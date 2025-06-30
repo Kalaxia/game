@@ -8,6 +8,7 @@ use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
 use App\Modules\Athena\Model\CommercialTax;
 use App\Modules\Athena\Model\Transaction;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
+use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Gaia\Helper\GalaxyGenerator;
@@ -36,6 +37,7 @@ class PopulateDatabase extends Command
 		private readonly CommercialTaxRepositoryInterface $commercialTaxRepository,
 		private readonly ConversationRepositoryInterface $conversationRepository,
 		private readonly ConversationUserRepositoryInterface $conversationUserRepository,
+		private readonly GetFactionsConfiguration $getFactionsConfiguration,
 		private readonly PlayerRepositoryInterface $playerRepository,
 		private readonly TransactionRepositoryInterface $transactionRepository,
 		#[Autowire('%game.available_factions%')]
@@ -71,7 +73,7 @@ class PopulateDatabase extends Command
 				identifier: $factionId,
 				alive: true,
 				electionStatement: Color::MANDATE,
-				regime: ColorResource::getInfo($factionId, 'regime'),
+				regime: ($this->getFactionsConfiguration)($factionId, 'regime'),
 				isInGame: true,
 				relations: array_filter(
 					$relations,
@@ -120,7 +122,6 @@ class PopulateDatabase extends Command
 		// @TODO remove Assistant player
 		$assistantPlayer = clone $p;
 		$assistantPlayer->id = 2;
-		$assistantPlayer->bind = Utils::generateString(25);
 		$assistantPlayer->name = 'Jean-Mi';
 		$assistantPlayer->avatar = 'jm';
 		$this->playerRepository->save($assistantPlayer);
@@ -129,7 +130,7 @@ class PopulateDatabase extends Command
 		foreach ($this->availableFactions as $factionId) {
 			$p = clone $p;
 			$p->bind = Utils::generateString(25);
-			$p->name = ColorResource::getInfo($factionId, 'officialName');
+			$p->name = ($this->getFactionsConfiguration)($factionId, 'officialName');
 			$p->avatar = ('color-'.$factionId);
 			$p->faction = $this->colorRepository->getOneByIdentifier($factionId);
 			$p->status = 6;
@@ -215,7 +216,7 @@ class PopulateDatabase extends Command
 
 			$conv = new Conversation(
 				id: Uuid::v4(),
-				title: 'Communication de '.ColorResource::getInfo($player->faction->identifier, 'popularName'),
+				title: 'Communication de '.($this->getFactionsConfiguration)($player->faction, 'popularName'),
 				messagesCount: 0,
 				createdAt: new \DateTimeImmutable(),
 				lastMessageAt: new \DateTimeImmutable(),

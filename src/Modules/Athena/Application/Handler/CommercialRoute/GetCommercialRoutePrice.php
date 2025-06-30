@@ -5,11 +5,17 @@ declare(strict_types=1);
 namespace App\Modules\Athena\Application\Handler\CommercialRoute;
 
 use App\Modules\Athena\Model\CommercialRoute;
+use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Zeus\Model\Player;
 
 readonly class GetCommercialRoutePrice
 {
+	public function __construct(
+		private GetFactionsConfiguration $getFactionsConfiguration,
+	) {
+	}
+
 	public function __invoke(int $distance, ?Player $player = null): int
 	{
 		$price = $distance * CommercialRoute::COEF_PRICE;
@@ -24,7 +30,7 @@ readonly class GetCommercialRoutePrice
 	private function applyBonuses(int $price, Player $player): float
 	{
 		// TODO Refactor faction economic bonuses to merge with player bonus management
-		$factionBonus = ColorResource::getInfo($player->faction->identifier, 'bonus');
+		$factionBonus = ($this->getFactionsConfiguration)($player->faction, 'bonus');
 
 		if (in_array(ColorResource::COMMERCIALROUTEPRICEBONUS, $factionBonus)) {
 			// bonus if the player is from Negore

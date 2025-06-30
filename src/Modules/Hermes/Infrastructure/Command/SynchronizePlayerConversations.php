@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Hermes\Infrastructure\Command;
 
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
+use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Hermes\Domain\Repository\ConversationUserRepositoryInterface;
@@ -30,6 +31,7 @@ class SynchronizePlayerConversations extends Command
 		private readonly ColorRepositoryInterface $factionRepository,
 		private readonly ConversationRepositoryInterface $conversationRepository,
 		private readonly ConversationUserRepositoryInterface $conversationUserRepository,
+		private readonly GetFactionsConfiguration $getFactionsConfiguration,
 		private readonly PlayerRepositoryInterface $playerRepository,
 		#[Autowire('%id_jeanmi%')]
 		private readonly int $jeanMiId,
@@ -44,7 +46,7 @@ class SynchronizePlayerConversations extends Command
 		$factions = $this->factionRepository->getInGameFactions();
 
 		foreach ($factions as $faction) {
-			$factionName = ColorResource::getInfo($faction->identifier, 'officialName');
+			$factionName = ($this->getFactionsConfiguration)($faction, 'officialName');
 			$style->info(sprintf('Processing faction conversation : %s', $factionName));
 
 			$factionAccount = $this->playerRepository->getFactionAccount($faction)

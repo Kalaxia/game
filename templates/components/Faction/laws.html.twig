@@ -35,7 +35,7 @@
 		<twig:H3 class="mt-4">Bonus de faction</twig:H3>
 
 		{# @TODO factorize with faction_choices #}
-		{% for bonus_identifier in get_faction_bonuses(faction.identifier) %}
+		{% for bonus_identifier in get_faction_bonuses(faction) %}
 			{% set bonus = get_bonus_text(bonus_identifier) %}
 			<div class="build-item">
 				<div class="name">

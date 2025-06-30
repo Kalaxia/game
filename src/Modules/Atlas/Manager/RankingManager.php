@@ -4,6 +4,7 @@ namespace App\Modules\Atlas\Manager;
 
 use App\Classes\Library\Utils;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
+use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Hermes\Model\ConversationMessage;
@@ -13,6 +14,7 @@ class RankingManager
 {
 	public function __construct(
 		private readonly ColorRepositoryInterface $colorRepository,
+		private readonly GetFactionsConfiguration $getFactionsConfiguration,
 		private readonly string $pointsToWin,
 		private readonly int $jeanMiId,
 	) {
@@ -27,7 +29,7 @@ class RankingManager
 		return;
 
 		// envoyer un message de Jean-Mi
-		$winnerName = ColorResource::getInfo($faction->id, 'officialName');
+		$winnerName = ($this->getFactionsConfiguration)($faction, 'officialName');
 		$content = 'Salut,<br /><br />La victoire vient d\'être remportée par : <br /><strong>'.$winnerName.'</strong><br />';
 		$content .= 'Cette faction a atteint les '.$this->pointsToWin.' points, la partie est donc terminée.<br /><br />Bravo et un grand merci à tous les participants !';
 

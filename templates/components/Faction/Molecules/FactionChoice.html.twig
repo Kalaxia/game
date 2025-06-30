@@ -41,7 +41,7 @@
 		{% endif %}
 
 		<h4 class="text-lg font-bold">Bonus & Malus de faction</h4>
-		{% for bonus_identifier in get_faction_bonuses(faction.identifier) %}
+		{% for bonus_identifier in get_faction_bonuses(faction) %}
 			{% set bonus = get_bonus_text(bonus_identifier) %}
 			<div class="">
 				<div class="">

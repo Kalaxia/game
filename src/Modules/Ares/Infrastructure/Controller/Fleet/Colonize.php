@@ -6,10 +6,10 @@ use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Application\Handler\Movement\MoveFleet;
 use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
-use App\Modules\Ares\Manager\CommanderManager;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Athena\Application\Registry\CurrentPlayerBasesRegistry;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
+use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
@@ -17,8 +17,6 @@ use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Gaia\Model\Place;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Promethee\Model\TechnologyId;
-use App\Modules\Travel\Domain\Model\TravelType;
-use App\Modules\Travel\Domain\Service\GetTravelDuration;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
 use App\Modules\Zeus\Manager\PlayerManager;
 use App\Modules\Zeus\Model\Player;
@@ -36,6 +34,7 @@ class Colonize extends AbstractController
 		Request $request,
 		Player $currentPlayer,
 		GetDistanceBetweenPlaces $getDistanceBetweenPlaces,
+		GetFactionsConfiguration $getFactionsConfiguration,
 		MoveFleet $moveFleet,
 		CurrentPlayerBasesRegistry $currentPlayerBasesRegistry,
 		CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
@@ -96,7 +95,7 @@ class Colonize extends AbstractController
 		$price = $totalBases * $this->getParameter('ares.coeff.colonization_cost');
 
 		// calcul du bonus
-		$factionBonuses = ColorResource::getInfo($currentPlayer->faction->identifier, 'bonus');
+		$factionBonuses = $getFactionsConfiguration($currentPlayer->faction, 'bonus');
 		if (in_array(ColorResource::COLOPRICEBONUS, $factionBonuses)) {
 			$price -= round($price * ColorResource::BONUS_CARDAN_COLO / 100);
 		}

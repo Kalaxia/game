@@ -3,6 +3,7 @@
 namespace App\Modules\Demeter\Infrastructure\Controller\Government\Ruler;
 
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
+use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
@@ -20,6 +21,7 @@ class Abdicate extends AbstractController
 	public function __invoke(
 		Request $request,
 		Player $currentPlayer,
+		GetFactionsConfiguration $getFactionsConfiguration,
 		PlayerRepositoryInterface $playerRepository,
 		NotificationRepositoryInterface $notificationRepository,
 		EntityManagerInterface $entityManager,
@@ -63,7 +65,7 @@ class Abdicate extends AbstractController
 
 		$entityManager->flush();
 
-		$statusArray = ColorResource::getInfo($heir->faction->identifier, 'status');
+		$statusArray = $getFactionsConfiguration($heir->faction, 'status');
 
 		$notification = NotificationBuilder::new()
 			->setTitle('Héritier du Trône.')

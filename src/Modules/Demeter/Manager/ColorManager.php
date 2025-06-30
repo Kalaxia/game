@@ -3,10 +3,9 @@
 namespace App\Modules\Demeter\Manager;
 
 use App\Classes\Library\DateTimeConverter;
-use App\Classes\Library\Parser;
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
-use App\Modules\Demeter\Domain\Repository\Law\LawRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
+use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Message\BallotMessage;
 use App\Modules\Demeter\Message\CampaignMessage;
 use App\Modules\Demeter\Message\ElectionMessage;
@@ -27,9 +26,9 @@ readonly class ColorManager implements SchedulerInterface
 {
 	public function __construct(
 		private ColorRepositoryInterface        $colorRepository,
+		private GetFactionsConfiguration 		$getFactionsConfiguration,
 		private PlayerRepositoryInterface       $playerRepository,
 		private NotificationRepositoryInterface $notificationRepository,
-		private Parser                          $parser,
 		private MessageBusInterface             $messageBus,
 		private UrlGeneratorInterface           $urlGenerator,
 		private EntityManagerInterface          $entityManager,
@@ -126,7 +125,7 @@ readonly class ColorManager implements SchedulerInterface
 				$isFromChief
 					? sprintf(
 						'Votre %s a appliqué une loi.',
-						ColorResource::getInfo($faction->identifier, 'status')[5]
+					($this->getFactionsConfiguration)($faction, 'status')[5]
 					)
 					: 'Votre gouvernement a proposé un projet de loi, en tant que membre du sénat,
 					il est de votre devoir de voter pour l\'acceptation ou non de ladite loi.',

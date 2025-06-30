@@ -32,15 +32,7 @@
 		<div class="body">
 			<h4>Dernières transactions</h4>
 			{% for transaction in credit_transactions %}
-				<div class="player color' . $transaction->receiverColor . '">
-					<a href="{{ transaction.receiverLink }}">
-						<img src="{{ asset('build/media/avatar/small/' ~ transaction.receiverAvatar ~ '.png') }}" class="picto" alt="{{ transaction.receiverName }}">
-					</a>
-
-					<span class="title">{{ transaction.receiverStatus }}</span>
-					<strong class="name">{{ transaction.receiverName }}</strong>
-					<span class="experience">{{ transaction.amount|number }} crédits</span>
-				</div>
+				<twig:CreditTransactionHistory :transaction="transaction" side="receiver" />
 			{% endfor %}
 
 			{% if credit_transactions == [] %}

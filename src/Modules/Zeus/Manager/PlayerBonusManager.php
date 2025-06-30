@@ -3,6 +3,7 @@
 namespace App\Modules\Zeus\Manager;
 
 use App\Modules\Demeter\Domain\Repository\Law\LawRepositoryInterface;
+use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Law\Law;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Demeter\Resource\LawResources;
@@ -21,6 +22,7 @@ readonly class PlayerBonusManager
 	public function __construct(
 		private CurrentPlayerRegistry $currentPlayerRegistry,
 		private CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
+		private GetFactionsConfiguration $getFactionsConfiguration,
 		private TechnologyRepositoryInterface $technologyRepository,
 		private TechnologyHelper              $technologyHelper,
 		private LawRepositoryInterface        $lawRepository,
@@ -93,7 +95,7 @@ readonly class PlayerBonusManager
 	{
 		$color = $playerBonus->playerColor ?? throw new \LogicException('Bonus must have a faction');
 
-		$bonus = ColorResource::getInfo($color->identifier, 'bonus');
+		$bonus = ($this->getFactionsConfiguration)($color, 'bonus');
 
 		if (in_array(ColorResource::DEFENSELITTLESHIPBONUS, $bonus)) {
 			$playerBonus->bonuses->increase(PlayerBonusId::FIGHTER_DEFENSE, 5);

@@ -134,7 +134,7 @@ class Color implements CreditHolderInterface
 
 	public function getRegime(): int
 	{
-		return ColorResource::getInfo($this->identifier, 'regime');
+		return $this->regime;
 	}
 
 	public function getCredits(): int
