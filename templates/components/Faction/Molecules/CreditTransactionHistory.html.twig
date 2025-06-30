@@ -1,0 +1,9 @@
+<div class="player color{{ this.displayFaction }}">
+	<a href="{{ this.displayLink }}">
+		<img src="{{ asset('build/media/avatar/small/' ~ this.displayAvatar ~ '.png') }}" class="picto" alt="{{ this.displayName }}">
+	</a>
+
+	<span class="title">{{ this.displayStatus }}</span>
+	<strong class="name">{{ this.displayName }}</strong>
+	<span class="experience">{{ this.amount|number }} crédits</span>
+</div>

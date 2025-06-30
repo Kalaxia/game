@@ -9,6 +9,7 @@ use App\Modules\Ares\Infrastructure\Validator\Commander\CanConquer;
 use App\Modules\Ares\Infrastructure\Validator\DTO\Conquest;
 use App\Modules\Athena\Application\Handler\CountPlayerBases;
 use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
@@ -31,6 +32,7 @@ class Conquer extends AbstractController
 		OrbitalBase $orbitalBase,
 		CountPlayerBases $countPlayerBases,
 		CommanderRepositoryInterface $commanderRepository,
+		GetFactionsConfiguration $getFactionsConfiguration,
 		MoveFleet $moveFleet,
 		PlaceRepositoryInterface $placeRepository,
 		PlayerManager $playerManager,
@@ -60,7 +62,7 @@ class Conquer extends AbstractController
 		$price = $totalBases * $conquestCost;
 
 		// TODO factorize faction bonus in BonusApplier
-		$factionBonus = ColorResource::getInfo($currentPlayer->faction->identifier, 'bonus');
+		$factionBonus = $getFactionsConfiguration($currentPlayer->faction, 'bonus');
 		// calcul du bonus
 		if (in_array(ColorResource::COLOPRICEBONUS, $factionBonus)) {
 			$price -= round($price * ColorResource::BONUS_CARDAN_COLO / 100);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Demeter\Infrastructure\DataFixtures\Factory;
 
+use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\ColorResource;
 use Symfony\Component\Uid\Uuid;
@@ -14,6 +15,11 @@ use Zenstruck\Foundry\ModelFactory;
  */
 class FactionFactory extends ModelFactory
 {
+	public function __construct(private readonly GetFactionsConfiguration $getFactionsConfiguration)
+	{
+		parent::__construct();
+	}
+
 	protected function getDefaults(): array
 	{
 		$identifier = self::faker()->unique()->numberBetween(1, 11);
@@ -27,7 +33,7 @@ class FactionFactory extends ModelFactory
 			'rankingPoints' => 0,
 			'points' => 0,
 			'electionStatement' => Color::MANDATE,
-			'regime' => ColorResource::getInfo($identifier, 'regime'),
+			'regime' => ($this->getFactionsConfiguration)($identifier, 'regime'),
 			'isClosed' => false,
 			'description' => null,
 			'isInGame' => true,

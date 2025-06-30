@@ -2,6 +2,7 @@
 
 namespace App\Modules\Demeter\Infrastructure\Controller\Government\Ruler;
 
+use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
@@ -20,6 +21,7 @@ class ChooseMinister extends AbstractController
 		Request $request,
 		Player $currentPlayer,
 		EntityManagerInterface $entityManager,
+		GetFactionsConfiguration $getFactionsConfiguration,
 		PlayerRepositoryInterface $playerRepository,
 		NotificationRepositoryInterface $notificationRepository,
 		int $department,
@@ -48,7 +50,7 @@ class ChooseMinister extends AbstractController
 		}
 		$appointee->status = $department;
 
-		$statusArray = ColorResource::getInfo($appointee->faction->identifier, 'status');
+		$statusArray = $getFactionsConfiguration($appointee->faction, 'status');
 
 		$notification = NotificationBuilder::new()
 			->setTitle('Nomination au gouvernement')

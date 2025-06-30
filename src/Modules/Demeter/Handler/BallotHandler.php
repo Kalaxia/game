@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Demeter\Handler;
 
 use App\Classes\Library\DateTimeConverter;
@@ -9,6 +11,7 @@ use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\CandidateRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\VoteRepositoryInterface;
+use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Message\BallotMessage;
 use App\Modules\Demeter\Message\CampaignMessage;
 use App\Modules\Demeter\Message\SenateUpdateMessage;
@@ -36,6 +39,7 @@ readonly class BallotHandler
 	public function __construct(
 		private ColorRepositoryInterface $colorRepository,
 		private CandidateRepositoryInterface $candidateRepository,
+		private GetFactionsConfiguration $getFactionsConfiguration,
 		private PlayerRepositoryInterface $playerRepository,
 		private MessageBusInterface $messageBus,
 		private NotificationRepositoryInterface $notificationRepository,
@@ -177,7 +181,7 @@ readonly class BallotHandler
 			$color->electionStatement = Color::MANDATE;
 
 			/** @var list<string> $statusArray */
-			$statusArray = ColorResource::getInfo($color->identifier, 'status');
+			$statusArray = ($this->getFactionsConfiguration)($color, 'status');
 			if ($color->isDemocratic()) {
 				$this->messageBus->dispatch(
 					new CampaignMessage($color->id),
@@ -201,7 +205,7 @@ readonly class BallotHandler
 						Un nouveau dirigeant a été élu pour faire valoir la force de %s à travers la galaxie.
 						Longue vie à <strong>%s</strong>.<br /><br />Voici les résultats des élections :<br /><br />
 						%s',
-						ColorResource::getPopularName($color),
+						($this->getFactionsConfiguration)($color, 'popularName'),
 						current($candidates)['candidate']->player->name,
 						array_map(
 							/** @param array{candidate: Candidate, votes_count: int} $player */
@@ -256,7 +260,7 @@ readonly class BallotHandler
 					conversation: $conv,
 					player: $convPlayer,
 					content: 'Un putsch a réussi, un nouveau dirigeant va faire valoir la force de '.
-						ColorResource::getPopularName($color).
+						($this->getFactionsConfiguration)($color, 'popularName').
 						' à travers la galaxie. Longue vie à <strong>'.
 						current($candidates)['candidate']->player->name.
 						'</strong>.<br /><br />De nombreux membres de la faction ont soutenu le mouvement révolutionnaire :<br /><br />'.
@@ -286,7 +290,7 @@ readonly class BallotHandler
 					conversation: $conv,
 					player: $convPlayer,
 					content: 'Les Oracles ont parlé, un nouveau dirigeant va faire valoir la force de '.
-						ColorResource::getPopularName($color).
+						($this->getFactionsConfiguration)($color, 'popularName').
 						' à travers la galaxie. Longue vie à <strong>'.
 						current($candidates)['candidate']->player->name.
 						'</strong>.<br /><br /><br /><br />',
@@ -297,7 +301,7 @@ readonly class BallotHandler
 			$noChief = false;
 			if ($currentLeader === null) {
 				$noChief = true;
-				$currentLeader = $this->playerRepository->getByName(ColorResource::getOfficialName($color))
+				$currentLeader = $this->playerRepository->getByName(($this->getFactionsConfiguration)($color, 'officialName'))
 					?? throw new \RuntimeException(sprintf('Missing faction account for %d faction', $color->identifier));
 			}
 			/*			$date = new DateTime($this->dLastElection);
@@ -318,11 +322,11 @@ readonly class BallotHandler
 
 					if (!$noChief) {
 						$this->notificationRepository->save(NotificationBuilder::new()
-							->setTitle('Vous demeurez '.ColorResource::getStatuses($color)[Player::CHIEF - 1])
+							->setTitle('Vous demeurez '.($this->getFactionsConfiguration)($color, 'status')[Player::CHIEF - 1])
 							->setContent(NotificationBuilder::paragraph(
 								'Aucun candidat ne s\'est présenté oour vous remplacer lors des dernières élections.',
 								'Par conséquent, vous êtes toujours à la tête de ',
-								ColorResource::getPopularName($color),
+								($this->getFactionsConfiguration)($color, 'popularName'),
 							))
 							->for($currentLeader));
 					}
@@ -332,7 +336,7 @@ readonly class BallotHandler
 						conversation: $conv,
 						player: $convPlayer,
 						content: 'La période électorale est terminée. Aucun candidat ne s\'est présenté pour prendre la tête de '.
-							ColorResource::getPopularName($color).'.'.
+							($this->getFactionsConfiguration)($color, 'popularName').'.'.
 						(false === $noChief)
 							? '<br>Par conséquent, '.$currentLeader->name.' est toujours au pouvoir.'
 							: '<br>Par conséquent, le siège du pouvoir demeure vacant.',
@@ -370,7 +374,7 @@ readonly class BallotHandler
 						content: 'Un coup d\'état a échoué. '.
 							$currentLeader->name.
 							' demeure le dirigeant de '.
-							ColorResource::getPopularName($color),
+							($this->getFactionsConfiguration)($color, 'popularName'),
 
 					);
 					$this->conversationMessageRepository->save($message);
@@ -397,7 +401,7 @@ readonly class BallotHandler
 						conversation: $conv,
 						player: $convPlayer,
 						content: 'Nul ne s\'est soumis au regard des dieux pour conduire '.
-							ColorResource::getPopularName($color).
+							($this->getFactionsConfiguration)($color, 'popularName').
 							' vers sa gloire.'.
 							(false === $noChief)
 								? $currentLeader->name.' demeure l\'élu des dieux pour accomplir leurs desseins dans la galaxie.'

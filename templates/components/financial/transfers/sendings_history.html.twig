@@ -6,15 +6,7 @@
 	</header>
 	<section>
 		{% for transaction in sendings %}
-			<div class="player color{{ transaction.receiverColor }}">
-				<a href="{{ transaction.receiverLink }}">
-					<img src="{{ asset('build/media/avatar/small/' ~ transaction.receiverAvatar ~ '.png') }}" alt="{{ transaction.receiverName }}" class="picto" />
-				</a>
-
-				<span class="title">{{ transaction.receiverStatus }}</span>
-				<strong class="name">{{ transaction.receiverName }}</strong>
-				<span class="experience">{{ transaction.amount|number }} crédit{{ transaction.amount|plural }}</span>
-			</div>
+			<twig:CreditTransactionHistory :transaction="transaction" side="receiver" />
 		{% endfor %}
 
 		{% if sendings|length == 0 %}

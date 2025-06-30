@@ -2,6 +2,7 @@
 
 namespace App\Modules\Demeter\Infrastructure\Controller\Government\Ruler;
 
+use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
@@ -19,6 +20,7 @@ class FireMinister extends AbstractController
 		Request $request,
 		Player $currentPlayer,
 		EntityManagerInterface $entityManager,
+		GetFactionsConfiguration $getFactionsConfiguration,
 		PlayerRepositoryInterface $playerRepository,
 		NotificationRepositoryInterface $notificationRepository,
 		int $id,
@@ -38,7 +40,7 @@ class FireMinister extends AbstractController
 			throw new ConflictHttpException('Vous ne pouvez choisir qu\'un membre du gouvernement.');
 		}
 
-		$statusArray = ColorResource::getInfo($minister->faction->identifier, 'status');
+		$statusArray = $getFactionsConfiguration($minister->faction, 'status');
 
 		$notification = NotificationBuilder::new()
 			->setTitle('Eviction du gouvernement')

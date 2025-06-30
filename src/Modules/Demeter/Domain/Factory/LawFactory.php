@@ -8,6 +8,7 @@ use App\Classes\Library\Parser;
 use App\Modules\Athena\Domain\Repository\CommercialTaxRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Law\LawRepositoryInterface;
+use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Domain\Service\Law\GetApplicationDuration;
 use App\Modules\Demeter\Domain\Service\Law\GetVotationTime;
 use App\Modules\Demeter\Manager\ColorManager;
@@ -32,6 +33,7 @@ readonly class LawFactory
 		private ColorRepositoryInterface $colorRepository,
 		private CommercialTaxRepositoryInterface $commercialTaxRepository,
 		private GetApplicationDuration $getApplicationDuration,
+		private GetFactionsConfiguration $getFactionsConfiguration,
 		private GetVotationTime $getVotationTime,
 		private PlayerRepositoryInterface        $playerRepository,
 		private SectorRepositoryInterface        $sectorRepository,
@@ -195,7 +197,7 @@ readonly class LawFactory
 			'taxes' => $taxes,
 			'rColor' => $rColor,
 			'display' => [
-				'Faction' => ColorResource::getInfo($rColor, 'officialName'),
+				'Faction' => ($this->getFactionsConfiguration)($relatedFaction, 'officialName'),
 				'Taxe actuelle' => $commercialTaxes->exportTax . ' %',
 				'Taxe proposée' => $taxes . ' %',
 			],
@@ -226,7 +228,7 @@ readonly class LawFactory
 			'taxes' => $taxes,
 			'rColor' => $rColor,
 			'display' => [
-				'Faction' => ColorResource::getInfo($rColor, 'officialName'),
+				'Faction' => ($this->getFactionsConfiguration)($relatedFaction, 'officialName'),
 				'Taxe actuelle' => $commercialTaxes->importTax . ' %',
 				'Taxe proposée' => $taxes . ' %',
 			],
@@ -242,9 +244,12 @@ readonly class LawFactory
 		$factionIdentifier = intval($payload['rcolor']
 			?? throw new \InvalidArgumentException('Informations manquantes.'));
 
-		if ($factionIdentifier < 1 || $factionIdentifier > (ColorResource::size() - 1) || $factionIdentifier === $faction->identifier) {
-			throw new \InvalidArgumentException('Cette faction n\'existe pas ou il s\'agit de la votre.');
+		if ($factionIdentifier === $faction->identifier) {
+			throw new \InvalidArgumentException('Il s\'agit de votre propre faction.');
 		}
+
+		$relatedFaction = $this->colorRepository->getOneByIdentifier($factionIdentifier)
+			?? throw new \InvalidArgumentException('Faction not found');
 
 		if (Color::NEUTRAL === $faction->relations[$factionIdentifier]) {
 			throw new \DomainException('Vous considérez déjà cette faction comme neutre.');
@@ -253,7 +258,7 @@ readonly class LawFactory
 		return [
 			'rColor' => $factionIdentifier,
 			'display' => [
-				'Faction' => ColorResource::getInfo($factionIdentifier, 'officialName'),
+				'Faction' => ($this->getFactionsConfiguration)($relatedFaction, 'officialName'),
 			],
 		];
 	}
@@ -266,8 +271,8 @@ readonly class LawFactory
 	{
 		$factionIdentifier = intval($payload['rcolor']
 			?? throw new \InvalidArgumentException('Informations manquantes.'));
-		if ($factionIdentifier < 1 || $factionIdentifier > (ColorResource::size() - 1) || $factionIdentifier === $faction->identifier) {
-			throw new \InvalidArgumentException('Cette faction n\'existe pas ou il s\'agit de la votre.');
+		if ($factionIdentifier === $faction->identifier) {
+			throw new \InvalidArgumentException('Il s\'agit de votre propre faction.');
 		}
 		$nbrPact = 0;
 		foreach ($faction->relations as $relation) {
@@ -283,10 +288,13 @@ readonly class LawFactory
 			throw new \DomainException('Vous considérez déjà cette faction comme votre alliée.');
 		}
 
+		$relatedFaction = $this->colorRepository->getOneByIdentifier($factionIdentifier)
+			?? throw new \InvalidArgumentException('Faction not found');
+
 		return [
 			'rColor' => $factionIdentifier,
 			'display' => [
-				'Faction' => ColorResource::getInfo($factionIdentifier, 'officialName'),
+				'Faction' => ($this->getFactionsConfiguration)($relatedFaction, 'officialName'),
 			],
 		];
 	}
@@ -299,8 +307,8 @@ readonly class LawFactory
 	{
 		$factionIdentifier = intval($payload['rcolor']
 			?? throw new \InvalidArgumentException('Informations manquantes.'));
-		if ($factionIdentifier < 1 || $factionIdentifier > (ColorResource::size() - 1) || $factionIdentifier === $faction->identifier) {
-			throw new \InvalidArgumentException('Cette faction n\'existe pas ou il s\'agit de la votre.');
+		if ($factionIdentifier === $faction->identifier) {
+			throw new \InvalidArgumentException('Il s\'agit de votre propre faction.');
 		}
 		$allyYet = false;
 		foreach ($faction->relations as $relation) {
@@ -316,10 +324,13 @@ readonly class LawFactory
 			throw new \DomainException('Vous considérez déjà cette faction comme votre alliée.');
 		}
 
+		$relatedFaction = $this->colorRepository->getOneByIdentifier($factionIdentifier)
+			?? throw new \InvalidArgumentException('Faction not found');
+
 		return [
 			'rColor' => $factionIdentifier,
 			'display' => [
-				'Faction' => ColorResource::getInfo($factionIdentifier, 'officialName'),
+				'Faction' => ($this->getFactionsConfiguration)($relatedFaction, 'officialName'),
 			],
 		];
 	}
@@ -333,17 +344,20 @@ readonly class LawFactory
 		$factionIdentifier = intval($payload['rcolor']
 			?? throw new \InvalidArgumentException('Informations manquantes.'));
 
-		if ($factionIdentifier < 1 || $factionIdentifier > (ColorResource::size() - 1) || $factionIdentifier === $faction->identifier) {
-			throw new \DomainException('Cette faction n\'existe pas ou il s\'agit de la votre.');
+		if ($factionIdentifier === $faction->identifier) {
+			throw new \InvalidArgumentException('Il s\'agit de votre propre faction.');
 		}
 		if (Color::ENEMY === $faction->relations[$factionIdentifier]) {
 			throw new \DomainException('Vous considérez déjà cette faction comme votre ennemie.');
 		}
 
+		$relatedFaction = $this->colorRepository->getOneByIdentifier($factionIdentifier)
+			?? throw new \InvalidArgumentException('Faction not found');
+
 		return [
 			'rColor' => $factionIdentifier,
 			'display' => [
-				'Faction' => ColorResource::getInfo($factionIdentifier, 'officialName')
+				'Faction' => ($this->getFactionsConfiguration)($relatedFaction, 'officialName')
 			],
 		];
 	}

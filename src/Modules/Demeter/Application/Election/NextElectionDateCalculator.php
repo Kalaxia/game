@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Demeter\Application\Election;
 
 use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
+use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Shared\Domain\Server\TimeMode;
@@ -18,6 +19,7 @@ readonly class NextElectionDateCalculator
 		private ElectionRepositoryInterface $electionRepository,
 		private DurationHandler $durationHandler,
 		private ClockInterface $clock,
+		private GetFactionsConfiguration $getFactionsConfiguration,
 		#[Autowire('%politics_campaign_duration%')]
 		private int $campaignDuration,
 		#[Autowire('%politics_election_duration%')]
@@ -74,7 +76,7 @@ readonly class NextElectionDateCalculator
 	public function getMandateDuration(Color $faction): int
 	{
 		return $this->timeMode->isStandard() ?
-			ColorResource::getInfo($faction->identifier, 'mandateDuration')
+			($this->getFactionsConfiguration)($faction, 'mandateDuration')
 			: 60 * 40;
 	}
 
