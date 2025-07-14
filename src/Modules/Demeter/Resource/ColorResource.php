@@ -8,13 +8,11 @@ class ColorResource
 {
 	// constants for factions
 	public const NO_FACTION = 0;
-	public const EMPIRE = 1;
-	public const KOVAHK = 2;
-	public const NEGORA = 3;
-	public const CARDAN = 4;
-	public const NERVE = 5;
-	public const APHERA = 6;
-	public const SYNELLE = 7;
+	public const KALANKAR = 1;
+	public const VALKAR = 2;
+	public const FALKIRR = 3;
+	public const ADRANITE = 4;
+	public const MALGAR = 7;
 
 	public const DEFENSELITTLESHIPBONUS = 0;
 	public const PRICEBIGSHIPBONUS = 1;

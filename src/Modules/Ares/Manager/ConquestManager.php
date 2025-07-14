@@ -61,7 +61,7 @@ readonly class ConquestManager
 	{
 		$price = $cost * $totalBases;
 
-		if (ColorResource::CARDAN == $player->faction->identifier) {
+		if (ColorResource::ADRANITE == $player->faction->identifier) {
 			// bonus if the player is from Cardan
 			$price -= round($price * ColorResource::BONUS_CARDAN_COLO / 100);
 		}

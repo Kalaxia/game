@@ -48,7 +48,7 @@ readonly class CountAffordableShips
 	{
 		$resourcePrice = ShipResource::getInfo($shipIdentifier, 'resourcePrice');
 		// TODO Apply BonusApplier once faction bonuses are processable with it
-		if (ColorResource::EMPIRE === $base->player->faction->identifier && in_array($shipIdentifier, [ShipResource::CERBERE, ShipResource::PHENIX])) {
+		if (ColorResource::KALANKAR === $base->player->faction->identifier && in_array($shipIdentifier, [ShipResource::CERBERE, ShipResource::PHENIX])) {
 			$resourcePrice -= PercentageApplier::toInt($resourcePrice, ColorResource::BONUS_EMPIRE_CRUISER);
 		}
 

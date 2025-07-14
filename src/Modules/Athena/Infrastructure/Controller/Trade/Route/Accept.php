@@ -72,7 +72,7 @@ class Accept extends AbstractController
 		// TODO move to BonusApplier logic
 		$distance = $getDistanceBetweenPlaces($proposerBase->place, $acceptorBase->place);
 		$price = $getCommercialRoutePrice($distance, $currentPlayer);
-		if (ColorResource::NEGORA === $currentPlayer->faction->identifier) {
+		if (ColorResource::FALKIRR === $currentPlayer->faction->identifier) {
 			$bonus = PercentageApplier::toFloat($price, ColorResource::BONUS_NEGORA_ROUTE);
 			$price = round($price - $bonus);
 		}

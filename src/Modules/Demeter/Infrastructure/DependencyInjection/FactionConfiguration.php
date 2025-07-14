@@ -22,28 +22,11 @@ class FactionConfiguration implements ConfigurationInterface
 			->arrayPrototype()
 				->children()
 					->integerNode('id')->min(1)->max(20)->end()
-					->scalarNode('officialName')->end()
-					->scalarNode('popularName')->end()
-					->scalarNode('government')->end()
-					->scalarNode('demonym')->end()
-					->scalarNode('devise')->end()
 					->enumNode('regime')->values([
 						Color::REGIME_DEMOCRATIC,
 						Color::REGIME_ROYALISTIC,
 						Color::REGIME_THEOCRATIC
 					])->end()
-					->scalarNode('factionPoint')->end()
-					->arrayNode('status')
-						->scalarPrototype()->end()
-						->validate()
-							->ifTrue(fn ($statuses) => count($statuses) !== 6)
-							->thenInvalid('Faction status must have 6 statuses')
-						->end()
-					->end()
-					->scalarNode('desc1')->end()
-					->scalarNode('desc2')->end()
-					->scalarNode('desc3')->end()
-					->scalarNode('desc4')->end()
 					->arrayNode('bonus')
 						->enumPrototype()->values([
 							ColorResource::DEFENSELITTLESHIPBONUS,
@@ -64,8 +47,6 @@ class FactionConfiguration implements ConfigurationInterface
 						])->end()
 					->end()
 					->integerNode('mandateDuration')->end()
-					->scalarNode('campaignDesc')->end()
-					->scalarNode('senateDesc')->end()
 				->end()
 			->end();
 

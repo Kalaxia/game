@@ -82,7 +82,7 @@ class Postulate extends AbstractController
 
 		$forumTopicRepository->save($topic);
 
-		if (ColorResource::CARDAN === $currentPlayer->faction->identifier) {
+		if (ColorResource::ADRANITE === $currentPlayer->faction->identifier) {
 			$vote = new \App\Modules\Demeter\Model\Election\Vote(
 				id: Uuid::v4(),
 				player: $currentPlayer,

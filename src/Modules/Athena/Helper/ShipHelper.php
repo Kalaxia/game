@@ -36,7 +36,7 @@ readonly class ShipHelper
 				case 'resource':
 					$price = ShipResource::getInfo($shipId, 'resourcePrice') * $quantity;
 					if (
-						ColorResource::EMPIRE === $this->currentPlayerRegistry->get()->faction->identifier
+						ColorResource::KALANKAR === $this->currentPlayerRegistry->get()->faction->identifier
 						&& in_array($shipId, [ShipResource::CERBERE, ShipResource::PHENIX])
 					) {
 						$price -= PercentageApplier::toInt($price, ColorResource::BONUS_EMPIRE_CRUISER);
