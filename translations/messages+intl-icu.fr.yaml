@@ -1,0 +1,331 @@
+factions:
+    !php/const App\Modules\Demeter\Resource\ColorResource::NO_FACTION:
+        name:
+            official: 'Sans Faction'
+            popular: ''
+            government: ''
+            demonym: 'Sans Faction'
+        devise: ''
+        faction_points: ''
+        descriptions:
+            general: ''
+            morals: ''
+            war: ''
+            culture: ''
+            senate: ''
+            campaign: ''
+        status:
+            player: ''
+            elite: ''
+            treasurer: ''
+            commander: ''
+            minister: ''
+            leader: ''
+
+    !php/const App\Modules\Demeter\Resource\ColorResource::KALANKAR:
+        name:
+            official: 'Fédération Kalankare'
+            popular: 'la Fédération'
+            government: 'Gardiens de la Fédération'
+            demonym: 'kalankars'
+        devise: 'Du Souvenir nous sommes gardiens'
+        faction_points: 'Points de Mémoire'
+        descriptions:
+            general: |
+                Empire puissant durant des générations, les Kalankars dominaient sur tous domaines l'ensemble des peuples de milliers de systèmes stellaires.
+                Leur avance technologique était incomparable, et leur croissance effrenée exigeait toujours plus d'énergie.
+                C'est ainsi que fut créé le projet Noyau-Monde, qui exploitait les noyaux planétaires pour fournir une quantité quasi-illimitée d'énergie à cette civilisation puissante.
+                Mais quelques dizaines d'années plus tard, une anomalie encore incomprise de nos jours conduisit à l'implosion de l'ensemble des Noyaux-Mondes et à la destruction des principales planètes kalankares en quelques heures.
+                Ce fut la fin de l'Empire Kalankar, dont les survivants appellèrent ce jour "Le Grand Cataclysme". Les planètes restantes, pour la plupart des avants-postes ou colonies, furent coupées les unes des autres, et nombre d'entre elles finirent par disparaître.
+                D'autres tentèrent de se rassembler et de mettre leurs efforts en commun pour tenter de persister. Ainsi naquît la Fédération Kalankare.
+            morals: |
+                Les Kalankars vivent dans la nostalgie de leur grandeur passée. Les difficultés auxquelles ils font face pour assurer leur subsistance sont autant de rappels de l'opulence perdue de l'Empire.
+                C'est un peuple qui sait avoir payé le prix de son arrogance, et dont l'humilité de leur existence les pousse à se concentrer sur l'essentiel : la survie.
+            war: |
+                Les flottes invincibles de l'Empire n'étant plus, les kalankars assurent leur protection avec les maigres moyens à leur disposition.
+                Ils évitent donc les conflits armés autant que possible. Cependant ce sont des combattants déterminés à protéger le peu qui leur reste.
+            culture: |
+                Ils n'oublient pas pour autant leurs origines et célèbrent leur passé par de nombreuses cérémonies liées à la Mémoire.
+                Nombre d'entre eux se lancent dans l'exploration des vestiges des mondes touchés par le Grand Cataclysme, espérant retrouver une partie de leur savoir et de leur richesse.
+                Certains d'entre eux pourraient même rêver de s'extraire de leur condition et rétablir la puissance qui fut jadis la leur.
+            senate: 'Le conseil est composé des membres de la faction qui possèdent le plus de points. Ces points sont consultables dans le classement général.'
+            campaign: |
+                À tout moment, un membre du conseil ou du gouvernement peut tenter un coup d'état.
+                Il aura alors 7 rotations pour attirer des partisans.
+                Il aura réussi son putsch s'il arrive à recruter suffisamment de partisans.
+        status:
+            player: 'Membre'
+            elite: >-
+                {gender, select,
+                    female {Conseillère}
+                    male {Conseiller}
+                    other {Conseiller-e}
+                }
+            treasurer: >-
+                {gender, select,
+                    female {Gardienne}
+                    male {Gardien}
+                    other {Gardien-ne}
+                } du Trésor
+            commander: >-
+                {gender, select,
+                    female {Gardienne}
+                    male {Gardien}
+                    other {Gardien-ne}
+                } des Armes
+            minister: >-
+                {gender, select,
+                    female {Gardienne}
+                    male {Gardien}
+                    other {Gardien-ne}
+                }du Domaine
+            leader: >-
+                {gender, select,
+                    female {Première Conseillère}
+                    male {Premier Conseiller}
+                    other {Premier-e Conseiller-e}
+                }
+
+    !php/const App\Modules\Demeter\Resource\ColorResource::VALKAR:
+        name:
+            official: 'Ascendance Valkar'
+            popular: "l'Ascendance"
+            government: 'Maison des Valkar'
+            demonym: 'valkars'
+        devise: "De nos lames, l'ordre viendra"
+        faction_points: 'Points de Bataille'
+        descriptions:
+            general: |
+                La Maison Valkar, une des principales dynasties de l'Empire Kalankar, a une longue tradition militaire.
+                L'essentiel de ses membres a servi dans les forces impériales et figuraient parmi les officiers les plus hauts placés.
+                Sa puissance majeure a fini par inspirer la crainte dans les sphères de pouvoir kalankares, soucieuses d'un potentiel coup d'état.
+                C'est leur établissement forcé aux confins de l'Empire qui sauvèrent les Valkar du Grand Cataclysme qui emporta la majeure partie des maisons kalankares.
+                Devenue la première puissance militaire de la galaxie, les Valkar sont désormais prêt-es à en prendre le contrôle en leur nom.
+            morals: |
+                Les Valkar sont une Maison pour qui l'ordre et la discipline sont capitales.
+                Leur société est entièrement vouée à la puissance militaire, qui dans leur philosophie est la seule protectrice de leurs existences.
+                Ils se considèrent comme les héritiers de l'empire Kalankar et entendent en préserver la tradition, tout du moins la vision qu'ils en ont.
+            war: |
+                Les Valkar sont habiles dans tous les aspects de l'Art de la Guerre. Brillants stratèges, ils savent mener des campagnes efficaces et frapper leurs ennemis en plein coeur.
+                Sur le champ de bataille, que ce soit dans d'immenses nefs d'acier, aux commandes de chasseurs ou sur le terrain, tous sont de redoutables combattants.
+            culture: |
+                C'est une société purement méritocrate, où chacun-e est libre de faire ses preuves et de se dépasser.
+                Les Valkar cultivent comme le reste des Kalankars la tradition du Souvenir et entretiennent la mémoire impériale.
+                Cela se voit notamment à leur art, austère et élégant, statues et tableaux qui chacune rappelle les heures glorieuses de l'Empire.
+            senate: 'Le sénat est composé des membres de la faction qui possèdent le plus de points. Ces points sont consultables dans le classement général.'
+            campaign: |
+                À tout moment, un membre du sénat ou du gouvernement peut tenter un coup d'état.
+                Il aura alors 7 relèves pour attirer des partisans.
+                Il aura réussi son putsch s'il arrive à recruter suffisemment de partisans.
+        status:
+            player: >-
+                {gender, select,
+                    female {Guerrière}
+                    male {Guerrier}
+                    other {Guerrier-e}
+                }
+            elite: 'Dignitaire'
+            treasurer: >-
+                {gender, select,
+                    female {Trésorière}
+                    male {Trésorier}
+                    other {Trésorier-e}
+                }
+            commander: >-
+                {gender, select,
+                    female {Maréchale}
+                    male {Maréchal}
+                    other {Maréchal-e}
+                }
+            minister: >-
+                {gender, select,
+                    female {Chambellane}
+                    male {Chambellan}
+                    other {Chambellan-e}
+                }
+            leader: >-
+                {gender, select,
+                    female {Impératrice}
+                    male {Empereur}
+                    other {Empereur-e}
+                }
+
+    !php/const App\Modules\Demeter\Resource\ColorResource::FALKIRR:
+        name:
+            official: 'République De Falkirr'
+            popular: 'Falkirr'
+            government: "l'Assemblée"
+            demonym: 'falkirriens'
+        devise: 'Liberté, guide nos pas'
+        faction_points: 'Points de Réputation'
+        descriptions:
+            general: |
+                Falkirr fut dans des temps très anciens une planète florissante, qui s'était étendue sur de nombreux mondes.
+                Puis les kalankars vinrent, leurs instoppables flottes réduisant en cendres toute résistance.
+                Les peuples de Falkirr eurent à subir des années d'occupation humiliante, avant de devenir peu à peu des citoyens à part entière de l'Empire.
+                Il y eu toujours en secret des nostalgiques du temps où Falkirr décidait d'elle-même son propre destin, mais devant la relative quiétude de la société jusqu'alors, aucun trouble majeur ne se manifesta.
+                Jusqu'au jour du Grand Cataclysme, où chacun-e put ressentir la chute du pouvoir kalankar jusqu'ici inquestionnable.
+                Les falkirrien-nes les plus enhardi-es proclamères donc la république de Falkirr, à laquelle adhérèrent rapidement les peuples des différentes planètes alentour.
+                Bien décidé-es à ne plus perdre le contrôle de leur Histoire, les citoyen-nes de la République luttent chaque jour pour leur indépendance.
+            morals: |
+                Les falkirrien-nes sont avant tout des personnes fières et attachées à leur liberté,
+                qui ont appris que le moindre manque de vigilance ou de cohésion pouvait mener à l'asservissement.
+                Leurs communautés sont extrêmement soudées et la majorité ne ménagent pas leurs efforts pour contribuer à la prospérité de la République.
+                L'engagement politique y est naturel, et chacun-e consacre de son temps pour s'investir dans les décisions de la collectivité.
+            war: |
+                Constamment sur leurs gardes, les flottes falkiriennes patrouillent sans relâche dans leurs secteurs pour ne courrir aucun risque d'invasion.
+                Elles sont préparées et entraînées pour défendre leurs territoires dont elles ont une parfaite connaissance.
+                La République de Falkirr n'a pas une richesse et une puissance comparable à celle des Valkar, mais fera tout son possible pour conserver sa liberté.
+            culture: |
+                Au sein de la République, on vit au jour le jour.
+                Les immenses efforts déployés pour assurer la subsistance de la société trouvent une récompense dans les différentes fêtes qui ont lieu un peu partout dans les cités et avant-postes.
+                Si les falkirien-nes sont un peu résolu et engagés pouvant passer énormément de temps à débattre et s'instruire, les moments légers de danse,
+                de musique et de chant restent particulièrement appréciés dans les communautés.
+            senate: 'Le sénat est composé des membres de la faction qui possèdent le plus de points. Ces points sont consultables dans le classement général.'
+            campaign: |
+                À tout moment, un membre du sénat ou du gouvernement peut tenter un coup d'état.
+                Il aura alors 7 relèves pour attirer des partisans.
+                Il aura réussi son putsch s'il arrive à recruter suffisemment de partisans.
+        status:
+            player: >-
+                {gender, select,
+                    female {Citoyenne}
+                    male {Citoyen}
+                    other {Citoyen-ne}
+                }
+            elite: >-
+                {gender, select,
+                    female {Sénatrice}
+                    male {Sénateur}
+                    other {Sénateur-e}
+                }
+            treasurer: >-
+                {gender, select,
+                    female {Trésorière}
+                    male {Trésorier}
+                    other {Trésorier-e}
+                }
+            commander: 'Stratège'
+            minister: >-
+                {gender, select,
+                    female {Première Consule}
+                    male {Premier Consul}
+                    other {Premier-e Consul-e}
+                }
+            leader: >-
+                {gender, select,
+                    female {Présidente}
+                    male {Président}
+                    other {Président-e}
+                }
+
+    !php/const App\Modules\Demeter\Resource\ColorResource::ADRANITE:
+        name:
+            official: 'Ruche Adranite'
+            popular: 'la Ruche'
+            government: 'Haute Ruche'
+            demonym: 'adranites'
+        devise: "Par-delà les confins de l'Univers, nous ne faisons qu'un"
+        faction_points: 'Points de Contribution'
+        descriptions:
+            general: |
+                Lors de l'expansion de l'Empire kalankar, des immenses contingents d'exploration s'élancèrent aux confins de la galaxie.
+                Rencontrant des mondes parfois hostiles, il arriva plusieurs fois que certains de ces groupes ne donnent plus signe de vie, sans que cela entraîne nécessairement des recherches au vu des distances parcourues.
+                Un de ces groupes refit surface quelques décades après sa disparition, mais leurs corps furent tout ce qui leur restait d'humain.
+                Devenus télépathes, les individus d'une même ruche sont lié-es par l'esprit à leur monarque.
+                Plusieurs ruches émergèrent des contrées inexplorées, chacune avec son ou sa monarque distillant sa volonté dans les esprits de leurs sujet-tes.
+                Les ruches sont unies entre elles par un-e être d'une puissance démesurée, qui représente un pouvoir quasiment impérial.
+            morals: |
+                Le pouvoir télépathique des adranites est cultivé par le lien entre les membres de la ruche et leur monarque.
+                De nombreux moments de la vie adranite sont donc dédié-es au renforcement de ce lien, par des rituels sacrés.
+                Le reste du temps, les adranites se dédient pleinement aux tâches permettant la croissance de leur communauté ou à la reproduction,
+                ce qui leur confère des populations en perpétuelle expansion.
+            war: |
+                Agissant comme un seul esprit, les adranites ont une coordination hors du commun et privilégient l'intérêt de la ruche à leur propre survie, ce qui en fait de terribles adversaires.
+                Envahissant de nouveaux mondes par nuées interminables pour répondre aux besoins de leur croissance démographique inarrêtable, leur nombre est une de leurs plus grandes forces.
+            culture: |
+                Chaque ruche célèbre la gloire de ses monarques et leur dresse de nombreux monuments.
+                La nature de ces monuments diffère selon les monarques, et peuvent se révéler esthétiques ou barbares.
+            senate: 'La Ruche Supérieure est composée des ouvrières de la faction qui possèdent le plus de points. Ces points sont consultables dans le classement général.'
+            campaign: |
+                Les membres du Sénat peuvent se proposer devant les Oracles pour prendre une place politiquement importante dans la faction.
+                <br /><br />Une fois que toutes les candidatures ont été déposées, la Grande Lumière, via les Oracles décide de la personne la plus apte à la représenter dans le monde physique. Cet personne reçoit le titre de Guide Suprême.
+                <br /><br />Le Guide Suprême va ensuite choisir trois personnes parmi les membres du Sénat pour le seconder dans la Faction. Il va devoir déterminer le Camerlingue, l\'Inquisiteur et l\'Archiprêtre de la faction.
+        status:
+            player: >-
+                {gender, select,
+                    female {Reine}
+                    male {Roi}
+                    other {Monarque}
+                }
+            elite: >-
+                {gender, select,
+                    female {Soeur}
+                    male {Frère}
+                    other {Adelphe}
+                }
+            treasurer: 'Économe'
+            commander: >-
+                {gender, select,
+                    female {Dévoreuse}
+                    male {Dévoreur}
+                    other {Dévoreur-e}
+                }
+            minister: >-
+                {gender, select,
+                    female {Coordinatrice}
+                    male {Coordinateur}
+                    other {Coordinateur-e}
+                }
+            leader: >-
+                {gender, select,
+                    female {Haute Reine}
+                    male {Haut Roi}
+                    other {Haut-e Monarque}
+                }
+
+
+    !php/const App\Modules\Demeter\Resource\ColorResource::MALGAR:
+        name:
+            official: 'Marche de Malgar'
+            popular: 'la Marche'
+            government: 'Le Conclave'
+            demonym: 'malgariens'
+        devise: "A l'Esprit, Obéissance et Amour"
+        faction_points: 'Points de Sagesse'
+        descriptions:
+            general: |
+                Certains mondes qui vécurent le Grand Cataclysme comptèrent tout de même quelques survivant-es.
+                Au milieu des débris de planètes intégralement ravagées, dont les noyaux avaient implosé et provoqué d'immenses éruptions magmatiques, des nuées de cendre, des séismes qui engloutirent les plus opulentes des cités,
+                Quelques miraculé-es errèrent des années durant sans qu'aucun secours ne vienne.
+                Jusqu'à ce qu'un message finisse par passer sur les réseaux de communication encore fonctionnels, silencieux depuis lors.
+                Ce message était celui annonçant la Vision, une prophétie promettant la fin du calvaire pour les rescapé-es du Grand Cataclysme,
+                qui se retrouveraient sur Malgar, un monde épargné où résiderait un puissant Esprit né de la souffrance des milliards d'âmes perdues lors du drame.
+            morals: |
+                Les habitant-es de Malgar et de ses environs, hanté-es par le souvenir du Grand Cataclysme, sont entièrement dédié-es au service de l'Esprit,
+                qui incarne la sagesse et l'humilité perdues par les kalankars.
+                Leur mission, en plus d'honorer l'Esprit par leur conduite modérée et altruiste, est d'empêcher que le drame se reproduise à nouveau.
+                C'est pourquoi leurs prêtre-sses parcourent les mondes alentour, prêchant la Vision, rassemblant toujours plus de fidèles dans les rangs des démuni-es.
+            war: |
+                Les peuples de la Marche disposent de quelques flottes mais leur puissance est bien moindre que celle de leurs voisins.
+                En revanche c'est la puissance de leur foi qui est à craindre, car elle s'immisce dans de nombreuses sociétés et peut déclencher des tempêtes de l'intérieur,
+                si tant est que l'on soit considéré par le clergé comme des adversaires de la Foi.
+            culture: |
+                Le culte de l'Esprit est l'occupation principale des malgarien-nes, qui le privilégient à bon nombres d'autres activités non essentielles à la survie de la communauté.
+            senate: 'Le clergé est composé des membres de la faction qui possèdent le plus de points. Ces points sont consultables dans le classement général.'
+            campaign: |
+                Les membres du Sénat peuvent se présenter aux élections pour prendre une place politiquement importante dans la faction.
+                <br /><br />Une fois que toutes les candidatures ont été déposées, chaque membre de Synelle peut voter pour le candidat de son choix. À la fin de la période de vote, la personne ayant reçu le plus de voix est élue Chancelier.
+                <br /><br />Le Chancelier va ensuite choisir trois personnes parmi les membres du Sénat pour le seconder dans la Faction. Il va devoir déterminer le Consul de la défense, le Consul des finances et le Premier Consul de la faction.
+        status:
+            player: 'Fidèle'
+            elite: >-
+                {gender, select,
+                    female {Prêtresse}
+                    male {Prêtre}
+                    other {Prêtre-sse}
+                }
+            treasurer: 'La Raison'
+            commander: 'Le Poing'
+            minister: 'La Voix'
+            leader: 'La Vision'

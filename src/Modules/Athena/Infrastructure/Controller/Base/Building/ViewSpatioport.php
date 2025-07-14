@@ -45,7 +45,7 @@ class ViewSpatioport extends AbstractController
 			'player_commercial_income_bonus' => $currentPlayerBonusRegistry
 				->getPlayerBonus()->bonuses->get(PlayerBonusId::COMMERCIAL_INCOME),
 			'negora_commercial_bonus' => ColorResource::BONUS_NEGORA_ROUTE,
-			'is_player_from_negora' => ColorResource::NEGORA === $currentPlayer->faction->identifier,
+			'is_player_from_negora' => ColorResource::FALKIRR === $currentPlayer->faction->identifier,
 			'in_game_factions' => $inGameFactions,
 			'mode' => $mode,
 			'search_results' => ('search' === $mode && 'POST' === $request->getMethod())

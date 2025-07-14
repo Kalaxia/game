@@ -24,8 +24,8 @@ class Banner
 	public function getBannerFile(): string
 	{
 		return match ($this->faction->identifier) {
-			ColorResource::EMPIRE => 'Adranites.png',
-			ColorResource::NEGORA => 'Dores_Blason_500px.png',
+			ColorResource::KALANKAR => 'Adranites.png',
+			ColorResource::FALKIRR => 'Dores_Blason_500px.png',
 			default => 'Azures_Blason_500px.png',
 		};
 	}

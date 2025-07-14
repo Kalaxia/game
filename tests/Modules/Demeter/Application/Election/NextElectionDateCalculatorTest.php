@@ -105,7 +105,7 @@ class NextElectionDateCalculatorTest extends KernelTestCase
 
 		yield 'Standard mode' => [
 			[
-				'identifier' => ColorResource::EMPIRE,
+				'identifier' => ColorResource::KALANKAR,
 				'regime' => Color::REGIME_DEMOCRATIC,
 				'electionStatement' => Color::MANDATE,
 				'lastElectionHeldAt' => new DatePoint('2023-06-01 17:00:00'),
@@ -119,7 +119,7 @@ class NextElectionDateCalculatorTest extends KernelTestCase
 
 		yield 'Standard mode with late elections' => [
 			[
-				'identifier' => ColorResource::EMPIRE,
+				'identifier' => ColorResource::KALANKAR,
 				'regime' => Color::REGIME_DEMOCRATIC,
 				'electionStatement' => Color::MANDATE,
 				'lastElectionHeldAt' => new DatePoint('2023-03-28 17:00:00'),
@@ -133,7 +133,7 @@ class NextElectionDateCalculatorTest extends KernelTestCase
 
 		yield 'Fast mode with late elections' => [
 			[
-				'identifier' => ColorResource::EMPIRE,
+				'identifier' => ColorResource::KALANKAR,
 				'regime' => Color::REGIME_DEMOCRATIC,
 				'electionStatement' => Color::MANDATE,
 				'lastElectionHeldAt' => new DatePoint('2023-06-04 17:00:00'),
