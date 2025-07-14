@@ -5,3 +5,5 @@ framework:
         fallbacks:
             - fr
         providers:
+        globals:
+            '{gender}': 'other'
