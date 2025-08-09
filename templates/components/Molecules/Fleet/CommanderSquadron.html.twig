@@ -1,7 +1,7 @@
 {% set nbr = key + 1 %}
 
 {% set squadron = commander.getSquadron(key) %}
-{% set pev = squadron is not null ? squadron.pev : 0 %}
+{% set pev = squadron is not null ? squadron|pev : 0 %}
 {% if pev == 0 %}
 	{% set full = 'full0' %}
 {% elseif pev < 50 %}

@@ -3,6 +3,7 @@
 namespace App\Modules\Ares\Model;
 
 use App\Modules\Ares\Domain\Model\CommanderMission;
+use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Gaia\Model\Place;
@@ -204,7 +205,7 @@ class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatabl
 	 */
 	public function getNbrShipByType(): array
 	{
-		$array = array_fill(0, ShipResource::countAvailableShips(), 0);
+		$array = array_fill(0, count(ShipCategory::cases()), 0);
 
 		foreach ($this->army as $squadron) {
 			for ($i = 0; $i < 12; ++$i) {

@@ -23,7 +23,7 @@
 					</div>
 				{% elseif transaction.hasShips %}
 					<div class="offer">
-						<strong>{{ transaction.quantity }} {{ get_ship_info(transaction.identifier, 'codeName') ~ transaction.quantity|plural }}</strong>
+						<strong>{{ transaction.quantity }} {{ get_ship_info(transaction.identifier, 'name') ~ transaction.quantity|plural }}</strong>
 						<em>{{ get_ship_info(transaction.identifier, 'name') }} / {{ get_ship_info(transaction.identifier, 'pev') }} pev</em>
 					</div>
 				{% endif %}

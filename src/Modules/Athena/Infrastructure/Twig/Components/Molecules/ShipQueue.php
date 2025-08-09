@@ -18,14 +18,17 @@ use App\Modules\Athena\Model\ShipQueue as ShipQueueModel;
 class ShipQueue extends Queue
 {
 	public ShipQueueModel|null $queue = null;
+	public string|null $nameComponent = 'ShipQueueName';
 
 	public function getName(): string
 	{
-		return sprintf('%d %s%s',
+		throw new \LogicException("You mustn't use this method and use the translator directly instead");
+
+		/*return sprintf('%d %s%s',
 			$this->queue->quantity,
-			ShipResource::getInfo($this->queue->shipNumber, 'codeName'),
+			ShipResource::getInfo($this->queue->shipNumber, 'name'),
 			Format::plural($this->queue->quantity),
-		);
+		);*/
 	}
 
 	public function getSubTitle(): string
@@ -47,10 +50,12 @@ class ShipQueue extends Queue
 
 	public function getPicto(): string
 	{
-		return sprintf(
+		throw new \LogicException("You mustn't use this method and use the ShipPicto component instead");
+
+		/*return sprintf(
 			'images/legacy/picto/ships/types/%s.svg',
 			ShipResource::getInfo($this->getIdentifier(), 'picto'),
-		);
+		);*/
 	}
 
 	public function getIdentifier(): int

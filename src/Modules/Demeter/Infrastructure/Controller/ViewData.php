@@ -8,6 +8,7 @@ use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Domain\Repository\LiveReportRepositoryInterface;
 use App\Modules\Ares\Domain\Repository\ReportRepositoryInterface;
 use App\Modules\Ares\Domain\Repository\SquadronRepositoryInterface;
+use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Ares\Manager\CommanderManager;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Resource\CommanderResources;
@@ -53,6 +54,7 @@ class ViewData extends AbstractController
 		GalaxyConfiguration                  $galaxyConfiguration,
 		SectorRepositoryInterface            $sectorRepository,
 		SquadronRepositoryInterface $squadronRepository,
+		GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 	): Response {
 		$faction = $currentPlayer->faction
 			?? throw new \LogicException('Player must have a faction');
@@ -83,7 +85,7 @@ class ViewData extends AbstractController
 
 		$totalPEV = 0;
 		for ($i = 0; $i < 12; ++$i) {
-			$totalPEV += ($fleetStats['nbs'.$i]) * ShipResource::getInfo($i, 'pev');
+			$totalPEV += ($fleetStats['nbs'.$i]) * $getShipCategoriesConfiguration($i, 'pev');
 		}
 
 		$factions = $this->colorRepository->getAll();

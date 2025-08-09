@@ -7,6 +7,8 @@ namespace App\Modules\Athena\Infrastructure\Controller\Financial;
 use App\Classes\Library\Game;
 use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
+use App\Modules\Ares\Domain\Service\CalculateFleetCost;
+use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Athena\Application\Handler\Tax\PopulationTaxHandler;
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
@@ -29,6 +31,8 @@ class ViewInvestments extends AbstractController
 		private readonly CommanderArmyHandler $commanderArmyHandler,
 		private readonly CommercialRouteRepositoryInterface $commercialRouteRepository,
 		private readonly PopulationTaxHandler $populationTaxHandler,
+		private readonly GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
+		private readonly CalculateFleetCost $calculateFleetCost,
 	) {
 	}
 
@@ -151,7 +155,7 @@ class ViewInvestments extends AbstractController
 			$data['totalTaxInBonus'] += $populationTax->bonus;
 			$data['totalTaxOut'] += $populationTax->getTotal() * $base->place->system->sector->tax / 100;
 			$data['totalInvest'] += $base->iSchool + $base->iAntiSpy;
-			$data['totalShipsFees'] += Game::getFleetCost($base->getShipStorage(), false);
+			$data['totalShipsFees'] += ($this->calculateFleetCost)($base->getShipStorage(), false);
 
 			// @TODO cout des trucs en vente
 
@@ -164,11 +168,11 @@ class ViewInvestments extends AbstractController
 
 		foreach ($commanders as $commander) {
 			$data['totalFleetFees'] += $commander->level * Commander::LVLINCOMECOMMANDER;
-			$data['totalShipsFees'] += Game::getFleetCost($commander->getNbrShipByType());
+			$data['totalShipsFees'] += ($this->calculateFleetCost)($commander->getNbrShipByType());
 		}
 
 		foreach ($transactions as $transaction) {
-			$data['totalShipsFees'] += ShipResource::getInfo($transaction->identifier, 'cost') * ShipResource::COST_REDUCTION * $transaction->quantity;
+			$data['totalShipsFees'] += ($this->getShipCategoriesConfiguration)($transaction->identifier, 'cost') * ShipResource::COST_REDUCTION * $transaction->quantity;
 		}
 
 		$data['totalRouteIncomeBonus'] = $this->bonusApplier->apply(

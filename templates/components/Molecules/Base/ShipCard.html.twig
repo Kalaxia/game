@@ -1,10 +1,7 @@
 {% extends 'components/common/card.html.twig' %}
 
 {% block title %}
-	<div class="flex justify-between items-center">
-		<h5 class="text-sm md:text-base">{{ get_ship_info(shipIdentifier, 'codeName')  }}</h5>
-		<em class="text-xs md:text-sm font-normal">{{ get_ship_info(shipIdentifier, 'name') }}</em>
-	</div>
+	<h5 class="text-sm md:text-base">{{ get_ship_info(shipIdentifier, 'name')  }}</h5>
 {% endblock %}
 
 {% block picto %}
@@ -41,22 +38,21 @@
 			{{ cost }}
 		</twig:Button>
 	{% else %}
-		<div class="flex gap-x-1 items-start justify-between w-full">
-			{% if not isHeavyShipyard %}
-				<twig:InsetLabelInput
-					label="Quantité"
-					for="quantity"
-					:faction="current_player.faction"
-					input:name="quantity"
-					input:type="number"
-					:input:max="min(99, maxShips)"
-					:input:value="maxShips"
-					:input:data-max-ships="maxShips"
-				/>
-			{% endif %}
-
-			<a class="basis-1/2" href="{{ absolute_url(path('build_ships', { 'ship': shipIdentifier, 'quantity': maxShips })) }}">
-				<twig:Button :faction="current_player.faction" type="button">
+		<form method="post" action="{{ path('build_ships', { 'ship': shipIdentifier }) }}">
+			<div class="flex gap-x-1 items-start justify-between w-full">
+				{% if not isHeavyShipyard %}
+					<twig:InsetLabelInput
+						label="Quantité"
+						for="quantity"
+						:faction="current_player.faction"
+						input:name="quantity"
+						input:type="number"
+						:input:max="min(99, maxShips)"
+						:input:value="maxShips"
+						:input:data-max-ships="maxShips"
+					/>
+				{% endif %}
+				<twig:Button class="basis-1/2" :faction="current_player.faction" type="submit">
 					<p class="text-sm md:font-semibold">
 						Commander
 					</p>
@@ -66,7 +62,8 @@
 						{{ (timeCost * (isHeavyShipyard ? 1 : maxShips))|lite_seconds }}
 					</span>
 				</twig:Button>
-			</a>
-		</div>
+			</div>
+		</form>
+
 	{% endif %}
 {% endblock footer %}

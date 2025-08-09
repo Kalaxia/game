@@ -8,8 +8,8 @@ use App\Shared\Domain\Model\QueueableInterface;
 
 abstract class Queue
 {
-	public QueueableInterface|null $queueable = null;
 	public int $refund;
+	public string|null $nameComponent = null;
 
 	abstract public function getName(): string;
 

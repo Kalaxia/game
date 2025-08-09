@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Athena\Domain\Enum;
 
-use App\Modules\Ares\Model\Ship;
+use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Resource\OrbitalBaseResource;
 use App\Modules\Athena\Resource\ShipResource;
@@ -18,8 +18,8 @@ enum DockType: string
 	public function getShipRange(): array
 	{
 		return match ($this) {
-			self::Manufacture => range(Ship::TYPE_PEGASE, Ship::TYPE_MEDUSE),
-			self::Shipyard => range(Ship::TYPE_GRIFFON, Ship::TYPE_PHENIX),
+			self::Manufacture => range(ShipCategory::LightFighter->value, ShipCategory::HeavyCorvette->value),
+			self::Shipyard => range(ShipCategory::LightFrigate->value, ShipCategory::HeavyCruiser->value),
 		};
 	}
 
@@ -52,6 +52,18 @@ enum DockType: string
 		return match ($this) {
 			self::Manufacture => 1,
 			self::Shipyard => 2,
+		};
+	}
+
+	public static function fromShipCategory(ShipCategory $category): self
+	{
+		return match ($category) {
+			ShipCategory::LightFighter, ShipCategory::Fighter, ShipCategory::HeavyFighter,
+			ShipCategory::Corvette, ShipCategory::LightCorvette, ShipCategory::HeavyCorvette => self::Manufacture,
+			ShipCategory::LightFrigate, ShipCategory::Frigate,
+			ShipCategory::Destroyer, ShipCategory::HeavyDestroyer,
+			ShipCategory::Cruiser, ShipCategory::HeavyCruiser => self::Shipyard,
+			default => throw new \InvalidArgumentException(sprintf('Invalid ship category %d', $category->value)),
 		};
 	}
 

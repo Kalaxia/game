@@ -46,7 +46,7 @@
 			{% set ship_identifier = loop.index0 %}
 
 			<div>
-				<strong class="pr-2">{{ quantity }}</strong> {{ get_ship_info(ship_identifier, 'codeName') }}
+				<strong class="pr-2">{{ quantity }}</strong> {{ get_ship_info(ship_identifier, 'name') }}
 			</div>
 		{% endfor %}
 	</section>

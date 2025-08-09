@@ -4,7 +4,10 @@ namespace App\Modules\Zeus\Application\Handler;
 
 use App\Classes\Library\Game;
 use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
+use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
+use App\Modules\Ares\Domain\Service\CalculateFleetCost;
+use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
 use App\Modules\Athena\Model\OrbitalBase;
@@ -14,14 +17,18 @@ use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Model\PlayerFinancialReport;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 readonly class ShipsWageHandler
 {
 	public function __construct(
+		private CalculateFleetCost $calculateFleetCost,
 		private CommanderArmyHandler $commanderArmyHandler,
 		private CommanderRepositoryInterface $commanderRepository,
 		private NotificationRepositoryInterface $notificationRepository,
 		private TransactionRepositoryInterface  $transactionRepository,
+		private TranslatorInterface $translator,
+		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 	) {
 	}
 
@@ -33,7 +40,7 @@ readonly class ShipsWageHandler
 		PlayerFinancialReport $playerFinancialReport,
 		array $commanders,
 		array $playerBases,
-		Player $rebelPlayer
+		Player $rebelPlayer,
 	): void {
 		$player = $playerFinancialReport->player;
 		$transactions = $this->transactionRepository->getPlayerPropositions($player, Transaction::TYP_SHIP);
@@ -43,7 +50,7 @@ readonly class ShipsWageHandler
 		$nbTransactions = count($transactions);
 		for ($i = ($nbTransactions - 1); $i >= 0; --$i) {
 			$transaction = $transactions[$i];
-			$transactionTotalCost += ShipResource::getInfo($transaction->identifier, 'cost') * ShipResource::COST_REDUCTION * $transaction->quantity;
+			$transactionTotalCost += ($this->getShipCategoriesConfiguration)($transaction->identifier, 'cost') * ShipResource::COST_REDUCTION * $transaction->quantity;
 		}
 		if ($playerFinancialReport->canAfford($transactionTotalCost)) {
 			$playerFinancialReport->shipsCost += $transactionTotalCost;
@@ -55,7 +62,7 @@ readonly class ShipsWageHandler
 		foreach ($commanders as $commander) {
 			$this->commanderArmyHandler->setArmy($commander);
 			$ships = $commander->getNbrShipByType();
-			$cost = Game::getFleetCost($ships);
+			$cost = ($this->calculateFleetCost)($ships);
 
 			if ($playerFinancialReport->canAfford($cost)) {
 				$playerFinancialReport->shipsCost += $cost;
@@ -81,7 +88,7 @@ readonly class ShipsWageHandler
 		// TODO refactor this part for better carving
 		foreach ($playerBases as $base) {
 			$shipsStorage = $base->getShipStorage();
-			$cost = Game::getFleetCost($shipsStorage, false);
+			$cost = ($this->calculateFleetCost)($shipsStorage, false);
 
 			if ($playerFinancialReport->canAfford($cost)) {
 				$playerFinancialReport->shipsCost += $cost;
@@ -89,11 +96,12 @@ readonly class ShipsWageHandler
 				continue;
 			}
 			// n'arrive pas à tous les payer !
-			for ($j = ShipResource::SHIP_QUANTITY - 1; $j >= 0; --$j) {
+			$shipCategoriesCount = count(ShipCategory::cases());
+			for ($j = $shipCategoriesCount - 1; $j >= 0; --$j) {
 				if (0 === $shipsStorage[$j]) {
 					continue;
 				}
-				$unitCost = ShipResource::getInfo($j, 'cost');
+				$unitCost = ($this->getShipCategoriesConfiguration)($j, 'cost');
 
 				$possibleMaintenable = floor($playerFinancialReport->getNewWallet() / $unitCost);
 				if ($possibleMaintenable > $shipsStorage[$j]) {
@@ -116,14 +124,14 @@ readonly class ShipsWageHandler
 						(1 == $toKill)
 							? sprintf(
 								' d\'un(e) %s sur %s. Ce vaisseau part donc à la casse ! ',
-								ShipResource::getInfo($j, 'codeName'),
+								$this->translator->trans(sprintf('ship_categories.%s.name', $j)),
 								$base->name,
 							)
 							: sprintf(
 								'Vous n\'avez pas assez de crédits pour payer l\'entretien de %d %ss sur %s.
 								Ces vaisseaux partent donc à la casse !',
 								$toKill,
-								ShipResource::getInfo($j, 'codeName'),
+								$this->translator->trans(sprintf('ship_categories.%s.name', $j)),
 								$base->name,
 							)
 					))

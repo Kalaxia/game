@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Zeus\Infrastructure\Controller\Tutorial;
 
 use App\Classes\Library\Format;
+use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
 use App\Modules\Athena\Manager\OrbitalBaseManager;
@@ -22,6 +23,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ValidateStep extends AbstractController
 {
@@ -36,6 +38,7 @@ class ValidateStep extends AbstractController
 		ShipQueueManager $shipQueueManager,
 		ShipQueueRepositoryInterface $shipQueueRepository,
 		PlayerRepositoryInterface $playerRepository,
+		TranslatorInterface $translator,
 	): Response {
 		$stepTutorial = $currentPlayer->stepTutorial;
 		$session = $request->getSession();
@@ -86,7 +89,7 @@ class ValidateStep extends AbstractController
 						if (0 != $value) {
 							$ships[$qty] = [];
 							$ships[$qty]['quantity'] = $value;
-							$ships[$qty]['name'] = ShipResource::getInfo($key, 'codeName');
+							$ships[$qty]['name'] = $translator->trans('ship_categories.' . $key . '.name');
 							++$qty;
 
 							// add ship to dock
@@ -164,7 +167,7 @@ class ValidateStep extends AbstractController
 					foreach ($playerBases as $ob) {
 						$shipQueues = $shipQueueRepository->getBaseQueues($ob);
 						foreach ($shipQueues as $shipQueue) {
-							if (ShipResource::PEGASE == $shipQueue->shipNumber) {
+							if (ShipCategory::LightFighter->value === $shipQueue->shipNumber) {
 								$nextStepAlreadyDone = true;
 								break;
 							}

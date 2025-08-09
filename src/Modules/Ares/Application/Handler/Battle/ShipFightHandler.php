@@ -32,10 +32,10 @@ readonly class ShipFightHandler
 				$this->attack($ship, $keyOfEnemyShip, $attackNumber, $enemySquadron, $playerBonus);
 			} else {
 				$this->logger->debug('{shipType} {shipId} of commander {commanderName} has dodged {attackerType} {attackerId} attack number {attackNumber}', [
-					'shipType' => $this->shipStatsHandler->getStats($enemySquadron->ships[$keyOfEnemyShip], ShipStat::CodeName, $playerBonus),
+					'shipType' => $this->shipStatsHandler->getStats($enemySquadron->ships[$keyOfEnemyShip], ShipStat::Name, $playerBonus),
 					'shipId' => $keyOfEnemyShip,
 					'commanderName' => $enemySquadron->commander->name,
-					'attackerType' => $this->shipStatsHandler->getStats($ship, ShipStat::CodeName, $playerBonus),
+					'attackerType' => $this->shipStatsHandler->getStats($ship, ShipStat::Name, $playerBonus),
 					'attackerId' => $ship->id,
 					'attackNumber' => $attackNumber,
 				]);
@@ -64,8 +64,8 @@ readonly class ShipFightHandler
 		));
 
 		$this->logger->debug('{shipType} {attackerId} of commander {commanderName} has inflicted {damage} damage points to {targetType} {targetId} with attack number {attackNumber}. Life before: {life}', [
-			'shipType' => $this->shipStatsHandler->getStats($ship, ShipStat::CodeName, $playerBonus),
-			'targetType' => $this->shipStatsHandler->getStats($targetShip, ShipStat::CodeName, $playerBonus),
+			'shipType' => $this->shipStatsHandler->getStats($ship, ShipStat::Name, $playerBonus),
+			'targetType' => $this->shipStatsHandler->getStats($targetShip, ShipStat::Name, $playerBonus),
 			'commanderName' => $ship->squadron->commander->name,
 			'targetId' => $key,
 			'life' => $targetShip->life,
@@ -92,7 +92,7 @@ readonly class ShipFightHandler
 
 		if ($ship->life <= 0) {
 			$this->logger->debug('{targetType} {targetId} of commander {commanderName} has been destroyed', [
-				'targetType' => $this->shipStatsHandler->getStats($ship, ShipStat::CodeName, $playerBonus),
+				'targetType' => $this->shipStatsHandler->getStats($ship, ShipStat::Name, $playerBonus),
 				'targetId' => $key,
 				'commanderName' => $ship->squadron->commander->name,
 			]);

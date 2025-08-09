@@ -2,10 +2,10 @@
 
 namespace App\Tests\Modules\Ares\Manager;
 
+use App\Modules\Ares\Application\Factory\ReportFactory;
 use App\Modules\Ares\Manager\FightManager;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\LiveReport;
-use App\Modules\Ares\Model\Report;
 use App\Modules\Ares\Model\Squadron;
 use App\Modules\Gaia\Model\Place;
 use App\Modules\Gaia\Model\Sector;
@@ -24,6 +24,8 @@ class FightManagerTest extends KernelTestCase
 
 		/** @var FightManager $fightManager */
 		$fightManager = static::getContainer()->get(FightManager::class);
+		/** @var ReportFactory $reportFactory */
+		$reportFactory = static::getContainer()->get(ReportFactory::class);
 
 		$commanderA = $this->getCommanderMock('attacker', 1);
 		$commanderD = $this->getCommanderMock('defender', 1);
@@ -36,7 +38,7 @@ class FightManagerTest extends KernelTestCase
 		LiveReport::$isLegal = true;
 		LiveReport::$dFight = new \DateTimeImmutable();
 
-		$report = Report::fromLiveReport($this->getPlaceMock());
+		$report = $reportFactory->create($this->getPlaceMock());
 
 		dump($report);
 	}

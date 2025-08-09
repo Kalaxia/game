@@ -6,6 +6,7 @@ use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Domain\Event\Fleet\SquadronUpdateEvent;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Domain\Repository\SquadronRepositoryInterface;
+use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Ares\Manager\CommanderManager;
 use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
 use App\Modules\Athena\Resource\ShipResource;
@@ -24,6 +25,7 @@ class UpdateSquadron extends AbstractController
 	public function __invoke(
 		Request $request,
 		Player $currentPlayer,
+		GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 		OrbitalBaseRepositoryInterface $orbitalBaseRepository,
 		CommanderManager $commanderManager,
 		CommanderArmyHandler $commanderArmyHandler,
@@ -87,7 +89,7 @@ class UpdateSquadron extends AbstractController
 
 		// vérif de squadron (pas plus de 100 PEV, pas de nombre négatif)
 		foreach ($squadronSHIP as $i => $v) {
-			$totalPEV += $v * ShipResource::getInfo($i, 'pev');
+			$totalPEV += $v * $getShipCategoriesConfiguration($i, 'pev');
 			if ($v < 0) {
 				$squadronOK = false;
 				break;

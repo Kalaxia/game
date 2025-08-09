@@ -180,7 +180,7 @@
                                                 {% for key in ship_reward|keys %}
                                                     {% set value = ship_reward[key] %}
                                                     {% if value > 0 %}
-                                                        <li>- <span class="">{{ value }}</span> {{ ship_name(key) }}{{ value|plural }}</li>
+                                                        <li>- <span class="">{{ value }}</span> {{ ('ship_categories.' ~ key ~ '.name')|trans }}{{ value|plural }}</li>
                                                     {% endif %}
                                                 {% endfor %}
                                             </ul>

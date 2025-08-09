@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace App\Modules\Athena\Domain\Service\Base\Ship;
 
+use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Athena\Model\ShipQueue;
-use App\Modules\Athena\Resource\ShipResource;
 
 readonly class CountQueuedShipPoints
 {
+	public function __construct(
+		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
+	) {
+	}
+
 	/**
 	 * @param list<ShipQueue> $shipQueues
 	 */
@@ -17,7 +22,7 @@ readonly class CountQueuedShipPoints
 		$inQueue = 0;
 
 		foreach ($shipQueues as $shipQueue) {
-			$inQueue += ShipResource::getInfo($shipQueue->shipNumber, 'pev') * $shipQueue->quantity;
+			$inQueue += ($this->getShipCategoriesConfiguration)($shipQueue->shipNumber, 'pev') * $shipQueue->quantity;
 		}
 
 		return $inQueue;

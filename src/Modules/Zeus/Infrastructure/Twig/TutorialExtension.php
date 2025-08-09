@@ -14,7 +14,6 @@ class TutorialExtension extends AbstractExtension
 	{
 		return [
 			new TwigFunction('tutorial_info', fn (int $step, string $info) => TutorialResource::getInfo($step, $info)),
-			new TwigFunction('ship_name', fn (int $id) => ShipResource::getInfo($id, 'codeName')),
 		];
 	}
 }

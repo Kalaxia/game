@@ -2,6 +2,7 @@
 
 namespace App\Modules\Athena\Infrastructure\Controller\Ship;
 
+use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
 use App\Modules\Athena\Manager\OrbitalBaseManager;
 use App\Modules\Athena\Manager\ShipQueueManager;
@@ -28,6 +29,7 @@ class CancelQueue extends AbstractController
 		OrbitalBaseManager $orbitalBaseManager,
 		ShipQueueManager $shipQueueManager,
 		ShipQueueRepositoryInterface $shipQueueRepository,
+		GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 		Uuid $id,
 	): Response {
 		$dock = $request->query->get('dock') ?? throw new BadRequestHttpException('Missing dock parameter');
@@ -84,7 +86,7 @@ class CancelQueue extends AbstractController
 		// $scheduler->cancel($shipQueues[$index], $shipQueues[$index]->dEnd);
 		$shipQueueRepository->remove($shipQueues[$index]);
 		// give a part of the resources back
-		$resourcePrice = ShipResource::getInfo($shipNumber, 'resourcePrice');
+		$resourcePrice = $getShipCategoriesConfiguration($shipNumber, 'resourcePrice');
 		if (1 == $dockType) {
 			$resourcePrice *= $quantity;
 		}

@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace App\Modules\Athena\Domain\Service\Base\Ship;
 
+use App\Modules\Ares\Domain\Model\ShipCategory;
+use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Athena\Domain\Enum\DockType;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\ShipQueue;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Shared\Application\PercentageApplier;
 
 readonly class CountAffordableShips
 {
-	public function __construct(private CountHangarAvailableStorableShipPoints $countHangarAvailableStorableShipPoints)
-	{
+	public function __construct(
+		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
+		private CountHangarAvailableStorableShipPoints $countHangarAvailableStorableShipPoints,
+	) {
 	}
 
 	/**
@@ -39,16 +42,16 @@ readonly class CountAffordableShips
 	): int {
 		$affordableShipPoints = ($this->countHangarAvailableStorableShipPoints)($base, $shipQueues, $dockType);
 
-		$affordableShipsCount = intval(floor($affordableShipPoints / ShipResource::getInfo($shipIdentifier, 'pev')));
+		$affordableShipsCount = intval(floor($affordableShipPoints / ($this->getShipCategoriesConfiguration)($shipIdentifier, 'pev')));
 
 		return min($affordableShipsCount, 99);
 	}
 
 	private function countAffordableShipsFromResources(int $shipIdentifier, OrbitalBase $base): int
 	{
-		$resourcePrice = ShipResource::getInfo($shipIdentifier, 'resourcePrice');
+		$resourcePrice = ($this->getShipCategoriesConfiguration)($shipIdentifier, 'resourcePrice');
 		// TODO Apply BonusApplier once faction bonuses are processable with it
-		if (ColorResource::KALANKAR === $base->player->faction->identifier && in_array($shipIdentifier, [ShipResource::CERBERE, ShipResource::PHENIX])) {
+		if (ColorResource::KALANKAR === $base->player->faction->identifier && in_array($shipIdentifier, [ShipCategory::Cruiser, ShipCategory::HeavyCruiser])) {
 			$resourcePrice -= PercentageApplier::toInt($resourcePrice, ColorResource::BONUS_EMPIRE_CRUISER);
 		}
 

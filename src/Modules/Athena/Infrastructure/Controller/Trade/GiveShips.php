@@ -26,6 +26,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class GiveShips extends AbstractController
 {
@@ -41,6 +42,7 @@ class GiveShips extends AbstractController
 		TransactionRepositoryInterface $transactionRepository,
 		NotificationRepositoryInterface $notificationRepository,
 		CountNeededCommercialShips $countNeededCommercialShips,
+		TranslatorInterface $translator,
 	): Response {
 		$baseId = $request->request->get('baseId') ?? throw new BadRequestHttpException('Missing base id');
 
@@ -168,7 +170,7 @@ class GiveShips extends AbstractController
 						),
 						' a lancé un convoi de ',
 						NotificationBuilder::bold(Format::numberFormat($ships)),
-						' ' . ShipResource::getInfo($shipType, 'codeName') . ' depuis sa base ',
+						' ' . $translator->trans(sprintf('ship_categories.%s.name', $shipType)) . ' depuis sa base ',
 						NotificationBuilder::link(
 							$this->generateUrl('map', ['place' => $currentBase->place->id]),
 							$currentBase->name,
