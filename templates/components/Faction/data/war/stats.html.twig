@@ -40,7 +40,7 @@
 					<img class="fill-red-500 w-8" src="{{ asset('images/legacy/picto/ships/types/' ~ get_ship_info(i, 'picto') ~ '.svg') }}" alt="" />
 
 					<div class="text-right">
-						<span class="text-sm">{{ get_ship_info(i, 'name') }} &laquo;{{ get_ship_info(i, 'codeName') }}&raquo;</span><br>
+						<span class="text-sm">{{ get_ship_info(i, 'name') }} &laquo;{{ get_ship_info(i, 'name') }}&raquo;</span><br>
 						<span class="text-lg font-semibold">{{ (fleet_stats['nbs' ~ i] ?? 0)|number }}</span>
 					</div>
 				</li>

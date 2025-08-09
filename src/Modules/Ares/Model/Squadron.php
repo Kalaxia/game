@@ -2,7 +2,6 @@
 
 namespace App\Modules\Ares\Model;
 
-use App\Modules\Athena\Resource\ShipResource;
 use Symfony\Component\Uid\Uuid;
 
 class Squadron implements \JsonSerializable
@@ -118,12 +117,7 @@ class Squadron implements \JsonSerializable
 	// Move this method in dedicated handler
 	public function getPev(): int
 	{
-		$pev = 0;
-		foreach ($this->getShips() as $shipNumber => $quantity) {
-			$pev += ShipResource::getInfo($shipNumber, 'pev') * $quantity;
-		}
-
-		return $pev;
+		trigger_error('This method is deprecated and will be removed in the next major release. Use GetSquadronPev service instead.', E_USER_DEPRECATED);
 	}
 
 	public function isEmpty(): bool

@@ -4,24 +4,18 @@ namespace App\Modules\Athena\Infrastructure\Controller\Trade\Offer;
 
 use App\Classes\Library\DateTimeConverter;
 use App\Classes\Library\Format;
-use App\Classes\Library\Game;
 use App\Modules\Athena\Domain\Repository\CommercialShippingRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
-use App\Modules\Athena\Manager\CommercialShippingManager;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
+use App\Modules\Athena\Domain\Service\Transaction\CalculateNewRate;
 use App\Modules\Athena\Manager\TransactionManager;
 use App\Modules\Athena\Message\Trade\CommercialShippingMessage;
 use App\Modules\Athena\Model\CommercialShipping;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
-use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
-use App\Modules\Demeter\Manager\ColorManager;
-use App\Modules\Gaia\Manager\PlaceManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Travel\Domain\Model\TravelType;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;
-use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Manager\PlayerManager;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,18 +34,13 @@ class Accept extends AbstractController
 		Request                               $request,
 		OrbitalBase                           $currentBase,
 		Player                                $currentPlayer,
-		ColorManager                          $colorManager,
-		ColorRepositoryInterface              $colorRepository,
+		CalculateNewRate					  $calculateNewRate,
 		GetTravelDuration                     $getTravelDuration,
 		TransactionManager                    $transactionManager,
-		OrbitalBaseManager                    $orbitalBaseManager,
-		CommercialShippingManager             $commercialShippingManager,
 		CommercialShippingRepositoryInterface $commercialShippingRepository,
 		HubInterface $mercure,
 		MessageBusInterface                   $messageBus,
 		NotificationRepositoryInterface       $notificationRepository,
-		PlaceManager                          $placeManager,
-		PlayerRepositoryInterface             $playerRepository,
 		PlayerManager                         $playerManager,
 		TransactionRepositoryInterface        $transactionRepository,
 		EntityManagerInterface $entityManager,
@@ -117,13 +106,7 @@ class Accept extends AbstractController
 		$transaction->buyerFactionTaxRate = $transactionData['import_tax'];
 
 		// update exchange rate
-		$transaction->currentRate = Game::calculateCurrentRate(
-			$transactionRepository->getExchangeRate($transaction->type),
-			$transaction->type,
-			$transaction->quantity,
-			$transaction->identifier,
-			$transaction->price,
-		);
+		$transaction->currentRate = $calculateNewRate($transaction);
 
 		// notif pour le proposeur
 		$n = NotificationBuilder::new()

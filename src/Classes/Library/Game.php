@@ -4,7 +4,6 @@ namespace App\Classes\Library;
 
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Athena\Model\Transaction;
-use App\Modules\Athena\Resource\ShipResource;
 
 class Game
 {
@@ -62,72 +61,6 @@ class Game
 		return Commander::DISTANCEMAX;
 	}
 
-	public static function calculateCurrentRate($currentRate, $transactionType, $quantity, $identifier, $price)
-	{
-		// calculate the new rate (when a transaction is accepted)
-		switch ($transactionType) {
-			case Transaction::TYP_RESOURCE:
-				// 1 resource = x credit
-				$thisRate = $price / $quantity;
-				// dilution of 1%
-				$newRate = (($quantity * $thisRate) + (50000 * (99 * $currentRate)) / 100) / (50000 + $quantity);
-
-				return max($newRate, Transaction::MIN_RATE_RESOURCE);
-				break;
-			case Transaction::TYP_SHIP:
-				// 1 resource = x credit
-				if (ShipResource::isAShip($identifier)) {
-					$resourceQuantity = ShipResource::getInfo($identifier, 'resourcePrice') * $quantity;
-					$thisRate = $price / $resourceQuantity;
-					// dilution of 1%
-					$newRate = (($resourceQuantity * $thisRate) + (50000 * (99 * $currentRate)) / 100) / (50000 + $resourceQuantity);
-
-					return max($newRate, Transaction::MIN_RATE_SHIP);
-				} else {
-					return false;
-				}
-				break;
-			case Transaction::TYP_COMMANDER:
-				// 1 experience = x credit
-				$thisRate = $price / $quantity;
-				// dilution of 1%
-				$newRate = (($quantity * $thisRate) + (50000 * (99 * $currentRate)) / 100) / (50000 + $quantity);
-
-				return max($newRate, Transaction::MIN_RATE_COMMANDER);
-				break;
-			default:
-				return 0;
-				break;
-		}
-	}
-
-	public static function calculateRate($transactionType, $quantity, $identifier, $price)
-	{
-		switch ($transactionType) {
-			case Transaction::TYP_RESOURCE:
-				// 1 resource = x credit
-				return $price / $quantity;
-				break;
-			case Transaction::TYP_SHIP:
-				// 1 resource = x credit
-				if (ShipResource::isAShip($identifier)) {
-					$resourceQuantity = ShipResource::getInfo($identifier, 'resourcePrice') * $quantity;
-
-					return $price / $resourceQuantity;
-				} else {
-					return false;
-				}
-				break;
-			case Transaction::TYP_COMMANDER:
-				// 1 experience = x credit
-				return $price / $quantity;
-				break;
-			default:
-				return false;
-				break;
-		}
-	}
-
 	public static function getMinPriceRelativeToRate($transactionType, $quantity, $identifier = null)
 	{
 		switch ($transactionType) {
@@ -136,7 +69,7 @@ class Game
 				break;
 			case Transaction::TYP_SHIP:
 				$minRate = Transaction::MIN_RATE_SHIP;
-				$quantity = ShipResource::getInfo($identifier, 'resourcePrice') * $quantity;
+				$quantity = ($this->getShipCategoriesConfiguration)($identifier, 'resourcePrice') * $quantity;
 				break;
 			case Transaction::TYP_COMMANDER:
 				$minRate = Transaction::MIN_RATE_COMMANDER;
@@ -161,7 +94,7 @@ class Game
 				break;
 			case Transaction::TYP_SHIP:
 				$minRate = Transaction::MAX_RATE_SHIP;
-				$quantity = ShipResource::getInfo($identifier, 'resourcePrice') * $quantity;
+				$quantity = ($this->getShipCategoriesConfiguration)($identifier, 'resourcePrice') * $quantity;
 				break;
 			case Transaction::TYP_COMMANDER:
 				$minRate = Transaction::MAX_RATE_COMMANDER;
@@ -186,21 +119,5 @@ class Game
 		} else {
 			return intval(ceil(0.004 * $coef * $coef - 0.01 * $coef + 0.7));
 		}
-	}
-
-	/**
-	 * @param array<int, int> $ships
-	 */
-	public static function getFleetCost(array $ships, bool $affected = true): int
-	{
-		$cost = 0;
-		for ($i = 0; $i < ShipResource::SHIP_QUANTITY; ++$i) {
-			$cost += ShipResource::getInfo($i, 'cost') * ($ships[$i] ?? 0);
-		}
-		if (!$affected) {
-			$cost *= ShipResource::COST_REDUCTION;
-		}
-
-		return ceil($cost);
 	}
 }

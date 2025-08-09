@@ -2,18 +2,17 @@
 
 namespace App\Modules\Athena\Infrastructure\Controller\Ship;
 
+use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
 use App\Modules\Athena\Manager\OrbitalBaseManager;
 use App\Modules\Athena\Manager\ShipQueueManager;
 use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Uid\Uuid;
 
 class CancelQueue extends AbstractController
@@ -28,6 +27,7 @@ class CancelQueue extends AbstractController
 		OrbitalBaseManager $orbitalBaseManager,
 		ShipQueueManager $shipQueueManager,
 		ShipQueueRepositoryInterface $shipQueueRepository,
+		GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 		Uuid $id,
 	): Response {
 		$dock = $request->query->get('dock') ?? throw new BadRequestHttpException('Missing dock parameter');
@@ -84,7 +84,7 @@ class CancelQueue extends AbstractController
 		// $scheduler->cancel($shipQueues[$index], $shipQueues[$index]->dEnd);
 		$shipQueueRepository->remove($shipQueues[$index]);
 		// give a part of the resources back
-		$resourcePrice = ShipResource::getInfo($shipNumber, 'resourcePrice');
+		$resourcePrice = $getShipCategoriesConfiguration($shipNumber, 'resourcePrice');
 		if (1 == $dockType) {
 			$resourcePrice *= $quantity;
 		}

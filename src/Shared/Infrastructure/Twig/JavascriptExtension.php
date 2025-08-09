@@ -2,15 +2,20 @@
 
 namespace App\Shared\Infrastructure\Twig;
 
-use App\Modules\Athena\Resource\ShipResource;
+use App\Modules\Ares\Domain\Model\ShipCategory;
+use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 class JavascriptExtension extends AbstractExtension
 {
-	public function __construct(private readonly RequestStack $requestStack)
-	{
+	public function __construct(
+		private readonly RequestStack $requestStack,
+		private readonly GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
+		private readonly TranslatorInterface $translator,
+	) {
 	}
 
 	#[\Override]
@@ -25,21 +30,17 @@ class JavascriptExtension extends AbstractExtension
 
 	protected function getShipNames(): array
 	{
-		$shipsName = [];
-		for ($i = 0; $i < 12; ++$i) {
-			$shipsName[] = "'".ShipResource::getInfo($i, 'codeName')."'";
-		}
-
-		return $shipsName;
+		return array_map(
+			fn (ShipCategory $shipCategory) => $this->translator->trans('ship_categories.'.$shipCategory->value.'.name'),
+			ShipCategory::cases(),
+		);
 	}
 
 	protected function getShipPevs(): array
 	{
-		$shipsPev = [];
-		for ($i = 0; $i < 12; ++$i) {
-			$shipsPev[] = ShipResource::getInfo($i, 'pev');
-		}
-
-		return $shipsPev;
+		return array_map(
+			fn (ShipCategory $shipCategory) => ($this->getShipCategoriesConfiguration)($shipCategory, 'pev'),
+			ShipCategory::cases(),
+		);
 	}
 }

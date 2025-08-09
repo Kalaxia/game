@@ -1,0 +1,180 @@
+ship_categories:
+      - id: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::LightFighter->value
+        class: 0
+        pev: 2
+        life: 26
+        speed: 195
+        defense: 1
+        attack: [ 5 ]
+        cost: 7
+        time: 500
+        resourcePrice: 2800
+        points: 3
+        picto: 'Intercepteur'
+        thumbnail: 'light_hunter'
+        techno: 5
+
+      - id: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::Fighter->value
+        class: 0
+        pev: 3
+        life: 30
+        speed: 185
+        defense: 5
+        attack: [ 7 ]
+        cost: 5
+        time: 570
+        resourcePrice: 3500
+        points: 4
+        picto: 'fighter'
+        thumbnail: 'battle_runner'
+        techno: 6
+
+      - id: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::HeavyFighter->value
+        class: 0
+        pev: 3
+        life: 26
+        speed: 195
+        defense: 3
+        attack: [ 6, 6 ]
+        cost: 25
+        time: 850
+        resourcePrice: 4420
+        points: 6
+        picto: 'bomber'
+        thumbnail: 'zartanyas_eye'
+        techno: 7
+
+      - id: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::LightCorvette->value
+        class: 1
+        pev: 5
+        life: 65
+        speed: 190
+        defense: 6
+        attack: [ 20, 2, 2 ]
+        cost: 100
+        time: 480
+        resourcePrice: 4000
+        points: 6
+        picto: 'corvette'
+        thumbnail: 'sullern_terror'
+        techno: 8
+
+      - id: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::Corvette->value
+        class: 1
+        pev: 7
+        life: 90
+        speed: 165
+        defense: 23
+        attack: [ 30 ]
+        cost: 58
+        time: 1880
+        resourcePrice: 8350
+        points: 8
+        picto: 'ChasseurSW'
+        thumbnail: 'sullern_terror'
+        techno: 9
+
+      - id: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::HeavyCorvette->value
+        class: 1
+        pev: 9
+        life: 75
+        speed: 145
+        defense: 8
+        attack: [ 20, 12, 12, 12, 12, 7, 7, 7 ]
+        cost: 80
+        time: 2500
+        resourcePrice: 15300
+        points: 15
+        picto: 'frigate'
+        thumbnail: 'sullern_terror'
+        techno: 10
+
+      - id: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::LightFrigate->value
+        class: 2
+        pev: 23
+        life: 250
+        speed: 100
+        defense: 40
+        attack: [ 15, 15, 15, 15 ]
+        cost: 68
+        time: 3600
+        resourcePrice: 40000
+        points: 30
+        picto: 'freighter'
+        thumbnail: 'tenium_bane'
+        techno: 11
+
+      - id: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::Frigate->value
+        class: 2
+        pev: 45
+        life: 320
+        speed: 90
+        defense: 40
+        attack: [ 225 ]
+        cost: 500
+        time: 7200
+        resourcePrice: 80000
+        points: 80
+        picto: 'freighter'
+        thumbnail: 'tenium_bane'
+        techno: 12
+
+      - id: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::Destroyer->value
+        class: 3
+        pev: 75
+        life: 1200
+        speed: 88
+        defense: 120
+        attack: [ 35, 35, 35, 35, 25, 10, 10 ]
+        cost: 250
+        time: 11400
+        resourcePrice: 112000
+        points: 70
+        picto: 'freighter'
+        thumbnail: 'tenium_bane'
+        techno: 13
+
+      - id: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::HeavyDestroyer->value
+        class: 3
+        pev: 86
+        life: 1050
+        speed: 75
+        defense: 100
+        attack: [ 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21 ]
+        cost: 600
+        time: 17400
+        resourcePrice: 150000
+        points: 80
+        picto: 'cruiser'
+        thumbnail: 'fray_breaker'
+        techno: 14
+
+      - id: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::Cruiser->value
+        class: 3
+        pev: 82
+        life: 1220
+        speed: 80
+        defense: 135
+        attack: [ 175, 50, 50, 25, 25, 25, 25, 6, 6, 6 ]
+        cost: 700
+        time: 15960
+        resourcePrice: 208000
+        points: 120
+        picto: 'cruiser'
+        thumbnail: 'fray_breaker'
+        techno: 15
+
+      - id: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::HeavyCruiser->value
+        class: 3
+        pev: 84
+        life: 1350
+        speed: 75
+        defense: 150
+        attack: [ 200, 50, 50, 50, 50, 25, 25, 25, 25, 6, 6, 6 ]
+        cost: 950
+        time: 18000
+        resourcePrice: 300000
+        points: 200
+        picto: 'cruiser'
+        thumbnail: 'fray_breaker'
+        techno: 16

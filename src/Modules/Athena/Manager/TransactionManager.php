@@ -4,6 +4,7 @@ namespace App\Modules\Athena\Manager;
 
 use App\Classes\Library\Game;
 use App\Modules\Athena\Domain\Repository\CommercialTaxRepositoryInterface;
+use App\Modules\Athena\Domain\Service\Transaction\CalculateRate;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
 use App\Modules\Demeter\Model\Color;
@@ -15,6 +16,7 @@ use App\Shared\Application\Handler\DurationHandler;
 readonly class TransactionManager
 {
 	public function __construct(
+		private CalculateRate $calculateRate,
 		private DurationHandler $durationHandler,
 		private GetTravelDuration $getTravelDuration,
 		private CommercialTaxRepositoryInterface $commercialTaxRepository,
@@ -38,7 +40,8 @@ readonly class TransactionManager
 	{
 		//	$rv = '1:' . Format::numberFormat(Game::calculateRate($transaction->type, $transaction->quantity, $transaction->identifier, $transaction->price), 3);
 		if (null !== $currentRate) {
-			$rate = round(Game::calculateRate($transaction->type, $transaction->quantity, $transaction->identifier, $transaction->price) / $currentRate * 100);
+			// TODO check if round's precision argument is not missing there
+			$rate = round(($this->calculateRate)($transaction) / $currentRate * 100);
 		}
 		$transactionSystem = $transaction->base->place->system;
 		$baseSystem = $ob->place->system;

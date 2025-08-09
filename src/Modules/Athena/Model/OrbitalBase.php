@@ -2,6 +2,7 @@
 
 namespace App\Modules\Athena\Model;
 
+use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Athena\Resource\OrbitalBaseResource;
 use App\Modules\Gaia\Model\Place;
 use App\Modules\Shared\Domain\Model\SystemUpdatable;
@@ -77,8 +78,19 @@ class OrbitalBase implements SystemUpdatable, \JsonSerializable
 		return self::TYP_NEUTRAL === $this->typeOfBase;
 	}
 
-	public function addShips(int $shipIdentifier, int $quantity): void
+	public function addShips(int|ShipCategory $shipCategory, int $quantity): void
 	{
+		if ($shipCategory instanceof ShipCategory) {
+			$shipIdentifier = $shipCategory->value;
+		} else {
+			trigger_error(
+				sprintf('Calling method %s with an integer as first argument is deprecated. Please use ShipCategory enum instead.', __METHOD__),
+				E_USER_DEPRECATED,
+			);
+
+			$shipIdentifier = $shipCategory;
+		}
+
 		$currentQuantity = $this->shipStorage[$shipIdentifier] ?? 0;
 
 		$this->shipStorage[$shipIdentifier] = $currentQuantity + $quantity;

@@ -2,7 +2,7 @@
 
 namespace App\Modules\Athena\Infrastructure\Controller\Ship;
 
-use App\Modules\Athena\Resource\ShipResource;
+use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
 use App\Modules\Zeus\Model\PlayerBonusId;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,11 +12,12 @@ class ViewShipPanel extends AbstractController
 {
 	public function __invoke(
 		CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
+		GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 		int $shipNumber,
 	): Response {
 		$playerBonuses = $currentPlayerBonusRegistry->getPlayerBonus()->bonuses;
 
-		switch (ShipResource::getInfo($shipNumber, 'class')) {
+		switch ($getShipCategoriesConfiguration($shipNumber, 'class')) {
 			case 0:
 				$bonusSPE = $playerBonuses->get(PlayerBonusId::FIGHTER_SPEED);
 				$bonusATT = $playerBonuses->get(PlayerBonusId::FIGHTER_ATTACK);
@@ -44,8 +45,7 @@ class ViewShipPanel extends AbstractController
 				break;
 		}
 
-		// MAXIMA
-		$attacks = ShipResource::getInfo($shipNumber, 'attack');
+		$attacks = $getShipCategoriesConfiguration($shipNumber, 'attack');
 
 		return $this->render('blocks/athena/ship_panel.html.twig', [
 			'ship_number' => $shipNumber,

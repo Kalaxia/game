@@ -3,6 +3,7 @@
 namespace App\Modules\Athena\Infrastructure\Controller\Ship;
 
 use App\Classes\Library\Format;
+use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Athena\Application\Factory\ShipQueueFactory;
 use App\Modules\Athena\Domain\Enum\DockType;
 use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
@@ -11,7 +12,6 @@ use App\Modules\Athena\Helper\OrbitalBaseHelper;
 use App\Modules\Athena\Helper\ShipHelper;
 use App\Modules\Athena\Manager\OrbitalBaseManager;
 use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BuildShips extends AbstractController
 {
@@ -33,20 +34,19 @@ class BuildShips extends AbstractController
 		ShipQueueRepositoryInterface  $shipQueueRepository,
 		ShipQueueFactory              $shipQueueFactory,
 		TechnologyRepositoryInterface $technologyRepository,
+		TranslatorInterface $translator,
 	): Response {
-		$session = $request->getSession();
 		$shipIdentifier = $request->query->getInt('ship')
 			?? throw new BadRequestHttpException('Missing ship identifier');
-		$quantity = $request->query->getInt('quantity')
-			?? throw new BadRequestHttpException('Missing quantity');
+		$quantity = $request->request->getInt('quantity', 1);
 
 		if (0 === $quantity) {
 			throw new BadRequestHttpException('Quantity must be higher than 0');
 		}
-		if (!ShipResource::isAShip($shipIdentifier)) {
+		if (null === ($shipCategory = ShipCategory::tryFrom($shipIdentifier))) {
 			throw new BadRequestHttpException('Invalid ship identifier');
 		}
-		$dockType = DockType::fromShipIdentifier($shipIdentifier);
+		$dockType = DockType::fromShipCategory($shipCategory);
 		if (DockType::Shipyard === $dockType) {
 			$quantity = 1;
 		}
@@ -76,26 +76,17 @@ class BuildShips extends AbstractController
 			startedAt: $startedAt,
 		);
 
-		// débit des ressources au joueur
 		$resourcePrice = ($countShipResourceCost)($shipIdentifier, $quantity, $currentPlayer);
 		$orbitalBaseManager->decreaseResources($currentBase, $resourcePrice);
 
-		// ajout de l'event dans le contrôleur
+		$session = $request->getSession();
 		$session->get('playerEvent')->add($shipQueue->getEndDate(), $this->getParameter('event_base'), $currentBase->id);
 
-		//						if (true === $this->getContainer()->getParameter('data_analysis')) {
-		//							$qr = $database->prepare('INSERT INTO
-		//						DA_BaseAction(`from`, type, opt1, opt2, weight, dAction)
-		//						VALUES(?, ?, ?, ?, ?, ?)'
-		//							);
-		//							$qr->execute([$session->get('playerId'), 3, $ship, $quantity, DataAnalysis::resourceToStdUnit(ShipResource::getInfo($ship, 'resourcePrice') * $quantity), Utils::now()]);
-		//						}
-
-		// alerte
+		// TODO Improve translations to put this in one line
 		if (1 == $quantity) {
-			$this->addFlash('success', 'Construction d\'' . (ShipResource::isAFemaleShipName($shipIdentifier) ? 'une ' : 'un ') . ShipResource::getInfo($shipIdentifier, 'codeName') . ' commandée');
+			$this->addFlash('success', 'Construction d\'' . $translator->trans('ship_categories.' . $shipIdentifier . '.designation', ['quantity' => $quantity]) . ' commandée');
 		} else {
-			$this->addFlash('success', 'Construction de ' . $quantity . ' ' . ShipResource::getInfo($shipIdentifier, 'codeName') . Format::addPlural($quantity) . ' commandée');
+			$this->addFlash('success', 'Construction de ' . $translator->trans('ship_categories.' . $shipIdentifier . '.designation', ['quantity' => $quantity]) . ' commandée');
 		}
 
 		return $this->redirect($request->headers->get('referer'));

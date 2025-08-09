@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Ares\Manager;
 
 use App\Classes\Library\DateTimeConverter;
+use App\Modules\Ares\Application\Factory\ReportFactory;
 use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Application\Handler\Movement\MoveFleet;
 use App\Modules\Ares\Application\Handler\VirtualCommanderHandler;
@@ -43,6 +44,7 @@ readonly class CommanderManager implements SchedulerInterface
 		private FightManager $fightManager,
 		private VirtualCommanderHandler $virtualCommanderHandler,
 		private CommanderArmyHandler $commanderArmyHandler,
+		private ReportFactory $reportFactory,
 	) {
 	}
 
@@ -225,7 +227,7 @@ readonly class CommanderManager implements SchedulerInterface
 
 	public function createReport(Place $place): Report
 	{
-		$report = Report::fromLiveReport($place);
+		$report = $this->reportFactory->create($place);
 
 		$this->reportRepository->save($report);
 		LiveReport::clear();

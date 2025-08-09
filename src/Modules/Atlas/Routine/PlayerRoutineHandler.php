@@ -3,9 +3,9 @@
 namespace App\Modules\Atlas\Routine;
 
 use App\Classes\Library\Game;
+use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Athena\Helper\OrbitalBaseHelper;
 use App\Modules\Athena\Resource\OrbitalBaseResource;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Atlas\Domain\Repository\PlayerRankingRepositoryInterface;
 use App\Modules\Atlas\Model\PlayerRanking;
 use App\Modules\Atlas\Model\Ranking;
@@ -24,6 +24,7 @@ class PlayerRoutineHandler
 		private readonly PlayerRepositoryInterface $playerRepository,
 		private readonly PlayerRankingRepositoryInterface $playerRankingRepository,
 		private readonly OrbitalBaseHelper $orbitalBaseHelper,
+		private readonly GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 	) {
 	}
 
@@ -242,36 +243,36 @@ class PlayerRoutineHandler
 				$shipStorage = json_decode($row['ship_storage'], true, flags: JSON_THROW_ON_ERROR);
 
 				$shipPrice = 0;
-				$shipPrice += ShipResource::getInfo(0, 'resourcePrice') * ($shipStorage[0] ?? 0);
-				$shipPrice += ShipResource::getInfo(1, 'resourcePrice') * ($shipStorage[1] ?? 0);
-				$shipPrice += ShipResource::getInfo(2, 'resourcePrice') * ($shipStorage[2] ?? 0);
-				$shipPrice += ShipResource::getInfo(3, 'resourcePrice') * ($shipStorage[3] ?? 0);
-				$shipPrice += ShipResource::getInfo(4, 'resourcePrice') * ($shipStorage[4] ?? 0);
-				$shipPrice += ShipResource::getInfo(5, 'resourcePrice') * ($shipStorage[5] ?? 0);
-				$shipPrice += ShipResource::getInfo(6, 'resourcePrice') * ($shipStorage[6] ?? 0);
-				$shipPrice += ShipResource::getInfo(7, 'resourcePrice') * ($shipStorage[7] ?? 0);
-				$shipPrice += ShipResource::getInfo(8, 'resourcePrice') * ($shipStorage[8] ?? 0);
-				$shipPrice += ShipResource::getInfo(9, 'resourcePrice') * ($shipStorage[9] ?? 0);
-				$shipPrice += ShipResource::getInfo(10, 'resourcePrice') * ($shipStorage[10] ?? 0);
-				$shipPrice += ShipResource::getInfo(11, 'resourcePrice') * ($shipStorage[11] ?? 0);
+				$shipPrice += ($this->getShipCategoriesConfiguration)(0, 'resourcePrice') * ($shipStorage[0] ?? 0);
+				$shipPrice += ($this->getShipCategoriesConfiguration)(1, 'resourcePrice') * ($shipStorage[1] ?? 0);
+				$shipPrice += ($this->getShipCategoriesConfiguration)(2, 'resourcePrice') * ($shipStorage[2] ?? 0);
+				$shipPrice += ($this->getShipCategoriesConfiguration)(3, 'resourcePrice') * ($shipStorage[3] ?? 0);
+				$shipPrice += ($this->getShipCategoriesConfiguration)(4, 'resourcePrice') * ($shipStorage[4] ?? 0);
+				$shipPrice += ($this->getShipCategoriesConfiguration)(5, 'resourcePrice') * ($shipStorage[5] ?? 0);
+				$shipPrice += ($this->getShipCategoriesConfiguration)(6, 'resourcePrice') * ($shipStorage[6] ?? 0);
+				$shipPrice += ($this->getShipCategoriesConfiguration)(7, 'resourcePrice') * ($shipStorage[7] ?? 0);
+				$shipPrice += ($this->getShipCategoriesConfiguration)(8, 'resourcePrice') * ($shipStorage[8] ?? 0);
+				$shipPrice += ($this->getShipCategoriesConfiguration)(9, 'resourcePrice') * ($shipStorage[9] ?? 0);
+				$shipPrice += ($this->getShipCategoriesConfiguration)(10, 'resourcePrice') * ($shipStorage[10] ?? 0);
+				$shipPrice += ($this->getShipCategoriesConfiguration)(11, 'resourcePrice') * ($shipStorage[11] ?? 0);
 				$points = round($shipPrice * self::COEF_RESOURCE);
 				$points += $row['points'];
 				$points += round($row['resources'] * self::COEF_RESOURCE);
 				$this->results[$row['player']]['general'] += $points;
 
 				$pevQuantity = 0;
-				$pevQuantity += ShipResource::getInfo(0, 'pev') * ($shipStorage[0] ?? 0);
-				$pevQuantity += ShipResource::getInfo(1, 'pev') * ($shipStorage[1] ?? 0);
-				$pevQuantity += ShipResource::getInfo(2, 'pev') * ($shipStorage[2] ?? 0);
-				$pevQuantity += ShipResource::getInfo(3, 'pev') * ($shipStorage[3] ?? 0);
-				$pevQuantity += ShipResource::getInfo(4, 'pev') * ($shipStorage[4] ?? 0);
-				$pevQuantity += ShipResource::getInfo(5, 'pev') * ($shipStorage[5] ?? 0);
-				$pevQuantity += ShipResource::getInfo(6, 'pev') * ($shipStorage[6] ?? 0);
-				$pevQuantity += ShipResource::getInfo(7, 'pev') * ($shipStorage[7] ?? 0);
-				$pevQuantity += ShipResource::getInfo(8, 'pev') * ($shipStorage[8] ?? 0);
-				$pevQuantity += ShipResource::getInfo(9, 'pev') * ($shipStorage[9] ?? 0);
-				$pevQuantity += ShipResource::getInfo(10, 'pev') * ($shipStorage[10] ?? 0);
-				$pevQuantity += ShipResource::getInfo(11, 'pev') * ($shipStorage[11] ?? 0);
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(0, 'pev') * ($shipStorage[0] ?? 0);
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(1, 'pev') * ($shipStorage[1] ?? 0);
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(2, 'pev') * ($shipStorage[2] ?? 0);
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(3, 'pev') * ($shipStorage[3] ?? 0);
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(4, 'pev') * ($shipStorage[4] ?? 0);
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(5, 'pev') * ($shipStorage[5] ?? 0);
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(6, 'pev') * ($shipStorage[6] ?? 0);
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(7, 'pev') * ($shipStorage[7] ?? 0);
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(8, 'pev') * ($shipStorage[8] ?? 0);
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(9, 'pev') * ($shipStorage[9] ?? 0);
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(10, 'pev') * ($shipStorage[10] ?? 0);
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(11, 'pev') * ($shipStorage[11] ?? 0);
 				$this->results[$row['player']]['armies'] += $pevQuantity;
 			}
 		}
@@ -282,34 +283,34 @@ class PlayerRoutineHandler
 		while ($row = $statement->fetchAssociative()) {
 			if (isset($this->results[$row['player']])) {
 				$shipPrice = 0;
-				$shipPrice += ShipResource::getInfo(0, 'resourcePrice') * $row['s0'];
-				$shipPrice += ShipResource::getInfo(1, 'resourcePrice') * $row['s1'];
-				$shipPrice += ShipResource::getInfo(2, 'resourcePrice') * $row['s2'];
-				$shipPrice += ShipResource::getInfo(3, 'resourcePrice') * $row['s3'];
-				$shipPrice += ShipResource::getInfo(4, 'resourcePrice') * $row['s4'];
-				$shipPrice += ShipResource::getInfo(5, 'resourcePrice') * $row['s5'];
-				$shipPrice += ShipResource::getInfo(6, 'resourcePrice') * $row['s6'];
-				$shipPrice += ShipResource::getInfo(7, 'resourcePrice') * $row['s7'];
-				$shipPrice += ShipResource::getInfo(8, 'resourcePrice') * $row['s8'];
-				$shipPrice += ShipResource::getInfo(9, 'resourcePrice') * $row['s9'];
-				$shipPrice += ShipResource::getInfo(10, 'resourcePrice') * $row['s10'];
-				$shipPrice += ShipResource::getInfo(11, 'resourcePrice') * $row['s11'];
+				$shipPrice += ($this->getShipCategoriesConfiguration)(0, 'resourcePrice') * $row['s0'];
+				$shipPrice += ($this->getShipCategoriesConfiguration)(1, 'resourcePrice') * $row['s1'];
+				$shipPrice += ($this->getShipCategoriesConfiguration)(2, 'resourcePrice') * $row['s2'];
+				$shipPrice += ($this->getShipCategoriesConfiguration)(3, 'resourcePrice') * $row['s3'];
+				$shipPrice += ($this->getShipCategoriesConfiguration)(4, 'resourcePrice') * $row['s4'];
+				$shipPrice += ($this->getShipCategoriesConfiguration)(5, 'resourcePrice') * $row['s5'];
+				$shipPrice += ($this->getShipCategoriesConfiguration)(6, 'resourcePrice') * $row['s6'];
+				$shipPrice += ($this->getShipCategoriesConfiguration)(7, 'resourcePrice') * $row['s7'];
+				$shipPrice += ($this->getShipCategoriesConfiguration)(8, 'resourcePrice') * $row['s8'];
+				$shipPrice += ($this->getShipCategoriesConfiguration)(9, 'resourcePrice') * $row['s9'];
+				$shipPrice += ($this->getShipCategoriesConfiguration)(10, 'resourcePrice') * $row['s10'];
+				$shipPrice += ($this->getShipCategoriesConfiguration)(11, 'resourcePrice') * $row['s11'];
 				$points = round($shipPrice * self::COEF_RESOURCE);
 				$this->results[$row['player']]['general'] += $points;
 
 				$pevQuantity = 0;
-				$pevQuantity += ShipResource::getInfo(0, 'pev') * $row['s0'];
-				$pevQuantity += ShipResource::getInfo(1, 'pev') * $row['s1'];
-				$pevQuantity += ShipResource::getInfo(2, 'pev') * $row['s2'];
-				$pevQuantity += ShipResource::getInfo(3, 'pev') * $row['s3'];
-				$pevQuantity += ShipResource::getInfo(4, 'pev') * $row['s4'];
-				$pevQuantity += ShipResource::getInfo(5, 'pev') * $row['s5'];
-				$pevQuantity += ShipResource::getInfo(6, 'pev') * $row['s6'];
-				$pevQuantity += ShipResource::getInfo(7, 'pev') * $row['s7'];
-				$pevQuantity += ShipResource::getInfo(8, 'pev') * $row['s8'];
-				$pevQuantity += ShipResource::getInfo(9, 'pev') * $row['s9'];
-				$pevQuantity += ShipResource::getInfo(10, 'pev') * $row['s10'];
-				$pevQuantity += ShipResource::getInfo(11, 'pev') * $row['s11'];
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(0, 'pev') * $row['s0'];
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(1, 'pev') * $row['s1'];
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(2, 'pev') * $row['s2'];
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(3, 'pev') * $row['s3'];
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(4, 'pev') * $row['s4'];
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(5, 'pev') * $row['s5'];
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(6, 'pev') * $row['s6'];
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(7, 'pev') * $row['s7'];
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(8, 'pev') * $row['s8'];
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(9, 'pev') * $row['s9'];
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(10, 'pev') * $row['s10'];
+				$pevQuantity += ($this->getShipCategoriesConfiguration)(11, 'pev') * $row['s11'];
 				$this->results[$row['player']]['armies'] += $pevQuantity;
 			}
 		}

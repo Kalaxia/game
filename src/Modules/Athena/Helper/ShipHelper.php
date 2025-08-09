@@ -2,12 +2,13 @@
 
 namespace App\Modules\Athena\Helper;
 
+use App\Modules\Ares\Domain\Model\ShipCategory;
+use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Athena\Domain\Enum\DockType;
 use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountHangarAvailableStorableShipPoints;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountMaxShipQueues;
 use App\Modules\Athena\Resource\OrbitalBaseResource;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Promethee\Helper\TechnologyHelper;
 use App\Modules\Shared\Application\PercentageApplier;
@@ -22,6 +23,7 @@ readonly class ShipHelper
 		private TechnologyHelper $technologyHelper,
 		private OrbitalBaseHelper $orbitalBaseHelper,
 		private ShipQueueRepositoryInterface $shipQueueRepository,
+		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 	) {
 	}
 
@@ -30,71 +32,74 @@ readonly class ShipHelper
 	 */
 	public function haveRights(int $shipId, string $type, $sup, int $quantity = 1): bool|string
 	{
-		if (ShipResource::isAShip($shipId)) {
-			switch ($type) {
-				// assez de ressources pour construire ?
-				case 'resource':
-					$price = ShipResource::getInfo($shipId, 'resourcePrice') * $quantity;
-					if (
-						ColorResource::KALANKAR === $this->currentPlayerRegistry->get()->faction->identifier
-						&& in_array($shipId, [ShipResource::CERBERE, ShipResource::PHENIX])
-					) {
-						$price -= PercentageApplier::toInt($price, ColorResource::BONUS_EMPIRE_CRUISER);
-					}
+		if (null === ($shipCategory = ShipCategory::tryFrom($shipId))) {
+			throw new \ErrorException(sprintf('shipId invalide %d (entre 0 et %d) dans haveRights de ShipResource', $shipId, count(ShipCategory::cases())));
+		}
+		$dockType = DockType::fromShipCategory($shipCategory);
 
-					return !($sup < $price);
-				case 'queue':
-					return $quantity < ($this->countMaxShipQueues)(
-						orbitalBase: $sup,
-						dockType: DockType::fromShipIdentifier($shipId),
-					);
-					// droit de construire le vaisseau ?
-					// $sup est un objet de type OrbitalBase
-				case 'shipTree':
-					if (ShipResource::isAShipFromDock1($shipId)) {
-						$level = $sup->levelDock1;
+		switch ($type) {
+			// assez de ressources pour construire ?
+			case 'resource':
+				$price = ($this->getShipCategoriesConfiguration)($shipCategory, 'resourcePrice') * $quantity;
+				if (
+					ColorResource::KALANKAR === $this->currentPlayerRegistry->get()->faction->identifier
+					&& in_array($shipCategory, [ShipCategory::Cruiser, ShipCategory::HeavyCruiser])
+				) {
+					$price -= PercentageApplier::toInt($price, ColorResource::BONUS_EMPIRE_CRUISER);
+				}
 
-						return $shipId < $this->orbitalBaseHelper->getBuildingInfo(2, 'level', $level, 'releasedShip');
-					} elseif (ShipResource::isAShipFromDock2($shipId)) {
-						$level = $sup->levelDock2;
-
-						return ($shipId - 6) < $this->orbitalBaseHelper->getBuildingInfo(3, 'level', $level, 'releasedShip');
-					} else {
-						$level = $sup->levelDock3;
-
-						return ($shipId - 12) < $this->orbitalBaseHelper->getBuildingInfo(4, 'level', $level, 'releasedShip');
-					}
-				// assez de pev dans le storage et dans la queue ?
+				return !($sup < $price);
+			case 'queue':
+				return $quantity < ($this->countMaxShipQueues)(
+					orbitalBase: $sup,
+					dockType: $dockType,
+				);
+				// droit de construire le vaisseau ?
 				// $sup est un objet de type OrbitalBase
-				case 'pev':
-					$dockType = DockType::fromShipIdentifier($shipId);
-					$wanted = ShipResource::getInfo($shipId, 'pev') * $quantity;
+			case 'shipTree':
+				if ($dockType === DockType::Manufacture) {
+					$level = $sup->levelDock1;
 
-					$shipQueues = $this->shipQueueRepository->getByBaseAndDockType($sup, $dockType->getIdentifier());
+					return $shipId < $this->orbitalBaseHelper->getBuildingInfo(2, 'level', $level, 'releasedShip');
+				} elseif ($dockType === DockType::Shipyard) {
+					$level = $sup->levelDock2;
 
-					return $wanted <= ($this->countHangarAvailableStorableShipPoints)($sup, $shipQueues, $dockType);
-				// a la technologie nécessaire pour constuire ce vaisseau ?
-				// $sup est un objet de type Technology
-				case 'techno':
-					if (1 == $sup->getTechnology(ShipResource::getInfo($shipId, 'techno'))) {
-						return true;
-					}
-					return 'il vous faut développer la technologie ' . $this->technologyHelper->getInfo(ShipResource::getInfo($shipId, 'techno'), 'name');
-				default:
-					throw new \ErrorException('type invalide dans haveRights de ShipResource');
-			}
-		} else {
-			throw new \ErrorException('shipId invalide (entre 0 et 14) dans haveRights de ShipResource');
+					return ($shipId - 6) < $this->orbitalBaseHelper->getBuildingInfo(3, 'level', $level, 'releasedShip');
+				} else {
+					$level = $sup->levelDock3;
+
+					return ($shipId - 12) < $this->orbitalBaseHelper->getBuildingInfo(4, 'level', $level, 'releasedShip');
+				}
+			// assez de pev dans le storage et dans la queue ?
+			// $sup est un objet de type OrbitalBase
+			case 'pev':
+				$wanted = ($this->getShipCategoriesConfiguration)($shipId, 'pev') * $quantity;
+
+				$shipQueues = $this->shipQueueRepository->getByBaseAndDockType($sup, $dockType->getIdentifier());
+
+				return $wanted <= ($this->countHangarAvailableStorableShipPoints)($sup, $shipQueues, $dockType);
+			// a la technologie nécessaire pour constuire ce vaisseau ?
+			// $sup est un objet de type Technology
+			case 'techno':
+				if (1 == $sup->getTechnology(($this->getShipCategoriesConfiguration)($shipId, 'techno'))) {
+					return true;
+				}
+				return 'il vous faut développer la technologie ' . $this->technologyHelper->getInfo(($this->getShipCategoriesConfiguration)($shipId, 'techno'), 'name');
+			default:
+				throw new \ErrorException('type invalide dans haveRights de ShipResource');
 		}
 	}
 
 	public function dockLevelNeededFor($shipId)
 	{
-		if (ShipResource::isAShipFromDock1($shipId)) {
+		$shipCategory = ShipCategory::from($shipId);
+		$dockType = DockType::fromShipCategory($shipCategory);
+
+		if ($dockType === DockType::Manufacture) {
 			$building = OrbitalBaseResource::DOCK1;
 			$size = 40;
 			++$shipId;
-		} elseif (ShipResource::isAShipFromDock2($shipId)) {
+		} elseif ($dockType === DockType::Shipyard) {
 			$building = OrbitalBaseResource::DOCK2;
 			$size = 20;
 			$shipId -= 5;

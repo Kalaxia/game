@@ -1,0 +1,5 @@
+<img src="{{ asset(get_ship_info(this.shipIdentifier, 'picto')) }}"
+	{{ attributes.defaults({
+		'class': "w-6 md:mr-2",
+	}) }}
+	alt="{{ get_ship_info(this.shipIdentifier, 'name') }}" />

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Zeus\Application\Factory;
 
+use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Model\Ship;
 use App\Modules\Athena\Application\Handler\OrbitalBasePointsHandler;
 use App\Modules\Athena\Model\OrbitalBase;
@@ -196,18 +197,18 @@ readonly class PlayerFactory
 			$ob->resourcesStorage = 3000000;
 
 			// remplir le dock
-			$ob->addShips(Ship::TYPE_PEGASE, 50);
-			$ob->addShips(Ship::TYPE_SATYRE, 50);
-			$ob->addShips(Ship::TYPE_CHIMERE, 10);
-			$ob->addShips(Ship::TYPE_SIRENE, 10);
-			$ob->addShips(Ship::TYPE_DRYADE, 5);
-			$ob->addShips(Ship::TYPE_MEDUSE, 5);
-			$ob->addShips(Ship::TYPE_GRIFFON, 2);
-			$ob->addShips(Ship::TYPE_CYCLOPE, 2);
-			$ob->addShips(Ship::TYPE_MINOTAURE, 1);
-			$ob->addShips(Ship::TYPE_HYDRE, 1);
-			$ob->addShips(Ship::TYPE_CERBERE, 0);
-			$ob->addShips(Ship::TYPE_PHENIX, 0);
+			$ob->addShips(ShipCategory::LightFighter, 50);
+			$ob->addShips(ShipCategory::Fighter, 50);
+			$ob->addShips(ShipCategory::HeavyFighter, 10);
+			$ob->addShips(ShipCategory::LightCorvette, 10);
+			$ob->addShips(ShipCategory::Corvette, 5);
+			$ob->addShips(ShipCategory::HeavyCorvette, 5);
+			$ob->addShips(ShipCategory::LightFrigate, 2);
+			$ob->addShips(ShipCategory::Frigate, 2);
+			$ob->addShips(ShipCategory::Destroyer, 1);
+			$ob->addShips(ShipCategory::HeavyDestroyer, 1);
+			$ob->addShips(ShipCategory::Cruiser, 0);
+			$ob->addShips(ShipCategory::HeavyCruiser, 0);
 		} else {
 			$ob->levelGenerator = 1;
 			$ob->levelRefinery = 1;

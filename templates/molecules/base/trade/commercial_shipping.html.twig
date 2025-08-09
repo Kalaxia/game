@@ -21,7 +21,7 @@
 					<div class="offer">
 						<strong>
 							{{ commercial_shipping.transaction.quantity }}
-							{{ get_ship_info(commercial_shipping.transaction.identifier, 'codeName') }}{{ commercial_shipping.transaction.quantity|plural }}
+							{{ get_ship_info(commercial_shipping.transaction.identifier, 'name') }}{{ commercial_shipping.transaction.quantity|plural }}
 						</strong>
 						<em>{{ get_ship_info(commercial_shipping.transaction.identifier, 'name') }} / {{ get_ship_info(commercial_shipping.transaction.identifier, 'pev') }} pev</em>
 					</div>

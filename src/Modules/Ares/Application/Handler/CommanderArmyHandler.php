@@ -3,11 +3,13 @@
 namespace App\Modules\Ares\Application\Handler;
 
 use App\Modules\Ares\Application\Handler\Battle\ShipStatsHandler;
+use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Domain\Model\ShipStat;
+use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
+use App\Modules\Ares\Domain\Service\GetSquadronPev;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\Ship;
 use App\Modules\Ares\Model\Squadron;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Zeus\Manager\PlayerBonusManager;
 use App\Modules\Zeus\Model\PlayerBonus;
 use Symfony\Component\Uid\Uuid;
@@ -15,6 +17,8 @@ use Symfony\Component\Uid\Uuid;
 readonly class CommanderArmyHandler
 {
 	public function __construct(
+		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
+		private GetSquadronPev $getSquadronPev,
 		private ShipStatsHandler $shipStatsHandler,
 		private PlayerBonusManager $playerBonusManager,
 	) {
@@ -52,7 +56,7 @@ readonly class CommanderArmyHandler
 		$this->setArmy($commander);
 		$pev = 0;
 		foreach ($commander->army as $squadron) {
-			$pev += $squadron->getPev();
+			$pev += ($this->getSquadronPev)($squadron);
 		}
 
 		return $pev;
@@ -62,8 +66,8 @@ readonly class CommanderArmyHandler
 	{
 		$pev = 0;
 		foreach ($commander->armyAtEnd as $squadron) {
-			for ($i = 0; $i < 12; ++$i) {
-				$pev += $squadron[$i] * ShipResource::getInfo($i, 'pev');
+			foreach (ShipCategory::cases() as $shipCategory) {
+				$pev += $squadron[$shipCategory->value] * ($this->getShipCategoriesConfiguration)($shipCategory, 'pev');
 			}
 		}
 

@@ -2,12 +2,12 @@
 
 namespace App\Shared\Infrastructure\Twig;
 
+use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Athena\Helper\OrbitalBaseHelper;
 use App\Modules\Athena\Model\BuildingQueue;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\ShipQueue;
 use App\Modules\Athena\Resource\OrbitalBaseResource;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Promethee\Helper\TechnologyHelper;
 use App\Modules\Promethee\Model\TechnologyQueue;
 use App\Shared\Application\Handler\DurationHandler;
@@ -23,6 +23,7 @@ class QueueableExtension extends AbstractExtension
 		private readonly OrbitalBaseHelper $orbitalBaseHelper,
 		private readonly TechnologyHelper $technologyHelper,
 		private readonly DurationHandler $durationHandler,
+		private readonly GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 	) {
 	}
 
@@ -66,9 +67,9 @@ class QueueableExtension extends AbstractExtension
 				$orbitalBase->levelDock2,
 				'nbQueues'
 			)),
-			new TwigFilter('ship_queue_time', fn (ShipQueue $shipQueue) => $shipQueue->quantity * ShipResource::getInfo($shipQueue->shipNumber, 'time')),
-			new TwigFilter('ship_queue_picture', fn (ShipQueue $shipQueue) => ShipResource::getInfo($shipQueue->shipNumber, 'picto')),
-			new TwigFilter('ship_queue_name', fn (ShipQueue $shipQueue) => ShipResource::getInfo($shipQueue->shipNumber, 'codeName')),
+			new TwigFilter('ship_queue_time', fn (ShipQueue $shipQueue) => $shipQueue->quantity * ($this->getShipCategoriesConfiguration)($shipQueue->shipNumber, 'time')),
+			new TwigFilter('ship_queue_picture', fn (ShipQueue $shipQueue) => ($this->getShipCategoriesConfiguration)($shipQueue->shipNumber, 'picto')),
+			new TwigFilter('ship_queue_name', fn (ShipQueue $shipQueue) => ($this->getShipCategoriesConfiguration)($shipQueue->shipNumber, 'name')),
 			new TwigFilter('base_max_building_queues', fn (OrbitalBase $orbitalBase) => $this->orbitalBaseHelper->getBuildingInfo(
 				OrbitalBaseResource::GENERATOR,
 				'level',

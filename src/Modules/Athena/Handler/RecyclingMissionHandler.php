@@ -3,6 +3,7 @@
 namespace App\Modules\Athena\Handler;
 
 use App\Classes\Library\DateTimeConverter;
+use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Athena\Domain\Repository\RecyclingLogRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\RecyclingMissionRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Recycling\ExtractPoints;
@@ -14,7 +15,6 @@ use App\Modules\Athena\Manager\OrbitalBaseManager;
 use App\Modules\Athena\Message\RecyclingMissionMessage;
 use App\Modules\Athena\Model\RecyclingLog;
 use App\Modules\Athena\Model\RecyclingMission;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Gaia\Manager\PlaceManager;
 use App\Modules\Gaia\Model\Place;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
@@ -198,8 +198,8 @@ readonly class RecyclingMissionHandler
 
 		// give to the orbitalBase ($orbitalBase) and player what was recycled
 		$this->orbitalBaseManager->increaseResources($orbitalBase, $resourceRecycled);
-		for ($i = 0; $i < ShipResource::SHIP_QUANTITY; ++$i) {
-			$orbitalBase->addShips($i, $buyShip[$i]);
+		foreach (ShipCategory::cases() as $shipCategory) {
+			$orbitalBase->addShips($shipCategory, $buyShip[$shipCategory->value]);
 		}
 		$this->playerManager->increaseCredit($player, $creditRecycled);
 

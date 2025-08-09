@@ -2,9 +2,9 @@
 
 namespace App\Modules\Athena\Infrastructure\Controller\Ship;
 
+use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Athena\Manager\OrbitalBaseManager;
 use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,13 +19,14 @@ class Recycle extends AbstractController
 		Player $currentPlayer,
 		OrbitalBase $currentBase,
 		OrbitalBaseManager $orbitalBaseManager,
+		GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 	): Response {
 		$typeOfShip = $request->query->get('ship_identifier');
 		$quantity = $request->request->get('quantity');
 
 		if (false !== $typeOfShip and false !== $quantity) {
 			if ($quantity > 0 && $quantity <= $currentBase->getShipStorage()[$typeOfShip]) {
-				$resources = ($quantity * ShipResource::getInfo($typeOfShip, 'resourcePrice')) / 2;
+				$resources = ($quantity * $getShipCategoriesConfiguration($typeOfShip, 'resourcePrice')) / 2;
 				$currentBase->removeShips($typeOfShip, $quantity);
 				$orbitalBaseManager->increaseResources($currentBase, $resources);
 

@@ -3,6 +3,7 @@
 namespace App\Modules\Athena\Infrastructure\Controller\Trade\Offer;
 
 use App\Classes\Library\Game;
+use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Manager\CommanderManager;
 use App\Modules\Ares\Model\Commander;
@@ -17,7 +18,6 @@ use App\Modules\Athena\Model\CommercialShipping;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
 use App\Modules\Athena\Resource\OrbitalBaseResource;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -68,7 +68,7 @@ class Propose extends AbstractController
 				$identifier = 0;
 				break;
 			case Transaction::TYP_SHIP:
-				if (null === $identifier || (!ShipResource::isAShipFromDock1($identifier) && !ShipResource::isAShipFromDock2($identifier))) {
+				if (null === ($shipCategory = ShipCategory::tryFrom($identifier))) {
 					throw new BadRequestHttpException('Invalid ship identifier');
 				}
 
@@ -76,7 +76,7 @@ class Propose extends AbstractController
 					throw new BadRequestHttpException('Invalid quantity');
 				}
 
-				if ($currentBase->getShipStorage()[$identifier] < $quantity) {
+				if ($currentBase->getShipStorage()[$shipCategory->value] < $quantity) {
 					throw new ConflictHttpException('The current base has not enough ships to make that sale');
 				}
 

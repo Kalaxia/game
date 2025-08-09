@@ -4,7 +4,8 @@ namespace App\Modules\Athena\Infrastructure\Twig;
 
 use App\Classes\Library\Format;
 use App\Classes\Library\Game;
-use App\Classes\Library\Utils;
+use App\Modules\Ares\Domain\Service\CalculateFleetCost;
+use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Artemis\Model\SpyReport;
 use App\Modules\Athena\Application\Handler\Tax\PopulationTaxHandler;
 use App\Modules\Athena\Domain\Service\Base\Building\BuildingDataHandler;
@@ -16,9 +17,9 @@ use App\Modules\Athena\Helper\OrbitalBaseHelper;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
 use App\Modules\Athena\Resource\OrbitalBaseResource;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Gaia\Resource\PlaceResource;
 use App\Shared\Application\Handler\DurationHandler;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -27,12 +28,16 @@ class OrbitalBaseExtension extends AbstractExtension
 {
 	public function __construct(
 		private readonly BuildingDataHandler          $buildingDataHandler,
+		private readonly CalculateFleetCost           $calculateFleetCost,
 		private readonly GetTimeCost                  $getTimeCost,
 		private readonly GetCoolDownBeforeLeavingBase $getCoolDownBeforeLeavingBase,
 		private readonly DurationHandler              $durationHandler,
 		private readonly OrbitalBaseHelper            $orbitalBaseHelper,
 		private readonly PopulationTaxHandler         $populationTaxHandler,
 		private readonly GetMaxResourceStorage        $getMaxStorage,
+		private readonly GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
+		#[Autowire('%game.ship_cost_reduction%')]
+		private readonly float                        $shipCostReduction,
 	) {
 	}
 
@@ -81,7 +86,7 @@ class OrbitalBaseExtension extends AbstractExtension
 				($currentLevel < 3) ? 1 : $currentLevel - 2,
 				(($currentLevel > 35) ? 41 : $currentLevel + 5) - 1,
 			)),
-			new TwigFunction('get_base_fleet_cost', fn (OrbitalBase $base) => Game::getFleetCost($base->shipStorage, false)),
+			new TwigFunction('get_base_fleet_cost', fn (OrbitalBase $base) => ($this->calculateFleetCost)($base->shipStorage, false)),
 			// TODO check if bonus must be applied here (previously Game::getTaxFromPopulation without bonus applied)
 			new TwigFunction('get_base_tax', fn (OrbitalBase $base, int $taxCoeff) => $this->populationTaxHandler->getPopulationTax($base)),
 			// @TODO Improve that part
@@ -90,7 +95,7 @@ class OrbitalBaseExtension extends AbstractExtension
 				Game::getSizeOfPlanet($base->place->population),
 			)),
 			// @TODO move to a rightful place
-			new TwigFunction('get_ship_transaction_cost', fn (Transaction $transaction) => ShipResource::getInfo($transaction->identifier, 'cost') * ShipResource::COST_REDUCTION * $transaction->quantity),
+			new TwigFunction('get_ship_transaction_cost', fn (Transaction $transaction) => ($this->getShipCategoriesConfiguration)($transaction->identifier, 'cost') * $this->shipCostReduction * $transaction->quantity),
 			new TwigFunction('can_leave_orbital_base', function (OrbitalBase $orbitalBase) {
 				$canLeaveBase = new CanLeaveOrbitalBase(($this->getCoolDownBeforeLeavingBase)());
 

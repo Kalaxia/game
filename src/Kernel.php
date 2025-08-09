@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Modules\Ares\Infrastructure\DependencyInjection\ShipCategoryExtension;
 use App\Modules\Demeter\Infrastructure\DependencyInjection\FactionBonusExtension;
 use App\Modules\Demeter\Infrastructure\DependencyInjection\FactionExtension;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -23,5 +24,9 @@ class Kernel extends BaseKernel
 		$factionBonusExtension = new FactionBonusExtension();
 		$container->registerExtension($factionBonusExtension);
 		$container->loadFromExtension($factionBonusExtension->getAlias());
+
+		$shipCategoriesExtension = new ShipCategoryExtension();
+		$container->registerExtension($shipCategoriesExtension);
+		$container->loadFromExtension($shipCategoriesExtension->getAlias());
 	}
 }

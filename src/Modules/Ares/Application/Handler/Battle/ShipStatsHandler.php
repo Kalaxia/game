@@ -2,9 +2,10 @@
 
 namespace App\Modules\Ares\Application\Handler\Battle;
 
+use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Domain\Model\ShipStat;
+use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Ares\Model\Ship;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Zeus\Application\Handler\Bonus\BonusApplierInterface;
 use App\Modules\Zeus\Model\PlayerBonus;
 use App\Modules\Zeus\Model\PlayerBonusId;
@@ -13,6 +14,7 @@ readonly class ShipStatsHandler
 {
 	public function __construct(
 		private BonusApplierInterface $bonusApplier,
+		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 	) {
 	}
 
@@ -23,7 +25,11 @@ readonly class ShipStatsHandler
 	
 	public function getStatsByShipNumber(int $shipNumber, ShipStat $stat, PlayerBonus|null $playerBonus = null): mixed
 	{
-		$initialValue = ShipResource::getInfo($shipNumber, $stat->value);
+		if (in_array($stat, [ShipStat::Name])) {
+			trigger_error('Calling ShipStatsHandler to retrieve a ship\'s name is deprecated, use the translator instead', E_USER_DEPRECATED);
+		}
+
+		$initialValue = ($this->getShipCategoriesConfiguration)($shipNumber, $stat->value);
 
 		if (null !== $playerBonus && null !== ($bonusId = $this->getBonusIdForStat($shipNumber, $stat))) {
 			if (ShipStat::Attack === $stat) {
@@ -47,26 +53,27 @@ readonly class ShipStatsHandler
 	 */
 	private function getBonusIdForStat(int $shipNumber, ShipStat $stat): int|null
 	{
+		$shipCategory = ShipCategory::tryFrom($shipNumber);
 		return match ($stat) {
-			ShipStat::Attack => match ($shipNumber) {
-				Ship::TYPE_PEGASE, Ship::TYPE_SATYRE, Ship::TYPE_CHIMERE => PlayerBonusId::FIGHTER_ATTACK,
-				Ship::TYPE_SIRENE, Ship::TYPE_DRYADE, Ship::TYPE_MEDUSE => PlayerBonusId::CORVETTE_ATTACK,
-				Ship::TYPE_GRIFFON, Ship::TYPE_CYCLOPE => PlayerBonusId::FRIGATE_ATTACK,
-				Ship::TYPE_MINOTAURE, Ship::TYPE_HYDRE => PlayerBonusId::DESTROYER_ATTACK,
+			ShipStat::Attack => match ($shipCategory) {
+				ShipCategory::LightFighter, ShipCategory::Fighter, ShipCategory::HeavyFighter => PlayerBonusId::FIGHTER_ATTACK,
+				ShipCategory::LightCorvette, ShipCategory::Corvette, ShipCategory::HeavyCorvette => PlayerBonusId::CORVETTE_ATTACK,
+				ShipCategory::LightFrigate, ShipCategory::Frigate => PlayerBonusId::FRIGATE_ATTACK,
+				ShipCategory::Destroyer, ShipCategory::HeavyDestroyer => PlayerBonusId::DESTROYER_ATTACK,
 				default => null,
 			},
-			ShipStat::Defense => match ($shipNumber) {
-				Ship::TYPE_PEGASE, Ship::TYPE_SATYRE, Ship::TYPE_CHIMERE => PlayerBonusId::FIGHTER_DEFENSE,
-				Ship::TYPE_SIRENE, Ship::TYPE_DRYADE, Ship::TYPE_MEDUSE => PlayerBonusId::CORVETTE_DEFENSE,
-				Ship::TYPE_GRIFFON, Ship::TYPE_CYCLOPE => PlayerBonusId::FRIGATE_DEFENSE,
-				Ship::TYPE_MINOTAURE, Ship::TYPE_HYDRE => PlayerBonusId::DESTROYER_DEFENSE,
+			ShipStat::Defense => match ($shipCategory) {
+				ShipCategory::LightFighter, ShipCategory::Fighter, ShipCategory::HeavyFighter => PlayerBonusId::FIGHTER_DEFENSE,
+				ShipCategory::LightCorvette, ShipCategory::Corvette, ShipCategory::HeavyCorvette => PlayerBonusId::CORVETTE_DEFENSE,
+				ShipCategory::LightFrigate, ShipCategory::Frigate => PlayerBonusId::FRIGATE_DEFENSE,
+				ShipCategory::Destroyer, ShipCategory::HeavyDestroyer => PlayerBonusId::DESTROYER_DEFENSE,
 				default => null,
 			},
-			ShipStat::Speed => match ($shipNumber) {
-				Ship::TYPE_PEGASE, Ship::TYPE_SATYRE, Ship::TYPE_CHIMERE => PlayerBonusId::FIGHTER_SPEED,
-				Ship::TYPE_SIRENE, Ship::TYPE_DRYADE, Ship::TYPE_MEDUSE => PlayerBonusId::CORVETTE_SPEED,
-				Ship::TYPE_GRIFFON, Ship::TYPE_CYCLOPE => PlayerBonusId::FRIGATE_SPEED,
-				Ship::TYPE_MINOTAURE, Ship::TYPE_HYDRE => PlayerBonusId::DESTROYER_SPEED,
+			ShipStat::Speed => match ($shipCategory) {
+				ShipCategory::LightFighter, ShipCategory::Fighter, ShipCategory::HeavyFighter => PlayerBonusId::FIGHTER_SPEED,
+				ShipCategory::LightCorvette, ShipCategory::Corvette, ShipCategory::HeavyCorvette => PlayerBonusId::CORVETTE_SPEED,
+				ShipCategory::LightFrigate, ShipCategory::Frigate => PlayerBonusId::FRIGATE_SPEED,
+				ShipCategory::Destroyer, ShipCategory::HeavyDestroyer => PlayerBonusId::DESTROYER_SPEED,
 				default => null,
 			},
 			default => null,

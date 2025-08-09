@@ -10,11 +10,11 @@ use App\Modules\Athena\Message\Trade\CommercialShippingMessage;
 use App\Modules\Athena\Model\CommercialShipping;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Shared\Application\SchedulerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 readonly class CommercialShippingManager implements SchedulerInterface
 {
@@ -23,6 +23,7 @@ readonly class CommercialShippingManager implements SchedulerInterface
 		private NotificationRepositoryInterface $notificationRepository,
 		private MessageBusInterface $messageBus,
 		private CommercialShippingRepositoryInterface $commercialShippingRepository,
+		private TranslatorInterface $translator,
 	) {
 	}
 
@@ -78,7 +79,7 @@ readonly class CommercialShippingManager implements SchedulerInterface
 							' vaisseau',
 							$pluralX,
 							' de type ',
-							ShipResource::getInfo($transaction->identifier, 'codeName'),
+							$this->translator->trans(sprintf('ship_categories.%d.name', $transaction->identifier)),
 							null === $commercialShipping->resourceTransported
 								? ' que vous avez acheté au marché.'
 								: ' envoyé'.$pluralS.' par un marchand galactique.',

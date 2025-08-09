@@ -2,8 +2,8 @@
 
 namespace App\Modules\Athena\Domain\Event;
 
+use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Athena\Model\ShipQueue;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Resource\TutorialResource;
 use App\Shared\Domain\Event\TrackingEvent;
@@ -23,9 +23,9 @@ class NewShipQueueEvent implements TutorialEvent, TrackingEvent
 
 	public function getTutorialStep(): int|null
 	{
-		return match ($this->shipQueue->shipNumber) {
-			ShipResource::PEGASE => TutorialResource::BUILD_SHIP0,
-			ShipResource::SATYRE => TutorialResource::BUILD_SHIP1,
+		return match (ShipCategory::tryFrom($this->shipQueue->shipNumber)) {
+			ShipCategory::LightFighter => TutorialResource::BUILD_SHIP0,
+			ShipCategory::Fighter => TutorialResource::BUILD_SHIP1,
 			default => null,
 		};
 	}
