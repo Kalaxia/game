@@ -30,7 +30,7 @@ readonly class ResearchManager
 		int $socialInvest,
 		int $informaticInvest,
 	): void {
-		$applyPrestige = ColorResource::APHERA == $player->faction->identifier;
+		// $applyPrestige = ColorResource::APHERA == $player->faction->identifier;
 		// natural technologies
 		do {
 			if ($research->naturalToPay > $naturalInvest) {

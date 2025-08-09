@@ -35,9 +35,9 @@ readonly class GetTimeCost
 			: 10 * $targetLevel;
 
 		$bonusPercent = $this->currentPlayerBonusRegistry->getPlayerBonus()->bonuses->get(PlayerBonusId::TECHNOSPHERE_SPEED);
-		if (ColorResource::APHERA === $researcher->faction->identifier) {
+		/*if (ColorResource::APHERA === $researcher->faction->identifier) {
 			$bonusPercent += ColorResource::BONUS_APHERA_TECHNO;
-		}
+		}*/
 		// ajout du bonus du lieu
 		$bonusPercent += Game::getImprovementFromScientificCoef($scienceCoeff);
 		$bonus = PercentageApplier::toFloat($time, $bonusPercent);

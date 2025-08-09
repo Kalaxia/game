@@ -63,10 +63,10 @@ class ViewTechnosphere extends AbstractController
 		$coefBonus = Game::getImprovementFromScientificCoef($coef);
 		$techBonus = $currentPlayerBonusRegistry->getPlayerBonus()->bonuses->get(PlayerBonusId::TECHNOSPHERE_SPEED);
 		$factionBonus = 0;
-		if (ColorResource::APHERA == $currentPlayer->faction->identifier) {
+		/*if (ColorResource::APHERA == $currentPlayer->faction->identifier) {
 			// bonus if the player is from Aphera
 			$factionBonus += ColorResource::BONUS_APHERA_TECHNO;
-		}
+		}*/
 		$totalBonus = $coefBonus + $techBonus + $factionBonus;
 
 		return $this->render('pages/athena/base/building/technosphere.html.twig', [
