@@ -12,7 +12,6 @@ use App\Modules\Athena\Helper\OrbitalBaseHelper;
 use App\Modules\Athena\Helper\ShipHelper;
 use App\Modules\Athena\Manager\OrbitalBaseManager;
 use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

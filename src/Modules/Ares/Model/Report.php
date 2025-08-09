@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Ares\Model;
 
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Gaia\Model\Place;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Component\Uid\Uuid;

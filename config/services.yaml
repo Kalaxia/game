@@ -55,6 +55,8 @@ parameters:
     antispy_display_mode: 0
     antispy_game_mode: 1
 
+    game.ship_cost_reduction: 0.8
+
     pam_coeftax: 1
     rsm_researchquantity: 10
 

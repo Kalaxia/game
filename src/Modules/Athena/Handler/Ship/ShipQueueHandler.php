@@ -5,7 +5,6 @@ namespace App\Modules\Athena\Handler\Ship;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
 use App\Modules\Athena\Message\Ship\ShipQueueMessage;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Zeus\Manager\PlayerManager;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 

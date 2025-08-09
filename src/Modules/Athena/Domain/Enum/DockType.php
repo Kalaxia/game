@@ -7,7 +7,6 @@ namespace App\Modules\Athena\Domain\Enum;
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Resource\OrbitalBaseResource;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Zeus\Model\PlayerBonusId;
 
 enum DockType: string
@@ -64,15 +63,6 @@ enum DockType: string
 			ShipCategory::Destroyer, ShipCategory::HeavyDestroyer,
 			ShipCategory::Cruiser, ShipCategory::HeavyCruiser => self::Shipyard,
 			default => throw new \InvalidArgumentException(sprintf('Invalid ship category %d', $category->value)),
-		};
-	}
-
-	public static function fromShipIdentifier(int $identifier): self
-	{
-		return match (true) {
-			ShipResource::isAShipFromDock1($identifier) => self::Manufacture,
-			ShipResource::isAShipFromDock2($identifier) => self::Shipyard,
-			default => throw new \InvalidArgumentException(sprintf('Invalid ship identifier %d', $identifier)),
 		};
 	}
 }

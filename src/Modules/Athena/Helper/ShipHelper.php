@@ -9,7 +9,6 @@ use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountHangarAvailableStorableShipPoints;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountMaxShipQueues;
 use App\Modules\Athena\Resource\OrbitalBaseResource;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Promethee\Helper\TechnologyHelper;
 use App\Modules\Shared\Application\PercentageApplier;
@@ -36,7 +35,7 @@ readonly class ShipHelper
 		if (null === ($shipCategory = ShipCategory::tryFrom($shipId))) {
 			throw new \ErrorException(sprintf('shipId invalide %d (entre 0 et %d) dans haveRights de ShipResource', $shipId, count(ShipCategory::cases())));
 		}
-		$dockType = DockType::fromShipIdentifier($shipId);
+		$dockType = DockType::fromShipCategory($shipCategory);
 
 		switch ($type) {
 			// assez de ressources pour construire ?
@@ -93,7 +92,8 @@ readonly class ShipHelper
 
 	public function dockLevelNeededFor($shipId)
 	{
-		$dockType = DockType::fromShipIdentifier($shipId);
+		$shipCategory = ShipCategory::from($shipId);
+		$dockType = DockType::fromShipCategory($shipCategory);
 
 		if ($dockType === DockType::Manufacture) {
 			$building = OrbitalBaseResource::DOCK1;

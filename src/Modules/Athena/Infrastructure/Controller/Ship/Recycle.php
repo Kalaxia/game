@@ -5,7 +5,6 @@ namespace App\Modules\Athena\Infrastructure\Controller\Ship;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Athena\Manager\OrbitalBaseManager;
 use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

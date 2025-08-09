@@ -8,7 +8,6 @@ use App\Modules\Athena\Model\BuildingQueue;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\ShipQueue;
 use App\Modules\Athena\Resource\OrbitalBaseResource;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Promethee\Helper\TechnologyHelper;
 use App\Modules\Promethee\Model\TechnologyQueue;
 use App\Shared\Application\Handler\DurationHandler;

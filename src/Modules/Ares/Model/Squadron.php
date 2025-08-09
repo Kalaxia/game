@@ -2,7 +2,6 @@
 
 namespace App\Modules\Ares\Model;
 
-use App\Modules\Athena\Resource\ShipResource;
 use Symfony\Component\Uid\Uuid;
 
 class Squadron implements \JsonSerializable

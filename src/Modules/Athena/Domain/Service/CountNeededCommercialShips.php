@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Athena\Domain\Service;
 
-use App\Classes\Library\Game;
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Athena\Model\Transaction;
-use App\Modules\Athena\Resource\ShipResource;
 
 readonly class CountNeededCommercialShips
 {

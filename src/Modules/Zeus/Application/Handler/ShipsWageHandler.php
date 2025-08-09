@@ -2,7 +2,6 @@
 
 namespace App\Modules\Zeus\Application\Handler;
 
-use App\Classes\Library\Game;
 use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
@@ -12,11 +11,11 @@ use App\Modules\Ares\Model\Commander;
 use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Model\PlayerFinancialReport;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 readonly class ShipsWageHandler
@@ -29,6 +28,8 @@ readonly class ShipsWageHandler
 		private TransactionRepositoryInterface  $transactionRepository,
 		private TranslatorInterface $translator,
 		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
+		#[Autowire('%game.ship_cost_reduction%')]
+		private float $shipCostReduction,
 	) {
 	}
 
@@ -50,7 +51,7 @@ readonly class ShipsWageHandler
 		$nbTransactions = count($transactions);
 		for ($i = ($nbTransactions - 1); $i >= 0; --$i) {
 			$transaction = $transactions[$i];
-			$transactionTotalCost += ($this->getShipCategoriesConfiguration)($transaction->identifier, 'cost') * ShipResource::COST_REDUCTION * $transaction->quantity;
+			$transactionTotalCost += ($this->getShipCategoriesConfiguration)($transaction->identifier, 'cost') * $this->shipCostReduction * $transaction->quantity;
 		}
 		if ($playerFinancialReport->canAfford($transactionTotalCost)) {
 			$playerFinancialReport->shipsCost += $transactionTotalCost;

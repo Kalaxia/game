@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Athena\Infrastructure\Controller\Financial;
 
-use App\Classes\Library\Game;
 use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Domain\Service\CalculateFleetCost;
@@ -17,11 +16,11 @@ use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
 use App\Modules\Athena\Model\CommercialRoute;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Zeus\Application\Handler\Bonus\BonusApplierInterface;
 use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Model\PlayerBonusId;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
 
 class ViewInvestments extends AbstractController
@@ -33,6 +32,8 @@ class ViewInvestments extends AbstractController
 		private readonly PopulationTaxHandler $populationTaxHandler,
 		private readonly GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 		private readonly CalculateFleetCost $calculateFleetCost,
+		#[Autowire('%game.ship_cost_reduction%')]
+		private readonly float $shipCostReduction,
 	) {
 	}
 
@@ -172,7 +173,7 @@ class ViewInvestments extends AbstractController
 		}
 
 		foreach ($transactions as $transaction) {
-			$data['totalShipsFees'] += ($this->getShipCategoriesConfiguration)($transaction->identifier, 'cost') * ShipResource::COST_REDUCTION * $transaction->quantity;
+			$data['totalShipsFees'] += ($this->getShipCategoriesConfiguration)($transaction->identifier, 'cost') * $this->shipCostReduction * $transaction->quantity;
 		}
 
 		$data['totalRouteIncomeBonus'] = $this->bonusApplier->apply(

@@ -7,14 +7,12 @@ use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
 use App\Modules\Athena\Manager\OrbitalBaseManager;
 use App\Modules\Athena\Manager\ShipQueueManager;
 use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Uid\Uuid;
 
 class CancelQueue extends AbstractController

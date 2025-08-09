@@ -9,7 +9,6 @@ use App\Modules\Ares\Domain\Repository\SquadronRepositoryInterface;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Ares\Manager\CommanderManager;
 use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;

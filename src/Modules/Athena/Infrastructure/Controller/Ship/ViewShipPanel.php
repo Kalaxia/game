@@ -3,7 +3,6 @@
 namespace App\Modules\Athena\Infrastructure\Controller\Ship;
 
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
 use App\Modules\Zeus\Model\PlayerBonusId;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

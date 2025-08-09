@@ -5,7 +5,6 @@ namespace App\Modules\Athena\Infrastructure\Twig;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountShipResourceCost;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountShipTimeCost;
-use App\Modules\Athena\Resource\ShipResource;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 

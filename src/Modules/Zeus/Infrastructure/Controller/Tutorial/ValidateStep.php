@@ -12,7 +12,6 @@ use App\Modules\Athena\Manager\OrbitalBaseManager;
 use App\Modules\Athena\Manager\ShipQueueManager;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Resource\OrbitalBaseResource;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Promethee\Model\TechnologyId;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Helper\TutorialHelper;

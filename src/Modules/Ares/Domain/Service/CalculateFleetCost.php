@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Ares\Domain\Service;
 
 use App\Modules\Ares\Domain\Model\ShipCategory;
-use App\Modules\Athena\Resource\ShipResource;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Calculates either a Commander or an OrbitalBase ships cost
@@ -14,6 +14,8 @@ final readonly class CalculateFleetCost
 {
 	public function __construct(
 		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
+		#[Autowire('%game.ship_cost_reduction%')]
+		private float $shipCostReduction,
 	) {
 	}
 
@@ -29,7 +31,7 @@ final readonly class CalculateFleetCost
 			$cost += ($this->getShipCategoriesConfiguration)($shipCategory, 'cost') * ($ships[$shipCategory->value] ?? 0);
 		}
 		if (!$affected) {
-			$cost *= ShipResource::COST_REDUCTION;
+			$cost *= $this->shipCostReduction;
 		}
 
 		return intval(ceil($cost));

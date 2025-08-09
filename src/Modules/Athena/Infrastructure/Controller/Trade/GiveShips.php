@@ -4,6 +4,7 @@ namespace App\Modules\Athena\Infrastructure\Controller\Trade;
 
 use App\Classes\Library\DateTimeConverter;
 use App\Classes\Library\Format;
+use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Athena\Domain\Repository\CommercialShippingRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
@@ -13,7 +14,6 @@ use App\Modules\Athena\Message\Trade\CommercialShippingMessage;
 use App\Modules\Athena\Model\CommercialShipping;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Travel\Domain\Model\TravelType;
@@ -56,37 +56,34 @@ class GiveShips extends AbstractController
 		}
 
 		// @TODO fix request format as multiple ships sending isn't possible with this design
-		for ($i = 0; $i < ShipResource::SHIP_QUANTITY; ++$i) {
-			if ($request->request->has('identifier-'.$i)) {
-				$shipType = $i;
-
-				if ($request->request->has('quantity-'.$i)) {
-					$ships = $request->request->get('quantity-'.$i) > 0
-						? $request->request->get('quantity-'.$i) : 1;
-					$ships = intval($ships);
-				}
-
-				break;
+		foreach (ShipCategory::cases() as $shipCategory) {
+			$shipIdentifier = $shipCategory->value;
+			if (!$request->request->has('identifier-'.$shipIdentifier)) {
+				continue;
 			}
+
+			if ($request->request->has('quantity-'.$shipIdentifier)) {
+				$ships = $request->request->get('quantity-'.$shipIdentifier) > 0
+					? $request->request->get('quantity-'.$shipIdentifier) : 1;
+				$ships = intval($ships);
+			}
+
+			break;
 		}
 
-		if (!isset($shipType) || !isset($ships)) {
-			throw new BadRequestHttpException('Missing ship request data');
-		}
-
-		if (!ShipResource::isAShipFromDock1($shipType) && !ShipResource::isAShipFromDock2($shipType)) {
-			throw new BadRequestHttpException('Invalid ship identifier');
+		if (!isset($shipIdentifier) || !isset($ships)) {
+			throw new BadRequestHttpException('Missing ship request data or invalid ship identifier');
 		}
 
 		if ($ships <= 0) {
 			throw new BadRequestHttpException('Invalid ship quantity');
 		}
 
-		if ($currentBase->getShipStorage()[$shipType] < $ships) {
+		if ($currentBase->getShipStorage()[$shipIdentifier] < $ships) {
 			throw new ConflictHttpException('You do not have enough ships');
 		}
 
-		$commercialShipQuantity = $countNeededCommercialShips(Transaction::TYP_SHIP, $ships, $shipType);
+		$commercialShipQuantity = $countNeededCommercialShips(Transaction::TYP_SHIP, $ships, $shipIdentifier);
 		$totalShips = $orbitalBaseHelper->getBuildingInfo(6, 'level', $currentBase->levelCommercialPlateforme, 'nbCommercialShip');
 		$usedShips = 0;
 
@@ -114,7 +111,7 @@ class GiveShips extends AbstractController
 			base: $currentBase,
 			type: Transaction::TYP_SHIP,
 			quantity: $ships,
-			identifier: $shipType,
+			identifier: $shipIdentifier,
 			price: 0,
 			statement: Transaction::ST_COMPLETED,
 			publishedAt: new \DateTimeImmutable(),
@@ -152,7 +149,7 @@ class GiveShips extends AbstractController
 			[DateTimeConverter::to_delay_stamp($cs->getArrivalDate())],
 		);
 
-		$currentBase->removeShips($shipType, $ships);
+		$currentBase->removeShips($shipIdentifier, $ships);
 
 		$orbitalBaseRepository->save($currentBase);
 
@@ -170,7 +167,7 @@ class GiveShips extends AbstractController
 						),
 						' a lancé un convoi de ',
 						NotificationBuilder::bold(Format::numberFormat($ships)),
-						' ' . $translator->trans(sprintf('ship_categories.%s.name', $shipType)) . ' depuis sa base ',
+						' ' . $translator->trans(sprintf('ship_categories.%s.name', $shipIdentifier)) . ' depuis sa base ',
 						NotificationBuilder::link(
 							$this->generateUrl('map', ['place' => $currentBase->place->id]),
 							$currentBase->name,

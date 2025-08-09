@@ -2,7 +2,6 @@
 
 namespace App\Modules\Zeus\Infrastructure\Twig;
 
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Zeus\Resource\TutorialResource;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;

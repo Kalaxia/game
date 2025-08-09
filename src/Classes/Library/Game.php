@@ -2,10 +2,8 @@
 
 namespace App\Classes\Library;
 
-use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Athena\Model\Transaction;
-use App\Modules\Athena\Resource\ShipResource;
 
 class Game
 {

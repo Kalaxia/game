@@ -6,7 +6,6 @@ namespace App\Modules\Athena\Domain\Service\Base\Ship;
 
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
-use App\Modules\Athena\Resource\ShipResource;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Shared\Application\PercentageApplier;
