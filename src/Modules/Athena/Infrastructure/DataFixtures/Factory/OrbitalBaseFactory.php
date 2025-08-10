@@ -8,11 +8,14 @@ use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\PlaceFactory;
 use App\Modules\Zeus\Infrastructure\DataFixtures\Factory\PlayerFactory;
 use Symfony\Component\Uid\Uuid;
-use Zenstruck\Foundry\ModelFactory;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
-class OrbitalBaseFactory extends ModelFactory
+/**
+ * @extends PersistentProxyObjectFactory<OrbitalBase>
+ */
+class OrbitalBaseFactory extends PersistentProxyObjectFactory
 {
-	protected function getDefaults(): array
+	protected function defaults(): array
 	{
 		return [
 			'id' => Uuid::v4(),
@@ -41,7 +44,7 @@ class OrbitalBaseFactory extends ModelFactory
 		];
 	}
 
-	protected static function getClass(): string
+	public static function class(): string
 	{
 		return OrbitalBase::class;
 	}

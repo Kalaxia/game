@@ -9,14 +9,17 @@ use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\FactionFactory;
 use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\PlaceFactory;
 use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\SectorFactory;
 use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\SystemFactory;
-use Zenstruck\Foundry\Factory;
+use Zenstruck\Foundry\Attribute\AsFixture;
 use Zenstruck\Foundry\Story;
 
+use function Zenstruck\Foundry\Persistence\flush_after;
+
+#[AsFixture('small-map')]
 class SmallMapStory extends Story
 {
 	public function build(): void
 	{
-		Factory::delayFlush(function (): void {
+		flush_after(function (): void {
 			FactionFactory::createMany(3);
 
 			SectorFactory::createMany(3);
