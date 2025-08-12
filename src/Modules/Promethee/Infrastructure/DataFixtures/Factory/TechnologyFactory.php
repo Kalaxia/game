@@ -8,10 +8,14 @@ use App\Modules\Promethee\Model\Technology;
 use App\Modules\Zeus\Infrastructure\DataFixtures\Factory\PlayerFactory;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\ModelFactory;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
-class TechnologyFactory extends ModelFactory
+/**
+ * @extends PersistentProxyObjectFactory<Technology>
+ */
+class TechnologyFactory extends PersistentProxyObjectFactory
 {
-	protected function getDefaults(): array
+	protected function defaults(): array
 	{
 		return [
 			'id' => Uuid::v4(),
@@ -19,7 +23,7 @@ class TechnologyFactory extends ModelFactory
 		];
 	}
 
-	protected static function getClass(): string
+	public static function class(): string
 	{
 		return Technology::class;
 	}

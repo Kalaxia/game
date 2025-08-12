@@ -8,10 +8,14 @@ use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\FactionFactory;
 use App\Modules\Demeter\Model\Election\Election;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\ModelFactory;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
-class ElectionFactory extends ModelFactory
+/**
+ * @extends PersistentProxyObjectFactory<Election>
+ */
+class ElectionFactory extends PersistentProxyObjectFactory
 {
-	protected function getDefaults(): array
+	protected function defaults(): array
 	{
 		return [
 			'id' => Uuid::v4(),
@@ -20,7 +24,7 @@ class ElectionFactory extends ModelFactory
 		];
 	}
 
-	protected static function getClass(): string
+	public static function class(): string
 	{
 		return Election::class;
 	}

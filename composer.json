@@ -58,13 +58,13 @@
         "phpstan/phpstan": "^2.1",
         "phpstan/phpstan-doctrine": "^2.0",
         "phpunit/phpunit": "^10.3",
-        "rector/rector": "^2.0",
+        "rector/rector": "^2.1",
         "squizlabs/php_codesniffer": "^3.11",
         "symfony/debug-bundle": "^7.3",
         "symfony/phpunit-bridge": "^7.3",
         "symfony/stopwatch": "^7.3",
         "symfony/web-profiler-bundle": "^7.3",
-        "zenstruck/foundry": "^1.35"
+        "zenstruck/foundry": "^2.6"
     },
     "scripts": {
         "auto-scripts": {

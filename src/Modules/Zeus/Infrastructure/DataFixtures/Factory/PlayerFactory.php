@@ -5,19 +5,34 @@ declare(strict_types=1);
 namespace App\Modules\Zeus\Infrastructure\DataFixtures\Factory;
 
 use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\FactionFactory;
+use App\Modules\Portal\Infrastructure\DataFixtures\Factory\UserFactory;
+use App\Modules\Promethee\Infrastructure\DataFixtures\Factory\TechnologyFactory;
 use App\Modules\Zeus\Model\Player;
 use Zenstruck\Foundry\ModelFactory;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
-class PlayerFactory extends ModelFactory
+/**
+ * @extends PersistentProxyObjectFactory<Player>
+ */
+class PlayerFactory extends PersistentProxyObjectFactory
 {
-	protected function getDefaults(): array
+	protected function initialize(): static
+	{
+		return $this->afterPersist(function (Player $player) {
+			TechnologyFactory::createOne([
+				'player' => $player,
+			]);
+		});
+	}
+
+	protected function defaults(): array
 	{
 		return [
 			'id' => 0,
-			'bind' => self::faker()->md5(),
 			'faction' => FactionFactory::randomOrCreate(),
 			'godFather' => null,
 			'name' => self::faker()->userName(),
+			'user' => UserFactory::randomOrCreate(),
 			'sex' => 0,
 			'description' => '',
 			'avatar' => 't3-c4',
@@ -44,7 +59,7 @@ class PlayerFactory extends ModelFactory
 		];
 	}
 
-	protected static function getClass(): string
+	public static function class(): string
 	{
 		return Player::class;
 	}

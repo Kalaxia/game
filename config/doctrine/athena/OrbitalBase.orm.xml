@@ -13,11 +13,7 @@
 		<many-to-one field="player" target-entity="App\Modules\Zeus\Model\Player">
 			<join-column nullable="true" />
 		</many-to-one>
-		<field name="name" column="name" type="string" length="45">
-			<options>
-				<option name="collation">utf8_bin</option>
-			</options>
-		</field>
+		<field name="name" column="name" type="string" length="45" />
 		<field name="typeOfBase" column="typeOfBase" type="smallint">
 			<options>
 				<option name="unsigned">true</option>

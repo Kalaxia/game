@@ -9,14 +9,19 @@ use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\FactionFactory;
 use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\PlaceFactory;
 use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\SectorFactory;
 use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\SystemFactory;
-use Zenstruck\Foundry\Factory;
+use App\Modules\Portal\Infrastructure\DataFixtures\Factory\UserFactory;
+use App\Modules\Zeus\Infrastructure\DataFixtures\Factory\PlayerFactory;
+use Zenstruck\Foundry\Attribute\AsFixture;
 use Zenstruck\Foundry\Story;
 
+use function Zenstruck\Foundry\Persistence\flush_after;
+
+#[AsFixture('small-map')]
 class SmallMapStory extends Story
 {
 	public function build(): void
 	{
-		Factory::delayFlush(function (): void {
+		flush_after(function (): void {
 			FactionFactory::createMany(3);
 
 			SectorFactory::createMany(3);
@@ -25,7 +30,17 @@ class SmallMapStory extends Story
 
 			PlaceFactory::createMany(250);
 
-			OrbitalBaseFactory::createMany(10);
+			UserFactory::createMany(5);
 		});
+
+		$user = UserFactory::createOne([
+			'username' => 'tester',
+			'email' => 'tester@example.org',
+		]);
+		PlayerFactory::createOne([
+			'user' => $user,
+		]);
+
+		OrbitalBaseFactory::createMany(10);
 	}
 }

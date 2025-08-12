@@ -7,10 +7,14 @@ namespace App\Modules\Gaia\Infrastructure\DataFixtures\Factory;
 use App\Modules\Gaia\Model\System;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\ModelFactory;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
-class SystemFactory extends ModelFactory
+/**
+ * @extends PersistentProxyObjectFactory<System>
+ */
+class SystemFactory extends PersistentProxyObjectFactory
 {
-	protected function getDefaults(): array
+	protected function defaults(): array
 	{
 		return [
 			'id' => Uuid::v4(),
@@ -22,7 +26,7 @@ class SystemFactory extends ModelFactory
 		];
 	}
 
-	protected static function getClass(): string
+	public static function class(): string
 	{
 		return System::class;
 	}

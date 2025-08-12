@@ -8,21 +8,27 @@ use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\ColorResource;
 use Symfony\Component\Uid\Uuid;
-use Zenstruck\Foundry\ModelFactory;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends ModelFactory<Color>
+ * @extends PersistentProxyObjectFactory<Color>
  */
-class FactionFactory extends ModelFactory
+class FactionFactory extends PersistentProxyObjectFactory
 {
 	public function __construct(private readonly GetFactionsConfiguration $getFactionsConfiguration)
 	{
 		parent::__construct();
 	}
 
-	protected function getDefaults(): array
+	protected function defaults(): array
 	{
-		$identifier = self::faker()->unique()->numberBetween(1, 11);
+		$identifier = self::faker()->unique()->randomElement([
+			ColorResource::KALANKAR,
+			ColorResource::VALKAR,
+			ColorResource::FALKIRR,
+			ColorResource::ADRANITE,
+			ColorResource::MALGAR,
+		]);
 
 		return [
 			'id' => Uuid::v4(),
@@ -45,7 +51,7 @@ class FactionFactory extends ModelFactory
 		];
 	}
 
-	protected static function getClass(): string
+	public static function class(): string
 	{
 		return Color::class;
 	}
