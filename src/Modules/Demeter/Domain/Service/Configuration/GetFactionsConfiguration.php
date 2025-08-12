@@ -60,6 +60,7 @@ final readonly class GetFactionsConfiguration
             'desc4' => 'descriptions.culture',
             'senate' => 'descriptions.senate',
             'campaign' => 'descriptions.campaign',
+			default => null,
 		};
 
 		if (null === $key) {

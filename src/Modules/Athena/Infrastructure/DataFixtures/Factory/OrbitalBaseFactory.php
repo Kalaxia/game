@@ -19,7 +19,7 @@ class OrbitalBaseFactory extends PersistentProxyObjectFactory
 	{
 		return [
 			'id' => Uuid::v4(),
-			'place' => PlaceFactory::randomOrCreate(),
+			'place' => PlaceFactory::createOne(),
 			'player' => PlayerFactory::randomOrCreate(),
 			'name' => 'Colonie',
 			'typeOfBase' => OrbitalBase::TYP_NEUTRAL,
