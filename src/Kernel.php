@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Modules\Ares\Infrastructure\DependencyInjection\CommanderSchoolExtension;
 use App\Modules\Ares\Infrastructure\DependencyInjection\ShipCategoryExtension;
 use App\Modules\Demeter\Infrastructure\DependencyInjection\FactionBonusExtension;
 use App\Modules\Demeter\Infrastructure\DependencyInjection\FactionExtension;
@@ -16,6 +17,10 @@ class Kernel extends BaseKernel
 	protected function build(ContainerBuilder $container): void
 	{
 		parent::build($container);
+
+		$commanderSchoolExtension = new CommanderSchoolExtension();
+		$container->registerExtension($commanderSchoolExtension);
+		$container->loadFromExtension($commanderSchoolExtension->getAlias());
 
 		$factionExtension = new FactionExtension();
 		$container->registerExtension($factionExtension);

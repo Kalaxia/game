@@ -1,4 +1,5 @@
 imports:
+    - { resource: ./game/commander_school.yaml }
     - { resource: ./game/faction_bonuses.yaml }
     - { resource: ./game/factions.yaml }
     - { resource: ./game/ship_categories.yaml }

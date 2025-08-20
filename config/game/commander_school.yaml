@@ -1,0 +1,5 @@
+commander_school:
+    credits_cost: 2500
+    minimum_experience: 100
+    maximum_experience: 210
+    points: 5
