@@ -1,4 +1,8 @@
 imports:
+    - { resource: ./game/faction_bonuses.yaml }
+    - { resource: ./game/factions.yaml }
+    - { resource: ./game/ship_categories.yaml }
+
     - { resource: ../src/Modules/Ares/Resource/config/config.yml }
     - { resource: ../src/Modules/Artemis/Resource/config/config.yml }
     - { resource: ../src/Modules/Athena/Resource/config/config.yml }
