@@ -2,12 +2,16 @@
 
 namespace App\Modules\Ares\Infrastructure\Controller\Fleet;
 
+use App\Classes\Library\DateTimeConverter;
+use App\Modules\Ares\Domain\Event\Fleet\CancelledJourneyEvent;
 use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Manager\CommanderManager;
+use App\Modules\Ares\Message\CommanderTravelMessage;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,6 +28,7 @@ class Cancel extends AbstractController
 		Player $currentPlayer,
 		CommanderManager $commanderManager,
 		CommanderRepositoryInterface $commanderRepository,
+		EventDispatcherInterface $eventDispatcher,
 		Uuid $id,
 	): Response {
 		$commander = $commanderRepository->get($id) ?? throw $this->createNotFoundException('Commander not found');
@@ -36,6 +41,7 @@ class Cancel extends AbstractController
 		}
 		// @TODO travel cancellation
 		// $scheduler->cancel($commander, $commander->dArrival);
+		$travelType = $commander->travelType;
 
 		$interval = $durationHandler->getDiff($commander->getDepartureDate(), new \DateTimeImmutable());
 		$newArrivalDate = new \DateTimeImmutable(sprintf('-%d seconds', $interval));
@@ -50,10 +56,15 @@ class Cancel extends AbstractController
 		$this->addFlash('success', 'Déplacement annulé.');
 
 		$messageBus->dispatch(
-			new \App\Modules\Ares\Message\CommanderTravelMessage($commander->id),
-			[\App\Classes\Library\DateTimeConverter::to_delay_stamp($commander->getArrivalDate())],
+			new CommanderTravelMessage($commander->id),
+			[DateTimeConverter::to_delay_stamp($commander->getArrivalDate())],
 		);
 		$commanderRepository->save($commander);
+
+		$eventDispatcher->dispatch(new CancelledJourneyEvent(
+			$commander,
+			$travelType,
+		));
 
 		if ($request->query->has('redirect')) {
 			return $this->redirectToRoute('map', ['place' => $request->query->get('redirect')]);

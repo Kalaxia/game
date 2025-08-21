@@ -150,10 +150,6 @@ services:
             $password: '%env(default::REDIS_PASSWORD)%'
             $timeout: "%redis_timeout%"
 
-    App\Shared\Infrastructure\EventListener\MixpanelListener:
-        arguments:
-            $environment: '%kernel.environment%'
-
     App\Modules\Travel\Domain\Service\CalculateTravelTime:
 
     App\Modules\Travel\Domain\Service\GetTravelDuration:
