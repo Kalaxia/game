@@ -6,11 +6,14 @@ namespace App\Modules\Gaia\Infrastructure\DataFixtures\Factory;
 
 use App\Modules\Gaia\Model\Sector;
 use Symfony\Component\Uid\Uuid;
-use Zenstruck\Foundry\ModelFactory;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
-class SectorFactory extends ModelFactory
+/**
+ * @extends PersistentProxyObjectFactory<Sector>
+ */
+class SectorFactory extends PersistentProxyObjectFactory
 {
-	protected function getDefaults(): array
+	protected function defaults(): array
 	{
 		return [
 			'id' => Uuid::v4(),
@@ -29,7 +32,7 @@ class SectorFactory extends ModelFactory
 		];
 	}
 
-	protected static function getClass(): string
+	public static function class(): string
 	{
 		return Sector::class;
 	}

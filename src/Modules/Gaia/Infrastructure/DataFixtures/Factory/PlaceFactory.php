@@ -6,14 +6,14 @@ namespace App\Modules\Gaia\Infrastructure\DataFixtures\Factory;
 
 use App\Modules\Gaia\Model\Place;
 use Symfony\Component\Uid\Uuid;
-use Zenstruck\Foundry\ModelFactory;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends ModelFactory<Place>
+ * @extends PersistentProxyObjectFactory<Place>
  */
-class PlaceFactory extends ModelFactory
+class PlaceFactory extends PersistentProxyObjectFactory
 {
-	protected function getDefaults(): array
+	protected function defaults(): array
 	{
 		return [
 			'id' => Uuid::v4(),
@@ -32,7 +32,7 @@ class PlaceFactory extends ModelFactory
 		];
 	}
 
-	protected static function getClass(): string
+	public static function class(): string
 	{
 		return Place::class;
 	}

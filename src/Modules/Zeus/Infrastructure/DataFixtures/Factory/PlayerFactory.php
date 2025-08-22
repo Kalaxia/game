@@ -6,11 +6,14 @@ namespace App\Modules\Zeus\Infrastructure\DataFixtures\Factory;
 
 use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\FactionFactory;
 use App\Modules\Zeus\Model\Player;
-use Zenstruck\Foundry\ModelFactory;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
-class PlayerFactory extends ModelFactory
+/**
+ * @extends PersistentProxyObjectFactory<Player>
+ */
+class PlayerFactory extends PersistentProxyObjectFactory
 {
-	protected function getDefaults(): array
+	protected function defaults(): array
 	{
 		return [
 			'id' => 0,
@@ -44,7 +47,7 @@ class PlayerFactory extends ModelFactory
 		];
 	}
 
-	protected static function getClass(): string
+	public static function class(): string
 	{
 		return Player::class;
 	}
