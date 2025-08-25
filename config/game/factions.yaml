@@ -1,0 +1,8 @@
+---
+game_factions:
+    factions:
+        akhena:
+            id: !php:const/App\Modules\Demeter\Model\Color::IDENTIFIER_AKHENA
+            regime: !php:const/App\Modules\Demeter\Model\Color::REGIME_DEMOCRATIC
+            bonuses:
+            mandate_duration: 604800
