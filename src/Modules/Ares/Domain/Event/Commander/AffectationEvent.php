@@ -7,11 +7,11 @@ use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Resource\TutorialResource;
 use App\Shared\Domain\Event\TutorialEvent;
 
-class AffectationEvent implements TutorialEvent
+readonly class AffectationEvent implements TutorialEvent
 {
 	public function __construct(
-		public readonly Commander $commander,
-		public readonly Player $player,
+		public Commander $commander,
+		public Player    $player,
 	) {
 	}
 

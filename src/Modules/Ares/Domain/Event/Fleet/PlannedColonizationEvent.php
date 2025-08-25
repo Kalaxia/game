@@ -9,7 +9,7 @@ use App\Modules\Zeus\Resource\TutorialResource;
 use App\Shared\Domain\Event\TrackingEvent;
 use App\Shared\Domain\Event\TutorialEvent;
 
-readonly class PlannedLootEvent implements TutorialEvent, TrackingEvent
+readonly class PlannedColonizationEvent implements TutorialEvent, TrackingEvent
 {
 	public function __construct(
 		public Place     $place,

@@ -1,4 +1,9 @@
 imports:
+    - { resource: ./game/commander_school.yaml }
+    - { resource: ./game/faction_bonuses.yaml }
+    - { resource: ./game/factions.yaml }
+    - { resource: ./game/ship_categories.yaml }
+
     - { resource: ../src/Modules/Ares/Resource/config/config.yml }
     - { resource: ../src/Modules/Artemis/Resource/config/config.yml }
     - { resource: ../src/Modules/Athena/Resource/config/config.yml }
@@ -144,10 +149,6 @@ services:
             $port: '%env(int:REDIS_PORT)%'
             $password: '%env(default::REDIS_PASSWORD)%'
             $timeout: "%redis_timeout%"
-
-    App\Shared\Infrastructure\EventListener\MixpanelListener:
-        arguments:
-            $environment: '%kernel.environment%'
 
     App\Modules\Travel\Domain\Service\CalculateTravelTime:
 

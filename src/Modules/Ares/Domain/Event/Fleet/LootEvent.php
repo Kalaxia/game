@@ -6,11 +6,11 @@ use App\Modules\Ares\Model\Commander;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Event\TrackingEvent;
 
-class LootEvent implements TrackingEvent
+readonly class LootEvent implements TrackingEvent
 {
 	public function __construct(
-		public readonly Commander $commander,
-		public readonly Player|null $defender,
+		public Commander   $commander,
+		public Player|null $defender,
 	) {
 	}
 
@@ -28,8 +28,8 @@ class LootEvent implements TrackingEvent
 	{
 		return [
 			'commander_id' => $this->commander->id,
-			'origin_place_id' => $this->commander->startPlace,
-			'target_place_id' => $this->commander->destinationPlace,
+			'origin_place_id' => $this->commander->startPlace->id,
+			'target_place_id' => $this->commander->destinationPlace->id,
 			'is_victorious' => $this->commander->isVictorious(),
 			'resources' => $this->commander->resources,
 			'defender_id' => $this->defender?->id,

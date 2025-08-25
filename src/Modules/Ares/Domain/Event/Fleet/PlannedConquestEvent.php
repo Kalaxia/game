@@ -3,16 +3,17 @@
 namespace App\Modules\Ares\Domain\Event\Fleet;
 
 use App\Modules\Ares\Model\Commander;
+use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Gaia\Model\Place;
 use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Resource\TutorialResource;
 use App\Shared\Domain\Event\TrackingEvent;
 use App\Shared\Domain\Event\TutorialEvent;
 
-readonly class PlannedLootEvent implements TutorialEvent, TrackingEvent
+readonly class PlannedConquestEvent implements TutorialEvent, TrackingEvent
 {
 	public function __construct(
-		public Place     $place,
+		public OrbitalBase $base,
 		public Commander $commander,
 		public Player    $attacker,
 	) {
