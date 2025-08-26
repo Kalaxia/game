@@ -17,16 +17,12 @@ use Symfony\Component\Uid\Uuid;
 
 class GalaxyGenerator
 {
-	public const MAX_QUERY = 5000;
-
-	// stats
 	public int $nbSystem = 0;
 	/** @var list<System> */
 	public array $listSystem = [];
 
 	public int $nbPlace = 0;
 	public int $popTotal = 0;
-	public array $listPlace = [];
 
 	public int $nbSector = 0;
 	public int $systemDeleted = 0;
@@ -285,10 +281,6 @@ class GalaxyGenerator
 				);
 
 				$this->placeRepository->save($place);
-
-				if (0 === $this->nbPlace % 20) {
-					$this->entityManager->clear();
-				}
 			}
 		}
 	}
