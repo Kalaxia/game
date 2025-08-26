@@ -8,6 +8,10 @@ zeus:
     resource: '../../src/Modules/Zeus/Infrastructure/Controller/'
     type: attribute
 
+economy:
+    resource: '../../src/Modules/Economy/Infrastructure/Controller/'
+    type: attribute
+
 portal:
     resource: '../../src/Modules/Portal/Infrastructure/Controller/'
     type: attribute
