@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Economy\Infrastructure\Controller;
 
 use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +19,7 @@ class ViewPlanetActivities extends AbstractController
 		methods: [Request::METHOD_GET],
 	)]
 	public function __invoke(
-		OrbitalBase $currentBase,
+		Planet $currentPlanet,
 	): Response {
 		return $this->render('pages/economy/view_planet_activities.html.twig', [
 
