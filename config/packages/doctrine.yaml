@@ -52,6 +52,11 @@ doctrine:
                 type: 'xml'
                 dir: '%kernel.project_dir%/config/doctrine/hermes'
                 prefix: 'App\Modules\Hermes\Model'
+            Economy:
+                is_bundle: false
+                type: 'attribute'
+                dir: '%kernel.project_dir%/src/Modules/Economy/Domain/Entity'
+                prefix: 'App\Modules\Economy\Domain\Entity'
             Portal:
                 is_bundle: false
                 type: 'attribute'
