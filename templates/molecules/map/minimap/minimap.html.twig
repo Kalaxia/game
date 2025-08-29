@@ -8,7 +8,7 @@
 			{% for sector in sectors %}
 				<polygon
 					class="ally{{ sector.faction.identifier ?? 0 }} moveTo"
-					points="{{ galaxy_configuration.getSectorCoord(sector.identifier, rate, 0) }}"
+					points="{{ galaxy_configuration.getSectorVertices(sector.identifier, rate, 0)|join(',') }}"
 					data-x-position="{{ sector.xBarycentric }}"
 					data-y-position="{{ sector.yBarycentric }}"
 				/>

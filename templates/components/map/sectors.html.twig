@@ -7,7 +7,7 @@
 				{% else %}
 					fill-gray-700
 				{% endif %} opacity-30 group-[.sector-only]/map:opacity-50 [stroke-dasharray:4,4] group-[.sector-only]/map:[stroke-dasharray:none] transition-opacity ease-in duration-500"
-				points="{{ galaxy_configuration.getSectorCoord(sector.identifier, galaxy_configuration.scale, 0) }}"
+				points="{{ galaxy_configuration.getSectorVertices(sector.identifier, galaxy_configuration.scale, 0)|join(',') }}"
 				data-x-brc="{{ sector.xBarycentric }}"
 				data-y-brc="{{ sector.yBarycentric }}"
 			/>

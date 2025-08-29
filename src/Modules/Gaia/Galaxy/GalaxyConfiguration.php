@@ -70,49 +70,14 @@ abstract class GalaxyConfiguration
 	public const DNG_HARD = 4;
 	public const DNG_VERY_HARD = 5;
 
-	public function getSectorCoord(int $i, int $scale = 1, int $xTranslate = 0): string
-	{
-		$sector = $this->sectors[$i - 1]['vertices'];
-
-		foreach ($sector as $k => $v) {
-			$sector[$k] = (($v * $scale) + $xTranslate);
-		}
-
-		return implode(', ', $sector);
-	}
-
 	/**
-	 * @return array{
-	 *     x: float,
-	 *     y: float,
-	 * }
+	 * @return list<int>
 	 */
-	public function getSectorCentroid(Sector $sector, int $scale): array
+	public function getSectorVertices(int $i, int $scale = 1, int $xTranslate = 0): array
 	{
-		// Convert string to array of integers
-		$vertices = array_map('intval', explode(',', $this->getSectorCoord($sector->identifier, $scale)));
-
-		$num_points = count($vertices) / 2;
-		$cx = 0;
-		$cy = 0;
-		$area = 0;
-
-		for ($i = 0; $i < $num_points; ++$i) {
-			$x1 = $vertices[2 * $i];
-			$y1 = $vertices[2 * $i + 1];
-			$x2 = $vertices[2 * (($i + 1) % $num_points)];
-			$y2 = $vertices[2 * (($i + 1) % $num_points) + 1];
-
-			$factor = ($x1 * $y2 - $x2 * $y1);
-			$cx += ($x1 + $x2) * $factor;
-			$cy += ($y1 + $y2) * $factor;
-			$area += $factor;
-		}
-
-		$area *= 0.5;
-		$cx /= (6 * $area);
-		$cy /= (6 * $area);
-
-		return ['x' => $cx, 'y' => $cy];
+		return array_map(
+			fn (int $vertice) => ($vertice * $scale) + $xTranslate,
+			$this->sectors[$i - 1]['vertices'],
+		);
 	}
 }
