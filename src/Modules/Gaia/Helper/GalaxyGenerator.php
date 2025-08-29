@@ -4,6 +4,7 @@ namespace App\Modules\Gaia\Helper;
 
 use App\Classes\Library\Utils;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
+use App\Modules\Gaia\Application\Message\SectorGenerationMessage;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Gaia\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Gaia\Domain\Repository\SystemRepositoryInterface;
@@ -13,6 +14,7 @@ use App\Modules\Gaia\Model\PointLocation;
 use App\Modules\Gaia\Model\Sector;
 use App\Modules\Gaia\Model\System;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
 class GalaxyGenerator
@@ -20,11 +22,6 @@ class GalaxyGenerator
 	public int $nbSystem = 0;
 	/** @var list<System> */
 	public array $listSystem = [];
-
-	public int $nbPlace = 0;
-	public int $popTotal = 0;
-
-	public int $nbSector = 0;
 	public int $systemDeleted = 0;
 
 	public function __construct(
@@ -32,8 +29,7 @@ class GalaxyGenerator
 		private readonly EntityManagerInterface $entityManager,
 		private readonly SectorRepositoryInterface $sectorRepository,
 		private readonly SystemRepositoryInterface $systemRepository,
-		private readonly PlaceRepositoryInterface $placeRepository,
-		private readonly ColorRepositoryInterface $colorRepository,
+		private readonly MessageBusInterface $messageBus,
 	) {
 	}
 
@@ -197,90 +193,6 @@ class GalaxyGenerator
 			$placesCount = $this->getNbOfPlace($system->typeOfSystem);
 
 			for ($i = 0; $i < $placesCount; ++$i) {
-				$type = $this->getTypeOfPlace($system->typeOfSystem);
-
-				if (1 == $type) {
-					$pointsRep = random_int(1, 10);
-					$abilities = [
-						'population' => 0,
-						'history' => 0,
-						'resources' => 0,
-					];
-
-					// nombre de point a distribuer
-					if ($pointsRep < 2) {
-						$pointsTot = random_int(90, 100);
-					} elseif ($pointsRep < 10) {
-						$pointsTot = 100;
-					} else {
-						$pointsTot = random_int(100, 120);
-					}
-
-					// brassage du tableau
-					Utils::shuffle($abilities);
-
-					// répartition
-					$z = 1;
-					foreach ($abilities as $l => $v) {
-						if ($z < 3) {
-							$max = $pointsTot - ($z * 10);
-							$max = $max < 10 ? 10 : $max;
-
-							$points = random_int(10, $max);
-							$abilities[$l] = $points;
-							$pointsTot -= $points;
-						} else {
-							$abilities[$l] = $pointsTot < 5 ? 5 : $pointsTot;
-						}
-
-						++$z;
-					}
-
-					$population = $abilities['population'] * 250 / 100;
-					$history = $abilities['history'];
-					$resources = $abilities['resources'];
-					$stRES = 0;
-				} elseif (6 == $type) {
-					$population = 0;
-					$history = 0;
-					$resources = 0;
-					$stRES = 0;
-				} else {
-					$population = $this->galaxyConfiguration->places[$type - 1]['credits'];
-					$resources = $this->galaxyConfiguration->places[$type - 1]['resources'];
-					$history = $this->galaxyConfiguration->places[$type - 1]['history'];
-					$stRES = random_int(2000000, 20000000);
-				}
-
-				// TODO DANGER
-				$danger = match ($sectorDanger) {
-					GalaxyConfiguration::DNG_CASUAL => random_int(0, Place::DNG_CASUAL),
-					GalaxyConfiguration::DNG_EASY => random_int(3, Place::DNG_EASY),
-					GalaxyConfiguration::DNG_MEDIUM => random_int(6, Place::DNG_MEDIUM),
-					GalaxyConfiguration::DNG_HARD => random_int(9, Place::DNG_HARD),
-					GalaxyConfiguration::DNG_VERY_HARD => random_int(12, Place::DNG_VERY_HARD),
-					default => 0,
-				};
-
-				++$this->nbPlace;
-				$this->popTotal += intval(round($population));
-				$place = new Place(
-					id: Uuid::v4(),
-					player: null,
-					base: null,
-					system: $system,
-					typeOfPlace: $type,
-					position: $i + 1,
-					population: $population,
-					coefResources: $resources,
-					coefHistory: $history,
-					resources: $stRES,
-					danger: $danger,
-					maxDanger: $danger,
-					updatedAt: new \DateTimeImmutable('-259200 seconds'),
-				);
-
-				$this->placeRepository->save($place);
 			}
 		}
 	}
@@ -288,33 +200,16 @@ class GalaxyGenerator
 	public function generateSectors(): void
 	{
 		foreach ($this->galaxyConfiguration->sectors as $sector) {
-			++$this->nbSector;
-
-			$prime = (null !== $sector['beginColor'])
-				? 1
-				: 0;
-
-			$faction = (null !== $sector['beginColor'])
-				? $this->colorRepository->getOneByIdentifier($sector['beginColor'])
-					?? throw new \LogicException('Faction not found') : null;
-
-			$sector = new Sector(
-				id: Uuid::v4(),
+			$this->messageBus->dispatch(new SectorGenerationMessage(
 				identifier: $sector['id'],
-				faction: $faction,
+				name: $sector['name'],
+				factionIdentifier: $sector['beginColor'],
 				xPosition: $sector['display'][0],
 				yPosition: $sector['display'][1],
-				xBarycentric: $sector['barycentre'][0],
-				yBarycentric: $sector['barycentre'][1],
-				tax: 5,
-				name: $sector['name'],
+				xBarycenter: $sector['barycentre'][0],
+				yBarycenter: $sector['barycentre'][1],
 				points: $sector['points'],
-				population: 0,
-				lifePlanet: 0,
-				prime: $prime,
-			);
-
-			$this->sectorRepository->save($sector);
+			));
 		}
 	}
 
@@ -448,13 +343,5 @@ class GalaxyGenerator
 		$nbrPlaces = $this->galaxyConfiguration->systems[$systemType - 1]['nbrPlaces'];
 
 		return random_int($nbrPlaces[0], $nbrPlaces[1]);
-	}
-
-	protected function getTypeOfPlace(int $systemType): int
-	{
-		return $this->getProportion(
-			$this->galaxyConfiguration->systems[$systemType - 1]['placesPropotion'],
-			random_int(1, 100),
-		);
 	}
 }
