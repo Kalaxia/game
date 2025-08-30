@@ -27,7 +27,6 @@ class SectorFactory extends PersistentProxyObjectFactory
 			'name' => null,
 			'points' => self::faker()->numberBetween(1, 5),
 			'population' => 0,
-			'lifePlanet' => 0,
 			'prime' => false,
 		];
 	}

@@ -110,7 +110,6 @@ class VirtualCommanderHandlerTest extends KernelTestCase
 					name: null,
 					points: 5,
 					population: 0,
-					lifePlanet: 10,
 					prime: 1,
 				),
 				faction: null,

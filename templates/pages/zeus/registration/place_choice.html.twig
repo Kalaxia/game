@@ -49,7 +49,6 @@
 										"
 										 points="{{ galaxy_configuration.getSectorVertices(sector.identifier, rate, 0)|join(',') }}"
 								/>
-								{% set barycenter = galaxy_configuration.sectors[sector.identifier - 1]['barycentre'] %}
 								<text class="
 										{%- if faction_identifier == chosenFaction.identifier -%}
 											fill-zinc-400
@@ -60,8 +59,8 @@
 										{% endif %}
 										text-3xl font-bold font-sans stroke-none"
 									  text-anchor="middle"
-									  x="{{ (barycenter[0] * rate) }}"
-									  y="{{ (barycenter[1] * rate) }}">
+									  x="{{ (sector.xBarycentric * rate) }}"
+									  y="{{ (sector.yBarycentric * rate) }}">
 									{{- sector.identifier -}}
 								</text>
 							</g>

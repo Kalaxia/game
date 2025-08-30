@@ -48,7 +48,6 @@ final readonly class SectorGenerationHandler
 			name: $message->name,
 			points: $message->points,
 			population: 0,
-			lifePlanet: 0,
 			prime: null !== $faction,
 		);
 
