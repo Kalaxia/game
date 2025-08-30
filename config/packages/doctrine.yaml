@@ -39,8 +39,8 @@ doctrine:
                 prefix: 'App\Modules\Demeter\Model'
             Gaia:
                 is_bundle: false
-                type: 'xml'
-                dir: '%kernel.project_dir%/config/doctrine/gaia'
+                type: 'attribute'
+                dir: '%kernel.project_dir%/src/Modules/Gaia/Domain/Entity'
                 prefix: 'App\Modules\Gaia\Domain\Entity'
             Hephaistos:
                 is_bundle: false
