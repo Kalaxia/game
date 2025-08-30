@@ -3,7 +3,7 @@
 namespace App\Modules\Gaia\Domain\Repository;
 
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Model\Sector;
+use App\Modules\Gaia\Domain\Entity\Sector;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use Symfony\Component\Uid\Uuid;
 

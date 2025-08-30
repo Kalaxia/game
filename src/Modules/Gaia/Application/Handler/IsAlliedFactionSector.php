@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Gaia\Application\Handler;
 
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Model\Sector;
+use App\Modules\Gaia\Domain\Entity\Sector;
 
 class IsAlliedFactionSector
 {

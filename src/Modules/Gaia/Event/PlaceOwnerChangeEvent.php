@@ -2,7 +2,7 @@
 
 namespace App\Modules\Gaia\Event;
 
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 
 class PlaceOwnerChangeEvent
 {

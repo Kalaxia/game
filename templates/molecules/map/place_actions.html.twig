@@ -101,7 +101,7 @@
 		{% else %}
 			{% if place.system.sector.faction is not null and place.system.sector.faction.id != current_player.faction.id %}
 				{% set tooltip = 'Vous ne pouvez envoyer des recycleurs que dans des secteurs non-revendiqués ou contrôlés par votre faction.' %}
-			{% elseif place.typeOfPlace == constant('App\\Modules\\Gaia\\Model\\Place::EMPTYZONE') %}
+			{% elseif place.typeOfPlace == constant('App\\Modules\\Gaia\\Domain\\Entity\\Place::EMPTYZONE') %}
 				{% set tooltip = 'Cet endroit regorgait autrefois de ressources ou de gaz mais de nombreux recycleurs sont déjà passés par là et n\'ont laissé que le vide de l\'espace.' %}
 			{% elseif current_base.levelRecycling == 0 %}
 				{% set tooltip = 'Vous devez disposer d\'un centre de recyclage.' %}

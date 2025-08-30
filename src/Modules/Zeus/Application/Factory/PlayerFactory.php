@@ -3,15 +3,14 @@
 namespace App\Modules\Zeus\Application\Factory;
 
 use App\Modules\Ares\Domain\Model\ShipCategory;
-use App\Modules\Ares\Model\Ship;
 use App\Modules\Athena\Application\Handler\OrbitalBasePointsHandler;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Repository\OrbitalBaseRepository;
 use App\Modules\Demeter\Model\Color;
+use App\Modules\Gaia\Domain\Entity\Sector;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Gaia\Event\PlaceOwnerChangeEvent;
 use App\Modules\Gaia\Manager\PlaceManager;
-use App\Modules\Gaia\Model\Sector;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Hermes\Domain\Repository\ConversationUserRepositoryInterface;

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Gaia\Repository;
 
 use App\Classes\Entity\AbstractRepository;
+use App\Modules\Gaia\Domain\Entity\Sector;
+use App\Modules\Gaia\Domain\Entity\System;
 use App\Modules\Gaia\Domain\Repository\SystemRepositoryInterface;
-use App\Modules\Gaia\Model\Sector;
-use App\Modules\Gaia\Model\System;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;

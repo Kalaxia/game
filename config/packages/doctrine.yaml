@@ -41,7 +41,7 @@ doctrine:
                 is_bundle: false
                 type: 'xml'
                 dir: '%kernel.project_dir%/config/doctrine/gaia'
-                prefix: 'App\Modules\Gaia\Model'
+                prefix: 'App\Modules\Gaia\Domain\Entity'
             Hephaistos:
                 is_bundle: false
                 type: 'xml'

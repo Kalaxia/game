@@ -10,7 +10,7 @@
 			<join-column nullable="false" />
 		</many-to-one>
 
-		<many-to-one field="place" target-entity="App\Modules\Gaia\Model\Place">
+		<many-to-one field="place" target-entity="App\Modules\Gaia\Domain\Entity\Place">
 			<join-column nullable="false" />
 		</many-to-one>
 

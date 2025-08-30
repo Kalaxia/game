@@ -39,10 +39,10 @@
 				<twig:CoeffIndicator label="Défense"
 					:values="[
 						0,
-						constant('App\\Modules\\Gaia\\Model\\Place::DNG_CASUAL'),
-						constant('App\\Modules\\Gaia\\Model\\Place::DNG_EASY'),
-						constant('App\\Modules\\Gaia\\Model\\Place::DNG_MEDIUM'),
-						constant('App\\Modules\\Gaia\\Model\\Place::DNG_HARD'),
+						constant('App\\Modules\\Gaia\\Domain\\Entity\\Place::DNG_CASUAL'),
+						constant('App\\Modules\\Gaia\\Domain\\Entity\\Place::DNG_EASY'),
+						constant('App\\Modules\\Gaia\\Domain\\Entity\\Place::DNG_MEDIUM'),
+						constant('App\\Modules\\Gaia\\Domain\\Entity\\Place::DNG_HARD'),
 					]"
 					:coeff="place.maxDanger"
 					mediaPath="build/media/resources/defense.png" />

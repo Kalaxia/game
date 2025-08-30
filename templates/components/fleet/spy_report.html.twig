@@ -123,7 +123,7 @@
 				{% endfor %}
 			{% endif %}
 
-			{% if spy_report.place.typeOfPlace is not constant('App\\Modules\\Gaia\\Model\\Place::TYP_EMPTY') %}
+			{% if spy_report.place.typeOfPlace is not constant('App\\Modules\\Gaia\\Domain\\Entity\\Place::TYP_EMPTY') %}
 				<twig:FleetSpyReport :spyReport="spy_report" :army="(spy_report.hasSpottedDocks ? spy_report.getShipStorage() : range(0, 11)|map(v => -1))" />
 			{% endif %}
 		</div>

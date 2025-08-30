@@ -2,8 +2,6 @@
 
 namespace App\Modules\Gaia\Galaxy;
 
-use App\Modules\Gaia\Model\Sector;
-
 abstract class GalaxyConfiguration
 {
 	/**

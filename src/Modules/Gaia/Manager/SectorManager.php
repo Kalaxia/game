@@ -7,9 +7,9 @@ namespace App\Modules\Gaia\Manager;
 use App\Classes\Redis\RedisManager;
 use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
+use App\Modules\Gaia\Domain\Entity\Sector;
 use App\Modules\Gaia\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Gaia\Domain\Repository\SystemRepositoryInterface;
-use App\Modules\Gaia\Model\Sector;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 readonly class SectorManager

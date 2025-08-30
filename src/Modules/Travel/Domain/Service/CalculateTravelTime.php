@@ -7,7 +7,7 @@ namespace App\Modules\Travel\Domain\Service;
 use App\Modules\Ares\Application\Handler\GetFleetSpeed;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Shared\Domain\Server\TimeMode;
 use App\Modules\Travel\Domain\Model\TravelType;
 use App\Modules\Zeus\Manager\PlayerBonusManager;

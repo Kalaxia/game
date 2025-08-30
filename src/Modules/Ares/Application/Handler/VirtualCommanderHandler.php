@@ -4,7 +4,7 @@ namespace App\Modules\Ares\Application\Handler;
 
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\Squadron;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Resource\SquadronResource;
 use Symfony\Component\Uid\Uuid;
 

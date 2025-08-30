@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Travel\Domain\Service;
 
 use App\Classes\Library\Game;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Travel\Domain\Model\TravelType;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;

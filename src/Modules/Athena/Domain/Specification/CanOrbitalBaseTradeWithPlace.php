@@ -2,7 +2,7 @@
 
 namespace App\Modules\Athena\Domain\Specification;
 
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 
 class CanOrbitalBaseTradeWithPlace extends OrbitalBaseSpecification
 {

@@ -5,7 +5,7 @@ namespace App\Modules\Artemis\Application\Handler;
 use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Application\Handler\VirtualCommanderHandler;
 use App\Modules\Artemis\Model\SpyReport;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 
 readonly class NpcSpyingHandler extends SpyingHandler
 {

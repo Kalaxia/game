@@ -2,9 +2,9 @@
 
 namespace App\Modules\Gaia\Domain\Repository;
 
-use App\Modules\Gaia\Model\Place;
-use App\Modules\Gaia\Model\Sector;
-use App\Modules\Gaia\Model\System;
+use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Sector;
+use App\Modules\Gaia\Domain\Entity\System;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Uid\Uuid;

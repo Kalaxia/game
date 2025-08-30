@@ -8,7 +8,7 @@ use App\Classes\Library\DateTimeConverter;
 use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Message\CommanderTravelMessage;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;
 use Symfony\Component\Messenger\MessageBusInterface;
 

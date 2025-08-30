@@ -8,7 +8,7 @@ use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Ares\Model\LiveReport;
 use App\Modules\Ares\Model\Report;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use Symfony\Component\Uid\Uuid;
 
 readonly class ReportFactory

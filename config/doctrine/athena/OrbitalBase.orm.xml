@@ -7,7 +7,7 @@
 	<entity name="App\Modules\Athena\Model\OrbitalBase" table="orbitalBase">
 		<id name="id" type="uuid" />
 
-		<one-to-one field="place" target-entity="App\Modules\Gaia\Model\Place" inversed-by="base">
+		<one-to-one field="place" target-entity="App\Modules\Gaia\Domain\Entity\Place" inversed-by="base">
 			<join-column nullable="null" />
 		</one-to-one>
 		<many-to-one field="player" target-entity="App\Modules\Zeus\Model\Player">

@@ -3,7 +3,7 @@
 namespace App\Modules\Artemis\Model;
 
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Component\Uid\Uuid;
 
