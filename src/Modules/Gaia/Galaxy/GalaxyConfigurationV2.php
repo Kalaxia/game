@@ -456,46 +456,6 @@ class GalaxyConfigurationV2 extends GalaxyConfiguration
 		],
 	];
 
-	public function fillSectorsData()
-	{
-		$k = 1;
-
-		echo '<pre>';
-		foreach ($this->sectors as $key => $sector) {
-			// calculate barycentre
-			$strArray = $this->getSectorCoord($key + 1);
-			$array = explode(', ', $strArray);
-
-			$gx = 0;
-			$gy = 0;
-			$vx = 0;
-			$vy = 0;
-			$lenght = count($array) / 2;
-
-			for ($j = 0; $j < count($array); $j += 2) {
-				$vx += $array[$j];
-				$vy += $array[$j + 1];
-			}
-
-			$gx = round($vx / $lenght);
-			$gy = round($vy / $lenght);
-
-			echo '['."\r\n";
-			echo '	\'id\' => '.$k.','."\r\n";
-			echo '	\'beginColor\' => 0,'."\r\n";
-			echo '	\'vertices\' => ['.implode(', ', $sector['vertices']).'],'."\r\n";
-			echo '	\'barycentre\' => ['.$gx.', '.$gy.'],'."\r\n";
-			echo '	\'display\' => ['.$gx.', '.$gy.'],'."\r\n";
-			echo '	\'name\' => \'Secteur '.$k."',\r\n";
-			echo '	\'danger\' => self::DNG_CASUAL,'."\r\n";
-			echo '	\'points\' => 1'."\r\n";
-			echo '], '."\r\n";
-
-			++$k;
-		}
-		echo '</pre>';
-	}
-
 	public array $systems = [
 		[
 			'id' => 1,

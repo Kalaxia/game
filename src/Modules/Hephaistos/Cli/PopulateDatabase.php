@@ -238,7 +238,6 @@ class PopulateDatabase extends Command
 		$output->writeln('Génération de la galaxie');
 
 		$this->galaxyGenerator->generate();
-		// echo $galaxyGenerator->getLog();
 
 		return self::SUCCESS;
 	}

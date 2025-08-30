@@ -30,7 +30,6 @@
 					<svg class="stroke-zinc-600 bg-black max-w-3xl" viewBox="0, 0, 750, 750" xmlns="http://www.w3.org/2000/svg">
 						{% for sector in sectors %}
 							{% set faction_identifier = sector.faction|default({identifier: 0}).identifier %}
-							{% set coords = galaxy_configuration.getSectorCentroid(sector, rate) %}
 
 							<g data-sector-id="{{ sector.id }}"
 							   data-action="click->map--sector-choice#select">
@@ -48,8 +47,9 @@
 											{% endif %}
 											{{ faction_identifier == app.session.get('inscription').get('ally') ? 'enabled' : 'disabled' -}}
 										"
-										 points="{{ galaxy_configuration.getSectorCoord(sector.identifier, rate, 0) }}"
+										 points="{{ galaxy_configuration.getSectorVertices(sector.identifier, rate, 0)|join(',') }}"
 								/>
+								{% set barycenter = galaxy_configuration.sectors[sector.identifier - 1]['barycentre'] %}
 								<text class="
 										{%- if faction_identifier == chosenFaction.identifier -%}
 											fill-zinc-400
@@ -60,8 +60,8 @@
 										{% endif %}
 										text-3xl font-bold font-sans stroke-none"
 									  text-anchor="middle"
-									  x="{{ coords.x }}"
-									  y="{{ coords.y }}">
+									  x="{{ (barycenter[0] * rate) }}"
+									  y="{{ (barycenter[1] * rate) }}">
 									{{- sector.identifier -}}
 								</text>
 							</g>

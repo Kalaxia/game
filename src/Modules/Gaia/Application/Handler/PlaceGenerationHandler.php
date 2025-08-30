@@ -11,6 +11,8 @@ use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Gaia\Domain\Repository\SystemRepositoryInterface;
 use App\Modules\Gaia\Galaxy\GalaxyConfiguration;
 use App\Modules\Gaia\Model\Place;
+use App\Modules\Shared\Application\Service\GetProportion;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Uid\Uuid;
 
@@ -19,9 +21,10 @@ final readonly class PlaceGenerationHandler
 {
 	public function __construct(
 		private GalaxyConfiguration $galaxyConfiguration,
+		private GetProportion $getProportion,
 		private PlaceRepositoryInterface $placeRepository,
-		private ColorRepositoryInterface $colorRepository,
 		private SystemRepositoryInterface $systemRepository,
+		private LoggerInterface $galaxyGenerationLogger,
 	) {
 
 	}
@@ -31,9 +34,9 @@ final readonly class PlaceGenerationHandler
 		$system = $this->systemRepository->get($message->systemId)
 			?? throw new \LogicException('System not found');
 
-		$type = $this->getTypeOfPlace($system->typeOfSystem);
+		$type = $this->getPlaceType($system->typeOfSystem);
 
-		if (1 == $type) {
+		if (Place::TYP_MS1 === $type) {
 			$pointsRep = random_int(1, 10);
 			$abilities = [
 				'population' => 0,
@@ -74,7 +77,8 @@ final readonly class PlaceGenerationHandler
 			$history = $abilities['history'];
 			$resources = $abilities['resources'];
 			$stRES = 0;
-		} elseif (6 == $type) {
+			// TODO does not seem to exist
+		} elseif (6 === $type) {
 			$population = 0;
 			$history = 0;
 			$resources = 0;
@@ -87,7 +91,7 @@ final readonly class PlaceGenerationHandler
 		}
 
 		// TODO DANGER
-		$danger = match ($sectorDanger) {
+		$danger = match ($message->sectorDanger) {
 			GalaxyConfiguration::DNG_CASUAL => random_int(0, Place::DNG_CASUAL),
 			GalaxyConfiguration::DNG_EASY => random_int(3, Place::DNG_EASY),
 			GalaxyConfiguration::DNG_MEDIUM => random_int(6, Place::DNG_MEDIUM),
@@ -102,7 +106,7 @@ final readonly class PlaceGenerationHandler
 			base: null,
 			system: $system,
 			typeOfPlace: $type,
-			position: $i + 1,
+			position: $message->position,
 			population: $population,
 			coefResources: $resources,
 			coefHistory: $history,
@@ -113,12 +117,18 @@ final readonly class PlaceGenerationHandler
 		);
 
 		$this->placeRepository->save($place);
+
+		$this->galaxyGenerationLogger->debug('Place generated successfully', [
+			'type' => $type,
+			'position' => $message->position,
+			'system_id' => $system->id->toRfc4122(),
+			'sector_identifier' => $system->sector->identifier,
+		]);
 	}
 
-
-	protected function getTypeOfPlace(int $systemType): int
+	protected function getPlaceType(int $systemType): int
 	{
-		return $this->getProportion(
+		return ($this->getProportion)(
 			$this->galaxyConfiguration->systems[$systemType - 1]['placesPropotion'],
 			random_int(1, 100),
 		);
