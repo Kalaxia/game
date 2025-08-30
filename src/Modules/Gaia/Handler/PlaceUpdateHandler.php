@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Gaia\Handler;
 
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Gaia\Message\PlaceUpdateMessage;
-use App\Modules\Gaia\Model\Place;
 use App\Modules\Shared\Application\Service\CountMissingSystemUpdates;
-use App\Modules\Shared\Domain\Server\TimeMode;
-use App\Modules\Zeus\Model\Player;
-use App\Shared\Application\Handler\DurationHandler;
 use Psr\Clock\ClockInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

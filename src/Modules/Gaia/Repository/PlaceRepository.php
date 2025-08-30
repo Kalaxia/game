@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace App\Modules\Gaia\Repository;
 
+use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Sector;
+use App\Modules\Gaia\Domain\Entity\System;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
-use App\Modules\Gaia\Model\Place;
-use App\Modules\Gaia\Model\Sector;
-use App\Modules\Gaia\Model\System;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
 

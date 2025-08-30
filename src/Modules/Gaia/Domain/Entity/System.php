@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Gaia\Model;
+namespace App\Modules\Gaia\Domain\Entity;
 
 use App\Modules\Demeter\Model\Color;
 use Symfony\Component\Uid\Uuid;

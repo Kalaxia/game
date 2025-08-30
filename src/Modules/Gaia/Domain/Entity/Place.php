@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Gaia\Model;
+namespace App\Modules\Gaia\Domain\Entity;
 
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Shared\Domain\Model\SystemUpdatable;

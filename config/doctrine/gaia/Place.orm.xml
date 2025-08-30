@@ -3,13 +3,13 @@
 				  xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
                           https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-	<entity name="App\Modules\Gaia\Model\Place" table="place">
+	<entity name="App\Modules\Gaia\Domain\Entity\Place" table="place">
 		<id name="id" type="uuid" />
 
 		<many-to-one field="player" target-entity="App\Modules\Zeus\Model\Player">
 			<join-column nullable="true" />
 		</many-to-one>
-		<many-to-one field="system" target-entity="App\Modules\Gaia\Model\System">
+		<many-to-one field="system" target-entity="App\Modules\Gaia\Domain\Entity\System">
 			<join-column nullable="false" />
 		</many-to-one>
 		<one-to-one field="base" target-entity="App\Modules\Athena\Model\OrbitalBase" mapped-by="place" />

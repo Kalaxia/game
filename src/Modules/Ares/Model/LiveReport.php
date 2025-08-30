@@ -2,7 +2,7 @@
 
 namespace App\Modules\Ares\Model;
 
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Zeus\Model\Player;
 
 class LiveReport

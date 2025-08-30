@@ -6,10 +6,10 @@ namespace App\Modules\Gaia\Application\Handler;
 
 use App\Modules\Gaia\Application\Message\PlaceGenerationMessage;
 use App\Modules\Gaia\Application\Message\SystemGenerationMessage;
+use App\Modules\Gaia\Domain\Entity\System;
 use App\Modules\Gaia\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Gaia\Domain\Repository\SystemRepositoryInterface;
 use App\Modules\Gaia\Galaxy\GalaxyConfiguration;
-use App\Modules\Gaia\Model\System;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Gaia\Infrastructure\DataFixtures\Factory;
 
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 

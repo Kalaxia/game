@@ -11,7 +11,7 @@
 
 namespace App\Modules\Athena\Model;
 
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use Symfony\Component\Uid\Uuid;
 
 class RecyclingMission

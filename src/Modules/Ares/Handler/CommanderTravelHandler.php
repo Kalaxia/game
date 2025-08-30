@@ -12,8 +12,8 @@ use App\Modules\Ares\Manager\LootManager;
 use App\Modules\Ares\Message\CommanderTravelMessage;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Athena\Manager\OrbitalBaseManager;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Manager\PlaceManager;
-use App\Modules\Gaia\Model\Place;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

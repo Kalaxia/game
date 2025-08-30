@@ -7,7 +7,7 @@ use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Artemis\Model\SpyReport;
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 
 readonly class PlayerSpyingHandler extends SpyingHandler
 {

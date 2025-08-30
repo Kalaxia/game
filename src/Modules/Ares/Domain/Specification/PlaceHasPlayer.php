@@ -2,7 +2,7 @@
 
 namespace App\Modules\Ares\Domain\Specification;
 
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Shared\Domain\Specification\Specification;
 
 class PlaceHasPlayer implements Specification

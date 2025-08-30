@@ -4,7 +4,7 @@ namespace App\Modules\Athena\Model;
 
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Athena\Resource\OrbitalBaseResource;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Shared\Domain\Model\SystemUpdatable;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Component\Uid\Uuid;

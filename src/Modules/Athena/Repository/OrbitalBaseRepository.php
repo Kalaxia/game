@@ -6,8 +6,8 @@ namespace App\Modules\Athena\Repository;
 
 use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
 use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Gaia\Model\Sector;
-use App\Modules\Gaia\Model\System;
+use App\Modules\Gaia\Domain\Entity\Sector;
+use App\Modules\Gaia\Domain\Entity\System;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Specification\SelectorSpecification;

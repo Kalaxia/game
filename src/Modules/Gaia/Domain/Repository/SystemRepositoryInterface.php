@@ -2,8 +2,8 @@
 
 namespace App\Modules\Gaia\Domain\Repository;
 
-use App\Modules\Gaia\Model\Sector;
-use App\Modules\Gaia\Model\System;
+use App\Modules\Gaia\Domain\Entity\Sector;
+use App\Modules\Gaia\Domain\Entity\System;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use Symfony\Component\Uid\Uuid;
 

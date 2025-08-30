@@ -3,7 +3,7 @@
 				  xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
                           https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-	<entity name="App\Modules\Gaia\Model\Sector" table="sector">
+	<entity name="App\Modules\Gaia\Domain\Entity\Sector" table="sector">
 		<id name="id" type="uuid" />
 
 		<many-to-one field="faction" target-entity="App\Modules\Demeter\Model\Color">

@@ -11,7 +11,7 @@
 
 namespace App\Modules\Promethee\Model;
 
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Model\QueueableInterface;
 use Symfony\Component\Uid\Uuid;

@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Modules\Gaia\Application\Handler;
 
 use App\Classes\Library\Utils;
-use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Gaia\Application\Message\PlaceGenerationMessage;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Gaia\Domain\Repository\SystemRepositoryInterface;
 use App\Modules\Gaia\Galaxy\GalaxyConfiguration;
-use App\Modules\Gaia\Model\Place;
 use App\Modules\Shared\Application\Service\GetProportion;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;

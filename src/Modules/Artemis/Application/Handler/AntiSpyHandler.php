@@ -7,7 +7,7 @@ namespace App\Modules\Artemis\Application\Handler;
 use App\Classes\Library\Game;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;
 use App\Shared\Application\Handler\DurationHandler;
 

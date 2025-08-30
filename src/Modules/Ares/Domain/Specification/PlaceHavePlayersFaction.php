@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Ares\Domain\Specification;
 
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Specification\Specification;
 
