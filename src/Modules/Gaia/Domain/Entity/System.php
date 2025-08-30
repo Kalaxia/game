@@ -3,6 +3,7 @@
 namespace App\Modules\Gaia\Domain\Entity;
 
 use App\Modules\Demeter\Model\Color;
+use App\Modules\Gaia\Domain\Enum\SystemType;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
@@ -23,8 +24,8 @@ class System
 		public int $xPosition,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int $yPosition,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
-		public int $typeOfSystem,
+		#[ORM\Column(type: 'smallint', enumType: SystemType::class, options: ['unsigned' => true])]
+		public SystemType $typeOfSystem,
 	) {
 			
 	}

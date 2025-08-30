@@ -16,7 +16,6 @@ use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
 use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\System;
-use App\Modules\Gaia\Resource\SystemResource;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerRegistry;
@@ -65,7 +64,6 @@ class MapExtension extends AbstractExtension
 				return $this->durationHandler->getDiff($departureDate, $arrivalDate);
 			}),
 			new TwigFunction('get_place_type', fn (string $type) => Game::convertPlaceType($type)),
-			new TwigFunction('get_system_info', fn (int $systemType, string $info) => SystemResource::getInfo($systemType, $info)),
 			new TwigFunction('get_place_distance', fn (OrbitalBase $defaultBase, Place $place) => ($this->getDistanceBetweenPlaces)(
 				$defaultBase->place,
 				$place,

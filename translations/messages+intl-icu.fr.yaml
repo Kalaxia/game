@@ -450,3 +450,17 @@ ship_categories:
                 other {# croiseurs lourds}
             }
         description: 'Le croiseur lourd est le type prédominant de croiseur de la galaxie de l’Œil. Conçu par le vieil Empire pour mettre un terme à la rébellion des périodes de troubles, il est le vaisseau de combat le plus massif du chantier de ligne. En effet, sa construction nécessite énormément de matériel et de main-d’œuvre. De plus, le Phénix est piloté par un équipage de plus de 300 personnes. <br /><br />Cet appareil, très gros, est difficile à manœuvrer dans les combats de mêlée. Cependant il est d’une efficacité redoutable en dernière ligne de vos escadrilles.'
+
+galaxy:
+    systems:
+        types:
+            !php/enum App\Modules\Gaia\Domain\Enum\SystemType::Graveyard->value:
+                name: 'Cimetière Spatial'
+            !php/enum App\Modules\Gaia\Domain\Enum\SystemType::Nebula->value:
+                name: 'Nébuleuse'
+            !php/enum App\Modules\Gaia\Domain\Enum\SystemType::BlueGiant->value:
+                name: 'Géante Bleue'
+            !php/enum App\Modules\Gaia\Domain\Enum\SystemType::YellowDwarf->value:
+                name: 'Naine Yellow'
+            !php/enum App\Modules\Gaia\Domain\Enum\SystemType::RedDwarf->value:
+                name: 'Naine Rouge'
