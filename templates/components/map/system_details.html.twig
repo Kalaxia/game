@@ -15,7 +15,7 @@
 			{% endif %}
 		</li>
 		<li>
-			<span>{{ get_system_info(system.typeOfSystem, 'frenchName') }}</span>
+			<span>{{ ('galaxy.systems.types.' ~ system.typeOfSystem.value ~ '.name')|trans }}</span>
 		</li>
 	</ul>
 
