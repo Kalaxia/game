@@ -7,9 +7,9 @@ namespace App\Modules\Gaia\Application\Handler;
 use App\Modules\Gaia\Application\Message\PlaceGenerationMessage;
 use App\Modules\Gaia\Application\Message\SystemGenerationMessage;
 use App\Modules\Gaia\Domain\Entity\System;
+use App\Modules\Gaia\Domain\Enum\SystemType;
 use App\Modules\Gaia\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Gaia\Domain\Repository\SystemRepositoryInterface;
-use App\Modules\Gaia\Galaxy\GalaxyConfiguration;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
@@ -18,7 +18,6 @@ use Symfony\Component\Uid\Uuid;
 final readonly class SystemGenerationHandler
 {
 	public function __construct(
-		private GalaxyConfiguration $galaxyConfiguration,
 		private MessageBusInterface $messageBus,
 		private SectorRepositoryInterface $sectorRepository,
 		private SystemRepositoryInterface $systemRepository,
@@ -36,7 +35,7 @@ final readonly class SystemGenerationHandler
 			faction: null,
 			xPosition: $message->xPosition,
 			yPosition: $message->yPosition,
-			typeOfSystem: $message->typeOfSystem,
+			typeOfSystem: SystemType::from($message->typeOfSystem),
 		);
 
 		$this->systemRepository->save($system);
@@ -52,9 +51,9 @@ final readonly class SystemGenerationHandler
 		}
 	}
 
-	protected function getPlacesCount(int $systemType): int
+	protected function getPlacesCount(SystemType $systemType): int
 	{
-		$nbrPlaces = $this->galaxyConfiguration->systems[$systemType - 1]['nbrPlaces'];
+		$nbrPlaces = $systemType->getPlacesCountRange();
 
 		return random_int($nbrPlaces[0], $nbrPlaces[1]);
 	}

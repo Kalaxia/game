@@ -40,25 +40,6 @@ abstract class GalaxyConfiguration
 	 * }>
 	 */
 	public array $sectors;
-	/**
-	 * @var list<array{
-	 *     id: int,
-	 *     name: string,
-	 *     placesPropotion: array{0: int, 1: int, 2: int, 3: int, 4: int, 5: int},
-	 *     nbrPlaces: array{0: int, 1: int},
-	 * }>
-	 */
-	public array $systems;
-	/**
-	 * @var list<array{
-	 *     id: int,
-	 *     name: string,
-	 *     resources: int,
-	 *     credits: int,
-	 *     history: int,
-	 * }>
-	 */
-	public array $places;
 
 	public int $scale = 20;
 
