@@ -84,10 +84,12 @@ final readonly class PlaceGenerationHandler
 			$resources = 0;
 			$stRES = 0;
 		} else {
-			$typeData = $this->galaxyConfiguration->places[$type->value - 1];
-			$population = $typeData['credits'];
-			$resources = $typeData['resources'];
-			$history = $typeData['history'];
+			[
+				'credits' => $population,
+				'resources' => $resources,
+				'history' => $history,
+			] = $type->getCoefficients();
+
 			$stRES = random_int(2000000, 20000000);
 		}
 
@@ -129,7 +131,7 @@ final readonly class PlaceGenerationHandler
 	protected function getPlaceType(SystemType $systemType): PlaceType
 	{
 		return PlaceType::from(($this->getProportion)(
-			$this->galaxyConfiguration->systems[$systemType->value - 1]['placesPropotion'],
+			$systemType->getPlacesProportions(),
 			random_int(1, 100),
 		));
 	}
