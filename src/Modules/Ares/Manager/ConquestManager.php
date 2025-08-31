@@ -75,7 +75,7 @@ readonly class ConquestManager
 		$commanderColor = $commander->player->faction;
 		$playerBonus = $this->playerBonusManager->getBonusByPlayer($commander->player);
 		// conquete
-		if (null !== ($placePlayer = $place->player)) {
+		if (null !== ($placePlayer = $place->base?->player)) {
 			// @TODO Replace with specification
 			if ($placePlayer->faction !== $commander->player->faction
 					&& $placePlayer->level > 3
@@ -129,9 +129,6 @@ readonly class ConquestManager
 					} else {
 						$this->placeManager->sendNotifForConquest($place, Place::CONQUERPLAYERWHITBATTLESUCCESS, $commander, $reportIds);
 					}
-
-					$place->player = $commander->player;
-
 					// changer l'appartenance de la base (et de la place)
 					$this->orbitalBaseManager->changeOwner($placeBase, $commander->player);
 
@@ -143,7 +140,7 @@ readonly class ConquestManager
 					$this->eventDispatcher->dispatch(new PlaceOwnerChangeEvent($place));
 
 					// PATCH DEGUEU POUR LES MUTLIS-COMBATS
-					$this->notificationManager->patchForMultiCombats($commander->player, $place->player, $commander->getArrivalDate());
+					$this->notificationManager->patchForMultiCombats($commander->player, $placeBase->player, $commander->getArrivalDate());
 					// défaite
 				} else {
 					// TODO check if these instructions still have use
@@ -159,7 +156,7 @@ readonly class ConquestManager
 				}
 			} else {
 				// si c'est la même couleur
-				if ($place->player->faction->identifier === $commander->player->faction->identifier) {
+				if ($place->base->player->faction->identifier === $commander->player->faction->identifier) {
 					// si c'est une de nos planètes
 					// on tente de se poser
 					$this->commanderManager->uChangeBase($commander);
@@ -186,8 +183,6 @@ readonly class ConquestManager
 
 			// victoire
 			if (!$commander->isDead()) {
-				$place->player = $commander->player;
-
 				// créer une base
 				// TODO factorize in a service
 				$ob = new OrbitalBase(

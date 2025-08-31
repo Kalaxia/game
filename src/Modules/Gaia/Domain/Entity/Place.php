@@ -66,9 +66,6 @@ class Place implements SystemUpdatable
 		#[ORM\Id]
 		#[ORM\Column(type: 'uuid')]
 		public Uuid $id,
-		#[ORM\ManyToOne(targetEntity: Player::class)]
-		#[ORM\JoinColumn(nullable: true)]
-		public Player|null $player,
 		#[ORM\ManyToOne(targetEntity: OrbitalBase::class, inversedBy: 'place')]
 		#[ORM\JoinColumn(nullable: true)]
 		public OrbitalBase|null $base,

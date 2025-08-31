@@ -46,7 +46,7 @@ class Move extends AbstractController
 		$place = $placeRepository->get(Uuid::fromString($placeId))
 			?? throw $this->createNotFoundException('Place not found');
 
-		if (!$commander->player->faction->id->equals($place->player?->faction->id)) {
+		if (!$commander->player->faction->id->equals($place->base?->player?->faction->id)) {
 			throw new ConflictHttpException('Vous ne pouvez pas envoyer une flotte sur une planète qui ne vous appartient pas.');
 		}
 		$home = $commander->base;

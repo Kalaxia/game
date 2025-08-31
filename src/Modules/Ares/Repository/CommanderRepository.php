@@ -93,8 +93,9 @@ class CommanderRepository extends DoctrineRepository implements CommanderReposit
 
 		return $qb
 			->join('c.destinationPlace', 'dp')
-			->join('dp.player', 'player')
-			->andWhere('dp.player = :player')
+			->join('dp.base', 'base')
+			->join('base.player', 'player')
+			->andWhere('base.player = :player')
 			->andWhere('c.player != :player')
 			->andWhere($qb->expr()->eq('c.statement', Commander::MOVING))
 			->andWhere($qb->expr()->in('c.travelType', [Commander::COLO, Commander::LOOT]))

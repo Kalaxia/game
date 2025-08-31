@@ -22,7 +22,7 @@ class BelongsToPlayerValidator extends ConstraintValidator
 
 		$place = $value->getPlace();
 
-		if (null === $place->player) {
+		if (null === $place->base) {
 			$this->context
 				->buildViolation('This planet does not belong to a player')
 				->addViolation();
