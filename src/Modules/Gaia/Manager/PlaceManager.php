@@ -7,6 +7,7 @@ use App\Classes\Library\Game;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\Report;
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
@@ -25,7 +26,7 @@ readonly class PlaceManager
 
 	public function turnAsEmptyPlace(Place $place): void
 	{
-		$place->typeOfPlace = Place::EMPTYZONE;
+		$place->typeOfPlace = PlaceType::Empty;
 
 		$this->placeRepository->save($place);
 	}

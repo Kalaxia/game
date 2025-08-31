@@ -3,6 +3,7 @@
 namespace App\Modules\Ares\Domain\Specification;
 
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Shared\Domain\Specification\Specification;
 
 class PlaceIsInhabited implements Specification
@@ -26,6 +27,6 @@ class PlaceIsInhabited implements Specification
 	 */
 	public function isSatisfiedBy($candidate): bool
 	{
-		return Place::TERRESTRIAL === $candidate->typeOfPlace;
+		return PlaceType::Planet === $candidate->typeOfPlace;
 	}
 }

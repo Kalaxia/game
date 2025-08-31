@@ -45,12 +45,6 @@ parameters:
     # 300 s = 5 minutes
     time_event_update: 300
 
-    # constantes pour le contre-espionnage
-    antispy_out_of_circle:	0
-    antispy_big_circle:	1
-    antispy_middle_circle: 2
-    antispy_little_circle: 3
-
     # pour Game::antiSpyRadius()
     antispy_display_mode: 0
     antispy_game_mode: 1

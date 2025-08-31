@@ -464,3 +464,17 @@ galaxy:
                 name: 'Naine Yellow'
             !php/enum App\Modules\Gaia\Domain\Enum\SystemType::RedDwarf->value:
                 name: 'Naine Rouge'
+    places:
+        types:
+            !php/enum App\Modules\Gaia\Domain\Enum\PlaceType::Planet->value:
+                name: 'planète tellurique'
+            !php/enum App\Modules\Gaia\Domain\Enum\PlaceType::GasPlanet->value:
+                name: 'géante gazeuse'
+            !php/enum App\Modules\Gaia\Domain\Enum\PlaceType::Ruin->value:
+                name: 'ruine'
+            !php/enum App\Modules\Gaia\Domain\Enum\PlaceType::GasPocket->value:
+                name: 'poche de gaz'
+            !php/enum App\Modules\Gaia\Domain\Enum\PlaceType::Asteroid->value:
+                name: "ceinture d'astéroïdes"
+            !php/enum App\Modules\Gaia\Domain\Enum\PlaceType::Empty->value:
+                name: 'zone vide'

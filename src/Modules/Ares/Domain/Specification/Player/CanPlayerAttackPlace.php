@@ -3,6 +3,7 @@
 namespace App\Modules\Ares\Domain\Specification\Player;
 
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 
 class CanPlayerAttackPlace extends PlayerSpecification
 {
@@ -14,6 +15,6 @@ class CanPlayerAttackPlace extends PlayerSpecification
 		$player = $candidate->base?->player;
 
 		return (null !== $player && !$player->faction->id->equals($this->player->faction->id))
-			|| (null === $player && 1 === $candidate->typeOfPlace);
+			|| (null === $player && PlaceType::Planet === $candidate->typeOfPlace);
 	}
 }

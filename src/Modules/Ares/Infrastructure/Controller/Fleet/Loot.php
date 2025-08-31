@@ -11,6 +11,7 @@ use App\Modules\Ares\Model\Commander;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
@@ -93,7 +94,7 @@ class Loot extends AbstractController
 			throw new ConflictHttpException('You cannot loot an ally planet');
 		}
 
-		if (Place::TERRESTRIAL !== $place->typeOfPlace) {
+		if (PlaceType::Planet !== $place->typeOfPlace) {
 			throw new ConflictHttpException('This place is not inhabited');
 		}
 		$moveFleet(

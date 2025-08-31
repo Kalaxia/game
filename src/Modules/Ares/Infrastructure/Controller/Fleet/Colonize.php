@@ -14,6 +14,7 @@ use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Promethee\Model\TechnologyId;
@@ -83,7 +84,7 @@ class Colonize extends AbstractController
 
 		$place = $placeRepository->get(Uuid::fromString($placeId))
 			?? throw $this->createNotFoundException('Place not found');
-		if (Place::TERRESTRIAL !== $place->typeOfPlace) {
+		if (PlaceType::Planet !== $place->typeOfPlace) {
 			throw new ConflictHttpException('Ce lieu n\'est pas habitable.');
 		}
 

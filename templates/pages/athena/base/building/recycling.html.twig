@@ -59,7 +59,7 @@
 
 						<p class="desc">
 							La mission recycle la
-							<strong>{{ get_place_type(mission.target.typeOfPlace) }}</strong>
+							<strong>{{ ('galaxy.places.types.' ~ mission.target.typeOfPlace.value ~ '.name')|trans }}</strong>
 							située aux coordonnées
 							<strong>
 								<a href="{{ path('map', {'place': mission.target.id }) }}">{{ mission_data.coords }}</a>

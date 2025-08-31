@@ -16,7 +16,7 @@
 		<twig:PlaceName :place="place" />
 	</div>
 
-	{% if place.typeOfPlace == 1 %}
+	{% if place.typeOfPlace == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
 		{% if place.base is not null %}
 			<div class="flex items-center justify-between px-2">
 				<span class="font-medium text-sm">Propriété du</span>
@@ -95,7 +95,7 @@
 		</span>
 	</div>
 
-	{% if place.typeOfPlace == 1 %}
+	{% if place.typeOfPlace == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
 		{% set reports = combatReports|filter(r => r.place.id.equals(place.id)) %}
 		{% if reports|length > 0 %}
 			{% set report = reports|first %}

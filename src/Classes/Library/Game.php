@@ -11,23 +11,7 @@ class Game
 
 	// @TODO Replace by parameters
 	public const ANTISPY_DISPLAY_MODE = 0;
-	public const ANTISPY_LITTLE_CIRCLE = 3;
-	public const ANTISPY_MIDDLE_CIRCLE = 2;
-	public const ANTISPY_BIG_CIRCLE = 1;
-	public const ANTISPY_OUT_OF_CIRCLE = 0;
-
-	public static function convertPlaceType(int $type): string
-	{
-		return match ($type) {
-			1 => 'planète tellurique',
-			2 => 'géante gazeuse',
-			3 => 'ruine',
-			4 => 'poche de gaz',
-			5 => 'ceinture d\'astéroïdes',
-			6 => 'zone vide',
-			default => 'rien',
-		};
-	}
+	public const ANTISPY_GAME_MODE = 1;
 
 	public static function getSizeOfPlanet(int|float $population): int
 	{

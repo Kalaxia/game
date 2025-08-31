@@ -7,6 +7,7 @@ namespace App\Modules\Gaia\Repository;
 use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Sector;
 use App\Modules\Gaia\Domain\Entity\System;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use App\Modules\Zeus\Model\Player;
@@ -46,7 +47,7 @@ class PlaceRepository extends DoctrineRepository implements PlaceRepositoryInter
 	{
 		return $this->matching(
 			Criteria::create()
-				->where(Criteria::expr()->eq('typeOfPlace', Place::TERRESTRIAL))
+				->where(Criteria::expr()->eq('typeOfPlace', PlaceType::Planet))
 				->orderBy(['id' => 'ASC'])
 		);
 	}
@@ -61,7 +62,7 @@ class PlaceRepository extends DoctrineRepository implements PlaceRepositoryInter
 			->where('IDENTITY(sys.sector) = :sector_id')
 			->andWhere('p.player IS NULL')
 			->andWhere('p.typeOfPlace = :type_of_place')
-			->setParameter('type_of_place', Place::TERRESTRIAL)
+			->setParameter('type_of_place', PlaceType::Planet)
 			->setParameter('sector_id', $sector->id->toBinary())
 			->orderBy('p.population', 'ASC')
 			->setMaxResults(30);

@@ -3,6 +3,7 @@
 namespace App\Modules\Gaia\Domain\Entity;
 
 use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Shared\Domain\Model\SystemUpdatable;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,13 +13,6 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Table(name: 'galaxy__places')]
 class Place implements SystemUpdatable
 {
-	// CONSTANTS
-	public const TYP_EMPTY = 0;
-	public const TYP_MS1 = 1;
-	public const TYP_MS2 = 2;
-	public const TYP_MS3 = 3;
-	public const TYP_ORBITALBASE = 4;
-
 	public const COEFFMAXRESOURCE = 600;
 	public const COEFFRESOURCE = 2;
 	public const REPOPDANGER = 2;
@@ -71,8 +65,8 @@ class Place implements SystemUpdatable
 		public OrbitalBase|null $base,
 		#[ORM\ManyToOne(targetEntity: System::class)]
 		public System $system,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
-		public int $typeOfPlace,
+		#[ORM\Column(type: 'smallint', enumType: PlaceType::class, options: ['unsigned' => true])]
+		public PlaceType $typeOfPlace,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int $position,
 		#[ORM\Column(type: 'float', options: ['unsigned' => true])]
