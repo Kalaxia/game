@@ -4,6 +4,7 @@ namespace App\Modules\Artemis\Model;
 
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Component\Uid\Uuid;
 
@@ -31,7 +32,7 @@ class SpyReport
 		public Place $place,
 		public int $price,
 		public Color|null $placeFaction,
-		public int $placeType,
+		public PlaceType $placeType,
 		public int|null $baseType,
 		public string|null $placeName,
 		public int $points,

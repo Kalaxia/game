@@ -8,6 +8,7 @@ use App\Modules\Artemis\Application\Handler\SpyingHandler;
 use App\Modules\Artemis\Domain\Event\SpyEvent;
 use App\Modules\Artemis\Domain\Repository\SpyReportRepositoryInterface;
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Zeus\Manager\PlayerManager;
 use App\Modules\Zeus\Model\Player;
@@ -55,7 +56,7 @@ class Spy extends AbstractController
 		$place = $placeRepository->get(Uuid::fromString($placeId)) ?? throw $this->createNotFoundException('Place not found');
 
 		// TODO convert into specification/Voter
-		if (Place::TERRESTRIAL !== $place->typeOfPlace || $place->base?->player->faction->id->equals($currentPlayer->faction->id)) {
+		if (PlaceType::Planet !== $place->typeOfPlace || $place->base?->player->faction->id->equals($currentPlayer->faction->id)) {
 			throw new ConflictHttpException('You cannot spy this place');
 		}
 		$spyReport = $this->getSpyingHandler($place)->spy($place, $currentPlayer, $price);

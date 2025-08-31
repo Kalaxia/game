@@ -7,7 +7,9 @@ use App\Modules\Athena\Model\BuildingQueue;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Resource\OrbitalBaseResource;
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Sector;
 use App\Modules\Gaia\Domain\Entity\System;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Zeus\Model\Player;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
@@ -183,17 +185,16 @@ class BuildingLevelHandlerTest extends TestCase
 			id: Uuid::v4(),
 			place: new Place(
 				id: Uuid::v4(),
-				player: new Player(),
 				base: null,
 				system: new System(
 					id: Uuid::v4(),
-					sector: null,
+					sector: new Sector(),
 					faction: null,
 					xPosition: 10,
 					yPosition: 20,
 					typeOfSystem: 0,
 				),
-				typeOfPlace: Place::TERRESTRIAL,
+				typeOfPlace: PlaceType::Planet,
 				position: 1,
 				population: 100,
 				coefResources: 60,

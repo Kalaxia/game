@@ -9,6 +9,7 @@ use App\Modules\Athena\Manager\RecyclingMissionManager;
 use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\RecyclingMission;
 use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
 use App\Modules\Zeus\Model\Player;
@@ -54,8 +55,7 @@ class CreateMission extends AbstractController
 			?? throw $this->createNotFoundException('Il y a un problème avec le lieu de départ ou d\'arrivée. Veuillez contacter un administrateur.');
 
 		$startPlace = $currentBase->place;
-		// TODO Make constants or enum
-		if (null !== $destinationPlace->base || !in_array($destinationPlace->typeOfPlace, [2, 3, 4, 5])) {
+		if (!in_array($destinationPlace->typeOfPlace, [PlaceType::GasPlanet, PlaceType::Ruin, PlaceType::GasPocket, PlaceType::Asteroid])) {
 			throw new BadRequestHttpException('On ne peut pas recycler ce lieu, petit hacker.');
 		}
 

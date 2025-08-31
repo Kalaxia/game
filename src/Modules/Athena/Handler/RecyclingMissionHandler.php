@@ -16,6 +16,7 @@ use App\Modules\Athena\Message\RecyclingMissionMessage;
 use App\Modules\Athena\Model\RecyclingLog;
 use App\Modules\Athena\Model\RecyclingMission;
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Gaia\Manager\PlaceManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
@@ -72,7 +73,7 @@ readonly class RecyclingMissionHandler
 			return;
 		}
 
-		if (Place::EMPTYZONE === $targetPlace->typeOfPlace) {
+		if (PlaceType::Empty === $targetPlace->typeOfPlace) {
 			$this->logger->debug('Mission {missionId} target has become empty',[
 				'missionId' => $mission->id->toRfc4122(),
 			]);

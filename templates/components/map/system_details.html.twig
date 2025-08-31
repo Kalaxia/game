@@ -48,7 +48,7 @@
 					</div>
 
 					<div class="flex justify-center items-center">
-						{% if place.typeOfPlace == 1 %}
+						{% if place.typeOfPlace == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
 							<img class="w-16 h-16" src="{{ asset('images/legacy/planet/Tempered.png') }}" alt="planet" />
 						{% else %}
 							{% if place.resources > 10000000 %}

@@ -7,6 +7,7 @@ use App\Modules\Ares\Application\Handler\VirtualCommanderHandler;
 use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Sector;
 use App\Modules\Gaia\Domain\Entity\System;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Uid\Uuid;
 
@@ -117,7 +118,7 @@ class VirtualCommanderHandlerTest extends KernelTestCase
 				yPosition: 10,
 				typeOfSystem: 0,
 			),
-			typeOfPlace: Place::TERRESTRIAL,
+			typeOfPlace: PlaceType::Planet,
 			position: $position,
 			population: $population,
 			coefResources: $resourcesCoeff,

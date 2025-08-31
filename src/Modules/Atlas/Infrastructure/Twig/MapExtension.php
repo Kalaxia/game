@@ -63,7 +63,6 @@ class MapExtension extends AbstractExtension
 
 				return $this->durationHandler->getDiff($departureDate, $arrivalDate);
 			}),
-			new TwigFunction('get_place_type', fn (string $type) => Game::convertPlaceType($type)),
 			new TwigFunction('get_place_distance', fn (OrbitalBase $defaultBase, Place $place) => ($this->getDistanceBetweenPlaces)(
 				$defaultBase->place,
 				$place,

@@ -7,6 +7,7 @@ use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Resource\OrbitalBaseResource;
 use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\System;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;
 use App\Shared\Domain\Model\DurationInterface;
@@ -141,7 +142,7 @@ class DurationHandlerTest extends TestCase
 						yPosition: 20,
 						typeOfSystem: 0,
 					),
-					typeOfPlace: Place::TERRESTRIAL,
+					typeOfPlace: PlaceType::Planet,
 					position: 1,
 					population: 100,
 					coefResources: 60,

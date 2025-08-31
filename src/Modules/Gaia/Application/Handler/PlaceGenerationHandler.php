@@ -7,6 +7,8 @@ namespace App\Modules\Gaia\Application\Handler;
 use App\Classes\Library\Utils;
 use App\Modules\Gaia\Application\Message\PlaceGenerationMessage;
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
+use App\Modules\Gaia\Domain\Enum\SystemType;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Gaia\Domain\Repository\SystemRepositoryInterface;
 use App\Modules\Gaia\Galaxy\GalaxyConfiguration;
@@ -35,7 +37,7 @@ final readonly class PlaceGenerationHandler
 
 		$type = $this->getPlaceType($system->typeOfSystem);
 
-		if (Place::TYP_MS1 === $type) {
+		if (PlaceType::Planet === $type) {
 			$pointsRep = random_int(1, 10);
 			$abilities = [
 				'population' => 0,
@@ -76,16 +78,16 @@ final readonly class PlaceGenerationHandler
 			$history = $abilities['history'];
 			$resources = $abilities['resources'];
 			$stRES = 0;
-			// TODO does not seem to exist
-		} elseif (6 === $type) {
+		} elseif (PlaceType::Empty === $type) {
 			$population = 0;
 			$history = 0;
 			$resources = 0;
 			$stRES = 0;
 		} else {
-			$population = $this->galaxyConfiguration->places[$type - 1]['credits'];
-			$resources = $this->galaxyConfiguration->places[$type - 1]['resources'];
-			$history = $this->galaxyConfiguration->places[$type - 1]['history'];
+			$typeData = $this->galaxyConfiguration->places[$type->value - 1];
+			$population = $typeData['credits'];
+			$resources = $typeData['resources'];
+			$history = $typeData['history'];
 			$stRES = random_int(2000000, 20000000);
 		}
 
@@ -101,7 +103,6 @@ final readonly class PlaceGenerationHandler
 
 		$place = new Place(
 			id: Uuid::v4(),
-			player: null,
 			base: null,
 			system: $system,
 			typeOfPlace: $type,
@@ -118,18 +119,18 @@ final readonly class PlaceGenerationHandler
 		$this->placeRepository->save($place);
 
 		$this->galaxyGenerationLogger->debug('Place generated successfully', [
-			'type' => $type,
+			'type' => $type->Name,
 			'position' => $message->position,
 			'system_id' => $system->id->toRfc4122(),
 			'sector_identifier' => $system->sector->identifier,
 		]);
 	}
 
-	protected function getPlaceType(int $systemType): int
+	protected function getPlaceType(SystemType $systemType): PlaceType
 	{
-		return ($this->getProportion)(
-			$this->galaxyConfiguration->systems[$systemType - 1]['placesPropotion'],
+		return PlaceType::from(($this->getProportion)(
+			$this->galaxyConfiguration->systems[$systemType->value - 1]['placesPropotion'],
 			random_int(1, 100),
-		);
+		));
 	}
 }

@@ -19,7 +19,7 @@
 		<many-to-one field="targetPlayer" target-entity="App\Modules\Zeus\Model\Player" />
 
 		<field name="price" type="integer" />
-		<field name="placeType" type="integer" />
+		<field name="placeType" type="integer" enum-type="App\Modules\Gaia\Domain\Enum\PlaceType" />
 		<field name="baseType" type="integer" nullable="true" />
 		<field name="placeName" length="124" nullable="true" />
 		<field name="resources" type="integer" />

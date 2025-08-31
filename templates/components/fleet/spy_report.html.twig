@@ -36,7 +36,8 @@
 		<div class="flex justify-between">
 			<div class="stellar">
 				<div class="info top">
-					{{ get_base_type_info(spy_report.place.typeOfPlace, 'name') }}<br />
+					{{ ('galaxy.places.types.' ~ spy_report.place.typeOfPlace.value ~ '.name')|trans }}
+					<br />
 					{% if spy_report.hasSpottedPoints %}
 						{{ spy_report.points|number }}
 					{% else %}
@@ -123,7 +124,7 @@
 				{% endfor %}
 			{% endif %}
 
-			{% if spy_report.place.typeOfPlace is not constant('App\\Modules\\Gaia\\Domain\\Entity\\Place::TYP_EMPTY') %}
+			{% if spy_report.place.typeOfPlace != enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Empty %}
 				<twig:FleetSpyReport :spyReport="spy_report" :army="(spy_report.hasSpottedDocks ? spy_report.getShipStorage() : range(0, 11)|map(v => -1))" />
 			{% endif %}
 		</div>
