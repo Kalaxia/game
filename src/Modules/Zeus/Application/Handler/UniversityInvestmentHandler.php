@@ -2,7 +2,7 @@
 
 namespace App\Modules\Zeus\Application\Handler;
 
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\ResearchRepositoryInterface;
@@ -27,7 +27,7 @@ readonly class UniversityInvestmentHandler
 	}
 
 	/**
-	 * @param list<OrbitalBase> $playerBases
+	 * @param list<Planet> $playerBases
 	 */
 	public function spend(PlayerFinancialReport $playerFinancialReport, array $playerBases): void
 	{

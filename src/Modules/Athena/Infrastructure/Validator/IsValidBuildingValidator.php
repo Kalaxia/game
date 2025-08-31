@@ -3,7 +3,7 @@
 namespace App\Modules\Athena\Infrastructure\Validator;
 
 use App\Modules\Athena\Infrastructure\Validator\DTO\HasBuildingIdentifier;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Gaia\Resource\PlanetResource;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -24,7 +24,7 @@ class IsValidBuildingValidator extends ConstraintValidator
 			throw new UnexpectedValueException($value, HasBuildingIdentifier::class);
 		}
 
-		if (!\in_array($value->getBuildingIdentifier(), OrbitalBaseResource::BUILDINGS)) {
+		if (!\in_array($value->getBuildingIdentifier(), PlanetResource::BUILDINGS)) {
 			$this->context->buildViolation('Invalid building number')
 				->addViolation();
 		}

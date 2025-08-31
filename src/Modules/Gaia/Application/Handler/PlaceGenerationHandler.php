@@ -121,7 +121,7 @@ final readonly class PlaceGenerationHandler
 		$this->placeRepository->save($place);
 
 		$this->galaxyGenerationLogger->debug('Place generated successfully', [
-			'type' => $type->Name,
+			'type' => $type->name,
 			'position' => $message->position,
 			'system_id' => $system->id->toRfc4122(),
 			'sector_identifier' => $system->sector->identifier,

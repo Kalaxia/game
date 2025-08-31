@@ -3,11 +3,11 @@
 namespace App\Shared\Infrastructure\Twig;
 
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
 use App\Modules\Athena\Model\BuildingQueue;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\ShipQueue;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Helper\PlanetHelper;
+use App\Modules\Gaia\Resource\PlanetResource;
 use App\Modules\Promethee\Helper\TechnologyHelper;
 use App\Modules\Promethee\Model\TechnologyQueue;
 use App\Shared\Application\Handler\DurationHandler;
@@ -20,9 +20,9 @@ use Twig\TwigFunction;
 class QueueableExtension extends AbstractExtension
 {
 	public function __construct(
-		private readonly OrbitalBaseHelper $orbitalBaseHelper,
-		private readonly TechnologyHelper $technologyHelper,
-		private readonly DurationHandler $durationHandler,
+		private readonly PlanetHelper                   $planetHelper,
+		private readonly TechnologyHelper               $technologyHelper,
+		private readonly DurationHandler                $durationHandler,
 		private readonly GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 	) {
 	}
@@ -44,10 +44,10 @@ class QueueableExtension extends AbstractExtension
 			new TwigFilter('queue_duration', fn (QueueableInterface $queue) => $this->durationHandler->getDurationRemainingTime($queue)),
 			new TwigFilter('queue_picture', fn (QueueableInterface $queue) => $this->getQueueHelper($queue)->getInfo($queue->getResourceIdentifier(), 'imageLink')),
 			new TwigFilter('queue_name', fn (QueueableInterface $queue) => $this->getQueueHelper($queue)->getInfo($queue->getResourceIdentifier(), $this->getQueueNameKey($queue))),
-			new TwigFilter('base_max_technology_queues', fn (OrbitalBase $orbitalBase) => $this->orbitalBaseHelper->getBuildingInfo(
-				OrbitalBaseResource::TECHNOSPHERE,
+			new TwigFilter('base_max_technology_queues', fn (Planet $planet) => $this->planetHelper->getBuildingInfo(
+				PlanetResource::TECHNOSPHERE,
 				'level',
-				$orbitalBase->levelTechnosphere,
+				$planet->levelTechnosphere,
 				'nbQueues'
 			)),
 			new TwigFilter('technology_queue_time', fn (TechnologyQueue $technologyQueue) => $this->technologyHelper->getInfo(
@@ -55,29 +55,29 @@ class QueueableExtension extends AbstractExtension
 				'time',
 				$technologyQueue->targetLevel
 			)),
-			new TwigFilter('base_max_dock1_ship_queues', fn (OrbitalBase $orbitalBase) => $this->orbitalBaseHelper->getBuildingInfo(
-				OrbitalBaseResource::DOCK1,
+			new TwigFilter('base_max_dock1_ship_queues', fn (Planet $planet) => $this->planetHelper->getBuildingInfo(
+				PlanetResource::DOCK1,
 				'level',
-				$orbitalBase->levelDock1,
+				$planet->levelDock1,
 				'nbQueues'
 			)),
-			new TwigFilter('base_max_dock2_ship_queues', fn (OrbitalBase $orbitalBase) => $this->orbitalBaseHelper->getBuildingInfo(
-				OrbitalBaseResource::DOCK2,
+			new TwigFilter('base_max_dock2_ship_queues', fn (Planet $planet) => $this->planetHelper->getBuildingInfo(
+				PlanetResource::DOCK2,
 				'level',
-				$orbitalBase->levelDock2,
+				$planet->levelDock2,
 				'nbQueues'
 			)),
 			new TwigFilter('ship_queue_time', fn (ShipQueue $shipQueue) => $shipQueue->quantity * ($this->getShipCategoriesConfiguration)($shipQueue->shipNumber, 'time')),
 			new TwigFilter('ship_queue_picture', fn (ShipQueue $shipQueue) => ($this->getShipCategoriesConfiguration)($shipQueue->shipNumber, 'picto')),
 			new TwigFilter('ship_queue_name', fn (ShipQueue $shipQueue) => ($this->getShipCategoriesConfiguration)($shipQueue->shipNumber, 'name')),
-			new TwigFilter('base_max_building_queues', fn (OrbitalBase $orbitalBase) => $this->orbitalBaseHelper->getBuildingInfo(
-				OrbitalBaseResource::GENERATOR,
+			new TwigFilter('base_max_building_queues', fn (Planet $planet) => $this->planetHelper->getBuildingInfo(
+				PlanetResource::GENERATOR,
 				'level',
-				$orbitalBase->levelGenerator,
+				$planet->levelGenerator,
 				'nbQueues',
 			)),
 			// @TODO check why building helper needs the sup level
-			new TwigFilter('building_queue_time', fn (BuildingQueue $buildingQueue) => $this->orbitalBaseHelper->getBuildingInfo(
+			new TwigFilter('building_queue_time', fn (BuildingQueue $buildingQueue) => $this->planetHelper->getBuildingInfo(
 				$buildingQueue->buildingNumber,
 				'level',
 				$buildingQueue->targetLevel,
@@ -86,10 +86,10 @@ class QueueableExtension extends AbstractExtension
 		];
 	}
 
-	protected function getQueueHelper(QueueableInterface $queueable): OrbitalBaseHelper|TechnologyHelper
+	protected function getQueueHelper(QueueableInterface $queueable): PlanetHelper|TechnologyHelper
 	{
 		return match ($queueable::class) {
-			BuildingQueue::class => $this->orbitalBaseHelper,
+			BuildingQueue::class => $this->planetHelper,
 			TechnologyQueue::class => $this->technologyHelper,
 		};
 	}

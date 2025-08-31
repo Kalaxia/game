@@ -8,12 +8,12 @@ use App\Modules\Ares\Manager\ConquestManager;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Artemis\Domain\Repository\SpyReportRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\RecyclingMissionRepositoryInterface;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Gaia\Domain\Repository\SystemRepositoryInterface;
 use App\Modules\Gaia\Manager\PlaceManager;
+use App\Modules\Gaia\Manager\PlanetManager;
 use App\Modules\Gaia\Manager\SystemManager;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
@@ -25,20 +25,20 @@ use Symfony\Component\Uid\Uuid;
 class LoadSystem extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		OrbitalBase $currentBase,
-		Player $currentPlayer,
-		CommanderRepositoryInterface $commanderRepository,
-		SystemRepositoryInterface $systemRepository,
-		PlaceManager $placeManager,
-		PlaceRepositoryInterface $placeRepository,
-		TechnologyRepositoryInterface $technologyRepository,
-		ConquestManager $conquestManager,
-		SpyReportRepositoryInterface $spyReportRepository,
-		ReportRepositoryInterface $reportRepository,
-		OrbitalBaseManager $orbitalBaseManager,
+		Request                       $request,
+		Planet                              $currentBase,
+		Player                              $currentPlayer,
+		CommanderRepositoryInterface        $commanderRepository,
+		SystemRepositoryInterface           $systemRepository,
+		PlaceManager                        $placeManager,
+		PlaceRepositoryInterface            $placeRepository,
+		TechnologyRepositoryInterface       $technologyRepository,
+		ConquestManager                     $conquestManager,
+		SpyReportRepositoryInterface        $spyReportRepository,
+		ReportRepositoryInterface           $reportRepository,
+		PlanetManager                       $planetManager,
 		RecyclingMissionRepositoryInterface $recyclingMissionRepository,
-		Uuid $id
+		Uuid                                $id
 	): Response {
 		$system = $systemRepository->get($id) ?? throw $this->createNotFoundException('System not found');
 
@@ -48,18 +48,18 @@ class LoadSystem extends AbstractController
 
 		$placesIds = array_map(fn (Place $place) => $place->id, $places);
 
-		$basesCount = $orbitalBaseManager->getPlayerBasesCount($movingCommanders);
+		$planetsCount = $planetManager->countPlayerPlanets($movingCommanders);
 
 		return $this->render('components/map/system_details.html.twig', [
 			'system' => $system,
 			'places' => $places,
 			'moving_commanders' => $movingCommanders,
 			'technologies' => $technologyRepository->getPlayerTechnology($currentPlayer),
-			'recycling_missions' => $recyclingMissionRepository->getBaseActiveMissions($currentBase),
+			'recycling_missions' => $recyclingMissionRepository->getPlanetActiveMissions($currentBase),
 			'spy_reports' => $spyReportRepository->getSystemReports($currentPlayer, $placesIds),
 			'combat_reports' => $reportRepository->getAttackReportsByPlaces($currentPlayer, $placesIds),
-			'colonization_cost' => $conquestManager->getColonizationCost($currentPlayer, $basesCount),
-			'conquest_cost' => $conquestManager->getConquestCost($currentPlayer, $basesCount),
+			'colonization_cost' => $conquestManager->getColonizationCost($currentPlayer, $planetsCount),
+			'conquest_cost' => $conquestManager->getConquestCost($currentPlayer, $planetsCount),
 		]);
 	}
 }

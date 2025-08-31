@@ -6,7 +6,7 @@ namespace App\Modules\Athena\Domain\Service\Base\Ship;
 
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Athena\Domain\Enum\DockType;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Gaia\Domain\Entity\Planet;
 
 readonly class CountStoredShipPoints
 {
@@ -15,7 +15,7 @@ readonly class CountStoredShipPoints
 	) {
 	}
 
-	public function __invoke(OrbitalBase $base, DockType $dockType): int
+	public function __invoke(Planet $base, DockType $dockType): int
 	{
 		$storage = $base->getShipStorage();
 		$inStorage = 0;

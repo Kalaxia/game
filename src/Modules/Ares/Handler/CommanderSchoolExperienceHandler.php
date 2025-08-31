@@ -45,7 +45,7 @@ readonly class CommanderSchoolExperienceHandler
 			return;
 		}
 
-		$orbitalBase = $commander->base;
+		$planet = $commander->base;
 
 		$playerBonus = $this->playerBonusManager->getBonusByPlayer($commander->player);
 		$playerBonus = $playerBonus->bonuses;
@@ -63,7 +63,7 @@ readonly class CommanderSchoolExperienceHandler
 
 					break;
 				}
-				$invest = $orbitalBase->iSchool;
+				$invest = $planet->iSchool;
 				$invest += $invest * $playerBonus->get(PlayerBonusId::COMMANDER_INVEST) / 100;
 
 				// xp gagnée

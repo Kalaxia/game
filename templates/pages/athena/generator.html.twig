@@ -1,9 +1,9 @@
-{% extends 'layouts/athena/current_base.html.twig' %}
+{% extends 'layouts/athena/current_planet.html.twig' %}
 
-{% set generator_building_number = constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::GENERATOR') %}
+{% set generator_building_number = constant('App\\Modules\\Gaia\\Resource\\PlanetResource::GENERATOR') %}
 
 {% block content %}
-	<twig:Headline :title="get_building_info(0, 'frenchName')" subTitle="niveau {{ current_base.levelGenerator }}">
+	<twig:Headline :title="get_building_info(0, 'frenchName')" subTitle="niveau {{ current_planet.levelGenerator }}">
 		{{ get_building_info(generator_building_number, 'description')|raw }}
 	</twig:Headline>
 
@@ -13,14 +13,14 @@
 			:queues="building_queues"
 			:queuesCount="building_queues_count"
 			:buildingIdentifier="generator_building_number"
-			:buildingLevel="current_base.levelGenerator"
+			:buildingLevel="current_planet.levelGenerator"
 			:speedBonus="generator_speed_bonus"
 			:refund="building_resource_refund" />
 
 		<twig:LayoutBox class="grow grid grid-cols-1 md:grid-cols-3 gap-x-2 gap-y-3 md:gap-y-2 lg:gap-4 rounded-r-xl">
-			{% for building_identifier in constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::BUILDINGS') %}
+			{% for building_identifier in constant('App\\Modules\\Gaia\\Resource\\PlanetResource::BUILDINGS') %}
 				<twig:BuildingCard
-					:base="current_base"
+					:planet="current_planet"
 					:buildingIdentifier="building_identifier"
 					:technology="technology"
 					:buildingQueues="building_queues"

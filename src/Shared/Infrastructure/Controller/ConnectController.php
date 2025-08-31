@@ -5,7 +5,7 @@ namespace App\Shared\Infrastructure\Controller;
 use App\Classes\Container\ArrayList;
 use App\Classes\Container\EventList;
 use App\Classes\Library\Utils;
-use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
+use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Portal\Domain\Entity\User;
 use App\Modules\Zeus\Domain\Event\PlayerConnectionEvent;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 class ConnectController extends AbstractController
 {
-	public function __construct(private readonly OrbitalBaseRepositoryInterface $orbitalBaseRepository)
+	public function __construct(private readonly PlanetRepositoryInterface $planetRepository)
 	{
 	}
 
@@ -81,7 +81,7 @@ class ConnectController extends AbstractController
 		// remplissage des données du joueur
 		$session->set('playerId', $player->id);
 
-		$playerBases = $this->orbitalBaseRepository->getPlayerBases($player);
+		$playerPlanets = $this->planetRepository->getPlayerPlanets($player);
 		// remplissage des bonus
 
 		// création des paramètres utilisateur
@@ -90,7 +90,7 @@ class ConnectController extends AbstractController
 		$session->set('playerInfo', new ArrayList());
 
 		// remplissage des paramètres utilisateur
-		$session->get('playerParams')->add('base', $playerBases[0]->id);
+		$session->get('playerParams')->add('base', $playerPlanets[0]->id);
 
 		// création des tableaux de données dans le contrôleur
 

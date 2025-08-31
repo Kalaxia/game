@@ -1,15 +1,15 @@
-{% extends 'layouts/athena/current_base.html.twig' %}
+{% extends 'layouts/athena/current_planet.html.twig' %}
 
 {% block content %}
 	<div class="grid grid-cols-4 gap-x-4">
-		<twig:FastView :orbitalBase="current_base" index="0" :isProfileView="false" />
+		<twig:FastView :planet="current_planet" index="0" :isProfileView="false" />
 
 		{{ include('components/base/situation.html.twig') }}
 
 		{{ include('components/base/type.html.twig') }}
 
-		{% if current_player_bases|length > 1 %}
-			{{ include('components/base/leave_base.html.twig') }}
+		{% if current_player_planets|length > 1 %}
+			{{ include('components/base/leave_planet.html.twig') }}
 		{% endif %}
 	</div>
 {% endblock %}

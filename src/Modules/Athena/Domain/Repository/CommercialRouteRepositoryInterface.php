@@ -3,11 +3,10 @@
 namespace App\Modules\Athena\Domain\Repository;
 
 use App\Modules\Athena\Model\CommercialRoute;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Demeter\Model\Color;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Exception;
 use Symfony\Component\Uid\Uuid;
 
@@ -22,11 +21,11 @@ interface CommercialRouteRepositoryInterface extends EntityRepositoryInterface
 	 * @throws Exception
 	 */
 	public function searchCandidates(
-		Player $player,
-		OrbitalBase $orbitalBase,
-		array $factions,
-		int $minDistance,
-		int $maxDistance,
+        Player $player,
+        Planet $planet,
+        array  $factions,
+        int    $minDistance,
+        int    $maxDistance,
 	): array;
 
 	/**
@@ -40,33 +39,33 @@ interface CommercialRouteRepositoryInterface extends EntityRepositoryInterface
 
 	public function getInternalCommercialRouteFactionData(Color $faction): array;
 
-	public function getByIdAndBase(Uuid $id, OrbitalBase $base): CommercialRoute|null;
+	public function getByIdAndPlanet(Uuid $id, Planet $planet): CommercialRoute|null;
 
-	public function getByIdAndDistantBase(Uuid $id, OrbitalBase $base): CommercialRoute|null;
-
-	/**
-	 * @return list<CommercialRoute>
-	 */
-	public function getByBase(OrbitalBase $base): array;
+	public function getByIdAndDistantPlanet(Uuid $id, Planet $planet): CommercialRoute|null;
 
 	/**
 	 * @return list<CommercialRoute>
 	 */
-	public function getByDistantBase(OrbitalBase $base): array;
-
-	public function getExistingRoute(OrbitalBase $base, OrbitalBase $distantBase): CommercialRoute|null;
+	public function getByPlanet(Planet $planet): array;
 
 	/**
 	 * @return list<CommercialRoute>
 	 */
-	public function getBaseRoutes(OrbitalBase $base): array;
+	public function getByDistantPlanet(Planet $planet): array;
 
-	public function getBaseIncome(OrbitalBase $base): int;
+	public function getExistingRoute(Planet $planet, Planet $distantPlanet): CommercialRoute|null;
+
+	/**
+	 * @return list<CommercialRoute>
+	 */
+	public function getPlanetRoutes(Planet $planet): array;
+
+	public function getPlanetIncome(Planet $planet): int;
 
 	/**
 	 * @param list<int> $statements
 	 */
-	public function countBaseRoutes(OrbitalBase $base, array $statements = []): int;
+	public function countPlanetRoutes(Planet $planet, array $statements = []): int;
 
 	public function freezeRoutes(Color $faction, Color $otherFaction, bool $freeze): void;
 

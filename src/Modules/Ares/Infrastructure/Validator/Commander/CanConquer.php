@@ -2,7 +2,7 @@
 
 namespace App\Modules\Ares\Infrastructure\Validator\Commander;
 
-use App\Modules\Athena\Infrastructure\Validator\CanGetNewBase;
+use App\Modules\Athena\Infrastructure\Validator\CanGetNewPlanet;
 use App\Modules\Gaia\Infrastructure\Validator\BelongsToPlayer;
 use App\Modules\Promethee\Infrastructure\Validator\HasUnlockedTechnology;
 use App\Modules\Promethee\Model\TechnologyId;
@@ -25,7 +25,7 @@ class CanConquer extends Compound
 			new HasShips(),
 			new BelongsToPlayer(),
 			new NotAllyTarget(),
-			new CanGetNewBase(),
+			new CanGetNewPlanet(),
 			new CanAfford($this->price),
 		];
 	}

@@ -15,41 +15,41 @@
 
 	<section class="mt-4">
 		<ul class="flex flex-col divide-y divide-gray-500 border-y border-gray-500">
-			{% for base in player_bases %}
-				{% set base_data = bases_data[base.id.toRfc4122()] %}
+			{% for planet in player_planets %}
+				{% set planet_data = planets_data[planet.id.toRfc4122()] %}
 
 				<li class="py-2">
 					<details class="marker:content-['']" name="commercial-routes">
 						<summary class="cursor-pointer">
-							{% if base_data['routes_count'] > 0 %}
+							{% if planet_data['routes_count'] > 0 %}
 								<span class="buttons">
-									<a href="#" class="sh" data-target="rc-base-{{ base.id }}">↓</a>
+									<a href="#" class="sh" data-target="rc-base-{{ planet.id }}">↓</a>
 								</span>
 							{% endif %}
 							<span class="label">
-								<span style="font-variant: all-small-caps">{{ base.name }}</span>
+								<span style="font-variant: all-small-caps">{{ planet.name }}</span>
 								<span class="text-sm">
-									[{{ base_data['routes_count'] }}
-									route{{ base_data['routes_count']|plural }}]
+									[{{ planet_data['routes_count'] }}
+									route{{ planet_data['routes_count']|plural }}]
 								</span>
 							</span><br>
 							<span class="flex items-center gap-x-2 mt-2">
-								<span class="text-sm">{{ base_data['routes_income'] }}</span>
-								{% if base_data['routes_income_bonus'] > 0 %}
-									<sup class="bonus px-1 bg-medium{{ current_player.faction.identifier }} rounded-md text-xs">+{{ base_data['routes_income_bonus']|number }}</sup>
+								<span class="text-sm">{{ planet_data['routes_income'] }}</span>
+								{% if planet_data['routes_income_bonus'] > 0 %}
+									<sup class="bonus px-1 bg-medium{{ current_player.faction.identifier }} rounded-md text-xs">+{{ planet_data['routes_income_bonus']|number }}</sup>
 								{% endif %}
 								<img src="{{ asset('images/legacy/picto/G_P_Mon_64px.png') }}" alt="crédits" class="inline w-4 h-4" />
 							</span>
 						</summary>
 
 						<div>
-							{% if base_data['routes_count'] > 0 %}
-								<ul class="sub-list-type-1" id="rc-base-{{ base.id }}">
-									{% for route in base_data['routes'] %}
+							{% if planet_data['routes_count'] > 0 %}
+								<ul class="sub-list-type-1" id="rc-base-{{ planet.id }}">
+									{% for route in planet_data['routes'] %}
 										{% if route.isActive %}
 											<li class="flex justify-between items-center">
 										<span class="label" style="font-variant: all-small-caps">
-											{{- route.originBase.name == base.name ? route.destinationBase.name : route.originBase.name -}}
+											{{- route.originBase.name == planet.name ? route.destinationBase.name : route.originBase.name -}}
 										</span>
 												<span class="value">
 											{{- route.income|number -}}

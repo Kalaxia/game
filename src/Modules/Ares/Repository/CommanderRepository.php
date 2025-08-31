@@ -6,9 +6,9 @@ namespace App\Modules\Ares\Repository;
 
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Specification\SelectorSpecification;
@@ -71,18 +71,18 @@ class CommanderRepository extends DoctrineRepository implements CommanderReposit
 			->getResult();
 	}
 
-	public function getBaseCommanders(OrbitalBase $orbitalBase, array $statements = [], array $orderBy = []): array
+	public function getPlanetCommanders(Planet $planet, array $statements = [], array $orderBy = []): array
 	{
 		return $this->findBy([
-			'base' => $orbitalBase,
+			'base' => $planet,
 			'statement' => $statements,
 		], $orderBy);
 	}
 
-	public function getCommandersByLine(OrbitalBase $orbitalBase, int $line): array
+	public function getCommandersByLine(Planet $planet, int $line): array
 	{
 		return $this->findBy([
-			'base' => $orbitalBase,
+			'base' => $planet,
 			'line' => $line,
 		]);
 	}
@@ -120,16 +120,16 @@ class CommanderRepository extends DoctrineRepository implements CommanderReposit
 		], ['dArrival' => 'ASC']);
 	}
 
-	public function countCommandersByLine(OrbitalBase $orbitalBase, int $line): int
+	public function countCommandersByLine(Planet $planet, int $line): int
 	{
 		$qb = $this->createQueryBuilder('c');
 
 		return $qb
 			->select('COUNT(c)')
-			->andWhere('c.base = :orbital_base')
+			->andWhere('c.base = :planet')
 			->andWhere('c.line = :line')
 			->andWhere($qb->expr()->in('c.statement', [Commander::AFFECTED, Commander::MOVING]))
-			->setParameter('orbital_base', $orbitalBase->id, UuidType::NAME)
+			->setParameter('planet', $planet->id, UuidType::NAME)
 			->setParameter('line', $line)
 			->getQuery()
 			->getSingleScalarResult();

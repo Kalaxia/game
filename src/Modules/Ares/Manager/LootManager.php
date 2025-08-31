@@ -11,11 +11,11 @@ use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\LiveReport;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Manager\PlaceManager;
+use App\Modules\Gaia\Manager\PlanetManager;
 use App\Modules\Zeus\Manager\PlayerBonusManager;
 use App\Modules\Zeus\Model\PlayerBonus;
 use App\Modules\Zeus\Model\PlayerBonusId;
@@ -29,11 +29,11 @@ readonly class LootManager
 		private EventDispatcherInterface     $eventDispatcher,
 		private CommanderManager             $commanderManager,
 		private CommanderRepositoryInterface $commanderRepository,
-		private MoveFleet $moveFleet,
-		private OrbitalBaseManager           $orbitalBaseManager,
+		private MoveFleet                    $moveFleet,
+		private PlanetManager                $planetManager,
 		private PlaceManager                 $placeManager,
 		private PlayerBonusManager           $playerBonusManager,
-		private CommanderArmyHandler $commanderArmyHandler,
+		private CommanderArmyHandler         $commanderArmyHandler,
 	) {
 	}
 
@@ -42,7 +42,7 @@ readonly class LootManager
 		$place = $commander->destinationPlace;
 		$placeBase = $place->base;
 		$placePlayer = $placeBase?->player;
-		$placeCommanders = null !== $placeBase ? $this->commanderRepository->getBaseCommanders($placeBase) : [];
+		$placeCommanders = null !== $placeBase ? $this->commanderRepository->getPlanetCommanders($placeBase) : [];
 		// @WARNING possibly not the right property to use
 		$commanderPlace = $commander->startPlace;
 		$commanderPlayer = $commander->player;
@@ -168,7 +168,7 @@ readonly class LootManager
 		$this->entityManager->flush();
 	}
 
-	public function lootAPlayerPlace(Commander $commander, PlayerBonus $playerBonus, OrbitalBase $placeBase): void
+	public function lootAPlayerPlace(Commander $commander, PlayerBonus $playerBonus, Planet $placeBase): void
 	{
 		$bonus = $playerBonus->bonuses->get(PlayerBonusId::SHIP_CONTAINER);
 
@@ -180,7 +180,7 @@ readonly class LootManager
 		$resourcesLooted = ($storage > $resourcesToLoot) ? $resourcesToLoot : $storage;
 
 		if ($resourcesLooted > 0) {
-			$this->orbitalBaseManager->decreaseResources($placeBase, $resourcesLooted);
+			$this->planetManager->decreaseResources($placeBase, $resourcesLooted);
 			$commander->resources = $resourcesLooted;
 
 			LiveReport::$resources = $resourcesLooted;

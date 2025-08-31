@@ -3,7 +3,7 @@
 namespace App\Modules\Athena\Application\Handler\Tax;
 
 use App\Modules\Athena\Domain\DTO\PopulationTax;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Resource\PlaceResource;
 use App\Modules\Zeus\Application\Handler\Bonus\BonusApplierInterface;
 use App\Modules\Zeus\Model\PlayerBonusId;
@@ -18,7 +18,7 @@ readonly class PopulationTaxHandler
 	) {
 	}
 
-	public function getPopulationTax(OrbitalBase $base): PopulationTax
+	public function getPopulationTax(Planet $base): PopulationTax
 	{
 		$tax = ((180 * $base->place->population) + 1500) * $this->playerTaxCoeff;
 		$tax *= PlaceResource::get($base->typeOfBase, 'tax');

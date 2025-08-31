@@ -1,4 +1,4 @@
-{% extends 'layouts/athena/current_base.html.twig' %}
+{% extends 'layouts/athena/current_planet.html.twig' %}
 
 {% block content %}
 	<twig:Headline :title="get_building_info(building_number, 'frenchName')" subTitle="niveau {{ dock_level }}">
@@ -12,7 +12,7 @@
 				:queues="ship_queues"
 				:queuesCount="nb_ship_queues"
 				:buildingIdentifier="building_number"
-				:buildingLevel="dock_type.getLevel(current_base)"
+				:buildingLevel="dock_type.getLevel(current_planet)"
 				:speedBonus="dock_speed_bonus"
 				:refund="ship_resource_refund" />
 
@@ -53,7 +53,7 @@
 
 					<div class="component market-sell">
 						{% for i in ships_range %}
-							{% set ships_count = current_base.shipStorage[i] ?? 0 %}
+							{% set ships_count = current_planet.shipStorage[i] ?? 0 %}
 							<div class="queue sh" data-target="sell-ships-{{ i }}">
 								<div class="item">
 									<strong>
@@ -101,7 +101,7 @@
 		<twig:LayoutBox class="grow grid grid-cols-1 md:grid-cols-3 gap-x-2 gap-y-3 md:gap-y-2 lg:gap-4 rounded-r-xl">
 			{% for ship_identifier in ships_range %}
 				<twig:ShipCard
-					:base="current_base"
+					:planet="current_planet"
 					:shipIdentifier="ship_identifier"
 					:technology="technology"
 					:dockType="dock_type"

@@ -1,4 +1,4 @@
-{% extends 'layouts/athena/current_base.html.twig' %}
+{% extends 'layouts/athena/current_planet.html.twig' %}
 
 {# TODO de-duplicate code here #}
 
@@ -17,7 +17,7 @@
 
 			<section class="mt-4">
 				<twig:NumberBox label="investissements alloués à l'école">
-					{{ current_base.iSchool|number }}
+					{{ current_planet.iSchool|number }}
 					{#<img alt="crédits" src="{{ asset('build/media/resources/credit.png') }}" class="icon-color">#}
 
 					<twig:block name="upper_links">

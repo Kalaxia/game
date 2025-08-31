@@ -23,10 +23,10 @@ readonly class ShipQueueHandler
 		if (null === ($queue = $this->shipQueueRepository->get($message->getShipQueueId()))) {
 			return;
 		}
-		$orbitalBase = $queue->base;
-		$player = $orbitalBase->player;
+		$planet = $queue->base;
+		$player = $planet->player;
 		// vaisseau construit
-		$orbitalBase->addShips($queue->shipNumber, $queue->quantity);
+		$planet->addShips($queue->shipNumber, $queue->quantity);
 		// increase player experience
 		$experience = $queue->quantity * ($this->getShipCategoriesConfiguration)($queue->shipNumber, 'points');
 		$this->playerManager->increaseExperience($player, $experience);
@@ -39,7 +39,7 @@ readonly class ShipQueueHandler
 		//				($queue->quantity > 1)
 		//					? \sprintf('vos <strong>%s %ss', $queue->quantity, $shipName)
 		//					: \sprintf('votre %s<strong>', $shipName),
-		//				$orbitalBase->name,
+		//				$planet->name,
 		//				$experience,
 		//				Format::addPlural($experience),
 		//			), 1 === $queue->dockType ? Flashbag::TYPE_DOCK1_SUCCESS : Flashbag::TYPE_DOCK2_SUCCESS);

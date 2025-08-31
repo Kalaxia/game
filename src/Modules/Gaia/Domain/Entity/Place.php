@@ -2,10 +2,8 @@
 
 namespace App\Modules\Gaia\Domain\Entity;
 
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Shared\Domain\Model\SystemUpdatable;
-use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
@@ -59,20 +57,20 @@ class Place implements SystemUpdatable
 	public function __construct(
 		#[ORM\Id]
 		#[ORM\Column(type: 'uuid')]
-		public Uuid $id,
-		#[ORM\ManyToOne(targetEntity: OrbitalBase::class, inversedBy: 'place')]
+		public Uuid        $id,
+		#[ORM\ManyToOne(targetEntity: Planet::class, inversedBy: 'place')]
 		#[ORM\JoinColumn(nullable: true)]
-		public OrbitalBase|null $base,
+		public Planet|null $base,
 		#[ORM\ManyToOne(targetEntity: System::class)]
-		public System $system,
+		public System      $system,
 		#[ORM\Column(type: 'smallint', enumType: PlaceType::class, options: ['unsigned' => true])]
-		public PlaceType $typeOfPlace,
+		public PlaceType   $typeOfPlace,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
-		public int $position,
+		public int         $position,
 		#[ORM\Column(type: 'float', options: ['unsigned' => true])]
-		public float $population,
+		public float       $population,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
-		public int $coefResources,
+		public int         $coefResources,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int $coefHistory,
 		#[ORM\Column(type: 'integer', options: ['unsigned' => true, 'default' => 0])]

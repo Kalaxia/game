@@ -11,13 +11,13 @@
 			  method="post">
 			<div class="label-box">
 				<span class="label">Ressources</span>
-				<span class="value">{{ current_base.resourcesStorage|number }}</span>
+				<span class="value">{{ current_planet.resourcesStorage|number }}</span>
 				{#<img class="icon-color" alt="ressources" src="{{ asset('build/media/resources/resource.png') }}">#}
 			</div>
 
 			<div class="label-box sf-quantity">
 				<label for="sell-market-quantity-resources" class="label">Quantité</label><br>
-				<twig:Input id="sell-market-quantity-resources" class="value" type="number" name="quantity" autocomplete="off" data-model="quantity" :max="current_base.resourcesStorage" />
+				<twig:Input id="sell-market-quantity-resources" class="value" type="number" name="quantity" autocomplete="off" data-model="quantity" :max="current_planet.resourcesStorage" />
 				{#<img class="icon-color" alt="ressources" src="{{ asset('build/media/resources/resource.png') }}">#}
 			</div>
 

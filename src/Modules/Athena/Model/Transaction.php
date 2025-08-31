@@ -3,10 +3,10 @@
 namespace App\Modules\Athena\Model;
 
 use App\Modules\Ares\Model\Commander;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class Transaction implements \JsonSerializable
 {
@@ -35,23 +35,23 @@ class Transaction implements \JsonSerializable
 	public const MAX_RATE_COMMANDER = 100;
 
 	public function __construct(
-		public Uuid $id,
-		public Player $player,
-		public OrbitalBase|null $base,
-		public int $type,			// see const TYP_*
-		public int $quantity,		// if ($type == TYP_RESOURCE) 	--> resource
+		public Uuid               $id,
+		public Player             $player,
+		public Planet|null        $base,
+		public int                $type,			// see const TYP_*
+		public int                $quantity,		// if ($type == TYP_RESOURCE) 	--> resource
 		// if ($type == TYP_SHIP) 		--> ship quantity
 		// if ($type == TYP_COMMANDER) 	--> experience
-		public int $identifier,		// if ($type == TYP_RESOURCE) 	--> NULL
+		public int                $identifier,		// if ($type == TYP_RESOURCE) 	--> NULL
 		// if ($type == TYP_SHIP) 		--> shipId
 		// if ($type == TYP_COMMANDER) 	--> rCommander
 		public \DateTimeImmutable $publishedAt,
-		public float $currentRate,
+		public float              $currentRate,
 		#[Assert\Expression(
 			"this.type == " . self::TYP_COMMANDER . " and value == null",
 			message: 'A commander transaction must have a commander set',
 		)]
-		public Commander|null $commander = null,
+		public Commander|null     $commander = null,
 		public Player|null $buyer = null,
 		public int $sellerFactionFees = 0,
 		public int $sellerFactionTaxRate = 0,

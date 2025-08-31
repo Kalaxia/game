@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Gaia\Manager;
 
 use App\Classes\Redis\RedisManager;
-use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Gaia\Domain\Entity\Sector;
+use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Gaia\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Gaia\Domain\Repository\SystemRepositoryInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -17,15 +17,15 @@ readonly class SectorManager
 	private const int CONTROLLED_SYSTEM_POINTS = 2;
 
 	public function __construct(
-		private ColorRepositoryInterface $colorRepository,
-		private RedisManager                   $redisManager,
-		private SystemRepositoryInterface      $systemRepository,
+		private ColorRepositoryInterface  $colorRepository,
+		private RedisManager              $redisManager,
+		private SystemRepositoryInterface $systemRepository,
 		private SectorRepositoryInterface $sectorRepository,
-		private OrbitalBaseRepositoryInterface $orbitalBaseRepository,
+		private PlanetRepositoryInterface $planetRepository,
 		#[Autowire('%gaia.sector_minimal_score%')]
-		private int $sectorMinimalScore,
+		private int                       $sectorMinimalScore,
 		#[Autowire('%gaia.scores%')]
-		private array $scores = [],
+		private array                     $scores = [],
 	) {
 	}
 
@@ -38,16 +38,16 @@ readonly class SectorManager
 	public function calculateOwnership(Sector $sector): array
 	{
 		$systems = $this->systemRepository->getSectorSystems($sector);
-		$bases = $this->orbitalBaseRepository->getSectorBases($sector);
+		$planets = $this->planetRepository->getSectorPlanets($sector);
 		$scores = [];
 
-		foreach ($bases as $base) {
-			$player = $base->player;
+		foreach ($planets as $planet) {
+			$player = $planet->player;
 
 			$scores[$player->faction->identifier] =
 				(!empty($scores[$player->faction->identifier]))
-				? $scores[$player->faction->identifier] + $this->scores[$base->typeOfBase]
-				: $this->scores[$base->typeOfBase]
+				? $scores[$player->faction->identifier] + $this->scores[$planet->typeOfBase]
+				: $this->scores[$planet->typeOfBase]
 			;
 		}
 		// For each system, the owning faction gains two points

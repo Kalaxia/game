@@ -6,8 +6,7 @@ namespace App\Modules\Athena\Infrastructure\Twig\Components\Organisms\Trade;
 
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Athena\Application\Registry\CurrentPlayerBasesRegistry;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Gaia\Application\Registry\CurrentPlayerPlanetsRegistry;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent(
@@ -20,7 +19,7 @@ readonly class CommanderSalesForm
 	public float $currentRate;
 
 	public function __construct(
-		private CurrentPlayerBasesRegistry $currentPlayerBasesRegistry,
+		private CurrentPlayerPlanetsRegistry $currentPlayerBasesRegistry,
 		private CommanderRepositoryInterface $commanderRepository
 	) {
 	}
@@ -29,7 +28,7 @@ readonly class CommanderSalesForm
 	{
 		$this->currentRate = $currentRate;
 
-		$this->commanders = $this->commanderRepository->getBaseCommanders(
+		$this->commanders = $this->commanderRepository->getPlanetCommanders(
 			$this->currentPlayerBasesRegistry->current(),
 			[Commander::INSCHOOL, Commander::RESERVE],
 			['experience' => 'DESC'],

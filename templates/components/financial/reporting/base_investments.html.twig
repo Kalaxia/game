@@ -14,47 +14,47 @@
 
 	<section class="mt-4">
 		<ul class="flex flex-col divide-y divide-gray-500 border-y border-gray-500">
-			{% for base in player_bases %}
-				{% set base_invest = base.iSchool + base.iAntiSpy %}
+			{% for planet in player_planets %}
+				{% set base_invest = planet.iSchool + planet.iAntiSpy %}
 
 				<li class="">
 					<details class="marker:content-['']" name="base-investments">
 						<summary class="cursor-pointer flex items-center justify-between py-2">
 							<span>
 								<span class="px-2">↓</span>
-								<span style="font-variant: all-small-caps" class="label">{{ base.name }}</span><br>
+								<span style="font-variant: all-small-caps" class="label">{{ planet.name }}</span><br>
 							</span>
 
 							<span class="text-sm">{{- base_invest|number -}}</span>
 						</summary>
 
 						<div>
-							<ul class="sub-list-type-1" id="invest-base-{{ base.id }}">
+							<ul class="sub-list-type-1" id="invest-base-{{ planet.id }}">
 								<li>
-									<label for="school-form-base-{{ base.id }}" class="flex justify-between items-center">
+									<label for="school-form-base-{{ planet.id }}" class="flex justify-between items-center">
 										<span>école de cmd.</span>
 										<span class="value">
-											{{- base.iSchool|number -}}
+											{{- planet.iSchool|number -}}
 										</span>
 									</label>
 
-									<form action="{{ path('update_base_investments', {'baseId': base.id, 'category': 'school'}) }}" method="POST" id="school-form-base-{{ base.id }}" class="flex py-2">
-										<twig:Input type="text" name="credit" value="{{ base.iSchool }}" class="w-48" />
+									<form action="{{ path('update_planet_investments', {'planetId': planet.id, 'category': 'school'}) }}" method="POST" id="school-form-base-{{ planet.id }}" class="flex py-2">
+										<twig:Input type="text" name="credit" value="{{ planet.iSchool }}" class="w-48" />
 										<twig:Button type="submit" :faction="current_player.faction">
 											ok
 										</twig:Button>
 									</form>
 								</li>
 								<li>
-									<label for="spying-form-base-{{ base.id }}" class="flex items-center justify-between">
+									<label for="spying-form-base-{{ planet.id }}" class="flex items-center justify-between">
 										<span class="label">contre-espionnage</span>
 										<span class="value">
-											{{- base.iAntiSpy|number -}}
+											{{- planet.iAntiSpy|number -}}
 										</span>
 									</label>
 
-									<form action="{{ path('update_base_investments', {'baseId': base.id, 'category': 'antispy'}) }}" method="POST" id="spying-form-base-{{ base.id }}" class="flex py-2">
-										<twig:Input type="text" name="credit" value="{{ base.iAntiSpy }}" class="w-48" />
+									<form action="{{ path('update_planet_investments', {'planetId': planet.id, 'category': 'antispy'}) }}" method="POST" id="spying-form-base-{{ planet.id }}" class="flex py-2">
+										<twig:Input type="text" name="credit" value="{{ planet.iAntiSpy }}" class="w-48" />
 										<twig:Button type="submit" :faction="current_player.faction">
 											ok
 										</twig:Button>

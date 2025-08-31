@@ -38,7 +38,7 @@ class Spy extends AbstractController
 		SpyReportRepositoryInterface $spyReportRepository,
 		EventDispatcherInterface $eventDispatcher,
 	): Response {
-		$placeId = $request->query->get('baseId') ?? throw new BadRequestHttpException('Missing place ID');
+		$placeId = $request->query->get('planetId') ?? throw new BadRequestHttpException('Missing place ID');
 
 		if (!Uuid::isValid($placeId)) {
 			throw new BadRequestHttpException('Place ID must be a valid UUID');

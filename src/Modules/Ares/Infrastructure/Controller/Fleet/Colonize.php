@@ -7,13 +7,12 @@ use App\Modules\Ares\Application\Handler\Movement\MoveFleet;
 use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Athena\Application\Registry\CurrentPlayerBasesRegistry;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
-use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Application\Registry\CurrentPlayerPlanetsRegistry;
 use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
@@ -32,21 +31,21 @@ use Symfony\Component\Uid\Uuid;
 class Colonize extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		Player $currentPlayer,
-		GetDistanceBetweenPlaces $getDistanceBetweenPlaces,
-		GetFactionsConfiguration $getFactionsConfiguration,
-		MoveFleet $moveFleet,
-		CurrentPlayerBasesRegistry $currentPlayerBasesRegistry,
-		CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
-		CommanderArmyHandler $commanderArmyHandler,
-		ColorRepositoryInterface $colorRepository,
-		CommanderRepositoryInterface $commanderRepository,
-		TechnologyRepositoryInterface $technologyRepository,
-		PlaceRepositoryInterface $placeRepository,
-		PlayerManager $playerManager,
-		EntityManagerInterface $entityManager,
-		Uuid $id,
+        Request                       $request,
+        Player                        $currentPlayer,
+        GetDistanceBetweenPlaces      $getDistanceBetweenPlaces,
+        GetFactionsConfiguration      $getFactionsConfiguration,
+        MoveFleet                     $moveFleet,
+        CurrentPlayerPlanetsRegistry  $currentPlayerBasesRegistry,
+        CurrentPlayerBonusRegistry    $currentPlayerBonusRegistry,
+        CommanderArmyHandler          $commanderArmyHandler,
+        ColorRepositoryInterface      $colorRepository,
+        CommanderRepositoryInterface  $commanderRepository,
+        TechnologyRepositoryInterface $technologyRepository,
+        PlaceRepositoryInterface      $placeRepository,
+        PlayerManager                 $playerManager,
+        EntityManagerInterface        $entityManager,
+        Uuid                          $id,
 	): Response {
 		// load the technologies
 		$technologies = $technologyRepository->getPlayerTechnology($currentPlayer);

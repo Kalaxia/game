@@ -3,7 +3,7 @@
 <header
 	class="flex justify-between bg-stone-900 border-t-4 {% if systemFactionIdentifier != 0 %}border-medium{{ systemFactionIdentifier }}{% else %}border-white{% endif %}"
 	 data-sector-color="{{ places[0].system.sector.faction.identifier ?? 0 }}"
-	 data-distance="{{ get_place_distance(current_base, places[0])|number }}">
+	 data-distance="{{ get_place_distance(current_planet, places[0])|number }}">
 	<ul class="flex items-center justify-between basis-2/3">
 		<li>Système #{{ system.id }}</li>
 		<li>Cordonnées {{ system|coords }}</li>

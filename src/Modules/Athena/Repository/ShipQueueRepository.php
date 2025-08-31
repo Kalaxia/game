@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Athena\Repository;
 
 use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\ShipQueue;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
@@ -28,14 +28,14 @@ class ShipQueueRepository extends DoctrineRepository implements ShipQueueReposit
 		return $this->findAll();
 	}
 
-	public function getBaseQueues(OrbitalBase $base): array
+	public function getBaseQueues(Planet $base): array
 	{
 		return $this->findBy([
 			'base' => $base,
 		]);
 	}
 
-	public function getByBaseAndDockType(OrbitalBase $base, int $dockType): array
+	public function getByBaseAndDockType(Planet $base, int $dockType): array
 	{
 		return $this->findBy([
 			'base' => $base,

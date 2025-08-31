@@ -5,23 +5,23 @@ declare(strict_types=1);
 namespace App\Modules\Athena\Domain\Service;
 
 use App\Modules\Athena\Domain\Repository\CommercialShippingRepositoryInterface;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
-use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Helper\PlanetHelper;
+use App\Modules\Gaia\Resource\PlanetResource;
 
 readonly class CountAvailableCommercialShips
 {
 	public function __construct(
 		private CommercialShippingRepositoryInterface $commercialShippingRepository,
-		private OrbitalBaseHelper $orbitalBaseHelper,
+		private PlanetHelper                          $planetHelper,
 	) {
 	}
 
-	public function __invoke(OrbitalBase $base): int
+	public function __invoke(Planet $base): int
 	{
 		// verif : have we enough commercialShips
-		$totalShips = $this->orbitalBaseHelper->getBuildingInfo(
-			OrbitalBaseResource::COMMERCIAL_PLATEFORME,
+		$totalShips = $this->planetHelper->getBuildingInfo(
+			PlanetResource::COMMERCIAL_PLATEFORME,
 			'level',
 			$base->levelCommercialPlateforme,
 			'nbCommercialShip',
@@ -29,7 +29,7 @@ readonly class CountAvailableCommercialShips
 		$usedShips = 0;
 
 		// TODO transform this part into an optimized SQL query
-		$commercialShippings = $this->commercialShippingRepository->getByBase($base);
+		$commercialShippings = $this->commercialShippingRepository->getByPlanet($base);
 
 		foreach ($commercialShippings as $commercialShipping) {
 			if ($commercialShipping->originBase->id->equals($base->id)) {

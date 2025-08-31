@@ -11,8 +11,8 @@
 		</header>
 
 		<section class="mt-4 flex flex-col gap-y-2">
-			{% for ship_number in current_base.shipStorage|keys %}
-				{% set ship_quantity = current_base.shipStorage[ship_number] %}
+			{% for ship_number in current_planet.shipStorage|keys %}
+				{% set ship_quantity = current_planet.shipStorage[ship_number] %}
 				{% if ship_quantity > 0 %}
 					<twig:ShipsSalesForm :currentRate="ship_current_rate" :shipQuantity="ship_quantity" :shipIdentifier="ship_number" />
 				{% endif %}

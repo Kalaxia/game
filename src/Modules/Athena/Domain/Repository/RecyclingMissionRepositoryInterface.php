@@ -2,8 +2,8 @@
 
 namespace App\Modules\Athena\Domain\Repository;
 
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\RecyclingMission;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -22,12 +22,12 @@ interface RecyclingMissionRepositoryInterface extends EntityRepositoryInterface
 	/**
 	 * @return list<RecyclingMission>
 	 */
-	public function getBaseMissions(OrbitalBase $base): array;
+	public function getBaseMissions(Planet $base): array;
 
 	/**
 	 * @return list<RecyclingMission>
 	 */
-	public function getBaseActiveMissions(OrbitalBase $base): array;
+	public function getPlanetActiveMissions(Planet $planet): array;
 
-	public function removeBaseMissions(OrbitalBase $base): void;
+	public function removePlanetMissions(Planet $planet): void;
 }

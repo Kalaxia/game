@@ -11,25 +11,25 @@
 						<td class="hb lt" title="niveau du bâtiment">niv.</td>
 						<td class="hb lt" title="prix en ressources du bâtiment">prix</td>
 						<td class="hb lt" title="temps de construction du bâtiment (heures:minutes:secondes) sans bonus">temps</td>
-						{% if building_number == constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::GENERATOR') %}
+						{% if building_number == constant('App\\Modules\\Gaia\\Resource\\PlanetResource::GENERATOR') %}
 							<td class="hb lt" title="nombre d\'éléments dans la file d\'attente de construction">queues</td>
-						{% elseif building_number == constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::REFINERY') %}
+						{% elseif building_number == constant('App\\Modules\\Gaia\\Resource\\PlanetResource::REFINERY') %}
 							<td class="hb lt" title="production de ressources par relève sans bonus et au coeff. ressource moyen de 50 %">prod.</td>
-						{% elseif building_number == constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::STORAGE') %}
+						{% elseif building_number == constant('App\\Modules\\Gaia\\Resource\\PlanetResource::STORAGE') %}
 							<td class="hb lt" title="stockage maximum de ressources sans bonus">stockage</td>
-						{% elseif building_number == constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::DOCK1') %}
+						{% elseif building_number == constant('App\\Modules\\Gaia\\Resource\\PlanetResource::DOCK1') %}
 							<td class="hb lt" title="nombre d\'éléments dans la file d\'attente de construction">queues</td>
 							<td class="hb lt" title="nombre de PEV que le chantier peut stocker">stockage</td>
-						{% elseif building_number == constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::DOCK2') %}
+						{% elseif building_number == constant('App\\Modules\\Gaia\\Resource\\PlanetResource::DOCK2') %}
 							<td class="hb lt" title="nombre d\'éléments dans la file d\'attente de construction">queues</td>
 							<td class="hb lt" title="nombre de PEV que le chantier peut stocker">stockage</td>
-						{% elseif building_number == constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::TECHNOSPHERE') %}
+						{% elseif building_number == constant('App\\Modules\\Gaia\\Resource\\PlanetResource::TECHNOSPHERE') %}
 							<td class="hb lt" title="nombre d\'éléments dans la file d\'attente de construction">queues</td>
-						{% elseif building_number == constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::COMMERCIAL_PLATEFORME') %}
+						{% elseif building_number == constant('App\\Modules\\Gaia\\Resource\\PlanetResource::COMMERCIAL_PLATEFORME') %}
 							<td class="hb lt" title="nombre de vaisseaux de transports">vaisseaux</td>
-						{% elseif building_number == constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::RECYCLING') %}
+						{% elseif building_number == constant('App\\Modules\\Gaia\\Resource\\PlanetResource::RECYCLING') %}
 							<td class="hb lt" title="nombre de collecteurs">collecteurs</td>
-						{% elseif building_number == constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::SPATIOPORT') %}
+						{% elseif building_number == constant('App\\Modules\\Gaia\\Resource\\PlanetResource::SPATIOPORT') %}
 							<td class="hb lt" title="nombre de routes commerciales disponibles">routes</td>
 						{% endif %}
 						<td class="hb lt" title="points gagné par le joueur lors de la construction du niveau de bâtiment">points</td>

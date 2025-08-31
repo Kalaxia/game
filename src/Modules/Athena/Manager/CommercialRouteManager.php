@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace App\Modules\Athena\Manager;
 
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
-use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
 use App\Modules\Demeter\Model\Color;
+use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Helper\PlanetHelper;
+use App\Modules\Gaia\Resource\PlanetResource;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerRegistry;
 
 readonly class CommercialRouteManager
 {
 	public function __construct(
-		private OrbitalBaseHelper                  $orbitalBaseHelper,
+		private PlanetHelper                       $planetHelper,
 		private CurrentPlayerRegistry              $currentPlayerRegistry,
 		private CommercialRouteRepositoryInterface $commercialRouteRepository,
 	) {
@@ -31,10 +31,10 @@ readonly class CommercialRouteManager
 	 *  max: int
 	 * }
 	 **/
-	public function getBaseCommercialData(OrbitalBase $orbitalBase): array
+	public function getBaseCommercialData(Planet $planet): array
 	{
 		$currentPlayer = $this->currentPlayerRegistry->get();
-		$routes = $this->commercialRouteRepository->getBaseRoutes($orbitalBase);
+		$routes = $this->commercialRouteRepository->getPlanetRoutes($planet);
 		// if (0 === count($routes)) {
 		//	return [];
 		// }
@@ -65,18 +65,18 @@ readonly class CommercialRouteManager
 			'stand_by' => $nCRInStandBy,
 			'total' => $nCROperational + $nCRInStandBy + $nCRWaitingForOther,
 			'total_income' => $totalIncome,
-			'max' => $this->orbitalBaseHelper->getBuildingInfo(
-				OrbitalBaseResource::SPATIOPORT,
+			'max' => $this->planetHelper->getBuildingInfo(
+				PlanetResource::SPATIOPORT,
 				'level',
-				$orbitalBase->levelSpatioport,
+				$planet->levelSpatioport,
 				'nbRoutesMax'
 			),
 		];
 	}
 
-	public function removeBaseRoutes(OrbitalBase $orbitalBase): void
+	public function removeBaseRoutes(Planet $planet): void
 	{
-		$routes = $this->commercialRouteRepository->getBaseRoutes($orbitalBase);
+		$routes = $this->commercialRouteRepository->getPlanetRoutes($planet);
 
 		foreach ($routes as $route) {
 			$this->commercialRouteRepository->remove($route);

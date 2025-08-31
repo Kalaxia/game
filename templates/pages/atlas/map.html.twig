@@ -29,9 +29,9 @@
 		>
 
 			{{ include('components/map/sectors.html.twig', { sectors, map_size, galaxy_configuration }) }}
-			{{ include('molecules/map/spying_circles.html.twig', { player_bases, map_size, galaxy_configuration }) }}
+			{{ include('molecules/map/spying_circles.html.twig', { player_planets, map_size, galaxy_configuration }) }}
 
-			{{ include('molecules/map/current_base.html.twig', { player_bases, map_size, galaxy_configuration }) }}
+			{{ include('molecules/map/current_planet.html.twig', { player_planets, map_size, galaxy_configuration }) }}
 			{{ include('molecules/map/commercial_routes.html.twig', { commercial_routes, default_map_parameters, map_size, galaxy_configuration }) }}
 			{{ include('molecules/map/fleet_movements.html.twig', { moving_commanders, default_map_parameters, map_size }) }}
 			{{ include('molecules/map/attacks.html.twig', { attacking_commanders, default_map_parameters, map_size }) }}

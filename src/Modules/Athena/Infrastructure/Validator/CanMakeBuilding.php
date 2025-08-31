@@ -12,7 +12,7 @@ class CanMakeBuilding extends Sequentially
 	) {
 		parent::__construct([
 			'constraints' => [
-				new HasRightBaseType(),
+				new HasRightPlanetType(),
 				new HasUnlockedBuilding(),
 				new IsValidTargetLevel(),
 				new CanOrderBuilding($buildingQueuesCount),
