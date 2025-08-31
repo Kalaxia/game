@@ -11,6 +11,6 @@ class CanOrbitalBaseTradeWithPlace extends OrbitalBaseSpecification
 	 */
 	public function isSatisfiedBy($candidate): bool
 	{
-		return null !== $candidate->player && !$candidate->id->equals($this->orbitalBase->place->id);
+		return null !== $candidate->base?->player && !$candidate->id->equals($this->orbitalBase->place->id);
 	}
 }

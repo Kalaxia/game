@@ -55,7 +55,7 @@ class CreateMission extends AbstractController
 
 		$startPlace = $currentBase->place;
 		// TODO Make constants or enum
-		if (null !== $destinationPlace->player || !in_array($destinationPlace->typeOfPlace, [2, 3, 4, 5])) {
+		if (null !== $destinationPlace->base || !in_array($destinationPlace->typeOfPlace, [2, 3, 4, 5])) {
 			throw new BadRequestHttpException('On ne peut pas recycler ce lieu, petit hacker.');
 		}
 

@@ -19,6 +19,6 @@ readonly class PlaceHavePlayersFaction implements Specification
 	 */
 	public function isSatisfiedBy($candidate): bool
 	{
-		return $this->player->faction->id->equals($candidate->player->faction->id);
+		return $this->player->faction->id->equals($candidate->base?->player->faction->id);
 	}
 }

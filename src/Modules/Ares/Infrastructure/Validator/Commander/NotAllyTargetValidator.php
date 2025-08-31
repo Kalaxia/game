@@ -30,11 +30,11 @@ class NotAllyTargetValidator extends ConstraintValidator
 		$place = $value->getPlace();
 		$faction = $commander->player->faction;
 
-		if (null === $place->player) {
+		if (null === $place->base) {
 			return;
 		}
 
-		if ($faction->id->equals($place->player->faction->id) || Color::ALLY === $faction->relations[$place->player->faction->identifier]) {
+		if ($faction->id->equals($place->base->player->faction->id) || Color::ALLY === $faction->relations[$place->base->player->faction->identifier]) {
 			$this->context
 				->buildViolation('Vous ne pouvez pas attaquer un lieu appartenant à votre Faction ou d\'une faction alliée.')
 				->addViolation();

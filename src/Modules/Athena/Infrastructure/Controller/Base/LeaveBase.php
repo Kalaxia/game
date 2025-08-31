@@ -82,7 +82,6 @@ class LeaveBase extends AbstractController
 		$place = $currentBase->place;
 
 		$orbitalBaseManager->changeOwner($currentBase, null);
-		$place->player = null;
 		$entityManager->flush();
 
 		$eventDispatcher->dispatch(new PlaceOwnerChangeEvent($place));

@@ -82,7 +82,7 @@ class Loot extends AbstractController
 		}
 
 		// Move that part in a Specification class
-		if (null !== ($targetPlayer = $place->player) && 1 === $targetPlayer->level && !in_array($place->player->statement, [Player::DELETED, Player::DEAD])) {
+		if (null !== ($targetPlayer = $place->base?->player) && 1 === $targetPlayer->level && !in_array($place->base->player->statement, [Player::DELETED, Player::DEAD])) {
 			throw new ConflictHttpException('Vous ne pouvez pas piller un joueur actif de niveau 1.');
 		}
 

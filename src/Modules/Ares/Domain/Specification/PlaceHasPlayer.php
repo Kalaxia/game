@@ -26,6 +26,6 @@ class PlaceHasPlayer implements Specification
 	 */
 	public function isSatisfiedBy($candidate): bool
 	{
-		return null !== $candidate->player;
+		return null !== $candidate->base?->player;
 	}
 }

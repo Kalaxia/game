@@ -3,11 +3,11 @@
 <div class="w-full border-l-2 border-stone-900 min-w-80">
 	<div class="flex items-center justify-around p-4 border-b-2 border-stone-900">
 		{% if place.typeOfPlace == 1 %}
-			{% if place.player is null and place.typeOfPlace != 1 %}
+			{% if place.base.player is not defined and place.typeOfPlace != 1 %}
 				{% set tooltip = 'Vous ne pouvez pas attaquer une planète non-habitable' %}
-			{% elseif place.typeOfPlace == 1 and place.player is not null and place.player.faction.id == current_player.faction.id %}
+			{% elseif place.typeOfPlace == 1 and place.base is not null and place.base.player.faction.id == current_player.faction.id %}
 				{% set tooltip = 'Vous ne pouvez pas attaquer un joueur de votre faction' %}
-			{% elseif place.typeOfPlace == 1 and place.player is not null and place.player.level == 1 and place.player is not null %}
+			{% elseif place.typeOfPlace == 1 and place.base is not null and place.base.player.level == 1 %}
 				{% set tooltip = 'Ce joueur est sous protection débutant' %}
 			{% else %}
 				{% set tooltip = '' %}
@@ -23,15 +23,16 @@
 			{% set max_bases = technologies.getTechnology(constant('App\\Modules\\Promethee\\Model\\TechnologyId::BASE_QUANTITY')) + 1 %}
 			{% set total_bases = get_player_bases_count(moving_commanders) %}
 
-			{% if place.player is null and place.typeOfPlace != 1 %}
+			{# TODO Replace with specification #}
+			{% if place.base is null and place.typeOfPlace != 1 %}
 				{% set tooltip = 'Vous ne pouvez pas coloniser une planète non-habitable.' %}
-			{% elseif place.typeOfPlace == 1 and place.player is not null and place.player.faction.id == current_player.faction.id %}
+			{% elseif place.typeOfPlace == 1 and place.base is not null and place.base.player.faction.id == current_player.faction.id %}
 				{% set tooltip = 'Vous ne pouvez pas conquérir un joueur de votre faction.' %}
-			{% elseif place.typeOfPlace == 1 and place.player is not null and place.player.level <= 3 and place.player.level > 0 %}
+			{% elseif place.typeOfPlace == 1 and place.base is not null and place.base.player.level <= 3 %}
 				{% set tooltip = 'Vous ne pouvez pas conquérir un joueur de niveau 3 ou inférieur.' %}
-			{% elseif place.player is null and technologies.getTechnology(constant('App\\Modules\\Promethee\\Model\\TechnologyId::COLONIZATION')) == 0 %}
+			{% elseif place.base is null and technologies.getTechnology(constant('App\\Modules\\Promethee\\Model\\TechnologyId::COLONIZATION')) == 0 %}
 				{% set tooltip = 'Vous devez développer la technologie colonisation.' %}
-			{% elseif place.player is not null and technologies.getTechnology(constant('App\\Modules\\Promethee\\Model\\TechnologyId::COLONIZATION')) == 0 %}
+			{% elseif place.base is not null and technologies.getTechnology(constant('App\\Modules\\Promethee\\Model\\TechnologyId::COLONIZATION')) == 0 %}
 				{% set tooltip = 'Vous devez développer la technologie conquête.' %}
 			{% elseif total_bases >= max_bases %}
 				{% set tooltip = 'Vous devez améliorer le niveau de la technologie administration étendue pour disposer de planète supplémentaire.' %}
@@ -43,14 +44,14 @@
 				data-action="click->map--action-box#chooseAction"
 				data-action-id="2"
 				:disabled="can_player_attack_place(current_player, place) == false"
-				:name="'Lancer une ' ~ (place.player is null ? 'colonisation' : 'conquête')"
+				:name="'Lancer une ' ~ (place.base is null ? 'colonisation' : 'conquête')"
 				:tooltip="tooltip"
 				picto="images/map/conquer.svg" />
 
 
 			{% if place.id == current_base.id %}
 				{% set tooltip = 'Vous ne pouvez pas déplacer une flotte sur votre planète de départ' %}
-			{% elseif place.player is not null and place.player.faction.id != current_player.faction.id %}
+			{% elseif place.base is not null and place.base.player.faction.id != current_player.faction.id %}
 				{% set tooltip = 'Vous ne pouvez donner une de vos flotte qu\'a un membre de votre faction' %}
 			{% else %}
 				{% set tooltip = '' %}
@@ -58,13 +59,13 @@
 			<twig:PlaceAction
 				data-action="click->map--action-box#chooseAction"
 				data-action-id="3"
-				:name="place.player is not null and place.player.id == current_base.player.id ? 'Déplacer une flotte' : 'Donner votre flotte'"
+				:name="place.base is not null and place.base.player.id == current_base.player.id ? 'Déplacer une flotte' : 'Donner votre flotte'"
 				:tooltip="tooltip"
 				:disabled="can_player_move_to_place(current_player, place, current_base) == false"
 				picto="images/legacy/picto/ships/Fleet.svg" />
 
 
-			{% if place.player is null %}
+			{% if place.base is null %}
 				{% set tooltip = 'Vous ne pouvez proposer une route commerciale qu\'à des joueurs.' %}
 			{% elseif place.id == current_base.place.id %}
 				{% set tooltip = 'Vous ne pouvez pas proposer une route commerciale sur votre propre base.' %}
@@ -84,9 +85,9 @@
 				:tooltip="tooltip"
 				picto="images/legacy/picto/B_Merc_64px.png" />
 
-			{% if place.player is not null and place.player.faction.id == current_player.faction.id %}
+			{% if place.base is not null and place.base.player.faction.id == current_player.faction.id %}
 				{% set tooltip = 'Vous ne pouvez pas espionner un joueur de votre faction' %}
-			{% elseif place.player is null and place.typeOfPlace != 1 %}
+			{% elseif place.base is null and place.typeOfPlace != 1 %}
 				{% set tooltip = 'Vous ne pouvez pas espionner une planète non-habitable' %}
 			{% else %}
 				{% set tooltip = '' %}
@@ -131,7 +132,7 @@
 				</twig:CommanderTile>
 			</twig:PlaceActionPanel>
 
-			{% if place.player is null %}
+			{% if place.base is null %}
 				{% set cost = colonization_cost|number %}
 				{% set action_url = path('colonize', {'id': '{id}', 'placeId': place.id}) %}
 				{% set label = 'Lancer la colonisation' %}
@@ -140,7 +141,7 @@
 				{% set action_url = path('conquer', {'id': '{id}', 'placeId': place.id}) %}
 				{% set label = 'Lancer la conquête' %}
 			{% endif %}
-			<twig:PlaceActionPanel :title="'Lancer une ' ~ (place.player is null ? 'colonisation' : 'conquête')" id="2" :actionUrl="action_url">
+			<twig:PlaceActionPanel :title="'Lancer une ' ~ (place.base is null ? 'colonisation' : 'conquête')" id="2" :actionUrl="action_url">
 				<twig:CommanderTile :travelTime="travel_time" :place="place">
 					<twig:block name="travel_details">
 						{{ parent() }}
@@ -150,12 +151,12 @@
 				</twig:CommanderTile>
 			</twig:PlaceActionPanel>
 
-			<twig:PlaceActionPanel :title="place.player is not null and place.player.id == current_base.player.id ? 'Déplacer une flotte' : 'Donner votre flotte'" id="3" :actionUrl="path('move_fleet', {'id': '{id}', 'placeId': place.id})">
+			<twig:PlaceActionPanel :title="place.base is not null and place.base.player.id == current_base.player.id ? 'Déplacer une flotte' : 'Donner votre flotte'" id="3" :actionUrl="path('move_fleet', {'id': '{id}', 'placeId': place.id})">
 				<twig:CommanderTile :travelTime="travel_time" :place="place">
 					<twig:block name="alerts">
 						{{ parent() }}
 
-						{% if place.player is not null and place.player.id != current_player.id %}
+						{% if place.base is not null and place.base.player.id != current_player.id %}
 							<twig:CommanderAlert identifier="lost-fleet" :factionIdentifier="current_player.faction.identifier">
 								Attention, vous perdrez votre flotte !
 							</twig:CommanderAlert>

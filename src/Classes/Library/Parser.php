@@ -151,8 +151,8 @@ class Parser
 			'#\[\#(.+)\]#isU',
 			function ($m) {
 				if (($place = $this->placeRepository->get($m[1]))) {
-					if ($place->getTypeOfBase() > 0) {
-						return '<a href="'.$this->urlGenerator->generate('map', ['place' => $place->id]).'" class="color'.$place->player->faction->identifier.' hb lt" title="voir la planète">'.$place->base->name.'</a>';
+					if ($place->base !== null) {
+						return '<a href="'.$this->urlGenerator->generate('map', ['place' => $place->id]).'" class="color'.$place->base->player->faction->identifier.' hb lt" title="voir la planète">'.$place->base->name.'</a>';
 					} else {
 						return '<a href="'.$this->urlGenerator->generate('map', ['place' => $place->id]).'" class="hb lt" title="voir la planète">planète rebelle</a>';
 					}

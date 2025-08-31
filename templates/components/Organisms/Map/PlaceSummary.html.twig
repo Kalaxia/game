@@ -1,4 +1,4 @@
-{% set playerFactionIdentifier = place.player.faction.identifier ?? 0 %}
+{% set playerFactionIdentifier = place.base.player.faction.identifier ?? 0 %}
 
 <div class="column info divide-y divide-stone-900 py-4 min-w-48 h-full">
 	{% set reports = spyReports|filter(r => r.place.id.equals(place.id)) %}
@@ -22,15 +22,15 @@
 				<span class="font-medium text-sm">Propriété du</span>
 				<span>
 					{% if playerFactionIdentifier != 0 %}
-						{% set player_status = get_faction_info(playerFactionIdentifier, 'status')[place.player.status - 1] %}
+						{% set player_status = get_faction_info(playerFactionIdentifier, 'status')[place.base.player.status - 1] %}
 						{{ player_status }}
 						<span class="player-name">
-							<a href="{{ path('embassy', {'player': place.player.id }) }}" class="color{{ playerFactionIdentifier }}">
-								{{ place.player.name }}
+							<a href="{{ path('embassy', {'player': place.base.player.id }) }}" class="color{{ playerFactionIdentifier }}">
+								{{ place.base.player.name }}
 							</a>
 						</span>
 					{% else %}
-						rebelle <span class="player-name">{{ place.player.name }}</span>
+						rebelle <span class="player-name">{{ place.base.player.name }}</span>
 					{% endif %}
 				</span>
 			</div>

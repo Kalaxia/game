@@ -11,7 +11,9 @@ class CanPlayerAttackPlace extends PlayerSpecification
 	 */
 	public function isSatisfiedBy($candidate): bool
 	{
-		return (null !== $candidate->player && !$candidate->player->faction->id->equals($this->player->faction->id))
-			|| (null === $candidate->player && 1 === $candidate->typeOfPlace);
+		$player = $candidate->base?->player;
+
+		return (null !== $player && !$player->faction->id->equals($this->player->faction->id))
+			|| (null === $player && 1 === $candidate->typeOfPlace);
 	}
 }

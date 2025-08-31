@@ -40,8 +40,8 @@ readonly class LootManager
 	public function loot(Commander $commander): void
 	{
 		$place = $commander->destinationPlace;
-		$placePlayer = $place->player;
 		$placeBase = $place->base;
+		$placePlayer = $placeBase?->player;
 		$placeCommanders = null !== $placeBase ? $this->commanderRepository->getBaseCommanders($placeBase) : [];
 		// @WARNING possibly not the right property to use
 		$commanderPlace = $commander->startPlace;
@@ -90,12 +90,12 @@ readonly class LootManager
 			// si il y a une base d'un joueur
 		} else {
 			// TODO Move to Specification class
-			LiveReport::$isLegal = $commanderColor->canAttackLegally($place->player->faction);
+			LiveReport::$isLegal = $commanderColor->canAttackLegally($place->base->player->faction);
 
 			// planète à joueur : si $this->rColor != commandant->rColor
 			// si il peut l'attaquer
 			// TODO move to spec
-			if ((!$place->player->faction->id->equals($commander->player->faction->id) && $place->player->level > 1 && Color::ALLY !== $commanderColor->relations[$place->player->faction->identifier]) || null === $place->player) {
+			if ((!$place->base->player->faction->id->equals($commander->player->faction->id) && $place->base->player->level > 1 && Color::ALLY !== $commanderColor->relations[$place->base->player->faction->identifier]) || null === $place->base) {
 				$dCommanders = [];
 				foreach ($placeCommanders as $dCommander) {
 					if ($dCommander->isAffected() && 1 == $dCommander->line) {
@@ -147,7 +147,7 @@ readonly class LootManager
 				}
 			} else {
 				// si c'est la même couleur
-				if ($place->player->id === $commander->player->id) {
+				if ($place->base->player->id === $commander->player->id) {
 					// si c'est une de nos planètes
 					// on tente de se poser
 					$this->commanderManager->uChangeBase($commander);
