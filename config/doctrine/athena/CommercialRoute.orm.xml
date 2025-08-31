@@ -2,10 +2,10 @@
 	<entity name="App\Modules\Athena\Model\CommercialRoute" table="commercialRoute">
 		<id name="id" column="id" type="uuid" />
 
-		<many-to-one field="originBase" target-entity="App\Modules\Athena\Model\OrbitalBase">
+		<many-to-one field="originBase" target-entity="App\Modules\Gaia\Domain\Entity\Planet">
 			<join-column name="origin_base_id" nullable="false" />
 		</many-to-one>
-		<many-to-one field="destinationBase" target-entity="App\Modules\Athena\Model\OrbitalBase">
+		<many-to-one field="destinationBase" target-entity="App\Modules\Gaia\Domain\Entity\Planet">
 			<join-column name="destination_base_id" nullable="false" />
 		</many-to-one>
 

@@ -40,23 +40,23 @@ class ChangeLine extends AbstractController
 			throw $this->createAccessDeniedException('Ce commandant ne vous appartient pas');
 		}
 
-		$orbitalBase = $commander->base;
+		$planet = $commander->base;
 
 		// checker si on a assez de place !!!!!
 		if (1 == $commander->line) {
-			$secondLineCommanders = $commanderRepository->getCommandersByLine($orbitalBase, 2);
+			$secondLineCommanders = $commanderRepository->getCommandersByLine($planet, 2);
 
 			$commander->line = 2;
-			if (count($secondLineCommanders) >= PlaceResource::get($orbitalBase->typeOfBase, 'r-line')) {
+			if (count($secondLineCommanders) >= PlaceResource::get($planet->typeOfBase, 'r-line')) {
 				$secondLineCommanders[0]->line = 1;
 
 				$this->addFlash('success', 'Votre commandant '.$commander->name.' a échangé sa place avec '.$commander->name.'.');
 			}
 		} else {
-			$firstLineCommanders = $commanderRepository->getCommandersByLine($orbitalBase, 1);
+			$firstLineCommanders = $commanderRepository->getCommandersByLine($planet, 1);
 
 			$commander->line = 1;
-			if (count($firstLineCommanders) >= PlaceResource::get($orbitalBase->typeOfBase, 'l-line')) {
+			if (count($firstLineCommanders) >= PlaceResource::get($planet->typeOfBase, 'l-line')) {
 				$firstLineCommanders[0]->line = 2;
 				$this->addFlash('success', 'Votre commandant '.$commander->name.' a échangé sa place avec '.$commander->name.'.');
 			}

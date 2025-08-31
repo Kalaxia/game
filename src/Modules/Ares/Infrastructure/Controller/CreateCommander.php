@@ -7,8 +7,8 @@ use App\Modules\Ares\Application\Handler\CommanderExperienceHandler;
 use App\Modules\Ares\Domain\Event\Commander\NewCommanderEvent;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Resource\SchoolClassResource;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Resource\PlaceResource;
 use App\Modules\Zeus\Helper\CheckName;
 use App\Modules\Zeus\Manager\PlayerManager;
@@ -25,13 +25,13 @@ use Symfony\Component\Uid\Uuid;
 class CreateCommander extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		Player $currentPlayer,
-		OrbitalBase $currentBase,
-		CommanderExperienceHandler $commanderExperienceHandler,
-		CommanderRepositoryInterface $commanderRepository,
-		PlayerManager $playerManager,
-		EventDispatcherInterface $eventDispatcher,
+        Request                      $request,
+        Player                       $currentPlayer,
+        Planet                       $currentBase,
+        CommanderExperienceHandler   $commanderExperienceHandler,
+        CommanderRepositoryInterface $commanderRepository,
+        PlayerManager                $playerManager,
+        EventDispatcherInterface     $eventDispatcher,
 	): Response {
 		$school = 0;
 		$name = $request->request->get('name') ?? throw new BadRequestHttpException('Missing name');
@@ -39,15 +39,15 @@ class CreateCommander extends AbstractController
 		$cn = new CheckName();
 		$cn->maxLength = 20;
 
-		$schoolCommanders = $commanderRepository->getBaseCommanders($currentBase, [Commander::INSCHOOL]);
+		$schoolCommanders = $commanderRepository->getPlanetCommanders($currentBase, [Commander::INSCHOOL]);
 
 		if (count($schoolCommanders) >= PlaceResource::get($currentBase->typeOfBase, 'school-size')) {
 			throw new ConflictHttpException('Trop d\'officiers en formation. Déplacez des officiers dans le mess pour libérer de la place.');
 		}
-		$reserveCommanders = $commanderRepository->getBaseCommanders($currentBase, [Commander::RESERVE]);
+		$reserveCommanders = $commanderRepository->getPlanetCommanders($currentBase, [Commander::RESERVE]);
 
-		if (count($reserveCommanders) >= OrbitalBase::MAXCOMMANDERINMESS) {
-			throw new ConflictHttpException('Vous ne pouvez pas créer de nouveaux officiers si vous en avez déjà '.Orbitalbase::MAXCOMMANDERINMESS.' ou plus.');
+		if (count($reserveCommanders) >= Planet::MAXCOMMANDERINMESS) {
+			throw new ConflictHttpException('Vous ne pouvez pas créer de nouveaux officiers si vous en avez déjà '.Planet::MAXCOMMANDERINMESS.' ou plus.');
 		}
 		$nbrCommandersToCreate = random_int(SchoolClassResource::getInfo($school, 'minSize'), SchoolClassResource::getInfo($school, 'maxSize'));
 

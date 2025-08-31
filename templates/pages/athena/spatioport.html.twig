@@ -1,4 +1,4 @@
-{% extends 'layouts/athena/current_base.html.twig' %}
+{% extends 'layouts/athena/current_planet.html.twig' %}
 
 {% block content %}
 	<div class="flex gap-x-4">
@@ -6,9 +6,9 @@
 			<header>
 				{#<img src="{{ asset('build/media/orbitalbase/spatioport.png') }}" alt="" />#}
 				<twig:H2>
-					{{- get_building_info(constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::SPATIOPORT'), 'frenchName') -}}
+					{{- get_building_info(constant('App\\Modules\\Gaia\\Resource\\PlanetResource::SPATIOPORT'), 'frenchName') -}}
 				</twig:H2>
-				<twig:H5>Niveau {{ current_base.levelSpatioport }}</twig:H5>
+				<twig:H5>Niveau {{ current_planet.levelSpatioport }}</twig:H5>
 			</header>
 
 			<section class="mt-4">
@@ -157,13 +157,13 @@
 									{% if is_player_from_negora %}
 										{% set price = price - (price * negora_commercial_bonus / 100)|round %}
 									{% endif %}
-									<a href="{{ path('accept_commercial_route', {'baseId': route.destinationBase.id, 'id': route.id}) }}">
+									<a href="{{ path('accept_commercial_route', {'planetId': route.destinationBase.id, 'id': route.id}) }}">
 										<twig:Button :faction="current_player.faction">
 											accepter pour {{ price|number }} crédits
 										</twig:Button>
 									</a>
 								{% endif %}
-								<a href="{{ path('refuse_commercial_route', {'baseId': route.destinationBase.id, 'id': route.id }) }}" class="hb lt" title="refuser l'offre">
+								<a href="{{ path('refuse_commercial_route', {'planetId': route.destinationBase.id, 'id': route.id }) }}" class="hb lt" title="refuser l'offre">
 									<twig:Button :faction="current_player.faction">
 										x
 									</twig:Button>
@@ -237,13 +237,13 @@
 						<section class="mt-4">
 							<div class="tool">
 								{% if route.isProposed %}
-									<a href="{{ path('cancel_route', {'baseId': current_base.id, 'id': route.id}) }}">
+									<a href="{{ path('cancel_route', {'planetId': current_planet.id, 'id': route.id}) }}">
 										<twig:Button :faction="current_player.faction">
 											annuler la proposition commerciale
 										</twig:Button>
 									</a>
 								{% else %}
-									<a href="{{ path('delete_route', {'baseId': current_base.id, 'id': route.id}) }}">
+									<a href="{{ path('delete_route', {'planetId': current_planet.id, 'id': route.id}) }}">
 										<twig:Button :faction="current_player.faction">
 											démanteler la route commerciale
 										</twig:Button>
@@ -305,7 +305,7 @@
 				<twig:H2>À propos</twig:H2>
 			</header>
 			<section class="mt-4">
-				<p class="text-sm">{{ get_building_info(constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::SPATIOPORT'), 'description')|raw }}</p>
+				<p class="text-sm">{{ get_building_info(constant('App\\Modules\\Gaia\\Resource\\PlanetResource::SPATIOPORT'), 'description')|raw }}</p>
 			</section>
 		</div>
 	</div>

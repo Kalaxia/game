@@ -11,15 +11,15 @@ use App\Modules\Ares\Domain\Repository\ReportRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\LiveReport;
 use App\Modules\Ares\Model\Report;
-use App\Modules\Athena\Application\Handler\OrbitalBasePointsHandler;
-use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
+use App\Modules\Gaia\Domain\Service\UpdatePlanetPoints;
 use App\Modules\Gaia\Event\PlaceOwnerChangeEvent;
 use App\Modules\Gaia\Manager\PlaceManager;
+use App\Modules\Gaia\Manager\PlanetManager;
 use App\Modules\Hermes\Manager\NotificationManager;
 use App\Modules\Zeus\Manager\PlayerBonusManager;
 use App\Modules\Zeus\Model\Player;
@@ -30,20 +30,20 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 readonly class ConquestManager
 {
 	public function __construct(
-		private CommanderManager $commanderManager,
+		private CommanderManager             $commanderManager,
 		private CommanderRepositoryInterface $commanderRepository,
-		private MoveFleet $moveFleet,
-		private PlaceManager $placeManager,
-		private OrbitalBasePointsHandler $orbitalBasePointsHandler,
-		private OrbitalBaseManager $orbitalBaseManager,
-		private OrbitalBaseRepositoryInterface $orbitalBaseRepository,
-		private PlayerBonusManager $playerBonusManager,
-		private ReportRepositoryInterface $reportRepository,
-		private EntityManagerInterface $entityManager,
-		private EventDispatcherInterface $eventDispatcher,
-		private NotificationManager $notificationManager,
-		private int $colonizationCost,
-		private int $conquestCost,
+		private MoveFleet                    $moveFleet,
+		private PlaceManager                 $placeManager,
+		private UpdatePlanetPoints           $updatePlanetPoints,
+		private PlanetManager                $planetManager,
+		private PlanetRepositoryInterface    $planetRepository,
+		private PlayerBonusManager           $playerBonusManager,
+		private ReportRepositoryInterface    $reportRepository,
+		private EntityManagerInterface       $entityManager,
+		private EventDispatcherInterface     $eventDispatcher,
+		private NotificationManager          $notificationManager,
+		private int                          $colonizationCost,
+		private int                          $conquestCost,
 	) {
 	}
 
@@ -83,7 +83,7 @@ readonly class ConquestManager
 				$reportIds = [];
 				$reportArray = [];
 				$placeBase = $place->base;
-				$baseCommanders = $this->commanderRepository->getBaseCommanders($placeBase);
+				$baseCommanders = $this->commanderRepository->getPlanetCommanders($placeBase);
 
 				for ($nbrBattle = 0; $nbrBattle < count($baseCommanders); ++$nbrBattle) {
 					if (!$baseCommanders[$nbrBattle]->isAffected()) {
@@ -130,7 +130,7 @@ readonly class ConquestManager
 						$this->placeManager->sendNotifForConquest($place, Place::CONQUERPLAYERWHITBATTLESUCCESS, $commander, $reportIds);
 					}
 					// changer l'appartenance de la base (et de la place)
-					$this->orbitalBaseManager->changeOwner($placeBase, $commander->player);
+					$this->planetManager->changeOwner($placeBase, $commander->player);
 
 					$commander->base = $placeBase;
 
@@ -185,7 +185,7 @@ readonly class ConquestManager
 			if (!$commander->isDead()) {
 				// créer une base
 				// TODO factorize in a service
-				$ob = new OrbitalBase(
+				$ob = new Planet(
 					id: Uuid::v4(),
 					place: $place,
 					player: $commander->player,
@@ -197,9 +197,9 @@ readonly class ConquestManager
 					createdAt: new \DateTimeImmutable(),
 					updatedAt: new \DateTimeImmutable(),
 				);
-				$this->orbitalBasePointsHandler->updatePoints($ob);
+				$this->updatePlanetPoints->updatePoints($ob);
 
-				$this->orbitalBaseRepository->save($ob);
+				$this->planetRepository->save($ob);
 
 				// attibuer le commander à la place
 				$commander->base = $ob;

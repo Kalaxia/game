@@ -17,8 +17,8 @@ use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\LiveReport;
 use App\Modules\Ares\Model\Report;
 use App\Modules\Artemis\Application\Handler\AntiSpyHandler;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Manager\PlaceManager;
 use App\Modules\Zeus\Manager\PlayerBonusManager;
 use App\Modules\Zeus\Model\Player;
@@ -85,12 +85,12 @@ readonly class CommanderManager implements SchedulerInterface
 	public function emptySquadrons(Commander $commander): void
 	{
 		$this->commanderArmyHandler->setArmy($commander);
-		$orbitalBase = $commander->base;
+		$planet = $commander->base;
 
 		$nbSquadrons = count($commander->squadronsIds);
 		for ($i = 0; $i < $nbSquadrons; ++$i) {
 			for ($j = 0; $j < 12; ++$j) {
-				$orbitalBase->addShips($j, $commander->getSquadron($i)->getShipQuantity($j));
+				$planet->addShips($j, $commander->getSquadron($i)->getShipQuantity($j));
 			}
 			$commander->getSquadron($i)->emptySquadron();
 		}
@@ -116,8 +116,8 @@ readonly class CommanderManager implements SchedulerInterface
 	{
 		$place = $commander->destinationPlace;
 		$base = $place->base;
-		$placeCommanders = $this->commanderRepository->getBaseCommanders($base);
-		// @WARNING check if this is the right property to use, originally rbaseId to Place
+		$placeCommanders = $this->commanderRepository->getPlanetCommanders($base);
+		// @WARNING check if this is the right property to use, originally rplanetId to Place
 		$commanderPlace = $commander->startPlace;
 		$player = $commander->player;
 		$playerBonus = $this->playerBonusManager->getBonusByPlayer($player);
@@ -140,8 +140,8 @@ readonly class CommanderManager implements SchedulerInterface
 		}
 		$maxCom =
 			($place->base->isMilitaryBase() || $place->base->isCapital())
-			? OrbitalBase::MAXCOMMANDERMILITARY
-			: OrbitalBase::MAXCOMMANDERSTANDARD
+			? Planet::MAXCOMMANDERMILITARY
+			: Planet::MAXCOMMANDERSTANDARD
 		;
 
 		// si place a assez de case libre :
@@ -154,7 +154,7 @@ readonly class CommanderManager implements SchedulerInterface
 				}
 			}
 
-			if (OrbitalBase::MAXCOMMANDERMILITARY == $maxCom) {
+			if (Planet::MAXCOMMANDERMILITARY == $maxCom) {
 				if ($comLine2 < 2) {
 					$commander->line = 2;
 				} else {

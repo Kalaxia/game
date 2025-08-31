@@ -20,15 +20,15 @@ readonly class PlayerSpyingHandler extends SpyingHandler
 
 	protected function processSpyingMission(SpyReport $spyReport): void
 	{
-		$orbitalBase = $spyReport->place->base;
+		$planet = $spyReport->place->base;
 
-		$spyReport->resources = $orbitalBase->resourcesStorage;
+		$spyReport->resources = $planet->resourcesStorage;
 
-		$spyReport->commercialRouteIncome = $this->commercialRouteRepository->getBaseIncome($orbitalBase);
+		$spyReport->commercialRouteIncome = $this->commercialRouteRepository->getPlanetIncome($planet);
 
 		$commandersArray = [];
-		$commanders = $this->commanderRepository->getBaseCommanders(
-			$orbitalBase,
+		$commanders = $this->commanderRepository->getPlanetCommanders(
+			$planet,
 			[Commander::AFFECTED, Commander::MOVING],
 		);
 

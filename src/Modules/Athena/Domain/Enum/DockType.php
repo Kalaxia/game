@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Athena\Domain\Enum;
 
 use App\Modules\Ares\Domain\Model\ShipCategory;
-use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Resource\PlanetResource;
 use App\Modules\Zeus\Model\PlayerBonusId;
 
 enum DockType: string
@@ -22,7 +22,7 @@ enum DockType: string
 		};
 	}
 
-	public function getLevel(OrbitalBase $base): int
+	public function getLevel(Planet $base): int
 	{
 		return match ($this) {
 			self::Manufacture => $base->levelDock1,
@@ -33,8 +33,8 @@ enum DockType: string
 	public function getBuildingNumber(): int
 	{
 		return match ($this) {
-			self::Manufacture => OrbitalBaseResource::DOCK1,
-			self::Shipyard => OrbitalBaseResource::DOCK2,
+			self::Manufacture => PlanetResource::DOCK1,
+			self::Shipyard => PlanetResource::DOCK2,
 		};
 	}
 

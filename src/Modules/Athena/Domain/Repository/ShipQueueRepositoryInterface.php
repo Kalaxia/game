@@ -2,8 +2,8 @@
 
 namespace App\Modules\Athena\Domain\Repository;
 
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\ShipQueue;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -19,10 +19,10 @@ interface ShipQueueRepositoryInterface extends EntityRepositoryInterface
 	/**
 	 * @return list<ShipQueue>
 	 */
-	public function getBaseQueues(OrbitalBase $base): array;
+	public function getBaseQueues(Planet $base): array;
 
 	/**
 	 * @return list<ShipQueue>
 	 */
-	public function getByBaseAndDockType(OrbitalBase $base, int $dockType): array;
+	public function getByBaseAndDockType(Planet $base, int $dockType): array;
 }

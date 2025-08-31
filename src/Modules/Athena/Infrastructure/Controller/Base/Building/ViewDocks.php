@@ -8,7 +8,7 @@ use App\Modules\Athena\Domain\Service\Base\Ship\CountMaxShipQueues;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountMaxStorableShipPoints;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountQueuedShipPoints;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountStoredShipPoints;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
 use App\Modules\Zeus\Model\Player;
@@ -19,17 +19,17 @@ use Symfony\Component\HttpFoundation\Response;
 class ViewDocks extends AbstractController
 {
 	public function __invoke(
-		Request                       $request,
-		OrbitalBase                   $currentBase,
-		CurrentPlayerBonusRegistry    $currentPlayerBonusRegistry,
-		Player                        $currentPlayer,
-		CountMaxShipQueues            $countMaxShipQueues,
-		CountMaxStorableShipPoints    $countMaxStorableShipPoints,
-		CountQueuedShipPoints         $countQueuedShipPoints,
-		CountStoredShipPoints         $countStoredShipPoints,
-		ShipQueueRepositoryInterface  $shipQueueRepository,
-		TechnologyRepositoryInterface $technologyRepository,
-		DockType                      $dockType,
+        Request                       $request,
+        Planet                        $currentBase,
+        CurrentPlayerBonusRegistry    $currentPlayerBonusRegistry,
+        Player                        $currentPlayer,
+        CountMaxShipQueues            $countMaxShipQueues,
+        CountMaxStorableShipPoints    $countMaxStorableShipPoints,
+        CountQueuedShipPoints         $countQueuedShipPoints,
+        CountStoredShipPoints         $countStoredShipPoints,
+        ShipQueueRepositoryInterface  $shipQueueRepository,
+        TechnologyRepositoryInterface $technologyRepository,
+        DockType                      $dockType,
 	): Response {
 		if (0 === $dockType->getLevel($currentBase)) {
 			return $this->redirectToRoute('base_overview');

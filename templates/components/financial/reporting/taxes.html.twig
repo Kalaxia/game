@@ -15,18 +15,18 @@
 
 	<section class="mt-4">
 		<ul class="flex flex-col divide-y divide-gray-500 border-y border-gray-500">
-			{% for base in player_bases %}
-				{% set base_tax = get_base_tax(base, tax_coeff) %}
+			{% for planet in player_planets %}
+				{% set planet_tax = get_planet_tax(planet, tax_coeff) %}
 				{# @TODO move that logic somewhere legit #}
-				{% set base_tax_out = base_tax.total * base.place.system.sector.tax / 100 %}
+				{% set planet_tax_out = planet_tax.total * planet.place.system.sector.tax / 100 %}
 
 				<li class="py-2">
 					<span class="label">
-						<span style="font-variant: all-small-caps">{{ base.name }}</span>
-						[{{ base.place.system.sector.tax }}% de taxe]
+						<span style="font-variant: all-small-caps">{{ planet.name }}</span>
+						[{{ planet.place.system.sector.tax }}% de taxe]
 					</span><br>
 					<span class="text-sm flex items-center gap-x-2 py-1">
-						{{- base_tax_out|number -}}
+						{{- planet_tax_out|number -}}
 						<img src="{{ asset('images/legacy/picto/G_P_Mon_64px.png') }}" alt="crédits" class="inline w-4 h-4" />
 					</span>
 				</li>

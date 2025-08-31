@@ -6,9 +6,9 @@ trade:
     resource: './athena/trade.yaml'
     prefix: /trade
 
-switchbase:
-    path: /switchbase/{baseId}/{page}
-    controller: App\Modules\Athena\Infrastructure\Controller\Base\SwitchBase
+switchplanet:
+    path: /switchplanet/{planetId}/{page}
+    controller: App\Modules\Athena\Infrastructure\Controller\Base\SwitchPlanet
     methods: 'GET'
     defaults:
         page: 'current'
@@ -46,14 +46,14 @@ docks:
     controller: App\Modules\Athena\Infrastructure\Controller\Base\Building\ViewDocks
 
 change_base_type:
-    path: /change-base-type
-    controller: App\Modules\Athena\Infrastructure\Controller\Base\ChangeBaseType
+    path: /change-planet-type
+    controller: App\Modules\Athena\Infrastructure\Controller\Base\ChangePlanetType
 
-leave_base:
-    path: /leave-base
-    controller: App\Modules\Athena\Infrastructure\Controller\Base\LeaveBase
+leave_planet:
+    path: /leave-planet
+    controller: App\Modules\Athena\Infrastructure\Controller\Base\LeavePlanet
 
-rename_base:
+rename_planet:
     path: /rename-base
     controller: App\Modules\Athena\Infrastructure\Controller\Base\RenameBase
     methods: 'POST'
@@ -111,6 +111,6 @@ cancel_ship_queue:
     path: /ship-queues/{id}/cancel
     controller: App\Modules\Athena\Infrastructure\Controller\Ship\CancelQueue
 
-autocomplete_base:
-    path: /api/bases/{search}
-    controller: App\Modules\Athena\Infrastructure\Controller\Base\AutocompleteBase
+autocomplete_planet:
+    path: /api/planets/{search}
+    controller: App\Modules\Athena\Infrastructure\Controller\Base\AutocompletePlanet

@@ -12,6 +12,7 @@
 namespace App\Modules\Athena\Model;
 
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use Symfony\Component\Uid\Uuid;
 
 class RecyclingMission
@@ -26,13 +27,13 @@ class RecyclingMission
 		// coef_ship a été calculé par un ingénieur. Si on change la capacité, il faut rechanger coef_ship
 
 	public function __construct(
-		public Uuid $id,
-		public OrbitalBase $base,
-		public Place $target,
-		public int $cycleTime = 0,
-		public int $recyclerQuantity = 0,
-		public int $addToNextMission = 0,
-		public int $statement = self::ST_ACTIVE,
+		public Uuid                    $id,
+		public Planet                  $base,
+		public Place                   $target,
+		public int                     $cycleTime = 0,
+		public int                     $recyclerQuantity = 0,
+		public int                     $addToNextMission = 0,
+		public int                     $statement = self::ST_ACTIVE,
 		public \DateTimeImmutable|null $endedAt = null,
 	) {
 	}

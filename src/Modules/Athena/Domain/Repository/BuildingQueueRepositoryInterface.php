@@ -3,7 +3,7 @@
 namespace App\Modules\Athena\Domain\Repository;
 
 use App\Modules\Athena\Model\BuildingQueue;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -14,7 +14,7 @@ interface BuildingQueueRepositoryInterface extends EntityRepositoryInterface
 	/**
 	 * @return list<BuildingQueue>
 	 */
-	public function getBaseQueues(OrbitalBase $orbitalBase): array;
+	public function getPlanetQueues(Planet $planet): array;
 
 	/**
 	 * @return list<BuildingQueue>

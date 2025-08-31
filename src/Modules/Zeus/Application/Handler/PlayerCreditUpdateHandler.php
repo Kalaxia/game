@@ -6,8 +6,8 @@ use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Athena\Application\Handler\Income\CommercialRouteIncomeHandler;
 use App\Modules\Athena\Application\Handler\Tax\PopulationTaxHandler;
-use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Shared\Application\PercentageApplier;
 use App\Modules\Shared\Application\Service\CountMissingSystemUpdates;
 use App\Modules\Shared\Domain\Service\GameTimeConverter;
@@ -32,23 +32,23 @@ readonly class PlayerCreditUpdateHandler
 	private const int MAX_MISSING_UPDATES = 24;
 
 	public function __construct(
-		private EntityManagerInterface $entityManager,
-		private CommercialRouteIncomeHandler $commercialRouteIncomeHandler,
+		private EntityManagerInterface                   $entityManager,
+		private CommercialRouteIncomeHandler             $commercialRouteIncomeHandler,
 		private CommercialRouteConstructionReportHandler $commercialRouteConstructionReportHandler,
-		private CommanderRepositoryInterface $commanderRepository,
-		private CreditTransactionReportHandler $creditTransactionReportHandler,
-		private GameTimeConverter $gameTimeConverter,
-		private OrbitalBaseRepositoryInterface $orbitalBaseRepository,
-		private PlayerRepositoryInterface $playerRepository,
+		private CommanderRepositoryInterface             $commanderRepository,
+		private CreditTransactionReportHandler           $creditTransactionReportHandler,
+		private GameTimeConverter                        $gameTimeConverter,
+		private PlanetRepositoryInterface                $planetRepository,
+		private PlayerRepositoryInterface                $playerRepository,
 		private PlayerFinancialReportRepositoryInterface $playerFinancialReportRepository,
-		private PlayerTransactionReportHandler $playerTransactionReportHandler,
-		private PlayerBonusManager $playerBonusManager,
-		private PopulationTaxHandler $populationTaxHandler,
-		private CommanderWageHandler $commanderWageHandler,
-		private MessageBusInterface $messageBus,
-		private ShipsWageHandler $shipsWageHandler,
-		private UniversityInvestmentHandler $universityInvestmentHandler,
-		private LoggerInterface $logger,
+		private PlayerTransactionReportHandler           $playerTransactionReportHandler,
+		private PlayerBonusManager                       $playerBonusManager,
+		private PopulationTaxHandler                     $populationTaxHandler,
+		private CommanderWageHandler                     $commanderWageHandler,
+		private MessageBusInterface                      $messageBus,
+		private ShipsWageHandler                         $shipsWageHandler,
+		private UniversityInvestmentHandler              $universityInvestmentHandler,
+		private LoggerInterface                          $logger,
 		private TechnologyInvestmentReportHandler $technologyInvestmentReportHandler,
 		private CurrentPlayerRegistry $currentPlayerRegistry,
 		private CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
@@ -63,7 +63,7 @@ readonly class PlayerCreditUpdateHandler
 		$player = $this->playerRepository->get($message->getPlayerId())
 			?? throw new \RuntimeException('Player not found');
 		$rebelPlayer = $this->playerRepository->get($this->gaiaId);
-		$bases = $this->orbitalBaseRepository->getPlayerBases($player);
+		$bases = $this->planetRepository->getPlayerPlanets($player);
 		$commanders = $this->commanderRepository->getPlayerCommanders(
 			$player,
 			[Commander::AFFECTED, Commander::MOVING],
@@ -184,7 +184,7 @@ readonly class PlayerCreditUpdateHandler
 	/**
 	 * TODO call a Symfony service iterator instead of all explicit calls here
 	 *
-	 * @param list<OrbitalBase> $bases
+	 * @param list<Planet> $bases
 	 */
 	private function updatePlayerCredits(
 		PlayerFinancialReport $playerFinancialReport,
@@ -278,7 +278,7 @@ readonly class PlayerCreditUpdateHandler
 		]);
 	}
 
-	private function payFactionTax(OrbitalBase $base, int $populationTax, PlayerFinancialReport $playerFinancialReport): int
+	private function payFactionTax(Planet $base, int $populationTax, PlayerFinancialReport $playerFinancialReport): int
 	{
 		if (null === ($sectorFaction = $base->place->system->sector->faction)) {
 			return 0;
@@ -293,7 +293,7 @@ readonly class PlayerCreditUpdateHandler
 		return $factionTax;
 	}
 
-	private function getFactionTax(OrbitalBase $base, int $populationTax): int
+	private function getFactionTax(Planet $base, int $populationTax): int
 	{
 		return PercentageApplier::toInt($base->place->system->sector->tax, $populationTax);
 	}

@@ -4,8 +4,7 @@ namespace App\Modules\Athena\Infrastructure\Controller\Trade\Route;
 
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
 use App\Modules\Athena\Manager\CommercialRouteManager;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Hermes\Manager\NotificationManager;
@@ -18,15 +17,14 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 class Delete extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		Player $currentPlayer,
-		OrbitalBase $currentBase,
-		CommercialRouteManager $commercialRouteManager,
+		Request                            $request,
+		Player                             $currentPlayer,
+		Planet                             $currentBase,
+		CommercialRouteManager             $commercialRouteManager,
 		CommercialRouteRepositoryInterface $commercialRouteRepository,
-		OrbitalBaseManager $orbitalBaseManager,
-		NotificationManager $notificationManager,
-		NotificationRepositoryInterface $notificationRepository,
-		int $id,
+		NotificationManager                $notificationManager,
+		NotificationRepositoryInterface    $notificationRepository,
+		int                                $id,
 	): Response {
 		$cr = $commercialRouteRepository->get($id)
 			?? throw $this->createNotFoundException('Commercial route not found');

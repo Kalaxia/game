@@ -2,6 +2,7 @@
 
 namespace App\Modules\Athena\Model;
 
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Model\TravellerInterface;
 use Symfony\Component\Uid\Uuid;
@@ -17,15 +18,15 @@ class CommercialShipping implements TravellerInterface
 
 	// attributes
 	public function __construct(
-		public Uuid $id,
-		public Player|null $player,
-		public OrbitalBase $originBase,
-		public OrbitalBase|null $destinationBase = null,
-		public Transaction|null $transaction = null,
+		public Uuid                    $id,
+		public Player|null             $player,
+		public Planet                  $originBase,
+		public Planet|null             $destinationBase = null,
+		public Transaction|null        $transaction = null,
 		// @TODO rather have a shipment type and then a quantity field
-		public int|null $resourceTransported = null, // soit l'un
-		public int $shipQuantity = 0, // soit l'autre
-		public int $statement = 0,
+		public int|null                $resourceTransported = null, // soit l'un
+		public int                     $shipQuantity = 0, // soit l'autre
+		public int                     $statement = 0,
 		public \DateTimeImmutable|null $departureDate = null,
 		public \DateTimeImmutable|null $arrivalDate = null,
 	) {

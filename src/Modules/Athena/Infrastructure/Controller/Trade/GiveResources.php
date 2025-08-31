@@ -5,14 +5,14 @@ namespace App\Modules\Athena\Infrastructure\Controller\Trade;
 use App\Classes\Library\DateTimeConverter;
 use App\Classes\Library\Format;
 use App\Modules\Athena\Domain\Repository\CommercialShippingRepositoryInterface;
-use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
 use App\Modules\Athena\Domain\Service\CountNeededCommercialShips;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
 use App\Modules\Athena\Message\Trade\CommercialShippingMessage;
 use App\Modules\Athena\Model\CommercialShipping;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
+use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
+use App\Modules\Gaia\Helper\PlanetHelper;
+use App\Modules\Gaia\Manager\PlanetManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Travel\Domain\Model\TravelType;
@@ -29,46 +29,46 @@ use Symfony\Component\Uid\Uuid;
 class GiveResources extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		Player $currentPlayer,
-		GetTravelDuration $getTravelDuration,
-		MessageBusInterface $messageBus,
-		OrbitalBase $currentBase,
-		OrbitalBaseManager $orbitalBaseManager,
-		OrbitalBaseRepositoryInterface $orbitalBaseRepository,
-		OrbitalBaseHelper $orbitalBaseHelper,
-		CommercialShippingRepositoryInterface $commercialShippingRepository,
-		NotificationRepositoryInterface $notificationRepository,
-		CountNeededCommercialShips $countNeededCommercialShips,
+        Request                               $request,
+        Player                                $currentPlayer,
+        GetTravelDuration                     $getTravelDuration,
+        MessageBusInterface                   $messageBus,
+        Planet                                $currentPlanet,
+        PlanetManager                         $planetManager,
+        PlanetRepositoryInterface             $planetRepository,
+        PlanetHelper                          $planetHelper,
+        CommercialShippingRepositoryInterface $commercialShippingRepository,
+        NotificationRepositoryInterface       $notificationRepository,
+        CountNeededCommercialShips            $countNeededCommercialShips,
 	): Response {
-		$baseId = $request->request->get('baseId') ?? throw new BadRequestHttpException('Missing base id');
+		$planetId = $request->request->get('planetId') ?? throw new BadRequestHttpException('Missing base id');
 		$quantity = $request->request->get('quantity') ?? throw new BadRequestHttpException('Missing quantity');
 
-		if (!Uuid::isValid($baseId)) {
+		if (!Uuid::isValid($planetId)) {
 			throw new BadRequestHttpException('Base id is invalid');
 		}
 
-		$baseUuid = Uuid::fromString($baseId);
-		if ($currentBase->id->equals($baseUuid)) {
+		$baseUuid = Uuid::fromString($planetId);
+		if ($currentPlanet->id->equals($baseUuid)) {
 			throw new BadRequestHttpException('envoi de ressources impossible - action inutile, vos ressources sont déjà sur cette base orbitale');
 		}
 		$resource = intval($quantity);
 		if ($resource === 0) {
 			throw new BadRequestHttpException('envoi de ressources impossible - il faut envoyer un nombre entier positif');
 		}
-		if ($currentBase->resourcesStorage < $resource) {
+		if ($currentPlanet->resourcesStorage < $resource) {
 			throw new ConflictHttpException('envoi de ressources impossible - vous ne pouvez pas envoyer plus que ce que vous possédez');
 		}
 		// ---------------------------
 		// controler le nombre de vaisseaux
 		// verif : have we enough commercialShips
-		$totalShips = $orbitalBaseHelper->getBuildingInfo(6, 'level', $currentBase->levelCommercialPlateforme, 'nbCommercialShip');
+		$totalShips = $planetHelper->getBuildingInfo(6, 'level', $currentPlanet->levelCommercialPlateforme, 'nbCommercialShip');
 		$usedShips = 0;
 
-		$commercialShippings = $commercialShippingRepository->getByBase($currentBase);
+		$commercialShippings = $commercialShippingRepository->getByPlanet($currentPlanet);
 
 		foreach ($commercialShippings as $commercialShipping) {
-			if ($commercialShipping->originBase->id->equals($currentBase->id)) {
+			if ($commercialShipping->originBase->id->equals($currentPlanet->id)) {
 				$usedShips += $commercialShipping->shipQuantity;
 			}
 		}
@@ -80,7 +80,7 @@ class GiveResources extends AbstractController
 		if ($remainingShips < $commercialShipQuantity) {
 			throw new ConflictHttpException('envoi de ressources impossible - vous n\'avez pas assez de vaisseaux de transport');
 		}
-		$otherBase = $orbitalBaseRepository->get($baseUuid)
+		$otherPlanet = $planetRepository->get($baseUuid)
 			?? throw $this->createNotFoundException('envoi de ressources impossible - erreur dans les bases orbitales');
 
 		$departure = new \DateTimeImmutable();
@@ -89,15 +89,15 @@ class GiveResources extends AbstractController
 		$cs = new CommercialShipping(
 			id: Uuid::v4(),
 			player: $currentPlayer,
-			originBase: $currentBase,
-			destinationBase: $otherBase,
+			originBase: $currentPlanet,
+			destinationBase: $otherPlanet,
 			resourceTransported: $resource,
 			shipQuantity: $commercialShipQuantity,
 			statement: CommercialShipping::ST_GOING,
 			departureDate: $departure,
 			arrivalDate: $getTravelDuration(
-				origin: $currentBase->place,
-				destination: $otherBase->place,
+				origin: $currentPlanet->place,
+				destination: $otherPlanet->place,
 				departureDate: $departure,
 				travelType: TravelType::CommercialShipping,
 				player: $currentPlayer
@@ -110,9 +110,9 @@ class GiveResources extends AbstractController
 			[DateTimeConverter::to_delay_stamp($cs->getArrivalDate())],
 		);
 
-		$orbitalBaseManager->decreaseResources($currentBase, $resource);
+		$planetManager->decreaseResources($currentPlanet, $resource);
 
-		if ($currentBase->player->id !== $otherBase->player->id) {
+		if ($currentPlanet->player->id !== $otherPlanet->player->id) {
 			$notification = NotificationBuilder::new()
 				->setTitle('Envoi de ressources')
 				->setContent(
@@ -125,8 +125,8 @@ class GiveResources extends AbstractController
 						NotificationBuilder::bold(Format::numberFormat($resource)),
 						' ressources depuis sa base ',
 						NotificationBuilder::link(
-							$this->generateUrl('map', ['place' => $currentBase->place->id]),
-							$currentBase->name,
+							$this->generateUrl('map', ['place' => $currentPlanet->place->id]),
+							$currentPlanet->name,
 						),
 						'.',
 					),
@@ -134,12 +134,12 @@ class GiveResources extends AbstractController
 						'Quand le convoi arrivera, les ressources seront à vous.',
 						NotificationBuilder::divider(),
 						NotificationBuilder::link(
-							$this->generateUrl('switchbase', ['baseId' => $otherBase->id, 'page' => 'market']),
+							$this->generateUrl('switchplanet', ['planetId' => $otherPlanet->id, 'page' => 'market']),
 							'vers la place du commerce →',
 						),
 					),
 				)
-				->for($otherBase->player);
+				->for($otherPlanet->player);
 			$notificationRepository->save($notification);
 		}
 

@@ -4,11 +4,11 @@ namespace App\Modules\Atlas\Routine;
 
 use App\Classes\Library\Game;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
 use App\Modules\Atlas\Domain\Repository\PlayerRankingRepositoryInterface;
 use App\Modules\Atlas\Model\PlayerRanking;
 use App\Modules\Atlas\Model\Ranking;
+use App\Modules\Gaia\Helper\PlanetHelper;
+use App\Modules\Gaia\Resource\PlanetResource;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\DBAL\Result;
@@ -21,10 +21,10 @@ class PlayerRoutineHandler
 	public const COEF_RESOURCE = 0.001;
 
 	public function __construct(
-		private readonly PlayerRepositoryInterface $playerRepository,
+		private readonly PlayerRepositoryInterface        $playerRepository,
 		private readonly PlayerRankingRepositoryInterface $playerRankingRepository,
-		private readonly OrbitalBaseHelper $orbitalBaseHelper,
-		private readonly GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
+		private readonly PlanetHelper                     $planetHelper,
+		private readonly GetShipCategoriesConfiguration   $getShipCategoriesConfiguration,
 	) {
 	}
 
@@ -212,7 +212,7 @@ class PlayerRoutineHandler
 	{
 		while ($row = $statement->fetchAssociative()) {
 			if (isset($this->results[$row['player']])) {
-				$resourcesProd = Game::resourceProduction($this->orbitalBaseHelper->getBuildingInfo(OrbitalBaseResource::REFINERY, 'level', $row['levelRefinery'], 'refiningCoefficient'), $row['coefResources']);
+				$resourcesProd = Game::resourceProduction($this->planetHelper->getBuildingInfo(PlanetResource::REFINERY, 'level', $row['levelRefinery'], 'refiningCoefficient'), $row['coefResources']);
 				$this->results[$row['player']]['resources'] += $resourcesProd;
 			}
 		}

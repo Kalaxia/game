@@ -5,10 +5,10 @@ namespace App\Modules\Athena\Infrastructure\Controller\Base\Building;
 use App\Modules\Athena\Domain\Repository\CommercialShippingRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Base\Trade\GetBaseCommercialShippingData;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Helper\PlanetHelper;
+use App\Modules\Gaia\Resource\PlanetResource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -21,11 +21,11 @@ class TradeMarketController extends AbstractController
 	}
 
 	public function __invoke(
-		GetBaseCommercialShippingData  $getBaseCommercialShippingsData,
-		OrbitalBase                    $currentBase,
-		OrbitalBaseHelper              $orbitalBaseHelper,
-		TransactionRepositoryInterface $transactionRepository,
-		string                         $mode,
+        GetBaseCommercialShippingData  $getBaseCommercialShippingsData,
+        Planet                         $currentBase,
+        PlanetHelper                   $planetHelper,
+        TransactionRepositoryInterface $transactionRepository,
+        string                         $mode,
 	): Response {
 		if ($currentBase->levelCommercialPlateforme === 0) {
 			return $this->redirectToRoute('base_overview');
@@ -33,8 +33,8 @@ class TradeMarketController extends AbstractController
 
 		return $this->render('pages/athena/trade_market.html.twig', [
 			'mode' => $mode,
-			'max_ships' => $orbitalBaseHelper->getInfo(
-				OrbitalBaseResource::COMMERCIAL_PLATEFORME,
+			'max_ships' => $planetHelper->getInfo(
+				PlanetResource::COMMERCIAL_PLATEFORME,
 				'level',
 				$currentBase->levelCommercialPlateforme,
 				'nbCommercialShip',

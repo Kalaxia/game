@@ -77,27 +77,27 @@
     <div class="">
         <div id="base-selector">
             <a href="{{ path('base_overview') }}" class="{% if app.request.get('_route') == 'bases' %}active{% endif %}">
-                {{ current_base.name }}
+                {{ current_planet.name }}
             </a>
             <div class="">
                 <div class="">
                     <h2 class="">Changer de bases</h2>
                     <ul class="">
-                        {% for orbital_base in current_player_bases %}
+                        {% for planet in current_player_planets %}
                             <li>
-                                <a href="{{ path('switchbase', {'baseId': orbital_base.id}) }}"
-                                   {% if orbital_base.id == current_base.id %}class="active"{% endif %}>
-                                    <span class="">{{ orbital_base.typeOfBase|scalar_base_type }}</span>
-                                    <strong class="">{{ orbital_base.name }}</strong>
+                                <a href="{{ path('switchplanet', {'planetId': planet.id}) }}"
+                                   {% if planet.id == current_planet.id %}class="active"{% endif %}>
+                                    <span class="">{{ planet.typeOfBase|scalar_base_type }}</span>
+                                    <strong class="">{{ planet.name }}</strong>
                                 </a>
                             </li>
                         {% endfor %}
                     </ul>
                 </div>
                 <span class="">
-                    {{ current_base.name }}
+                    {{ current_planet.name }}
                 </span>
-                <a href="{{ path('switchbase', {'baseId': next_base is not null ? next_base.id : first_base.id }) }}" class="bg-black p-1">
+                <a href="{{ path('switchplanet', {'planetId': next_planet is not null ? next_planet.id : first_planet.id }) }}" class="bg-black p-1">
                     >
                 </a>
             </div>
@@ -228,7 +228,7 @@
                     <div>
                         <div class="">
                             <span class="">
-                                {{ current_base.resourcesStorage|number }}
+                                {{ current_planet.resourcesStorage|number }}
                             </span>
                         </div>
                         <h2 class="">Raffinerie</h2>
@@ -236,7 +236,7 @@
                             <div class="">
                                 <span class="">production par relève</span>
                                 <span class="">
-                                    {% set production = get_base_production(current_base) %}
+                                    {% set production = get_planet_production(current_planet) %}
                                     {% set refining_bonus = get_player_bonus(constant('App\\Modules\\Zeus\\Model\\PlayerBonusId::REFINERY_REFINING')) %}
                                     {{ production|number }}
                                     {% if refining_bonus > 0 %}
@@ -246,8 +246,8 @@
                             </div>
 
                             {{ include('molecules/base/production/storage_gauge.html.twig', {
-                                'stored_resources': current_base.resourcesStorage,
-                                'percent': current_base|base_storage_percent,
+                                'stored_resources': current_planet.resourcesStorage,
+                                'percent': current_planet|base_storage_percent,
                                 'faction_color': false,
                             }) }}
 
@@ -376,7 +376,7 @@
                                     <p class="">Aucun vaisseau en construction pour le moment.</p>
                                 {% endif %}
 
-                                <a href="{{ path('docks', {'dockType': constant('App\\Modules\\Athena\\Model\\OrbitalBase::DOCK_TYPE_MANUFACTURE')}) }}" class="">
+                                <a href="{{ path('docks', {'dockType': constant('App\\Modules\\Gaia\\Domain\\Entity\\Planet::DOCK_TYPE_MANUFACTURE')}) }}" class="">
                                     vers le chantier alpha
                                 </a>
                             </div>
@@ -414,7 +414,7 @@
                                     <p class="">Aucun vaisseau en construction pour le moment.</p>
                                 {% endif %}
 
-                                <a href="{{ path('docks', {'dockType': constant('App\\Modules\\Athena\\Model\\OrbitalBase::DOCK_TYPE_SHIPYARD')}) }}" class="">
+                                <a href="{{ path('docks', {'dockType': constant('App\\Modules\\Gaia\\Domain\\Entity\\Planet::DOCK_TYPE_SHIPYARD')}) }}" class="">
                                     vers le chantier de ligne
                                 </a>
                             </div>

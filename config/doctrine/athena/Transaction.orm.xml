@@ -7,7 +7,7 @@
 		</many-to-one>
 
 		<many-to-one field="buyer" target-entity="App\Modules\Zeus\Model\Player" />
-		<many-to-one field="base" target-entity="App\Modules\Athena\Model\OrbitalBase" />
+		<many-to-one field="base" target-entity="App\Modules\Gaia\Domain\Entity\Planet" />
 
 		<many-to-one field="commander" target-entity="App\Modules\Ares\Model\Commander" />
 

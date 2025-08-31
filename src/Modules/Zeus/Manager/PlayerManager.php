@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Zeus\Manager;
 
-use App\Modules\Athena\Application\Handler\OrbitalBasePointsHandler;
-use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
+use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Gaia\Domain\Repository\SectorRepositoryInterface;
+use App\Modules\Gaia\Domain\Service\UpdatePlanetPoints;
 use App\Modules\Gaia\Manager\PlaceManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
@@ -19,30 +19,30 @@ use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 // @TODO Remove bounds to sessions
 // TODO reapply readonly when service has been simplified
 readonly class PlayerManager
 {
 	public function __construct(
-		private PlayerRepositoryInterface $playerRepository,
-		private EventDispatcherInterface $eventDispatcher,
-		private EntityManagerInterface $entityManager,
-		private OrbitalBasePointsHandler $orbitalBasePointsHandler,
-		private OrbitalBaseRepositoryInterface $orbitalBaseRepository,
-		private PlaceManager $placeManager,
-		private PlaceRepositoryInterface $placeRepository,
+		private PlayerRepositoryInterface       $playerRepository,
+		private EventDispatcherInterface        $eventDispatcher,
+		private EntityManagerInterface          $entityManager,
+		private UpdatePlanetPoints              $updatePlanetPoints,
+		private PlanetRepositoryInterface       $planetRepository,
+		private PlaceManager                    $placeManager,
+		private PlaceRepositoryInterface        $placeRepository,
 		private NotificationRepositoryInterface $notificationRepository,
-		private SectorRepositoryInterface $sectorRepository,
-		private TechnologyRepositoryInterface $technologyRepository,
-		private UrlGeneratorInterface $urlGenerator,
+		private SectorRepositoryInterface       $sectorRepository,
+		private TechnologyRepositoryInterface   $technologyRepository,
+		private UrlGeneratorInterface           $urlGenerator,
 		#[Autowire('%zeus.player.base_level%')]
-		private int $playerBaseLevel,
+		private int                             $playerBaseLevel,
 		#[Autowire('%server_id%')]
-		private int $serverId,
+		private int                             $serverId,
 	) {
 	}
 
@@ -105,7 +105,7 @@ readonly class PlayerManager
 			$place = $this->placeRepository->get($placeId) ?? throw new \LogicException('Place not found');
 
 			// attribute new base and place to player
-			$ob = new OrbitalBase(
+			$ob = new Planet(
 				id: Uuid::v4(),
 				place: $place,
 				player: $player,
@@ -116,9 +116,9 @@ readonly class PlayerManager
 				resourcesStorage: 1000,
 			);
 
-			$this->orbitalBasePointsHandler->updatePoints($ob);
+			$this->updatePlanetPoints->updatePoints($ob);
 
-			$this->orbitalBaseRepository->save($ob);
+			$this->planetRepository->save($ob);
 
 			$this->placeManager->turnAsSpawnPlace($placeId, $player);
 

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Athena\Infrastructure\Twig\Components\Molecules;
 
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
 use App\Modules\Athena\Infrastructure\Controller\Base\Building\Cancel;
+use App\Modules\Athena\Model\BuildingQueue as BuildingQueueModel;
+use App\Modules\Gaia\Helper\PlanetHelper;
 use App\Modules\Shared\Infrastructure\Twig\Components\Molecules\Queue;
 use App\Shared\Application\Handler\DurationHandler;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
-use App\Modules\Athena\Model\BuildingQueue as BuildingQueueModel;
 
 #[AsTwigComponent(
 	name: 'BuildingQueue',
@@ -22,9 +22,9 @@ final class BuildingQueue extends Queue
 
 	public function __construct(
 		private readonly DurationHandler $durationHandler,
-		private readonly OrbitalBaseHelper $orbitalBaseHelper,
+		private readonly PlanetHelper    $planetHelper,
 		#[Autowire('%athena.building.building_queue_resource_refund%')]
-		public readonly float $buildingResourceRefund,
+		public readonly float            $buildingResourceRefund,
 	) {
 
 	}
@@ -35,7 +35,7 @@ final class BuildingQueue extends Queue
 			throw new \LogicException('You cannot use name property on an empty queue');
 		}
 
-		return $this->orbitalBaseHelper->getBuildingInfo($this->queue->buildingNumber, 'frenchName');
+		return $this->planetHelper->getBuildingInfo($this->queue->buildingNumber, 'frenchName');
 	}
 
 	public function getSubTitle(): string

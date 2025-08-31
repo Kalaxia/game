@@ -3,8 +3,8 @@
 namespace App\Modules\Artemis\Application\Handler;
 
 use App\Modules\Artemis\Model\SpyReport;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\Uid\Uuid;
@@ -29,7 +29,7 @@ abstract readonly class SpyingHandler
 			price: $price,
 			placeFaction: $place->base?->player->faction,
 			placeType: $place->typeOfPlace,
-			baseType: $place->base?->typeOfBase ?? OrbitalBase::TYP_NEUTRAL,
+			baseType: $place->base?->typeOfBase ?? Planet::TYP_NEUTRAL,
 			placeName: $place->base?->name ?? 'Planète rebelle',
 			points: $place->base?->points ?? 0,
 			targetPlayer: $place->base?->player,

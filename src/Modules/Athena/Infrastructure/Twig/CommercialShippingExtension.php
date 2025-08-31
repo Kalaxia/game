@@ -6,8 +6,8 @@ use App\Classes\Library\Format;
 use App\Classes\Library\Game;
 use App\Modules\Athena\Manager\TransactionManager;
 use App\Modules\Athena\Model\CommercialShipping;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -45,7 +45,7 @@ class CommercialShippingExtension extends AbstractExtension
 				default => null,
 			}),
 			new TwigFunction('get_cancellation_price', fn (CommercialShipping $commercialShipping) => Format::number(floor($commercialShipping->transaction->price * Transaction::PERCENTAGE_TO_CANCEL / 100))),
-			new TwigFunction('get_transaction_data', fn (Transaction $transaction, OrbitalBase $orbitalBase, float $currentRate) => $this->transactionManager->getTransactionData($transaction, $orbitalBase, $currentRate)),
+			new TwigFunction('get_transaction_data', fn (Transaction $transaction, Planet $planet, float $currentRate) => $this->transactionManager->getTransactionData($transaction, $planet, $currentRate)),
 		];
 	}
 }

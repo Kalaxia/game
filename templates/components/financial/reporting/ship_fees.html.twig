@@ -13,12 +13,12 @@
 
 	<section class="mt-4">
 		<ul class="flex flex-col divide-y divide-gray-500 border-y border-gray-500">
-			{% for base in player_bases %}
-				{% set base_fleet_cost = get_base_fleet_cost(base) %}
-				{% set base_commanders = commanders_by_base[base.id.toRfc4122()] is defined ? commanders_by_base[base.id.toRfc4122()] : [] %}
-				{% set base_transaction = transactions|filter(t => t.base.id == base.id)|reduce((carry, t) => carry + get_ship_transaction_cost(t))|default(0) %}
+			{% for planet in player_planets %}
+				{% set planet_fleet_cost = get_planet_fleet_cost(planet) %}
+				{% set planet_commanders = commanders_by_base[planet.id.toRfc4122()] is defined ? commanders_by_base[planet.id.toRfc4122()] : [] %}
+				{% set base_transaction = transactions|filter(t => t.base.id == planet.id)|reduce((carry, t) => carry + get_ship_transaction_cost(t))|default(0) %}
 
-				{% set total_base = base_fleet_cost + base_transaction + base_commanders|reduce(
+				{% set total_base = planet_fleet_cost + base_transaction + planet_commanders|reduce(
 					(carry, commander) => carry + get_fleet_cost(commander)
 				) %}
 				<li class="py-2">
@@ -26,7 +26,7 @@
 						<summary class="cursor-pointer flex justify-between items-center">
 							<span class="flex gap-x-2">
 								<span>↓</span>
-								<span style="font-variant: all-small-caps">{{ base.name }}</span>
+								<span style="font-variant: all-small-caps">{{ planet.name }}</span>
 							</span>
 							<span class="flex gap-x-2 text-sm">
 								{{- total_base|number -}}
@@ -38,7 +38,7 @@
 							<li>
 								<strong class="label">Dans le hangar</strong>
 								<span class="text-sm">
-									{{- base_fleet_cost|number -}}
+									{{- planet_fleet_cost|number -}}
 								</span>
 							</li>
 
@@ -49,7 +49,7 @@
 								</span>
 							</li>
 
-							{% for commander in base_commanders %}
+							{% for commander in planet_commanders %}
 								<li>
 									<strong class="label">{{ commander|commander_rank }} {{ commander.name }}</strong>
 									<span class="text-sm">

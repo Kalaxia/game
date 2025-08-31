@@ -2,12 +2,12 @@
 
 namespace App\Modules\Demeter\Infrastructure\Controller;
 
-use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Demeter\Manager\ColorManager;
 use App\Modules\Demeter\Model\Color;
+use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Gaia\Domain\Repository\SectorRepositoryInterface;
+use App\Modules\Gaia\Manager\PlanetManager;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Infrastructure\Validator\IsGovernmentMember;
 use App\Modules\Zeus\Manager\PlayerManager;
@@ -20,14 +20,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class ViewEmbassy extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		Player $currentPlayer,
-		ColorManager $colorManager,
-		ColorRepositoryInterface $colorRepository,
+		Request                   $request,
+		Player                    $currentPlayer,
+		ColorManager              $colorManager,
+		ColorRepositoryInterface  $colorRepository,
 		PlayerRepositoryInterface $playerRepository,
-		OrbitalBaseManager $orbitalBaseManager,
-		OrbitalBaseRepositoryInterface $orbitalBaseRepository,
-		PlayerManager $playerManager,
+		PlanetManager             $planetManager,
+		PlanetRepositoryInterface $planetRepository,
+		PlayerManager             $playerManager,
 		SectorRepositoryInterface $sectorRepository,
 	): Response {
 		$data = [];
@@ -39,7 +39,7 @@ class ViewEmbassy extends AbstractController
 
 			$data = [
 				'player' => $player,
-				'player_bases' => $orbitalBaseRepository->getPlayerBases($player),
+				'player_planets' => $planetRepository->getPlayerPlanets($player),
 				'is_current_player' => $playerId === $currentPlayer->id,
 			];
 		}

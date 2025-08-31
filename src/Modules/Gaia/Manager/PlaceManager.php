@@ -391,7 +391,7 @@ readonly class PlaceManager
 						),
 						'Votre empire s\'étend, administrez votre ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('switchbase', ['baseId' => $place->base->id]),
+							$this->urlGenerator->generate('switchplanet', ['planetId' => $place->base->id]),
 							'nouvelle planète',
 						),
 						'.',
@@ -461,7 +461,7 @@ readonly class PlaceManager
 						),
 						'Elle est désormais votre, vous pouvez l\'administrer ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('switchbase', ['baseId' => $place->base->id]),
+							$this->urlGenerator->generate('switchplanet', ['planetId' => $place->base->id]),
 							'ici',
 						),
 						'.',
@@ -573,7 +573,7 @@ readonly class PlaceManager
 						NotificationBuilder::divider(),
 						'Elle est désormais vôtre, vous pouvez l\'administrer ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('switchbase', ['baseId' => $place->base->id]),
+							$this->urlGenerator->generate('switchplanet', ['planetId' => $place->base->id]),
 							'ici',
 						),
 						'.',

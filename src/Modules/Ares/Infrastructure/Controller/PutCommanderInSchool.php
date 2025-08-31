@@ -25,12 +25,12 @@ class PutCommanderInSchool extends AbstractController
 		if (null === ($commander = $commanderRepository->get($id)) || $commander->player->id !== $currentPlayer->id) {
 			throw new BadRequestHttpException('Ce commandant n\'existe pas ou ne vous appartient pas');
 		}
-		$orbitalBase = $commander->base;
+		$planet = $commander->base;
 
 		if ($commander->isInReserve()) {
-			$commanders = $commanderRepository->getBaseCommanders($commander->base, [Commander::INSCHOOL]);
+			$commanders = $commanderRepository->getPlanetCommanders($commander->base, [Commander::INSCHOOL]);
 
-			if (count($commanders) >= PlaceResource::get($orbitalBase->typeOfBase, 'school-size')) {
+			if (count($commanders) >= PlaceResource::get($planet->typeOfBase, 'school-size')) {
 				throw new ConflictHttpException('Votre école est déjà pleine.');
 			}
 			$commander->statement = Commander::INSCHOOL;

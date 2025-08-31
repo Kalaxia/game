@@ -9,19 +9,19 @@
 		<section>
 			<form action="{{ path('give_resources') }}" method="post">
 				<p><label for="send-resources-target">Base destinataire</label></p>
-				<input class="autocomplete-hidden" type="hidden" name="baseId" />
+				<input class="autocomplete-hidden" type="hidden" name="planetId" />
 				<p class="input input-text"><input type="text" id="send-resources-target" class="autocomplete-orbitalbase" name="name" autocomplete="off" /></p>
 
 				<div class="sell-form"
 					 data-shipcom-size="{{ constant('App\\Modules\\Athena\\Model\\CommercialShipping::WEDGE') }}"
 					 data-resource-rate="1"
-					 data-max-quantity="{{ current_base.resourcesStorage }}"
+					 data-max-quantity="{{ current_planet.resourcesStorage }}"
 					 data-rate="0"
 					 data-min-price="0"
 				>
 					<div class="label-box">
 						<span class="label">Ressources</span>
-						<span class="value">{{ current_base.resourcesStorage|number }}</span>
+						<span class="value">{{ current_planet.resourcesStorage|number }}</span>
 						{#<img class="icon-color" alt="ressources" src="{{ asset('build/media/resources/resource.png') }}">#}
 					</div>
 
@@ -59,13 +59,13 @@
 		<section>
 			<form action="{{ path('give_ships') }}" method="post">
 				<p><label for="send-ships-target">Base destinataire</label></p>
-				<input class="autocomplete-hidden" type="hidden" name="baseId" />
+				<input class="autocomplete-hidden" type="hidden" name="planetId" />
 				<p class="input input-text">
 					<twig:Input type="text" id="send-ships-target" class="autocomplete-orbitalbase" name="name" autocomplete="off" />
 				</p>
 
-				{% for ship_number in current_base.shipStorage|keys %}
-					{% set ship_quantity = current_base.shipStorage[ship_number] %}
+				{% for ship_number in current_planet.shipStorage|keys %}
+					{% set ship_quantity = current_planet.shipStorage[ship_number] %}
 					{% if ship_quantity > 0 %}
 						<div class="queue sh" data-target="sell-ships-{{ ship_number }}">
 							<div class="item">

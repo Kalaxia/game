@@ -28,7 +28,7 @@ update_university_investments:
     controller: App\Modules\Athena\Infrastructure\Controller\Financial\UpdateUniversityInvestments
     methods: 'POST'
 
-update_base_investments:
-    path: /bases/{baseId}/investments/{category<antispy|school>}
+update_planet_investments:
+    path: /bases/{planetId}/investments/{category<antispy|school>}
     controller: App\Modules\Athena\Infrastructure\Controller\Financial\UpdateBaseInvestments
     methods: 'POST'

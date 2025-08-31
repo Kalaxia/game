@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Athena\Repository;
 
 use App\Modules\Athena\Domain\Repository\RecyclingLogRepositoryInterface;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\RecyclingLog;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,7 +19,7 @@ class RecyclingLogRepository extends DoctrineRepository implements RecyclingLogR
 		parent::__construct($registry, RecyclingLog::class);
 	}
 
-	public function getBaseActiveMissionsLogs(OrbitalBase $base): array
+	public function getBaseActiveMissionsLogs(Planet $base): array
 	{
 		$qb = $this->createQueryBuilder('rl');
 

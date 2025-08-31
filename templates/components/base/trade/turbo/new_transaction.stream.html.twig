@@ -12,7 +12,7 @@
 {% elseif transaction.hasShips %}
 	<turbo-stream action="replace" target="sell-ships-{{ transaction.identifier }}">
 		<template>
-			<twig:ShipsSalesForm :shipIdentifier="transaction.identifier" :shipQuantity="current_base.getShipStorage()[transaction.identifier]" :currentRate="transaction.currentRate" />
+			<twig:ShipsSalesForm :shipIdentifier="transaction.identifier" :shipQuantity="current_planet.getShipStorage()[transaction.identifier]" :currentRate="transaction.currentRate" />
 		</template>
 	</turbo-stream>
 {% endif %}

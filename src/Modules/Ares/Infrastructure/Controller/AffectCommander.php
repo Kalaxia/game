@@ -38,17 +38,17 @@ class AffectCommander extends AbstractController
 		$commander = $commanderRepository->get($id)
 			?? throw $this->createNotFoundException('Cet officier n\'existe pas ou ne vous appartient pas');
 
-		$orbitalBase = $commander->base;
+		$planet = $commander->base;
 
 		// checker si on a assez de place !!!!!
-		$nbrLine1 = $commanderRepository->countCommandersByLine($orbitalBase, 1);
-		$nbrLine2 = $commanderRepository->countCommandersByLine($orbitalBase, 2);
+		$nbrLine1 = $commanderRepository->countCommandersByLine($planet, 1);
+		$nbrLine2 = $commanderRepository->countCommandersByLine($planet, 2);
 
 		if ($commander->isInSchool() || $commander->isInReserve()) {
-			if ($nbrLine2 < PlaceResource::get($orbitalBase->typeOfBase, 'r-line')) {
+			if ($nbrLine2 < PlaceResource::get($planet->typeOfBase, 'r-line')) {
 				$commander->line = 2;
 				$statement = 'de réserve';
-			} elseif ($nbrLine1 < PlaceResource::get($orbitalBase->typeOfBase, 'l-line')) {
+			} elseif ($nbrLine1 < PlaceResource::get($planet->typeOfBase, 'l-line')) {
 				$commander->line = 1;
 				$statement = 'active';
 			} else {
@@ -65,13 +65,13 @@ class AffectCommander extends AbstractController
 
 			return $this->redirectToRoute('fleet_headquarters', ['commander' => $commander->id]);
 		} elseif ($commander->isAffected()) {
-			$baseCommanders = $commanderRepository->getBaseCommanders(
-				$orbitalBase,
+			$baseCommanders = $commanderRepository->getPlanetCommanders(
+				$planet,
 				[Commander::INSCHOOL],
 			);
 
 			$commander->updatedAt = new \DateTimeImmutable();
-			if (count($baseCommanders) < PlaceResource::get($orbitalBase->typeOfBase, 'school-size')) {
+			if (count($baseCommanders) < PlaceResource::get($planet->typeOfBase, 'school-size')) {
 				$commander->statement = Commander::INSCHOOL;
 				$this->addFlash('success', 'Votre officier '.$commander->name.' a été remis à l\'école');
 			} else {

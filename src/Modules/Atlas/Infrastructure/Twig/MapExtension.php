@@ -10,11 +10,11 @@ use App\Modules\Ares\Domain\Specification\Player\CanSpyPlace;
 use App\Modules\Artemis\Application\Handler\AntiSpyHandler;
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Recycling\GetMissionTime;
-use App\Modules\Athena\Domain\Specification\CanOrbitalBaseTradeWithPlace;
+use App\Modules\Athena\Domain\Specification\CanPlanetTradeWithPlace;
 use App\Modules\Athena\Model\CommercialRoute;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Entity\System;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
@@ -51,8 +51,8 @@ class MapExtension extends AbstractExtension
     public function getFunctions(): array
 	{
 		return [
-			new TwigFunction('get_base_antispy_radius', fn (OrbitalBase $base) => $this->antiSpyHandler->getAntiSpyRadius($base->antiSpyAverage)),
-			new TwigFunction('get_travel_time', function (OrbitalBase $defaultBase, Place $place) {
+			new TwigFunction('get_planet_antispy_radius', fn (Planet $base) => $this->antiSpyHandler->getAntiSpyRadius($base->antiSpyAverage)),
+			new TwigFunction('get_travel_time', function (Planet $defaultBase, Place $place) {
 				$departureDate = new \DateTimeImmutable();
 				$arrivalDate = ($this->getTravelDuration)(
 					origin: $defaultBase->place,
@@ -63,27 +63,27 @@ class MapExtension extends AbstractExtension
 
 				return $this->durationHandler->getDiff($departureDate, $arrivalDate);
 			}),
-			new TwigFunction('get_place_distance', fn (OrbitalBase $defaultBase, Place $place) => ($this->getDistanceBetweenPlaces)(
+			new TwigFunction('get_place_distance', fn (Planet $defaultBase, Place $place) => ($this->getDistanceBetweenPlaces)(
 				$defaultBase->place,
 				$place,
 			)),
 			new TwigFunction('get_max_travel_distance', fn () => Game::getMaxTravelDistance($this->currentPlayerBonusRegistry->getPlayerBonus())),
 			new TwigFunction('get_place_demography', fn (Place $place) => Game::getSizeOfPlanet($place->population)),
 			new TwigFunction('get_place_technosphere_improvement_coeff', fn (Place $place) => Game::getImprovementFromScientificCoef($place->coefHistory)),
-			new TwigFunction('get_commercial_route_data', fn (OrbitalBase $defaultBase, Place $place) => $this->getCommercialRouteData($defaultBase, $place)),
+			new TwigFunction('get_commercial_route_data', fn (Planet $defaultBase, Place $place) => $this->getCommercialRouteData($defaultBase, $place)),
 
 			new TwigFunction('can_player_attack_place', function (Player $player, Place $place) {
 				$specification = new CanPlayerAttackPlace($player);
 
 				return $specification->isSatisfiedBy($place);
 			}),
-			new TwigFunction('can_player_move_to_place', function (Player $player, Place $place, OrbitalBase $orbitalBase) {
-				$specification = new CanPlayerMoveToPlace($player, $orbitalBase);
+			new TwigFunction('can_player_move_to_place', function (Player $player, Place $place, Planet $planet) {
+				$specification = new CanPlayerMoveToPlace($player, $planet);
 
 				return $specification->isSatisfiedBy($place);
 			}),
-			new TwigFunction('can_orbital_base_trade_with_place', function (OrbitalBase $orbitalBase, Place $place) {
-				$specification = new CanOrbitalBaseTradeWithPlace($orbitalBase);
+			new TwigFunction('can_planet_trade_with_place', function (Planet $planet, Place $place) {
+				$specification = new CanPlanetTradeWithPlace($planet);
 
 				return $specification->isSatisfiedBy($place);
 			}),
@@ -97,13 +97,13 @@ class MapExtension extends AbstractExtension
 
 				return $specification->isSatisfiedBy($place);
 			}),
-			new TwigFunction('get_recycling_mission_time', fn (OrbitalBase $orbitalBase, Place $place) => ($this->getMissionTime)($orbitalBase->place, $place, $this->currentPlayerRegistry->get())),
+			new TwigFunction('get_recycling_mission_time', fn (Planet $planet, Place $place) => ($this->getMissionTime)($planet->place, $place, $this->currentPlayerRegistry->get())),
 		];
 	}
 
-	private function getCommercialRouteData(OrbitalBase $defaultBase, Place $place): array
+	private function getCommercialRouteData(Planet $defaultBase, Place $place): array
 	{
-		$routes = $this->commercialRouteRepository->getBaseRoutes($defaultBase);
+		$routes = $this->commercialRouteRepository->getPlanetRoutes($defaultBase);
 
 		$data = [
 			'proposed' => false,

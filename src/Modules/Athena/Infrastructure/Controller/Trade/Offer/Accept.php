@@ -10,8 +10,8 @@ use App\Modules\Athena\Domain\Service\Transaction\CalculateNewRate;
 use App\Modules\Athena\Manager\TransactionManager;
 use App\Modules\Athena\Message\Trade\CommercialShippingMessage;
 use App\Modules\Athena\Model\CommercialShipping;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Travel\Domain\Model\TravelType;
@@ -31,20 +31,20 @@ use Symfony\Component\Uid\Uuid;
 class Accept extends AbstractController
 {
 	public function __invoke(
-		Request                               $request,
-		OrbitalBase                           $currentBase,
-		Player                                $currentPlayer,
-		CalculateNewRate					  $calculateNewRate,
-		GetTravelDuration                     $getTravelDuration,
-		TransactionManager                    $transactionManager,
-		CommercialShippingRepositoryInterface $commercialShippingRepository,
-		HubInterface $mercure,
-		MessageBusInterface                   $messageBus,
-		NotificationRepositoryInterface       $notificationRepository,
-		PlayerManager                         $playerManager,
-		TransactionRepositoryInterface        $transactionRepository,
-		EntityManagerInterface $entityManager,
-		Uuid $id,
+        Request                               $request,
+        Planet                                $currentBase,
+        Player                                $currentPlayer,
+        CalculateNewRate                      $calculateNewRate,
+        GetTravelDuration                     $getTravelDuration,
+        TransactionManager                    $transactionManager,
+        CommercialShippingRepositoryInterface $commercialShippingRepository,
+        HubInterface                          $mercure,
+        MessageBusInterface                   $messageBus,
+        NotificationRepositoryInterface       $notificationRepository,
+        PlayerManager                         $playerManager,
+        TransactionRepositoryInterface        $transactionRepository,
+        EntityManagerInterface $entityManager,
+        Uuid $id,
 	): Response {
 		if (0 === $currentBase->levelCommercialPlateforme) {
 			throw $this->createAccessDeniedException('YOu cannot accept offers without a trading platform');
@@ -126,7 +126,7 @@ class Accept extends AbstractController
 				),
 				NotificationBuilder::divider(),
 				NotificationBuilder::link(
-					$this->generateUrl('switchbase', ['baseId' => $commercialShipping->originBase->id, 'page' => 'sell']),
+					$this->generateUrl('switchplanet', ['planetId' => $commercialShipping->originBase->id, 'page' => 'sell']),
 					'En savoir plus ?',
 				),
 			))

@@ -5,8 +5,8 @@ namespace App\Modules\Athena\Infrastructure\Controller\Trade\Route;
 use App\Classes\Library\Format;
 use App\Modules\Athena\Application\Handler\CommercialRoute\GetCommercialRoutePrice;
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
@@ -21,19 +21,19 @@ use Symfony\Component\Uid\Uuid;
 class Refuse extends AbstractController
 {
 	public function __invoke(
-		Request                            $request,
-		Player                             $currentPlayer,
-		OrbitalBase                        $currentBase,
-		CommercialRouteRepositoryInterface $commercialRouteRepository,
-		GetCommercialRoutePrice $getCommercialRoutePrice,
-		GetDistanceBetweenPlaces $getDistanceBetweenPlaces,
-		PlayerRepositoryInterface          $playerRepository,
-		PlayerManager                      $playerManager,
-		NotificationRepositoryInterface    $notificationRepository,
-		Uuid                               $baseId,
-		Uuid                               $id,
+        Request                            $request,
+        Player                             $currentPlayer,
+        Planet                             $currentBase,
+        CommercialRouteRepositoryInterface $commercialRouteRepository,
+        GetCommercialRoutePrice            $getCommercialRoutePrice,
+        GetDistanceBetweenPlaces           $getDistanceBetweenPlaces,
+        PlayerRepositoryInterface          $playerRepository,
+        PlayerManager                      $playerManager,
+        NotificationRepositoryInterface    $notificationRepository,
+        Uuid                               $planetId,
+        Uuid                               $id,
 	): Response {
-		$cr = $commercialRouteRepository->getByIdAndDistantBase($id, $currentBase)
+		$cr = $commercialRouteRepository->getByIdAndDistantPlanet($id, $currentBase)
 			?? throw $this->createNotFoundException('Commercial route not found');
 
 		if (!$cr->isProposed()) {

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Athena\Model;
 
+use App\Modules\Gaia\Domain\Entity\Planet;
 use Symfony\Component\Uid\Uuid;
 
 class CommercialRoute
@@ -16,14 +17,14 @@ class CommercialRoute
 	public const STANDBY = 2;
 
 	public function __construct(
-		public Uuid $id,
-		public OrbitalBase $originBase,
-		public OrbitalBase $destinationBase,
-		public string $imageLink,
-		public int $income,
-		public \DateTimeImmutable $proposedAt,
+		public Uuid                    $id,
+		public Planet                  $originBase,
+		public Planet                  $destinationBase,
+		public string                  $imageLink,
+		public int                     $income,
+		public \DateTimeImmutable      $proposedAt,
 		public \DateTimeImmutable|null $acceptedAt = null,
-		public int $statement = self::PROPOSED,
+		public int                     $statement = self::PROPOSED,
 	) {
 
 	}

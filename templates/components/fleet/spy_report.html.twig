@@ -108,7 +108,7 @@
 <!--				<span class="line-help line-1">I</span>
 			<span class="line-help line-2">II</span>-->
 
-			{% set orbital_base_type = spy_report.place.base.type ?? constant('App\\Modules\\Athena\\Model\\OrbitalBase::TYP_NEUTRAL') %}
+			{% set planet_type = spy_report.place.base.type ?? constant('App\\Modules\\Gaia\\Domain\\Entity\\Planet::TYP_NEUTRAL') %}
 
 			{% set commanders = spy_report.commanders %}
 

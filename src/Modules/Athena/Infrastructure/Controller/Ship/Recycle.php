@@ -3,8 +3,8 @@
 namespace App\Modules\Athena\Infrastructure\Controller\Ship;
 
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Manager\PlanetManager;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,10 +15,10 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 class Recycle extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		Player $currentPlayer,
-		OrbitalBase $currentBase,
-		OrbitalBaseManager $orbitalBaseManager,
+		Request                        $request,
+		Player                         $currentPlayer,
+		Planet                         $currentBase,
+		PlanetManager                  $planetManager,
 		GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 	): Response {
 		$typeOfShip = $request->query->get('ship_identifier');
@@ -28,7 +28,7 @@ class Recycle extends AbstractController
 			if ($quantity > 0 && $quantity <= $currentBase->getShipStorage()[$typeOfShip]) {
 				$resources = ($quantity * $getShipCategoriesConfiguration($typeOfShip, 'resourcePrice')) / 2;
 				$currentBase->removeShips($typeOfShip, $quantity);
-				$orbitalBaseManager->increaseResources($currentBase, $resources);
+				$planetManager->increaseResources($currentBase, $resources);
 
 				return $this->redirect($request->headers->get('referer'));
 			} else {

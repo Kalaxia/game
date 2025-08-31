@@ -7,11 +7,11 @@ namespace App\Modules\Athena\Infrastructure\Twig\Components\Molecules;
 use App\Modules\Athena\Application\Handler\Building\BuildingLevelHandler;
 use App\Modules\Athena\Domain\Service\Base\Building\BuildingDataHandler;
 use App\Modules\Athena\Domain\Service\Base\Building\GetTimeCost;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
 use App\Modules\Athena\Infrastructure\Validator\CanMakeBuilding;
 use App\Modules\Athena\Infrastructure\Validator\DTO\BuildingConstructionOrder;
 use App\Modules\Athena\Model\BuildingQueue;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Helper\PlanetHelper;
 use App\Modules\Promethee\Model\Technology;
 use App\Modules\Shared\Infrastructure\Twig\Components\Molecules\Card;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -25,7 +25,7 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 final class BuildingCard extends Card
 {
 	public int $buildingIdentifier;
-	public OrbitalBase $base;
+	public Planet $base;
 	public Technology $technology;
 	/** @var list<BuildingQueue> */
 	public array $buildingQueues;
@@ -35,31 +35,31 @@ final class BuildingCard extends Card
 	public ConstraintViolationListInterface $requirements;
 
 	public function __construct(
-		private readonly BuildingDataHandler $buildingDataHandler,
-		private readonly GetTimeCost $getTimeCost,
+		private readonly BuildingDataHandler  $buildingDataHandler,
+		private readonly GetTimeCost          $getTimeCost,
 		private readonly BuildingLevelHandler $buildingLevelHandler,
-		private readonly OrbitalBaseHelper $orbitalBaseHelper,
-		private readonly ValidatorInterface $validator,
+		private readonly PlanetHelper         $planetHelper,
+		private readonly ValidatorInterface   $validator,
 	) {
 
 	}
 
-	public function mount(OrbitalBase $base, Technology $technology, int $buildingIdentifier, array $buildingQueues, int $buildingQueuesCount): void
+	public function mount(Planet $planet, Technology $technology, int $buildingIdentifier, array $buildingQueues, int $buildingQueuesCount): void
 	{
-		$this->base = $base;
+		$this->base = $planet;
 		$this->technology = $technology;
 		$this->buildingIdentifier = $buildingIdentifier;
 		$this->buildingQueues = $buildingQueues;
 		$this->buildingQueuesCount = $buildingQueuesCount;
-		$this->level = $this->buildingLevelHandler->getBuildingLevel($base, $buildingIdentifier);
+		$this->level = $this->buildingLevelHandler->getBuildingLevel($planet, $buildingIdentifier);
 		$this->realLevel = $this->buildingLevelHandler->getBuildingRealLevel(
-			$base,
+			$planet,
 			$buildingIdentifier,
 			$buildingQueues,
 		);
 
 		$buildingConstructionOrder = new BuildingConstructionOrder(
-			orbitalBase: $base,
+			planet: $planet,
 			targetLevel: $this->getNextLevel(),
 			buildingIdentifier: $buildingIdentifier,
 			technology: $technology,
@@ -87,12 +87,12 @@ final class BuildingCard extends Card
 
 	public function getMaxLevel(): int
 	{
-		return $this->orbitalBaseHelper->getBuildingInfo($this->buildingIdentifier, 'maxLevel', $this->base->typeOfBase);
+		return $this->planetHelper->getBuildingInfo($this->buildingIdentifier, 'maxLevel', $this->base->typeOfBase);
 	}
 
 	public function getName(): string
 	{
-		return $this->orbitalBaseHelper->getBuildingInfo($this->buildingIdentifier, 'frenchName');
+		return $this->planetHelper->getBuildingInfo($this->buildingIdentifier, 'frenchName');
 	}
 
 	public function getResourceCost(): int|null

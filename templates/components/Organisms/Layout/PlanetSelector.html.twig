@@ -1,0 +1,32 @@
+<details id="base-selector" class="relative marker:content-['']" name="toolbar">
+	<summary class="h-12 bg-gray-800 border border-gray-700 cursor-pointer flex items-center w-48">
+		<svg class="size-5 w-6 mx-2" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+			<path fill-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd"></path>
+		</svg>
+
+		<a href="{{ path('base_overview') }}" class="{% if app.request.get('_route') == 'bases' %}active{% endif %} px-4 py-2 border-l border-gray-700 grow" style="font-variant: all-small-caps">
+			{{ current_planet.name }}
+		</a>
+
+		<a href="{{ path('switchplanet', {'planetId': next_planet is not null ? next_planet.id : first_planet.id }) }}" class="p-2">
+			<img src="{{ asset('images/legacy/picto/arrow_right.svg') }}" alt=">" class="h-4" />
+		</a>
+	</summary>
+
+	<div class="absolute top-14 left-0 w-64 p-2 bg-gray-800 rounded-md border border-gray-700 z-[1000]">
+		<div class="">
+			<twig:H2 class="">Changer de base</twig:H2>
+			<ul class=" flex flex-col divide-y divide-gray-700">
+				{% for planet in current_player_planets %}
+					<li class="py-2 px-4">
+						<a href="{{ path('switchplanet', {'planetId': planet.id}) }}"
+						   class="flex items-end gap-x-2 {% if planet.id == current_planet.id %}active{% endif %}">
+							<span class="">{{ planet.typeOfBase|scalar_base_type }}</span>
+							<span class="" style="font-variant: all-small-caps">{{ planet.name }}</span>
+						</a>
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+</details>

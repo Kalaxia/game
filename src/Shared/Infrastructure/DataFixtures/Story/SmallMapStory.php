@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\DataFixtures\Story;
 
-use App\Modules\Athena\Infrastructure\DataFixtures\Factory\OrbitalBaseFactory;
 use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\FactionFactory;
 use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\PlaceFactory;
+use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\PlanetFactory;
 use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\SectorFactory;
 use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\SystemFactory;
 use Zenstruck\Foundry\Factory;
@@ -25,7 +25,7 @@ class SmallMapStory extends Story
 
 			PlaceFactory::createMany(250);
 
-			OrbitalBaseFactory::createMany(10);
+			PlanetFactory::createMany(10);
 		});
 	}
 }

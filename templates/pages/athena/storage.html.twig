@@ -1,4 +1,4 @@
-{% extends 'layouts/athena/current_base.html.twig' %}
+{% extends 'layouts/athena/current_planet.html.twig' %}
 
 {% block content %}
 	<div class="flex gap-x-4 [&>div]:w-80">
@@ -6,15 +6,15 @@
 			<header>
 				{#<img src="{{ asset('build/media/orbitalbase/storage.png') }}" alt="" />#}
 				<twig:H2>
-					{{ get_building_info(constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::STORAGE'), 'frenchName') }}
+					{{ get_building_info(constant('App\\Modules\\Gaia\\Resource\\PlanetResource::STORAGE'), 'frenchName') }}
 				</twig:H2>
-				<twig:H5>Niveau {{ current_base.levelStorage }}</twig:H5>
+				<twig:H5>Niveau {{ current_planet.levelStorage }}</twig:H5>
 			</header>
 
 			<section class="mt-4">
 				{{ include('molecules/base/production/storage_gauge.html.twig', {
-					'stored_resources': current_base.resourcesStorage,
-					'percent': current_base|base_storage_percent,
+					'stored_resources': current_planet.resourcesStorage,
+					'percent': current_planet|base_storage_percent,
 				}) }}
 
 				<hr class="my-2" />
@@ -32,14 +32,14 @@
 			<section>
 				<twig:H3>Stockage maximal de la raffinerie</twig:H3>
 				<ul class="flex flex-col gap-y-2 divide-y divide-gray-500 mt-2 border-y border-gray-500">
-					{% set storage_level = current_base.levelStorage %}
+					{% set storage_level = current_planet.levelStorage %}
 
 					{% for level in get_building_level_range(storage_level) %}
 						<li {% if level == storage_level %}class="strong"{% endif %}>
 							<em class="text-sm">niveau {{ level }}</em><br>
 							<span class="value">
 								{% set storage_space = get_building_info(
-									constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::STORAGE'),
+									constant('App\\Modules\\Gaia\\Resource\\PlanetResource::STORAGE'),
 									'level',
 									level,
 									'storageSpace',
@@ -63,7 +63,7 @@
 
 			<section class="mt-4">
 				<p class="text-sm">
-					{{ get_building_info(constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::STORAGE'), 'description')|raw }}
+					{{ get_building_info(constant('App\\Modules\\Gaia\\Resource\\PlanetResource::STORAGE'), 'description')|raw }}
 				</p>
 			</section>
 		</div>

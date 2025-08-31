@@ -1,48 +1,48 @@
-{% set type_neutral = constant('App\\Modules\\Athena\\Model\\OrbitalBase::TYP_NEUTRAL') %}
-{% set type_commercial = constant('App\\Modules\\Athena\\Model\\OrbitalBase::TYP_COMMERCIAL') %}
-{% set type_military = constant('App\\Modules\\Athena\\Model\\OrbitalBase::TYP_MILITARY') %}
-{% set type_capital = constant('App\\Modules\\Athena\\Model\\OrbitalBase::TYP_CAPITAL') %}
+{% set type_neutral = constant('App\\Modules\\Gaia\\Domain\\Entity\\Planet::TYP_NEUTRAL') %}
+{% set type_commercial = constant('App\\Modules\\Gaia\\Domain\\Entity\\Planet::TYP_COMMERCIAL') %}
+{% set type_military = constant('App\\Modules\\Gaia\\Domain\\Entity\\Planet::TYP_MILITARY') %}
+{% set type_capital = constant('App\\Modules\\Gaia\\Domain\\Entity\\Planet::TYP_CAPITAL') %}
 
 {# @TODO FACTORIZE THIIIIIS #}
 
 <twig:LayoutBox class="component generator">
 	<header>
 		<twig:H2>
-			{#<img src="{{ asset('build/media/orbitalbase/base-type-' ~ current_base.typeOfBase ~ '.jpg') }}" alt="{{ current_base|base_type }}">#}
-			<strong>{{ current_base.name }}</strong><br>
-			<em>{{ current_base|base_type }}</em>
+			{#<img src="{{ asset('build/media/orbitalbase/base-type-' ~ current_planet.typeOfBase ~ '.jpg') }}" alt="{{ current_planet|base_type }}">#}
+			<strong>{{ current_planet.name }}</strong><br>
+			<em>{{ current_planet|base_type }}</em>
 		</twig:H2>
 	</header>
 	<section class="mt-4">
-		<p class="text-sm">{{ get_base_type_info(current_base.typeOfBase, 'desc') }}</p>
+		<p class="text-sm">{{ get_planet_type_info(current_planet.typeOfBase, 'desc') }}</p>
 
 		<div class="flex flex-col divide-y divide-gray-900 mt-2">
 			<twig:BaseTypeChoice :type="type_neutral" />
 
 			<twig:BaseTypeChoice :type="type_commercial">
 				{# @TODO move that logic to a Specification class #}
-				{% if current_base.typeOfBase == type_neutral and current_player.credit >= get_base_type_info(type_commercial, 'price') and current_base.levelGenerator >= minimal_change_level %}
-					<a href="{{ path('change_base_type', { 'id': current_base.id, 'type': type_commercial }) }}" class="button">
+				{% if current_planet.typeOfBase == type_neutral and current_player.credit >= get_planet_type_info(type_commercial, 'price') and current_planet.levelGenerator >= minimal_change_level %}
+					<a href="{{ path('change_base_type', { 'id': current_planet.id, 'type': type_commercial }) }}" class="button">
 						<twig:Button :faction="current_player.faction">
-							Evoluer en {{ get_base_type_info(type_commercial, 'name') }}<br />
-							<span class="text-xs">{{ get_base_type_info(type_commercial, 'price')|number }}</span>
+							Evoluer en {{ get_planet_type_info(type_commercial, 'name') }}<br />
+							<span class="text-xs">{{ get_planet_type_info(type_commercial, 'price')|number }}</span>
 							{#<img class="icon-color" alt="crédits" src="{{ asset('build/media/resources/credit.png') }}">#}
 						</twig:Button>
 					</a>
-				{% elseif current_base.typeOfBase == type_military and current_player.credit >= get_base_type_info(type_commercial, 'price') %}
-					<a href="{{ path('change_base_type', { 'id': current_base.id, 'type': type_commercial }) }}" onclick="confirm('Transformer cette base supprimera toute la file de construction. Vos missions de recyclage seront également annulées.')">
+				{% elseif current_planet.typeOfBase == type_military and current_player.credit >= get_planet_type_info(type_commercial, 'price') %}
+					<a href="{{ path('change_base_type', { 'id': current_planet.id, 'type': type_commercial }) }}" onclick="confirm('Transformer cette base supprimera toute la file de construction. Vos missions de recyclage seront également annulées.')">
 						<twig:Button :faction="current_player.faction">
-							Transformer en {{ get_base_type_info(type_commercial, 'name') }}<br />
-							<span class="text-xs">{{ get_base_type_info(type_commercial, 'price')|number }}</span>
+							Transformer en {{ get_planet_type_info(type_commercial, 'name') }}<br />
+							<span class="text-xs">{{ get_planet_type_info(type_commercial, 'price')|number }}</span>
 							{#<img class="icon-color" alt="crédits" src="{{ asset('build/media/resources/credit.png') }}">#}
 						</twig:Button>
 					</a>
-				{% elseif current_base.typeOfBase == type_commercial or current_base.typeOfBase == type_capital %}
+				{% elseif current_planet.typeOfBase == type_commercial or current_planet.typeOfBase == type_capital %}
 					{# do nothing #}
 				{% else %}
 					<twig:Button :faction="current_player.faction" disabled>
-						Evoluer en {{ get_base_type_info(type_commercial, 'name') }}<br />
-						<span class="text-xs">{{ get_base_type_info(type_commercial, 'price')|number }}</span>
+						Evoluer en {{ get_planet_type_info(type_commercial, 'name') }}<br />
+						<span class="text-xs">{{ get_planet_type_info(type_commercial, 'price')|number }}</span>
 						{#<img class="icon-color" alt="crédits" src="{{ asset('build/media/resources/credit.png') }}">#}
 					</twig:Button>
 				{% endif %}
@@ -65,28 +65,28 @@
 			</twig:BaseTypeChoice>
 
 			<twig:BaseTypeChoice :type="type_military">
-				{% if current_base.typeOfBase == type_neutral and current_player.credit >= get_base_type_info(type_military, 'price') and current_base.levelGenerator >= minimal_change_level %}
+				{% if current_planet.typeOfBase == type_neutral and current_player.credit >= get_planet_type_info(type_military, 'price') and current_planet.levelGenerator >= minimal_change_level %}
 					<a href="{{ path('change_base_type', {'type': type_military}) }}" class="button">
 							<twig:Button :faction="current_player.faction">
-								Evoluer en {{ get_base_type_info(type_military, 'name') }}<br />
-								<span class="text-xs">{{- get_base_type_info(type_military, 'price')|number -}}</span>
+								Evoluer en {{ get_planet_type_info(type_military, 'name') }}<br />
+								<span class="text-xs">{{- get_planet_type_info(type_military, 'price')|number -}}</span>
 								{#<img class="icon-color" alt="crédits" src="{{ asset('build/media/resources/credit.png') }}">#}
 							</twig:Button>
 					</a>
-				{% elseif current_base.typeOfBase == type_commercial and current_player.credit >= get_base_type_info(type_military, 'price') %}
+				{% elseif current_planet.typeOfBase == type_commercial and current_player.credit >= get_planet_type_info(type_military, 'price') %}
 					<a href="{{ path('change_base_type', {'type': type_military}) }}" class="button confirm" onclick="confirm('Transformer cette base supprimera toute la file de construction.')">
 						<twig:Button :faction="current_player.faction">
-							Evoluer en {{ get_base_type_info(type_military, 'name') }}<br />
-							<span class="text-xs">{{- get_base_type_info(type_military, 'price')|number -}}</span>
+							Evoluer en {{ get_planet_type_info(type_military, 'name') }}<br />
+							<span class="text-xs">{{- get_planet_type_info(type_military, 'price')|number -}}</span>
 							{#<img class="icon-color" alt="crédits" src="{{ asset('build/media/resources/credit.png') }}">#}
 						</twig:Button>
 					</a>
-				{% elseif current_base.typeOfBase == type_military or current_base.typeOfBase == type_capital %}
+				{% elseif current_planet.typeOfBase == type_military or current_planet.typeOfBase == type_capital %}
 					{# do nothing #}
 				{% else %}
 					<twig:Button :faction="current_player.faction" disabled>
-						Evoluer en {{ get_base_type_info(type_military, 'name') }}<br />
-						<span class="text-xs">{{- get_base_type_info(type_military, 'price')|number -}}</span>
+						Evoluer en {{ get_planet_type_info(type_military, 'name') }}<br />
+						<span class="text-xs">{{- get_planet_type_info(type_military, 'price')|number -}}</span>
 						{#<img class="icon-color" alt="crédits" src="{{ asset('build/media/resources/credit.png') }}">#}
 					</twig:Button>
 				{% endif %}
@@ -107,33 +107,33 @@
 			</twig:BaseTypeChoice>
 
 			<twig:BaseTypeChoice :type="type_capital">
-				{% set total_price = get_base_type_info(type_capital, 'price') %}
-				{% if current_base.typeOfBase in [type_commercial, type_military] and current_player.credit >= total_price and current_base.levelGenerator >= capital_change_level %}
+				{% set total_price = get_planet_type_info(type_capital, 'price') %}
+				{% if current_planet.typeOfBase in [type_commercial, type_military] and current_player.credit >= total_price and current_planet.levelGenerator >= capital_change_level %}
 					{% if capitals_count == 0 %}
-						<a href="{{ path('change_base_type', {'baseId': current_base.id, 'type': type_capital }) }}" class="button">
+						<a href="{{ path('change_base_type', {'planetId': current_planet.id, 'type': type_capital }) }}" class="button">
 							<twig:Button :faction="current_player.faction">
-								Evoluer en {{ get_base_type_info(type_capital, 'name') }}<br />
+								Evoluer en {{ get_planet_type_info(type_capital, 'name') }}<br />
 								<span class="text-xs">{{- total_price|number -}}</span>
 								{#<img class="icon-color" alt="crédits" src="{{ asset('build/media/resources/credit.png') }}">#}
 							</twig:Button>
 						</a>
 					{% else %}
 						<twig:Button :faction="current_player.faction" disabled>
-							Vous avez déjà une {{ get_base_type_info(type_capital, 'name') }}
+							Vous avez déjà une {{ get_planet_type_info(type_capital, 'name') }}
 						</twig:Button>
 					{% endif %}
-				{% elseif current_base.typeOfBase == type_capital %}
+				{% elseif current_planet.typeOfBase == type_capital %}
 					{# do nothing #}
 				{% else %}
 					{% if capitals_count == 0 %}
 						<twig:Button :faction="current_player.faction" disabled>
-							Evoluer en {{ get_base_type_info(type_capital, 'name') }}<br />
+							Evoluer en {{ get_planet_type_info(type_capital, 'name') }}<br />
 							<span class="text-xs">{{- total_price|number -}}</span>
 							{#<img class="icon-color" alt="crédits" src="{{ asset('build/media/resources/credit.png') }}">#}
 						</twig:Button>
 					{% else %}
 						<twig:Button :faction="current_player.faction" disabled>
-							Vous avez déjà une {{ get_base_type_info(type_capital, 'name') }}
+							Vous avez déjà une {{ get_planet_type_info(type_capital, 'name') }}
 						</twig:Button>
 					{% endif %}
 				{% endif %}

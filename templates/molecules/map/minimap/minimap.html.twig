@@ -24,8 +24,8 @@
 			{% endfor %}
 		</div>
 		<svg id="bases" class="absolute top-0 left-0" viewBox="0, 0, 400, 400" xmlns="http://www.w3.org/2000/svg">
-			{% for base in player_bases %}
-				{% set base_system = base.place.system %}
+			{% for planet in player_planets %}
+				{% set base_system = planet.place.system %}
 				<circle cx="{{ base_system.xPosition * rate }}"
 						cy="{{ base_system.yPosition * rate }}"
 						r="4" />
