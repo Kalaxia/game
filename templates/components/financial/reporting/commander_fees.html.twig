@@ -23,7 +23,7 @@
 				<li>
 					<details class="marker:content-['']" name="commander-fees">
 						<summary class="cursor-pointer flex items-center justify-between py-2">
-							{% for base in player_bases|filter(b => b.id == base_id) %}
+							{% for base in player_planets|filter(b => b.id == base_id) %}
 								<span class="label">
 									<span style="font-variant: all-small-caps">{{ base.name }}</span>
 									[{{ commanders|length }} officier{{ commanders|length|plural }}]

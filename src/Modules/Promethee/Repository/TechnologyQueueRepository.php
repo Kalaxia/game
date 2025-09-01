@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Promethee\Repository;
 
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Promethee\Domain\Repository\TechnologyQueueRepositoryInterface;
 use App\Modules\Promethee\Model\TechnologyQueue;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;

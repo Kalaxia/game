@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Gaia\Infrastructure\Command;
 
+use App\Modules\Gaia\Domain\Entity\Sector;
 use App\Modules\Gaia\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Gaia\Manager\SectorManager;
-use App\Modules\Gaia\Model\Sector;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

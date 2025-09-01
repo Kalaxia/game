@@ -8,7 +8,7 @@ use App\Modules\Ares\Domain\Model\ShipCategory;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
- * Calculates either a Commander or an OrbitalBase ships cost
+ * Calculates either a Commander or a Planet ships cost
  */
 final readonly class CalculateFleetCost
 {
@@ -22,7 +22,7 @@ final readonly class CalculateFleetCost
 	/**
 	 * @param list<int> $ships
 	 *
-	 * TODO instead of passing an array of ships, we could implement a ShipStoreInterface on both Commander and OrbitalBase entities to retrieve the ships list
+	 * TODO instead of passing an array of ships, we could implement a ShipStoreInterface on both Commander and Planet entities to retrieve the ships list
 	 */
 	public function __invoke(array $ships, bool $affected = true): int
 	{

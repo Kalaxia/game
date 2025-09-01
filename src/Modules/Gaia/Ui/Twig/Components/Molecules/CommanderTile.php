@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Gaia\Ui\Twig\Components\Molecules;
 
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent(

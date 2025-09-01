@@ -3,10 +3,11 @@
 namespace App\Tests\Shared\Handler;
 
 use App\Modules\Athena\Model\BuildingQueue;
-use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
-use App\Modules\Gaia\Model\Place;
-use App\Modules\Gaia\Model\System;
+use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Domain\Entity\System;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
+use App\Modules\Gaia\Resource\PlanetResource;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;
 use App\Shared\Domain\Model\DurationInterface;
@@ -127,7 +128,7 @@ class DurationHandlerTest extends TestCase
 	{
 		return new BuildingQueue(
 			id: Uuid::v4(),
-			base: new OrbitalBase(
+			base: new Planet(
 				id: Uuid::v4(),
 				place: new Place(
 					id: Uuid::v4(),
@@ -141,7 +142,7 @@ class DurationHandlerTest extends TestCase
 						yPosition: 20,
 						typeOfSystem: 0,
 					),
-					typeOfPlace: Place::TERRESTRIAL,
+					typeOfPlace: PlaceType::Planet,
 					position: 1,
 					population: 100,
 					coefResources: 60,
@@ -158,7 +159,7 @@ class DurationHandlerTest extends TestCase
 				levelCommercialPlateforme: 0,
 				levelStorage: 5,
 			),
-			buildingNumber: OrbitalBaseResource::SPATIOPORT,
+			buildingNumber: PlanetResource::SPATIOPORT,
 			targetLevel: 10,
 			startedAt: new \DateTimeImmutable(),
 			endedAt: $endedAt,

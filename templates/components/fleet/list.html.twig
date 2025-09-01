@@ -16,11 +16,11 @@
 				<div class="grow mx-4">
 					<header class="flex justify-between mb-2">
 						<h2 style="font-variant-caps: all-small-caps">
-							{{ get_base_type_info(base.info.type, 'name') }}
+							{{ get_planet_type_info(base.info.type, 'name') }}
 							{{ base.info.name }}
 						</h2>
 
-						<a href="{{ path('switchbase', {'baseId': base.info.id, 'page': 'school'}) }}" class="text-light{{ current_player.faction.identifier }}">
+						<a href="{{ path('switchplanet', {'planetId': base.info.id, 'page': 'school'}) }}" class="text-light{{ current_player.faction.identifier }}">
 							(affecter un officier)
 						</a>
 					</header>

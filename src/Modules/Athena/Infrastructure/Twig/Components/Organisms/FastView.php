@@ -7,10 +7,9 @@ namespace App\Modules\Athena\Infrastructure\Twig\Components\Organisms;
 use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
 use App\Modules\Athena\Manager\CommercialRouteManager;
 use App\Modules\Athena\Model\BuildingQueue;
-use App\Modules\Athena\Model\CommercialRoute;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\ShipQueue;
 use App\Modules\Athena\Repository\BuildingQueueRepository;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Promethee\Domain\Repository\TechnologyQueueRepositoryInterface;
 use App\Modules\Promethee\Model\TechnologyQueue;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -22,7 +21,7 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 )]
 class FastView
 {
-	public OrbitalBase $orbitalBase;
+	public Planet $planet;
 	/** @var list<BuildingQueue> */
 	public array $buildingQueues;
 	/** @var list<TechnologyQueue> */
@@ -46,17 +45,17 @@ class FastView
 	) {
 	}
 
-	public function mount(OrbitalBase $orbitalBase): void
+	public function mount(Planet $planet): void
 	{
-		$this->orbitalBase = $orbitalBase;
-		$this->buildingQueues = $this->buildingQueueRepository->getBaseQueues($orbitalBase);
-		$this->technologyQueues = $this->technologyQueueRepository->getPlaceQueues($orbitalBase->place);
-		$this->dock1ShipQueues = $this->shipQueueRepository->getByBaseAndDockType($orbitalBase, 1);
-		$this->dock2ShipQueues = $this->shipQueueRepository->getByBaseAndDockType($orbitalBase, 2);
+		$this->planet = $planet;
+		$this->buildingQueues = $this->buildingQueueRepository->getPlanetQueues($planet);
+		$this->technologyQueues = $this->technologyQueueRepository->getPlaceQueues($planet->place);
+		$this->dock1ShipQueues = $this->shipQueueRepository->getByBaseAndDockType($planet, 1);
+		$this->dock2ShipQueues = $this->shipQueueRepository->getByBaseAndDockType($planet, 2);
 
 		// @TODO: move it to the using part of the code and remove useless data
-		if ($orbitalBase->levelSpatioport > 0) {
-			$this->commercialRoutesData = $this->commercialRouteManager->getBaseCommercialData($orbitalBase);
+		if ($planet->levelSpatioport > 0) {
+			$this->commercialRoutesData = $this->commercialRouteManager->getBaseCommercialData($planet);
 		}
 	}
 }

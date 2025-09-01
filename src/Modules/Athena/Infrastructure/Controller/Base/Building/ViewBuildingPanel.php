@@ -6,26 +6,26 @@ use App\Classes\Library\Chronos;
 use App\Classes\Library\Format;
 use App\Classes\Library\Game;
 use App\Modules\Athena\Application\Handler\Building\BuildingLevelHandler;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
-use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Helper\PlanetHelper;
+use App\Modules\Gaia\Resource\PlanetResource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
 class ViewBuildingPanel extends AbstractController
 {
 	public function __invoke(
-		OrbitalBase $currentBase,
-		BuildingLevelHandler $buildingLevelHandler,
-		OrbitalBaseHelper $orbitalBaseHelper,
-		int $identifier,
+        Planet               $currentPlanet,
+        BuildingLevelHandler $buildingLevelHandler,
+        PlanetHelper         $planetHelper,
+        int                  $identifier,
 	): Response {
-		if (!$orbitalBaseHelper->isABuilding($identifier)) {
+		if (!$planetHelper->isABuilding($identifier)) {
 			throw $this->createNotFoundException('This building does not exist');
 		}
 
-		$currentLevel = $buildingLevelHandler->getBuildingLevel($currentBase, $identifier);
-		$max = $orbitalBaseHelper->getBuildingInfo($identifier, 'maxLevel', OrbitalBase::TYP_CAPITAL);
+		$currentLevel = $buildingLevelHandler->getBuildingLevel($currentPlanet, $identifier);
+		$max = $planetHelper->getBuildingInfo($identifier, 'maxLevel', Planet::TYP_CAPITAL);
 
 		$noteQuantity = 0;
 		$footnoteArray = [];
@@ -36,7 +36,7 @@ class ViewBuildingPanel extends AbstractController
 			$alreadyANote = false;
 			$note = '';
 			for ($j = 0; $j < 4; ++$j) {
-				if ($i == $orbitalBaseHelper->getInfo($identifier, 'maxLevel', $j) - 1) {
+				if ($i == $planetHelper->getInfo($identifier, 'maxLevel', $j) - 1) {
 					if (!$alreadyANote) {
 						$alreadyANote = true;
 						++$noteQuantity;
@@ -47,59 +47,59 @@ class ViewBuildingPanel extends AbstractController
 			}
 			$data[$i] = [
 				'note' => $level.$note,
-				'resourcePrice' => Format::numberFormat($orbitalBaseHelper->getBuildingInfo($identifier, 'level', $level, 'resourcePrice')),
-				'time' => Chronos::secondToFormat($orbitalBaseHelper->getBuildingInfo($identifier, 'level', $level, 'time'), 'lite'),
+				'resourcePrice' => Format::numberFormat($planetHelper->getBuildingInfo($identifier, 'level', $level, 'resourcePrice')),
+				'time' => Chronos::secondToFormat($planetHelper->getBuildingInfo($identifier, 'level', $level, 'time'), 'lite'),
 				'stats' => match ($identifier) {
-					OrbitalBaseResource::GENERATOR => [
-						['stat' => Format::numberFormat($orbitalBaseHelper->getBuildingInfo($identifier, 'level', $level, 'nbQueues'))],
+					PlanetResource::GENERATOR => [
+						['stat' => Format::numberFormat($planetHelper->getBuildingInfo($identifier, 'level', $level, 'nbQueues'))],
 					],
-					OrbitalBaseResource::REFINERY => [
+					PlanetResource::REFINERY => [
 						[
-							'stat' => Format::numberFormat(Game::resourceProduction($orbitalBaseHelper->getBuildingInfo($identifier, 'level', $level, 'refiningCoefficient'), 50)),
+							'stat' => Format::numberFormat(Game::resourceProduction($planetHelper->getBuildingInfo($identifier, 'level', $level, 'refiningCoefficient'), 50)),
 							'image' => 'resource',
 							'alt' => 'resources',
 						],
 					],
-					OrbitalBaseResource::STORAGE => [
+					PlanetResource::STORAGE => [
 						[
-							'stat' => Format::numberFormat($orbitalBaseHelper->getBuildingInfo($identifier, 'level', $level, 'storageSpace')),
+							'stat' => Format::numberFormat($planetHelper->getBuildingInfo($identifier, 'level', $level, 'storageSpace')),
 							'image' => 'resource',
 							'alt' => 'resources',
 						],
 					],
-					OrbitalBaseResource::DOCK1, OrbitalBaseResource::DOCK2 => [
+					PlanetResource::DOCK1, PlanetResource::DOCK2 => [
 						[
-							'stat' => Format::numberFormat($orbitalBaseHelper->getBuildingInfo($identifier, 'level', $level, 'nbQueues')),
+							'stat' => Format::numberFormat($planetHelper->getBuildingInfo($identifier, 'level', $level, 'nbQueues')),
 						],
 						[
-							'stat' => Format::numberFormat($orbitalBaseHelper->getBuildingInfo($identifier, 'level', $level, 'storageSpace')),
+							'stat' => Format::numberFormat($planetHelper->getBuildingInfo($identifier, 'level', $level, 'storageSpace')),
 							'image' => 'pev',
 							'alt' => 'pev',
 						],
 					],
-					OrbitalBaseResource::TECHNOSPHERE => [
+					PlanetResource::TECHNOSPHERE => [
 						[
-							'stat' => Format::numberFormat($orbitalBaseHelper->getBuildingInfo($identifier, 'level', $level, 'nbQueues')),
+							'stat' => Format::numberFormat($planetHelper->getBuildingInfo($identifier, 'level', $level, 'nbQueues')),
 						],
 					],
-					OrbitalBaseResource::COMMERCIAL_PLATEFORME => [
+					PlanetResource::COMMERCIAL_PLATEFORME => [
 						[
-							'stat' => Format::numberFormat($orbitalBaseHelper->getBuildingInfo($identifier, 'level', $level, 'nbCommercialShip')),
+							'stat' => Format::numberFormat($planetHelper->getBuildingInfo($identifier, 'level', $level, 'nbCommercialShip')),
 						],
 					],
-					OrbitalBaseResource::RECYCLING => [
+					PlanetResource::RECYCLING => [
 						[
-							'stat' => Format::numberFormat($orbitalBaseHelper->getBuildingInfo($identifier, 'level', $level, 'nbRecyclers')),
+							'stat' => Format::numberFormat($planetHelper->getBuildingInfo($identifier, 'level', $level, 'nbRecyclers')),
 						],
 					],
-					OrbitalBaseResource::SPATIOPORT => [
+					PlanetResource::SPATIOPORT => [
 						[
-							'stat' => Format::numberFormat($orbitalBaseHelper->getBuildingInfo($identifier, 'level', $level, 'nbRoutesMax')),
+							'stat' => Format::numberFormat($planetHelper->getBuildingInfo($identifier, 'level', $level, 'nbRoutesMax')),
 						],
 					],
 					default => throw new \LogicException(),
 				},
-				'points' => $orbitalBaseHelper->getBuildingInfo($identifier, 'level', $level, 'points'),
+				'points' => $planetHelper->getBuildingInfo($identifier, 'level', $level, 'points'),
 			];
 		}
 

@@ -3,7 +3,7 @@
 namespace App\Tests\Modules\Athena\Domain\Service\Base\Building;
 
 use App\Modules\Athena\Domain\Service\Base\Building\BuildingDataHandler;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Gaia\Resource\PlanetResource;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -36,7 +36,7 @@ class BuildingDataHandlerTest extends KernelTestCase
 	public static function provideTestDataForBuildingCost(): Generator
 	{
 		yield [
-			OrbitalBaseResource::GENERATOR,
+			PlanetResource::GENERATOR,
 			2,
 			[
 				'time' => 28,
@@ -45,7 +45,7 @@ class BuildingDataHandlerTest extends KernelTestCase
 		];
 
 		yield [
-			OrbitalBaseResource::REFINERY,
+			PlanetResource::REFINERY,
 			14,
 			[
 				'time' => 800,
@@ -54,7 +54,7 @@ class BuildingDataHandlerTest extends KernelTestCase
 		];
 
 		yield [
-			OrbitalBaseResource::SPATIOPORT,
+			PlanetResource::SPATIOPORT,
 			10,
 			[
 				'time' => 2066,

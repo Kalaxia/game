@@ -6,12 +6,12 @@ use App\Modules\Athena\Application\Factory\BuildingQueueFactory;
 use App\Modules\Athena\Application\Handler\Building\BuildingLevelHandler;
 use App\Modules\Athena\Domain\Repository\BuildingQueueRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Base\Building\BuildingDataHandler;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
 use App\Modules\Athena\Infrastructure\Validator\CanMakeBuilding;
 use App\Modules\Athena\Infrastructure\Validator\DTO\BuildingConstructionOrder;
 use App\Modules\Athena\Infrastructure\Validator\IsValidBuilding;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Helper\PlanetHelper;
+use App\Modules\Gaia\Manager\PlanetManager;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,31 +25,31 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class Build extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		Player $currentPlayer,
-		OrbitalBase $currentBase,
-		OrbitalBaseHelper $orbitalBaseHelper,
-		OrbitalBaseManager $orbitalBaseManager,
-		TechnologyRepositoryInterface $technologyRepository,
-		BuildingDataHandler $buildingDataHandler,
-		BuildingQueueRepositoryInterface $buildingQueueRepository,
-		BuildingLevelHandler $buildingLevelHandler,
-		BuildingQueueFactory $buildingQueueFactory,
-		ValidatorInterface $validator,
-		int $identifier,
+        Request                          $request,
+        Player                           $currentPlayer,
+        Planet                           $currentPlanet,
+        PlanetHelper                     $planetHelper,
+        PlanetManager                    $planetManager,
+        TechnologyRepositoryInterface    $technologyRepository,
+        BuildingDataHandler              $buildingDataHandler,
+        BuildingQueueRepositoryInterface $buildingQueueRepository,
+        BuildingLevelHandler             $buildingLevelHandler,
+        BuildingQueueFactory             $buildingQueueFactory,
+        ValidatorInterface               $validator,
+        int                              $identifier,
 	): Response {
-		if (!$orbitalBaseHelper->isABuilding($identifier)) {
+		if (!$planetHelper->isABuilding($identifier)) {
 			throw new BadRequestHttpException('le bâtiment indiqué n\'est pas valide');
 		}
-		$buildingQueues = $buildingQueueRepository->getBaseQueues($currentBase);
+		$buildingQueues = $buildingQueueRepository->getPlanetQueues($currentPlanet);
 		$buildingQueuesCount = count($buildingQueues);
 
-		$currentLevel = $buildingLevelHandler->getBuildingRealLevel($currentBase, $identifier, $buildingQueues);
+		$currentLevel = $buildingLevelHandler->getBuildingRealLevel($currentPlanet, $identifier, $buildingQueues);
 		$targetLevel = $currentLevel + 1;
 		$technos = $technologyRepository->getPlayerTechnology($currentPlayer);
 
 		$buildingConstructionOrder = new BuildingConstructionOrder(
-			orbitalBase: $currentBase,
+			planet: $currentPlanet,
 			technology: $technos,
 			buildingIdentifier: $identifier,
 			targetLevel: $targetLevel,
@@ -71,13 +71,13 @@ class Build extends AbstractController
 		}
 
 		// debit resources
-		$orbitalBaseManager->decreaseResources(
-			$currentBase,
+		$planetManager->decreaseResources(
+			$currentPlanet,
 			$buildingDataHandler->getBuildingResourceCost($identifier, $targetLevel),
 		);
 
 		$buildingQueue = $buildingQueueFactory->create(
-			orbitalBase: $currentBase,
+			planet: $currentPlanet,
 			identifier: $identifier,
 			targetLevel: $targetLevel,
 			startedAt: $startedAt,
@@ -85,7 +85,7 @@ class Build extends AbstractController
 
 		// TODO remove this
 		// add the event in controller
-		$request->getSession()->get('playerEvent')->add($buildingQueue->getEndDate(), $this->getParameter('event_base'), $currentBase->id);
+		$request->getSession()->get('playerEvent')->add($buildingQueue->getEndDate(), $this->getParameter('event_base'), $currentPlanet->id);
 
 		$this->addFlash('success', 'Construction programmée');
 

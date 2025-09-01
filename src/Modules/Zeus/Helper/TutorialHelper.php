@@ -4,18 +4,17 @@ namespace App\Modules\Zeus\Helper;
 
 use App\Modules\Athena\Application\Handler\Building\BuildingLevelHandler;
 use App\Modules\Athena\Domain\Repository\BuildingQueueRepositoryInterface;
-use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
+use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\TechnologyQueueRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
-use Doctrine\ORM\EntityManagerInterface;
 
 readonly class TutorialHelper
 {
 	public function __construct(
-		private PlayerRepositoryInterface $playerRepository,
-		private OrbitalBaseRepositoryInterface     $orbitalBaseRepository,
+		private PlayerRepositoryInterface          $playerRepository,
+		private PlanetRepositoryInterface          $planetRepository,
 		private BuildingQueueRepositoryInterface   $buildingQueueRepository,
 		private TechnologyRepositoryInterface      $technologyRepository,
 		private TechnologyQueueRepositoryInterface $technologyQueueRepository,
@@ -65,14 +64,14 @@ readonly class TutorialHelper
 	{
 		$nextStepAlreadyDone = false;
 
-		$playerBases = $this->orbitalBaseRepository->getPlayerBases($player);
-		foreach ($playerBases as $orbitalBase) {
-			if ($this->buildingLevelHandler->getBuildingLevel($orbitalBase, $buildingId) >= $level) {
+		$playerPlanets = $this->planetRepository->getPlayerPlanets($player);
+		foreach ($playerPlanets as $planet) {
+			if ($this->buildingLevelHandler->getBuildingLevel($planet, $buildingId) >= $level) {
 				$nextStepAlreadyDone = true;
 				break;
 			} else {
 				// verify in the queue
-				$buildingQueues = $this->buildingQueueRepository->getBaseQueues($orbitalBase);
+				$buildingQueues = $this->buildingQueueRepository->getPlanetQueues($planet);
 				foreach ($buildingQueues as $buildingQueue) {
 					if ($buildingQueue->buildingNumber == $buildingId and $buildingQueue->targetLevel >= $level) {
 						$nextStepAlreadyDone = true;

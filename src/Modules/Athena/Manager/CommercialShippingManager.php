@@ -8,8 +8,9 @@ use App\Modules\Ares\Model\Commander;
 use App\Modules\Athena\Domain\Repository\CommercialShippingRepositoryInterface;
 use App\Modules\Athena\Message\Trade\CommercialShippingMessage;
 use App\Modules\Athena\Model\CommercialShipping;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
+use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Manager\PlanetManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Shared\Application\SchedulerInterface;
@@ -19,11 +20,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 readonly class CommercialShippingManager implements SchedulerInterface
 {
 	public function __construct(
-		private OrbitalBaseManager $orbitalBaseManager,
-		private NotificationRepositoryInterface $notificationRepository,
-		private MessageBusInterface $messageBus,
+		private PlanetManager                         $planetManager,
+		private NotificationRepositoryInterface       $notificationRepository,
+		private MessageBusInterface                   $messageBus,
 		private CommercialShippingRepositoryInterface $commercialShippingRepository,
-		private TranslatorInterface $translator,
+		private TranslatorInterface                   $translator,
 	) {
 	}
 
@@ -43,15 +44,15 @@ readonly class CommercialShippingManager implements SchedulerInterface
 	 * TODO: add more data and links in notifications.
 	 */
 	public function deliver(
-		CommercialShipping $commercialShipping,
-		Transaction|null $transaction,
-		OrbitalBase $destOB,
-		Commander|null $commander
+        CommercialShipping $commercialShipping,
+        Transaction|null   $transaction,
+        Planet             $destOB,
+        Commander|null     $commander
 	): void {
 		if (null !== $transaction && $transaction->isCompleted()) {
 			switch ($transaction->type) {
 				case Transaction::TYP_RESOURCE:
-					$this->orbitalBaseManager->increaseResources($destOB, $transaction->quantity, true);
+					$this->planetManager->increaseResources($destOB, $transaction->quantity, true);
 
 					// notif pour l'acheteur
 					$notification = NotificationBuilder::new()
@@ -117,7 +118,7 @@ readonly class CommercialShippingManager implements SchedulerInterface
 		} elseif (null === $transaction && null === $commercialShipping->transaction && null !== $commercialShipping->resourceTransported) {
 			// resource sending
 
-			$this->orbitalBaseManager->increaseResources($destOB, $commercialShipping->resourceTransported, true);
+			$this->planetManager->increaseResources($destOB, $commercialShipping->resourceTransported, true);
 
 			// notif for the player who receive the resources
 			$notification = NotificationBuilder::new()

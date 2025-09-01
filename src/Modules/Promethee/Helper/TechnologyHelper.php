@@ -4,27 +4,27 @@ namespace App\Modules\Promethee\Helper;
 
 use App\Classes\Container\ArrayList;
 use App\Classes\Container\StackList;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
-use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Helper\PlanetHelper;
+use App\Modules\Gaia\Resource\PlanetResource;
 use App\Modules\Promethee\Model\Technology;
 use App\Modules\Promethee\Resource\TechnologyResource;
 use Symfony\Contracts\Service\Attribute\Required;
 
 class TechnologyHelper
 {
-	protected OrbitalBaseHelper $orbitalBaseHelper;
+	protected PlanetHelper $planetHelper;
 
 	public function __construct(
 		protected ResearchHelper $researchHelper,
-		protected int $researchQuantity
+		protected int $researchQuantity,
 	) {
 	}
 
 	#[Required]
-	public function setOrbitalBaseHelper(OrbitalBaseHelper $orbitalBaseHelper): void
+	public function setPlanetHelper(PlanetHelper $planetHelper): void
 	{
-		$this->orbitalBaseHelper = $orbitalBaseHelper;
+		$this->planetHelper = $planetHelper;
 	}
 
 	public function isATechnology(int $techno): bool
@@ -104,7 +104,7 @@ class TechnologyHelper
 				// $arg1 est un objet de type OrbitalBase
 				// $arg2 est le nombre de technologies dans la queue
 				case 'queue':
-					$maxQueue = $this->orbitalBaseHelper->getBuildingInfo(OrbitalBaseResource::TECHNOSPHERE, 'level', $arg1->levelTechnosphere, 'nbQueues');
+					$maxQueue = $this->planetHelper->getBuildingInfo(PlanetResource::TECHNOSPHERE, 'level', $arg1->levelTechnosphere, 'nbQueues');
 
 					return $arg2 < $maxQueue;
 				// a-t-on le droit de construire ce niveau ?
@@ -149,10 +149,10 @@ class TechnologyHelper
 					// arg1 est le type de la base
 				case 'baseType':
 					return match ($arg1) {
-						OrbitalBase::TYP_NEUTRAL => in_array($this->getInfo($techno, 'column'), [1, 2, 3]),
-						OrbitalBase::TYP_COMMERCIAL => in_array($this->getInfo($techno, 'column'), [1, 2, 3, 4, 5]),
-						OrbitalBase::TYP_MILITARY => in_array($this->getInfo($techno, 'column'), [1, 2, 3, 6, 7]),
-						OrbitalBase::TYP_CAPITAL => in_array($this->getInfo($techno, 'column'), [1, 2, 3, 4, 5, 6, 7]),
+						Planet::TYP_NEUTRAL => in_array($this->getInfo($techno, 'column'), [1, 2, 3]),
+						Planet::TYP_COMMERCIAL => in_array($this->getInfo($techno, 'column'), [1, 2, 3, 4, 5]),
+						Planet::TYP_MILITARY => in_array($this->getInfo($techno, 'column'), [1, 2, 3, 6, 7]),
+						Planet::TYP_CAPITAL => in_array($this->getInfo($techno, 'column'), [1, 2, 3, 4, 5, 6, 7]),
 						default => false,
 					};
 				default:

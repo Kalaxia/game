@@ -3,9 +3,9 @@
 namespace App\Shared\Infrastructure\EventSubscriber;
 
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
-use App\Modules\Athena\Application\Registry\CurrentPlayerBasesRegistry;
 use App\Modules\Athena\Domain\Repository\BuildingQueueRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
+use App\Modules\Gaia\Application\Registry\CurrentPlayerPlanetsRegistry;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\TechnologyQueueRepositoryInterface;
@@ -20,14 +20,14 @@ class TwigEventSubscriber implements EventSubscriberInterface
 	protected SessionInterface|null $session = null;
 
 	public function __construct(
-		private readonly Environment $twig,
-		private readonly CommanderRepositoryInterface $commanderRepository,
-		private readonly ConversationRepositoryInterface $conversationRepository,
-		private readonly NotificationRepositoryInterface $notificationRepository,
-		private readonly CurrentPlayerRegistry $currentPlayerRegistry,
-		private readonly CurrentPlayerBasesRegistry $currentPlayerBasesRegistry,
-		private readonly ShipQueueRepositoryInterface $shipQueueRepository,
-		private readonly BuildingQueueRepositoryInterface $buildingQueueRepository,
+		private readonly Environment                        $twig,
+		private readonly CommanderRepositoryInterface       $commanderRepository,
+		private readonly ConversationRepositoryInterface    $conversationRepository,
+		private readonly NotificationRepositoryInterface    $notificationRepository,
+		private readonly CurrentPlayerRegistry              $currentPlayerRegistry,
+		private readonly CurrentPlayerPlanetsRegistry       $currentPlayerPlanetsRegistry,
+		private readonly ShipQueueRepositoryInterface       $shipQueueRepository,
+		private readonly BuildingQueueRepositoryInterface   $buildingQueueRepository,
 		private readonly TechnologyQueueRepositoryInterface $technologyQueueRepository,
 	) {
 	}
@@ -49,15 +49,15 @@ class TwigEventSubscriber implements EventSubscriberInterface
 		}
 
 		$player = $this->currentPlayerRegistry->get();
-		$currentBase = $this->currentPlayerBasesRegistry->current();
+		$currentBase = $this->currentPlayerPlanetsRegistry->current();
 
-		$this->twig->addGlobal('current_base', $currentBase);
-		$this->twig->addGlobal('current_player_bases', $this->currentPlayerBasesRegistry->all());
-		$this->twig->addGlobal('first_base', $this->currentPlayerBasesRegistry->first());
-		$this->twig->addGlobal('next_base', $this->currentPlayerBasesRegistry->next());
+		$this->twig->addGlobal('current_planet', $currentBase);
+		$this->twig->addGlobal('current_player_planets', $this->currentPlayerPlanetsRegistry->all());
+		$this->twig->addGlobal('first_planet', $this->currentPlayerPlanetsRegistry->first());
+		$this->twig->addGlobal('next_planet', $this->currentPlayerPlanetsRegistry->next());
 		$this->twig->addGlobal('incoming_commanders', $this->commanderRepository->getIncomingAttacks($player));
 		$this->twig->addGlobal('outgoing_commanders', $this->commanderRepository->getOutcomingAttacks($player));
-		$this->twig->addGlobal('current_building_queues', $this->buildingQueueRepository->getBaseQueues($currentBase));
+		$this->twig->addGlobal('current_building_queues', $this->buildingQueueRepository->getPlanetQueues($currentBase));
 		$this->twig->addGlobal('current_technology_queues', $this->technologyQueueRepository->getPlaceQueues($currentBase->place));
 		$this->twig->addGlobal('current_dock1_ship_queues', $this->shipQueueRepository->getByBaseAndDockType($currentBase, 1));
 		$this->twig->addGlobal('current_dock2_ship_queues', $this->shipQueueRepository->getByBaseAndDockType($currentBase, 2));

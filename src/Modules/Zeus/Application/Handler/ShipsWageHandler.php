@@ -9,8 +9,8 @@ use App\Modules\Ares\Domain\Service\CalculateFleetCost;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
@@ -35,7 +35,7 @@ readonly class ShipsWageHandler
 
 	/**
 	 * @param list<Commander>   $commanders
-	 * @param list<OrbitalBase> $playerBases
+	 * @param list<Planet> $playerBases
 	 */
 	public function payWages(
 		PlayerFinancialReport $playerFinancialReport,

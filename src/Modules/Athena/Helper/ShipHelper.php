@@ -8,8 +8,9 @@ use App\Modules\Athena\Domain\Enum\DockType;
 use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountHangarAvailableStorableShipPoints;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountMaxShipQueues;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
 use App\Modules\Demeter\Resource\ColorResource;
+use App\Modules\Gaia\Helper\PlanetHelper;
+use App\Modules\Gaia\Resource\PlanetResource;
 use App\Modules\Promethee\Helper\TechnologyHelper;
 use App\Modules\Shared\Application\PercentageApplier;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerRegistry;
@@ -17,13 +18,13 @@ use App\Modules\Zeus\Application\Registry\CurrentPlayerRegistry;
 readonly class ShipHelper
 {
 	public function __construct(
-		private CountMaxShipQueues $countMaxShipQueues,
+		private CountMaxShipQueues                     $countMaxShipQueues,
 		private CountHangarAvailableStorableShipPoints $countHangarAvailableStorableShipPoints,
-		private CurrentPlayerRegistry $currentPlayerRegistry,
-		private TechnologyHelper $technologyHelper,
-		private OrbitalBaseHelper $orbitalBaseHelper,
-		private ShipQueueRepositoryInterface $shipQueueRepository,
-		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
+		private CurrentPlayerRegistry                  $currentPlayerRegistry,
+		private TechnologyHelper                       $technologyHelper,
+		private PlanetHelper                           $planetHelper,
+		private ShipQueueRepositoryInterface           $shipQueueRepository,
+		private GetShipCategoriesConfiguration         $getShipCategoriesConfiguration,
 	) {
 	}
 
@@ -51,27 +52,27 @@ readonly class ShipHelper
 				return !($sup < $price);
 			case 'queue':
 				return $quantity < ($this->countMaxShipQueues)(
-					orbitalBase: $sup,
+					planet: $sup,
 					dockType: $dockType,
 				);
 				// droit de construire le vaisseau ?
-				// $sup est un objet de type OrbitalBase
+				// $sup est un objet de type Planet
 			case 'shipTree':
 				if ($dockType === DockType::Manufacture) {
 					$level = $sup->levelDock1;
 
-					return $shipId < $this->orbitalBaseHelper->getBuildingInfo(2, 'level', $level, 'releasedShip');
+					return $shipId < $this->planetHelper->getBuildingInfo(2, 'level', $level, 'releasedShip');
 				} elseif ($dockType === DockType::Shipyard) {
 					$level = $sup->levelDock2;
 
-					return ($shipId - 6) < $this->orbitalBaseHelper->getBuildingInfo(3, 'level', $level, 'releasedShip');
+					return ($shipId - 6) < $this->planetHelper->getBuildingInfo(3, 'level', $level, 'releasedShip');
 				} else {
 					$level = $sup->levelDock3;
 
-					return ($shipId - 12) < $this->orbitalBaseHelper->getBuildingInfo(4, 'level', $level, 'releasedShip');
+					return ($shipId - 12) < $this->planetHelper->getBuildingInfo(4, 'level', $level, 'releasedShip');
 				}
 			// assez de pev dans le storage et dans la queue ?
-			// $sup est un objet de type OrbitalBase
+			// $sup est un objet de type Planet
 			case 'pev':
 				$wanted = ($this->getShipCategoriesConfiguration)($shipId, 'pev') * $quantity;
 
@@ -96,20 +97,20 @@ readonly class ShipHelper
 		$dockType = DockType::fromShipCategory($shipCategory);
 
 		if ($dockType === DockType::Manufacture) {
-			$building = OrbitalBaseResource::DOCK1;
+			$building = PlanetResource::DOCK1;
 			$size = 40;
 			++$shipId;
 		} elseif ($dockType === DockType::Shipyard) {
-			$building = OrbitalBaseResource::DOCK2;
+			$building = PlanetResource::DOCK2;
 			$size = 20;
 			$shipId -= 5;
 		} else {
-			$building = OrbitalBaseResource::DOCK3;
+			$building = PlanetResource::DOCK3;
 			$size = 10;
 			$shipId -= 11;
 		}
 		for ($i = 0; $i <= $size; ++$i) {
-			$relasedShip = $this->orbitalBaseHelper->getBuildingInfo($building, 'level', $i, 'releasedShip');
+			$relasedShip = $this->planetHelper->getBuildingInfo($building, 'level', $i, 'releasedShip');
 			if ($relasedShip == $shipId) {
 				return $i;
 			}

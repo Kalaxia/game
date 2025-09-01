@@ -2,16 +2,15 @@
 
 namespace App\Modules\Athena\Infrastructure\Controller\Ship;
 
-use App\Classes\Library\Format;
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Athena\Application\Factory\ShipQueueFactory;
 use App\Modules\Athena\Domain\Enum\DockType;
 use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountShipResourceCost;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
 use App\Modules\Athena\Helper\ShipHelper;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Helper\PlanetHelper;
+use App\Modules\Gaia\Manager\PlanetManager;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,17 +23,17 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class BuildShips extends AbstractController
 {
 	public function __invoke(
-		Request                       $request,
-		Player                        $currentPlayer,
-		OrbitalBase                   $currentBase,
-		OrbitalBaseManager            $orbitalBaseManager,
-		OrbitalBaseHelper             $orbitalBaseHelper,
-		CountShipResourceCost         $countShipResourceCost,
-		ShipHelper                    $shipHelper,
-		ShipQueueRepositoryInterface  $shipQueueRepository,
-		ShipQueueFactory              $shipQueueFactory,
-		TechnologyRepositoryInterface $technologyRepository,
-		TranslatorInterface $translator,
+        Request                       $request,
+        Player                        $currentPlayer,
+        Planet                        $currentPlanet,
+        PlanetManager                 $planetManager,
+        PlanetHelper                  $planetHelper,
+        CountShipResourceCost         $countShipResourceCost,
+        ShipHelper                    $shipHelper,
+        ShipQueueRepositoryInterface  $shipQueueRepository,
+        ShipQueueFactory              $shipQueueFactory,
+        TechnologyRepositoryInterface $technologyRepository,
+        TranslatorInterface           $translator,
 	): Response {
 		$shipIdentifier = $request->query->getInt('ship')
 			?? throw new BadRequestHttpException('Missing ship identifier');
@@ -50,15 +49,15 @@ class BuildShips extends AbstractController
 		if (DockType::Shipyard === $dockType) {
 			$quantity = 1;
 		}
-		$shipQueues = $shipQueueRepository->getByBaseAndDockType($currentBase, $dockType->getIdentifier());
+		$shipQueues = $shipQueueRepository->getByBaseAndDockType($currentPlanet, $dockType->getIdentifier());
 		$shipQueuesCount = count($shipQueues);
 		$technos = $technologyRepository->getPlayerTechnology($currentPlayer);
 		// TODO Replace with Specification pattern
 		if (
-			!$shipHelper->haveRights($shipIdentifier, 'resource', $currentBase->resourcesStorage, $quantity)
-			|| !$shipHelper->haveRights($shipIdentifier, 'queue', $currentBase, $shipQueuesCount)
-			|| !$shipHelper->haveRights($shipIdentifier, 'shipTree', $currentBase)
-			|| !$shipHelper->haveRights($shipIdentifier, 'pev', $currentBase, $quantity)
+			!$shipHelper->haveRights($shipIdentifier, 'resource', $currentPlanet->resourcesStorage, $quantity)
+			|| !$shipHelper->haveRights($shipIdentifier, 'queue', $currentPlanet, $shipQueuesCount)
+			|| !$shipHelper->haveRights($shipIdentifier, 'shipTree', $currentPlanet)
+			|| !$shipHelper->haveRights($shipIdentifier, 'pev', $currentPlanet, $quantity)
 			|| !$shipHelper->haveRights($shipIdentifier, 'techno', $technos)
 		) {
 			throw new ConflictHttpException('Missing some conditions to launch the build order');
@@ -69,7 +68,7 @@ class BuildShips extends AbstractController
 			: $shipQueues[$shipQueuesCount - 1]->getEndDate();
 
 		$shipQueue = $shipQueueFactory->create(
-			orbitalBase: $currentBase,
+			planet: $currentPlanet,
 			shipIdentifier: $shipIdentifier,
 			dockType: $dockType,
 			quantity: $quantity,
@@ -77,10 +76,10 @@ class BuildShips extends AbstractController
 		);
 
 		$resourcePrice = ($countShipResourceCost)($shipIdentifier, $quantity, $currentPlayer);
-		$orbitalBaseManager->decreaseResources($currentBase, $resourcePrice);
+		$planetManager->decreaseResources($currentPlanet, $resourcePrice);
 
 		$session = $request->getSession();
-		$session->get('playerEvent')->add($shipQueue->getEndDate(), $this->getParameter('event_base'), $currentBase->id);
+		$session->get('playerEvent')->add($shipQueue->getEndDate(), $this->getParameter('event_base'), $currentPlanet->id);
 
 		// TODO Improve translations to put this in one line
 		if (1 == $quantity) {

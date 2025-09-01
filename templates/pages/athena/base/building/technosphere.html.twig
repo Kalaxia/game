@@ -1,14 +1,14 @@
-{% extends 'layouts/athena/current_base.html.twig' %}
+{% extends 'layouts/athena/current_planet.html.twig' %}
 
 {% block content %}
-	{% set technosphere_building_number = constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::TECHNOSPHERE') %}
+	{% set technosphere_building_number = constant('App\\Modules\\Gaia\\Resource\\PlanetResource::TECHNOSPHERE') %}
 
 	<div class="flex gap-x-4 [&>div]:w-80">
 		<twig:LayoutBox>
 			<header>
 				{#<img src="{{ asset('build/media/orbitalbase/technosphere.png') }}" alt="" />#}
 				<twig:H2>{{ get_building_info(technosphere_building_number, 'frenchName') }}</twig:H2>
-				<twig:H5>niveau {{ current_base.levelTechnosphere }}</twig:H5>
+				<twig:H5>niveau {{ current_planet.levelTechnosphere }}</twig:H5>
 			</header>
 			<section class="mt-4">
 				<div class="body">
@@ -20,9 +20,9 @@
 
 					<div class="flex flex-col divide-y divide-gray-500">
 						{% set total_time_techno = 0 %}
-						{% set base_queues_count = base_queues|length %}
+						{% set planet_queues_count = planet_queues|length %}
 
-						{% for queue in base_queues %}
+						{% for queue in planet_queues %}
 							{% set total_time_techno = total_time_techno + queue|technology_queue_time %}
 							{% set remaining_total_time = queue|queue_duration %}
 
@@ -36,13 +36,13 @@
 								{#<img class="picto" src="{{ asset('build/media/technology/picto/' ~ queue|queue_picture ~ '.png') }}" alt="" />#}
 								<strong class="text-sm">{{ queue|queue_name }}
 									{% if queue|is_unblocking_technology %}
-										<span class="level">niv. {{ queue.targetLevel }}</span>
+										<span class="level">niv. {{ queue.targetLevel }}</span>sw
 									{% endif %}
 								</strong><br>
 
 								<em class="text-sm"><span class="progress-text">{{ remaining_total_time|lite_seconds }}</span></em>
 
-								{% if base_queues_count > 1 %}
+								{% if planet_queues_count > 1 %}
 									<twig:ProgressBar current="0" :faction="current_player.faction" />
 								{% else %}
 									<twig:ProgressBar :current="(total_time_techno - remaining_total_time)|percent(total_time_techno)" :faction="current_player.faction" />
@@ -50,8 +50,8 @@
 							</div>
 						{% endfor %}
 
-						{% if base_queues_count < available_queues %}
-							{% for i in range(base_queues_count, available_queues - 1) %}
+						{% if planet_queues_count < available_queues %}
+							{% for i in range(planet_queues_count, available_queues - 1) %}
 								<div class="item empty">
 									<span class="picto"></span>
 									<strong>Emplacement libre</strong>

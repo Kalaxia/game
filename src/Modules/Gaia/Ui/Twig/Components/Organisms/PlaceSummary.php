@@ -6,7 +6,7 @@ namespace App\Modules\Gaia\Ui\Twig\Components\Organisms;
 
 use App\Modules\Ares\Model\Report;
 use App\Modules\Artemis\Model\SpyReport;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent(

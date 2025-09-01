@@ -6,7 +6,7 @@ namespace App\Modules\Athena\Domain\Service\Base\Trade;
 
 use App\Modules\Athena\Domain\Repository\CommercialShippingRepositoryInterface;
 use App\Modules\Athena\Model\CommercialShipping;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Gaia\Domain\Entity\Planet;
 
 readonly class GetBaseCommercialShippingData
 {
@@ -21,7 +21,7 @@ readonly class GetBaseCommercialShippingData
 	 *     outgoing: list<list<CommercialShipping>>,
 	 * }
 	 */
-	public function __invoke(OrbitalBase $orbitalBase)
+	public function __invoke(Planet $planet)
 	{
 		$commercialShippingsData = [
 			'used_ships' => 0,
@@ -36,14 +36,14 @@ readonly class GetBaseCommercialShippingData
 				CommercialShipping::ST_MOVING_BACK => [],
 			],
 		];
-		$commercialShippings = $this->commercialShippingRepository->getByBase($orbitalBase);
+		$commercialShippings = $this->commercialShippingRepository->getByPlanet($planet);
 
 		foreach ($commercialShippings as $commercialShipping) {
-			if ($commercialShipping->originBase->id->equals($orbitalBase->id)) {
+			if ($commercialShipping->originBase->id->equals($planet->id)) {
 				$commercialShippingsData['used_ships'] += $commercialShipping->shipQuantity;
 				$commercialShippingsData['outgoing'][$commercialShipping->statement][] = $commercialShipping;
 			}
-			if ($commercialShipping->destinationBase?->id->equals($orbitalBase->id)) {
+			if ($commercialShipping->destinationBase?->id->equals($planet->id)) {
 				$commercialShippingsData['incoming'][$commercialShipping->statement][] = $commercialShipping;
 			}
 		}

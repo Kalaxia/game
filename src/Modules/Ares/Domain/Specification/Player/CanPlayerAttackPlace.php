@@ -2,7 +2,8 @@
 
 namespace App\Modules\Ares\Domain\Specification\Player;
 
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 
 class CanPlayerAttackPlace extends PlayerSpecification
 {
@@ -11,7 +12,9 @@ class CanPlayerAttackPlace extends PlayerSpecification
 	 */
 	public function isSatisfiedBy($candidate): bool
 	{
-		return (null !== $candidate->player && !$candidate->player->faction->id->equals($this->player->faction->id))
-			|| (null === $candidate->player && 1 === $candidate->typeOfPlace);
+		$player = $candidate->base?->player;
+
+		return (null !== $player && !$player->faction->id->equals($this->player->faction->id))
+			|| (null === $player && PlaceType::Planet === $candidate->typeOfPlace);
 	}
 }

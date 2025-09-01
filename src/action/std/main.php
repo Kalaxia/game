@@ -17,7 +17,7 @@ if ($request->query->has('sftr')) {
 
 if ($request->query->has('token') && $session->get('token') === $request->query->get('token')) {
 	match ($request->query->get('a')) {
-        'switchbase' => include $actionPath.'common/switchBase.php',
+        'switchplanet' => include $actionPath.'common/switchBase.php',
         'switchparams' => include $actionPath.'common/switchParams.php',
         'sendsponsorshipemail' => include $actionPath.'common/sendSponsorshipEmail.php',
         'discordrequest' => include $actionPath.'common/discordRequest.php',
@@ -110,7 +110,7 @@ if ($request->query->has('token') && $session->get('token') === $request->query-
         'donate' => include $actionPath.'demeter/donate.php',
         default => throw new ErrorException('action inconnue ou non-référencée'),
     };
-} elseif ('switchbase' == $request->query->get('a')) {
+} elseif ('switchplanet' == $request->query->get('a')) {
 	// action sans token
 	include $actionPath.'common/switchBase.php';
 } else {

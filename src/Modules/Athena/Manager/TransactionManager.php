@@ -2,12 +2,11 @@
 
 namespace App\Modules\Athena\Manager;
 
-use App\Classes\Library\Game;
 use App\Modules\Athena\Domain\Repository\CommercialTaxRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Transaction\CalculateRate;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
 use App\Modules\Demeter\Model\Color;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Shared\Application\PercentageApplier;
 use App\Modules\Travel\Domain\Model\TravelType;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;
@@ -36,7 +35,7 @@ readonly class TransactionManager
 	 *  rate: float|null,
 	 * }
 	 */
-	public function getTransactionData(Transaction $transaction, OrbitalBase $ob, ?float $currentRate = null): array
+	public function getTransactionData(Transaction $transaction, Planet $ob, ?float $currentRate = null): array
 	{
 		//	$rv = '1:' . Format::numberFormat(Game::calculateRate($transaction->type, $transaction->quantity, $transaction->identifier, $transaction->price), 3);
 		if (null !== $currentRate) {

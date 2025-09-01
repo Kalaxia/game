@@ -11,7 +11,7 @@
 		<many-to-one field="winner" target-entity="App\Modules\Zeus\Model\Player" />
 		<many-to-one field="attackerCommander" target-entity="App\Modules\Ares\Model\Commander" />
 		<many-to-one field="defenderCommander" target-entity="App\Modules\Ares\Model\Commander" />
-		<many-to-one field="place" target-entity="App\Modules\Gaia\Model\Place" />
+		<many-to-one field="place" target-entity="App\Modules\Gaia\Domain\Entity\Place" />
 
 		<field name="type" type="smallint" />
 		<field name="attackerLevel" type="integer" />

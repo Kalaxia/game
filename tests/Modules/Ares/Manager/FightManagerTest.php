@@ -7,9 +7,10 @@ use App\Modules\Ares\Manager\FightManager;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\LiveReport;
 use App\Modules\Ares\Model\Squadron;
-use App\Modules\Gaia\Model\Place;
-use App\Modules\Gaia\Model\Sector;
-use App\Modules\Gaia\Model\System;
+use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Sector;
+use App\Modules\Gaia\Domain\Entity\System;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Uid\Uuid;
@@ -100,7 +101,6 @@ class FightManagerTest extends KernelTestCase
 					name: null,
 					points: 5,
 					population: 0,
-					lifePlanet: 10,
 					prime: 1,
 				),
 				faction: null,
@@ -108,7 +108,7 @@ class FightManagerTest extends KernelTestCase
 				yPosition: 10,
 				typeOfSystem: 0,
 			),
-			typeOfPlace: Place::TERRESTRIAL,
+			typeOfPlace: PlaceType::Planet,
 			position: 1,
 			population: 100,
 			coefResources: 60,

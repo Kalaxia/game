@@ -7,7 +7,7 @@ namespace App\Modules\Artemis\Application\Handler;
 use App\Classes\Library\Game;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;
 use App\Shared\Application\Handler\DurationHandler;
 
@@ -58,7 +58,7 @@ readonly class AntiSpyHandler
 		$distance = ($this->getDistanceBetweenPlaces)($startPlace, $destinationPlace);
 		$distanceRemaining = $this->getRemainingSeconds($distance, $ratioRemaining);
 
-		$antiSpyRadius = $this->getAntiSpyRadius($destinationPlace->base->iAntiSpy, 1);
+		$antiSpyRadius = $this->getAntiSpyRadius($destinationPlace->base->iAntiSpy, Game::ANTISPY_GAME_MODE);
 
 		if ($distanceRemaining < $antiSpyRadius / 3) {
 			return [true, true, true];

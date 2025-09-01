@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\Gaia\Repository;
 
+use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Sector;
+use App\Modules\Gaia\Domain\Entity\System;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
-use App\Modules\Gaia\Model\Place;
-use App\Modules\Gaia\Model\Sector;
-use App\Modules\Gaia\Model\System;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
 
@@ -47,7 +47,7 @@ class PlaceRepository extends DoctrineRepository implements PlaceRepositoryInter
 	{
 		return $this->matching(
 			Criteria::create()
-				->where(Criteria::expr()->eq('typeOfPlace', Place::TERRESTRIAL))
+				->where(Criteria::expr()->eq('typeOfPlace', PlaceType::Planet))
 				->orderBy(['id' => 'ASC'])
 		);
 	}
@@ -60,9 +60,9 @@ class PlaceRepository extends DoctrineRepository implements PlaceRepositoryInter
 			->select('p.id')
 			->join('p.system', 'sys')
 			->where('IDENTITY(sys.sector) = :sector_id')
-			->andWhere('p.player IS NULL')
+			->andWhere('p.base IS NULL')
 			->andWhere('p.typeOfPlace = :type_of_place')
-			->setParameter('type_of_place', Place::TERRESTRIAL)
+			->setParameter('type_of_place', PlaceType::Planet)
 			->setParameter('sector_id', $sector->id->toBinary())
 			->orderBy('p.population', 'ASC')
 			->setMaxResults(30);
@@ -78,8 +78,8 @@ class PlaceRepository extends DoctrineRepository implements PlaceRepositoryInter
 		$qb = $this->createQueryBuilder('p');
 
 		$qb
-			->join('p.player', 'pl')
 			->join('p.base', 'ob')
+			->join('ob.player', 'pl')
 			->where($qb->expr()->andX(
 				$qb->expr()->orX(
 					$qb->expr()->in('pl.statement', [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY])

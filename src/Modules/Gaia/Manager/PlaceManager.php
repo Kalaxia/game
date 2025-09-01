@@ -6,12 +6,11 @@ use App\Classes\Library\Format;
 use App\Classes\Library\Game;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\Report;
+use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
-use App\Modules\Gaia\Model\Place;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
-use App\Modules\Hermes\Manager\NotificationManager;
-use App\Modules\Hermes\Model\Notification;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
@@ -27,14 +26,13 @@ readonly class PlaceManager
 
 	public function turnAsEmptyPlace(Place $place): void
 	{
-		$place->typeOfPlace = Place::EMPTYZONE;
+		$place->typeOfPlace = PlaceType::Empty;
 
 		$this->placeRepository->save($place);
 	}
 
 	public function turnAsSpawnPlace(Place $place, Player $player): void
 	{
-		$place->player = $player;
 		$place->coefResources = 60;
 		$place->coefHistory = 20;
 		$place->population = 50;
@@ -184,8 +182,8 @@ readonly class PlaceManager
 						),
 						' appartenant au joueur ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('embassy', ['player' => $place->player]),
-							$place->player->name,
+							$this->urlGenerator->generate('embassy', ['player' => $place->base->player]),
+							$place->base->player->name,
 						),
 						'.',
 						NotificationBuilder::divider(),
@@ -234,7 +232,7 @@ readonly class PlaceManager
 							'voir le rapport',
 						),
 					))
-					->for($place->player)
+					->for($place->base->player)
 			],
 			Place::LOOTPLAYERWHITBATTLEFAIL => [
 				NotificationBuilder::new()
@@ -252,8 +250,8 @@ readonly class PlaceManager
 						),
 						' appartenant au joueur ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('embassy', ['player' => $place->player]),
-							$place->player->name,
+							$this->urlGenerator->generate('embassy', ['player' => $place->base->player]),
+							$place->base->player->name,
 						),
 						'.',
 						NotificationBuilder::divider(),
@@ -272,8 +270,8 @@ readonly class PlaceManager
 						NotificationBuilder::bold($commander->name),
 						' appartenant au joueur ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('embassy', ['player' => $place->player]),
-							$place->player->name,
+							$this->urlGenerator->generate('embassy', ['player' => $place->base->player]),
+							$place->base->player->name,
 						),
 						' a attaqué votre planète ',
 						NotificationBuilder::link(
@@ -289,7 +287,7 @@ readonly class PlaceManager
 							'voir le rapport',
 						),
 					))
-					->for($place->player),
+					->for($place->base->player),
 			],
 			Place::LOOTPLAYERWHITOUTBATTLESUCCESS => [
 				NotificationBuilder::new()
@@ -307,8 +305,8 @@ readonly class PlaceManager
 						),
 						' appartenant au joueur ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('embassy', ['player' => $place->player]),
-							$place->player->name,
+							$this->urlGenerator->generate('embassy', ['player' => $place->base->player]),
+							$place->base->player->name,
 						),
 						'.',
 						NotificationBuilder::divider(),
@@ -347,7 +345,7 @@ readonly class PlaceManager
 							'ressources pillées',
 						),
 					)
-					->for($place->player)
+					->for($place->base->player)
 			],
 			Place::LOOTLOST => [
 				NotificationBuilder::new()
@@ -393,7 +391,7 @@ readonly class PlaceManager
 						),
 						'Votre empire s\'étend, administrez votre ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('switchbase', ['baseId' => $place->base->id]),
+							$this->urlGenerator->generate('switchplanet', ['planetId' => $place->base->id]),
 							'nouvelle planète',
 						),
 						'.',
@@ -451,8 +449,8 @@ readonly class PlaceManager
 						),
 						' appartenant au joueur ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('embassy', ['player' => $place->player]),
-							$place->player->name,
+							$this->urlGenerator->generate('embassy', ['player' => $place->base->player]),
+							$place->base->player->name,
 						),
 						'.',
 						NotificationBuilder::divider(),
@@ -463,7 +461,7 @@ readonly class PlaceManager
 						),
 						'Elle est désormais votre, vous pouvez l\'administrer ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('switchbase', ['baseId' => $place->base->id]),
+							$this->urlGenerator->generate('switchplanet', ['planetId' => $place->base->id]),
 							'ici',
 						),
 						'.',
@@ -488,7 +486,7 @@ readonly class PlaceManager
 						NotificationBuilder::divider(),
 						'Impliquez votre faction dans une action punitive envers votre assaillant.',
 					))
-					->for($place->player),
+					->for($place->base->player),
 			],
 			Place::CONQUERLOST => [
 				NotificationBuilder::new()
@@ -560,8 +558,8 @@ readonly class PlaceManager
 						),
 						' appartenant au joueur ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('embassy', ['player' => $place->player]),
-							$place->player->name,
+							$this->urlGenerator->generate('embassy', ['player' => $place->base->player]),
+							$place->base->player->name,
 						),
 						'.',
 						NotificationBuilder::divider(),
@@ -575,7 +573,7 @@ readonly class PlaceManager
 						NotificationBuilder::divider(),
 						'Elle est désormais vôtre, vous pouvez l\'administrer ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('switchbase', ['baseId' => $place->base->id]),
+							$this->urlGenerator->generate('switchplanet', ['planetId' => $place->base->id]),
 							'ici',
 						),
 						'.',
@@ -626,7 +624,7 @@ readonly class PlaceManager
 							array_keys($reports),
 						),
 					))
-					->for($place->player)
+					->for($place->base->player)
 			],
 			Place::CONQUERPLAYERWHITBATTLEFAIL => [
 				NotificationBuilder::new()
@@ -644,8 +642,8 @@ readonly class PlaceManager
 						),
 						' appartenant au joueur ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('embassy', ['player' => $place->player]),
-							$place->player->name,
+							$this->urlGenerator->generate('embassy', ['player' => $place->base->player]),
+							$place->base->player->name,
 						),
 						'.',
 						NotificationBuilder::divider(),
@@ -699,7 +697,7 @@ readonly class PlaceManager
 							array_keys($reports),
 						),
 					))
-					->for($place->player)
+					->for($place->base->player)
 			],
 			default => throw new \RuntimeException(sprintf('Unknown notification type %s', $case)),
 		};

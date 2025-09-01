@@ -2,7 +2,7 @@
 
 namespace App\Modules\Ares\Domain\Specification\Player;
 
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Gaia\Domain\Entity\Place;
 
 class CanRecycle extends PlayerSpecification
 {
