@@ -3,6 +3,7 @@
 namespace App\Modules\Gaia\Domain\Entity;
 
 use App\Modules\Ares\Domain\Model\ShipCategory;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Gaia\Resource\PlanetResource;
 use App\Modules\Shared\Domain\Model\SystemUpdatable;
 use App\Modules\Zeus\Model\Player;
@@ -11,13 +12,13 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'galaxy__planets')]
-class Planet implements SystemUpdatable, \JsonSerializable
+class Planet extends Place implements SystemUpdatable, \JsonSerializable
 {
 	// type of base
-	public const TYP_NEUTRAL = 0;
-	public const TYP_COMMERCIAL = 1;
-	public const TYP_MILITARY = 2;
-	public const TYP_CAPITAL = 3;
+	public const BASE_TYPE_COLONY = 0;
+	public const BASE_TYPE_COMMERCIAL = 1;
+	public const BASE_TYPE_MILITARY = 2;
+	public const BASE_TYPE_CAPITAL = 3;
 
 	public const MAXCOMMANDERSTANDARD = 2;
 	public const MAXCOMMANDERMILITARY = 5;
@@ -32,13 +33,27 @@ class Planet implements SystemUpdatable, \JsonSerializable
 		#[ORM\Id]
 		#[ORM\Column(type: 'uuid')]
 		public Uuid $id,
-		#[ORM\ManyToOne(targetEntity: Place::class, inversedBy: 'base')]
-		public Place $place,
+		#[ORM\ManyToOne(targetEntity: System::class)]
+		public System      $system,
+		#[ORM\Column(type: 'smallint', enumType: PlaceType::class, options: ['unsigned' => true])]
+		public PlaceType   $typeOfPlace,
+		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
+		public int         $position,
 		#[ORM\ManyToOne(targetEntity: Player::class)]
 		#[ORM\JoinColumn(nullable: true)]
 		public Player|null $player,
-		#[ORM\Column(type: 'string', length: 45)]
-		public string $name,
+		#[ORM\Column(type: 'string', length: 45, nullable: true)]
+		public string|null $name,
+		#[ORM\Column(type: 'float', options: ['unsigned' => true])]
+		public float       $population,
+		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
+		public int         $coefResources,
+		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
+		public int $coefHistory,
+		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
+		public int $danger,							// danger actuel de la place (force des flottes rebelles)
+		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
+		public int $maxDanger,						// danger max de la place (force des flottes rebelles)
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
 		public int $typeOfBase = 0,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
@@ -87,22 +102,22 @@ class Planet implements SystemUpdatable, \JsonSerializable
 
 	public function isCapital(): bool
 	{
-		return self::TYP_CAPITAL === $this->typeOfBase;
+		return self::BASE_TYPE_CAPITAL === $this->typeOfBase;
 	}
 
 	public function isMilitaryBase(): bool
 	{
-		return self::TYP_MILITARY === $this->typeOfBase;
+		return self::BASE_TYPE_MILITARY === $this->typeOfBase;
 	}
 
 	public function isCommercialBase(): bool
 	{
-		return self::TYP_COMMERCIAL === $this->typeOfBase;
+		return self::BASE_TYPE_COMMERCIAL === $this->typeOfBase;
 	}
 
 	public function isColony(): bool
 	{
-		return self::TYP_NEUTRAL === $this->typeOfBase;
+		return self::BASE_TYPE_COLONY === $this->typeOfBase;
 	}
 
 	public function addShips(int|ShipCategory $shipCategory, int $quantity): void
