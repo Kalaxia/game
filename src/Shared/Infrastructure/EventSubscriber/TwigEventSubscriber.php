@@ -49,18 +49,18 @@ class TwigEventSubscriber implements EventSubscriberInterface
 		}
 
 		$player = $this->currentPlayerRegistry->get();
-		$currentBase = $this->currentPlayerPlanetsRegistry->current();
+		$currentPlanet = $this->currentPlayerPlanetsRegistry->current();
 
-		$this->twig->addGlobal('current_planet', $currentBase);
+		$this->twig->addGlobal('current_planet', $currentPlanet);
 		$this->twig->addGlobal('current_player_planets', $this->currentPlayerPlanetsRegistry->all());
 		$this->twig->addGlobal('first_planet', $this->currentPlayerPlanetsRegistry->first());
 		$this->twig->addGlobal('next_planet', $this->currentPlayerPlanetsRegistry->next());
 		$this->twig->addGlobal('incoming_commanders', $this->commanderRepository->getIncomingAttacks($player));
 		$this->twig->addGlobal('outgoing_commanders', $this->commanderRepository->getOutcomingAttacks($player));
-		$this->twig->addGlobal('current_building_queues', $this->buildingQueueRepository->getPlanetQueues($currentBase));
-		$this->twig->addGlobal('current_technology_queues', $this->technologyQueueRepository->getPlaceQueues($currentBase->place));
-		$this->twig->addGlobal('current_dock1_ship_queues', $this->shipQueueRepository->getByBaseAndDockType($currentBase, 1));
-		$this->twig->addGlobal('current_dock2_ship_queues', $this->shipQueueRepository->getByBaseAndDockType($currentBase, 2));
+		$this->twig->addGlobal('current_building_queues', $this->buildingQueueRepository->getPlanetQueues($currentPlanet));
+		$this->twig->addGlobal('current_technology_queues', $this->technologyQueueRepository->getPlanetQueues($currentPlanet));
+		$this->twig->addGlobal('current_dock1_ship_queues', $this->shipQueueRepository->getByBaseAndDockType($currentPlanet, 1));
+		$this->twig->addGlobal('current_dock2_ship_queues', $this->shipQueueRepository->getByBaseAndDockType($currentPlanet, 2));
 	}
 
 	public function setCurrentPlayer(): void

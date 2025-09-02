@@ -29,7 +29,7 @@ class ViewOverview extends AbstractController
 			'vanguard_positions_count' => PlaceResource::get($currentPlanet->typeOfBase, 'l-line'),
 			'rear_positions' => PlaceResource::get($currentPlanet->typeOfBase, 'r-line-position'),
 			'rear_positions_count' => PlaceResource::get($currentPlanet->typeOfBase, 'r-line'),
-			'science_coeff' => Game::getImprovementFromScientificCoef($currentPlanet->place->coefHistory),
+			'science_coeff' => Game::getImprovementFromScientificCoef($currentPlanet->coefHistory),
 			'minimal_change_level' => $this->getParameter('athena.obm.change_type_min_level'),
 			'capital_change_level' => $this->getParameter('athena.obm.capital_min_level'),
 			'capitals_count' => $this->getCapitalsCount($currentPlayerPlanetsRegistry->all()),

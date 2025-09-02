@@ -7,10 +7,10 @@ namespace App\Modules\Gaia\Message;
 use App\Shared\Domain\Message\AsyncMessage;
 use Symfony\Component\Uid\Uuid;
 
-class PlaceUpdateMessage implements AsyncMessage
+class PlanetUpdateMessage implements AsyncMessage
 {
 	public function __construct(
-		public Uuid $placeId,
+		public Uuid $planetId,
 	) {
 
 	}

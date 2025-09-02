@@ -6,7 +6,7 @@ namespace App\Modules\Ares\Repository;
 
 use App\Modules\Ares\Domain\Repository\ReportRepositoryInterface;
 use App\Modules\Ares\Model\Report;
-use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\DBAL\ArrayParameterType;
@@ -25,7 +25,7 @@ class ReportRepository extends DoctrineRepository implements ReportRepositoryInt
 		return $this->find($id);
 	}
 
-	public function getByAttackerAndPlace(Player $attacker, Place $place, \DateTimeImmutable $dFight): array
+	public function getByAttackerAndPlace(Player $attacker, Planet $place, \DateTimeImmutable $dFight): array
 	{
 		return $this->findBy([
 			'attacker' => $attacker,

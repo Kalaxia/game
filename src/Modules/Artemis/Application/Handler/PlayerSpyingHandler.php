@@ -7,7 +7,7 @@ use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Artemis\Model\SpyReport;
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
-use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 
 readonly class PlayerSpyingHandler extends SpyingHandler
 {
@@ -20,7 +20,7 @@ readonly class PlayerSpyingHandler extends SpyingHandler
 
 	protected function processSpyingMission(SpyReport $spyReport): void
 	{
-		$planet = $spyReport->place->base;
+		$planet = $spyReport->place;
 
 		$spyReport->resources = $planet->resourcesStorage;
 
@@ -46,8 +46,8 @@ readonly class PlayerSpyingHandler extends SpyingHandler
 		$spyReport->commanders = $commandersArray;
 	}
 
-	protected function getAntiSpyCoeff(Place $place): int
+	protected function getAntiSpyCoeff(Planet $place): int
 	{
-		return $place->base->antiSpyAverage;
+		return $place->antiSpyAverage;
 	}
 }

@@ -56,7 +56,7 @@ class ChangePlanetType extends AbstractController
 				throw new ConflictHttpException('Evolution de votre colonie impossible - niveau du générateur pas assez élevé');
 			}
 
-			if (!in_array($type, [Planet::TYP_COMMERCIAL, Planet::TYP_MILITARY])) {
+			if (!in_array($type, [Planet::BASE_TYPE_COMMERCIAL, Planet::BASE_TYPE_MILITARY])) {
 				throw new BadRequestHttpException('Modification du type de la base orbitale impossible (seulement commercial ou militaire)');
 			}
 			$totalPrice = PlaceResource::get($type, 'price');
@@ -70,13 +70,13 @@ class ChangePlanetType extends AbstractController
 				'%s est désormais %s',
 				$currentPlanet->name,
 				match ($type) {
-					Planet::TYP_COMMERCIAL => 'un Centre Industriel',
-					Planet::TYP_MILITARY => 'une Base Militaire',
+					Planet::BASE_TYPE_COMMERCIAL => 'un Centre Industriel',
+					Planet::BASE_TYPE_MILITARY => 'une Base Militaire',
 				}
 			));
 		} elseif ($currentPlanet->isCommercialBase() || $currentPlanet->isMilitaryBase()) {
 			$baseMinLevelForCapital = intval($this->getParameter('athena.obm.capital_min_level'));
-			if (Planet::TYP_CAPITAL === $type) {
+			if (Planet::BASE_TYPE_CAPITAL === $type) {
 				if ($currentPlanet->levelGenerator < $baseMinLevelForCapital) {
 					throw new ConflictHttpException('Pour transformer votre base en capitale, vous devez augmenter votre générateur jusqu\'au niveau '.$baseMinLevelForCapital.'.');
 				}
@@ -84,14 +84,14 @@ class ChangePlanetType extends AbstractController
 
 				$capitalQuantity = 0;
 				foreach ($playerBases as $playerBase) {
-					if (Planet::TYP_CAPITAL == $playerBase->typeOfBase) {
+					if (Planet::BASE_TYPE_CAPITAL == $playerBase->typeOfBase) {
 						++$capitalQuantity;
 					}
 				}
 				if (0 < $capitalQuantity) {
 					throw new ConflictHttpException('Vous ne pouvez pas avoir plus d\'une Capitale. Sauf si vous en conquérez à vos ennemis bien sûr.');
 				}
-				$totalPrice = PlaceResource::get(Planet::TYP_CAPITAL, 'price');
+				$totalPrice = PlaceResource::get(Planet::BASE_TYPE_CAPITAL, 'price');
 				if (!$currentPlayer->canAfford($totalPrice)) {
 					throw new ConflictHttpException('Modification du type de la base orbitale impossible - vous n\'avez pas assez de crédits');
 				}
@@ -99,15 +99,15 @@ class ChangePlanetType extends AbstractController
 				$playerManager->decreaseCredit($currentPlayer, $totalPrice);
 
 				$this->addFlash('success', $currentPlanet->name.' est désormais une capitale.');
-			} elseif (($currentPlanet->isCommercialBase() && Planet::TYP_MILITARY === $type)
-				|| ($currentPlanet->isMilitaryBase() && Planet::TYP_COMMERCIAL === $type)) {
+			} elseif (($currentPlanet->isCommercialBase() && Planet::BASE_TYPE_MILITARY === $type)
+				|| ($currentPlanet->isMilitaryBase() && Planet::BASE_TYPE_COMMERCIAL === $type)) {
 				// commercial --> military OR military --> commercial
 				$totalPrice = PlaceResource::get($type, 'price');
 				if (!$currentPlayer->canAfford($totalPrice)) {
 					throw new ConflictHttpException('modification du type de la base orbitale impossible - vous n\'avez pas assez de crédits');
 				}
 				$canChangeBaseType = true;
-				if (Planet::TYP_COMMERCIAL === $type) {
+				if (Planet::BASE_TYPE_COMMERCIAL === $type) {
 					$canChangeBaseType = $this->removeCommercialBaseAssets($currentPlanet);
 				}
 				if (!$canChangeBaseType) {
@@ -131,7 +131,7 @@ class ChangePlanetType extends AbstractController
 				}
 				$entityManager->flush();
 				// send the right alert
-				if (Planet::TYP_COMMERCIAL == $type) {
+				if (Planet::BASE_TYPE_COMMERCIAL == $type) {
 					$this->addFlash('success', 'Votre Base Militaire devient un Centre Commerciale. Vos bâtiments militaires superflus sont détruits.');
 				} else {
 					$this->addFlash('success', 'Votre Centre Industriel devient une Base Militaire. Vos bâtiments commerciaux superflus sont détruits.');
@@ -141,13 +141,13 @@ class ChangePlanetType extends AbstractController
 			}
 		} elseif ($currentPlanet->isCapital()) {
 			/*switch ($type) {
-				case Planet::TYP_COMMERCIAL:
+				case Planet::BASE_TYPE_COMMERCIAL:
 					$orbitalBase->typeOfBase = $type;
 					# casser les bâtiments en trop
 					# killer la file de construction
 					throw new ErrorException('Votre base orbitale devient commerciale.', ALERT_STD_SUCCESS);
 					break;
-				case Planet::TYP_MILITARY:
+				case Planet::BASE_TYPE_MILITARY:
 					$orbitalBase->typeOfBase = $type;
 					# casser les bâtiments en trop
 					# killer la file de construction
@@ -163,7 +163,7 @@ class ChangePlanetType extends AbstractController
 		}
 		$planetRepository->save($currentPlanet);
 
-		$eventDispatcher->dispatch(new PlaceOwnerChangeEvent($currentPlanet->place));
+		$eventDispatcher->dispatch(new PlaceOwnerChangeEvent($currentPlanet));
 
 		return $this->redirectToRoute('base_overview');
 	}

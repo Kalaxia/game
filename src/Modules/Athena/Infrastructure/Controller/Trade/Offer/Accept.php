@@ -72,11 +72,11 @@ class Accept extends AbstractController
 		$playerManager->increaseCredit($seller, $transaction->price);
 
 		// transfert des crédits aux alliances
-		if (null !== ($exportFaction = $transaction->base->place->system->sector->faction)) {
+		if (null !== ($exportFaction = $transaction->base->system->sector->faction)) {
 			$exportFaction->increaseCredit($transactionData['export_tax']);
 		}
 
-		if (null !== ($importFaction = $currentBase->place->system->sector->faction)) {
+		if (null !== ($importFaction = $currentBase->system->sector->faction)) {
 			$importFaction->increaseCredit($transactionData['import_tax']);
 		}
 
@@ -88,8 +88,8 @@ class Accept extends AbstractController
 		$commercialShipping->destinationBase = $currentBase;
 		$commercialShipping->departureDate = new \DateTimeImmutable();
 		$commercialShipping->arrivalDate = $getTravelDuration(
-			$commercialShipping->originBase->place,
-			$currentBase->place,
+			$commercialShipping->originBase,
+			$currentBase,
 			$commercialShipping->departureDate,
 			TravelType::CommercialShipping,
 			$commercialShipping->player,
@@ -114,9 +114,9 @@ class Accept extends AbstractController
 			->setContent(NotificationBuilder::paragraph(
 				NotificationBuilder::link($this->generateUrl('embassy', ['player' => $currentPlayer->id]), $currentPlayer->name),
 				' a accepté une de vos propositions dans le marché. Des vaisseaux commerciaux viennent de partir de votre ',
-				NotificationBuilder::link($this->generateUrl('map', ['place' => $commercialShipping->originBase->place->id]), 'base'),
+				NotificationBuilder::link($this->generateUrl('map', ['place' => $commercialShipping->originBase->id]), 'base'),
 				' et se dirigent vers ',
-				NotificationBuilder::link($this->generateUrl('map', ['place' => $currentBase->place->id]), $currentBase->name),
+				NotificationBuilder::link($this->generateUrl('map', ['place' => $currentBase->id]), $currentBase->name),
 				' pour acheminer la marchandise. ',
 				NotificationBuilder::divider(),
 				sprintf(

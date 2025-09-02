@@ -83,7 +83,7 @@ class Conquer extends AbstractController
 
 		$moveFleet(
 			commander: $commander,
-			origin: $commander->base->place,
+			origin: $commander->base,
 			destination: $place,
 			mission: CommanderMission::Colo,
 		);

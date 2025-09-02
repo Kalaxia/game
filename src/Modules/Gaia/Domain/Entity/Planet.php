@@ -35,25 +35,23 @@ class Planet extends Place implements SystemUpdatable, \JsonSerializable
 		public Uuid $id,
 		#[ORM\ManyToOne(targetEntity: System::class)]
 		public System      $system,
-		#[ORM\Column(type: 'smallint', enumType: PlaceType::class, options: ['unsigned' => true])]
-		public PlaceType   $typeOfPlace,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int         $position,
 		#[ORM\ManyToOne(targetEntity: Player::class)]
 		#[ORM\JoinColumn(nullable: true)]
-		public Player|null $player,
+		public Player|null $player = null,
 		#[ORM\Column(type: 'string', length: 45, nullable: true)]
-		public string|null $name,
+		public string|null $name = null,
 		#[ORM\Column(type: 'float', options: ['unsigned' => true])]
-		public float       $population,
+		public float       $population = 0.0,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
-		public int         $coefResources,
+		public int         $coefResources = 0,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
-		public int $coefHistory,
+		public int $coefHistory = 0,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $danger,							// danger actuel de la place (force des flottes rebelles)
+		public int $danger = 0,							// danger actuel de la place (force des flottes rebelles)
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $maxDanger,						// danger max de la place (force des flottes rebelles)
+		public int $maxDanger = 0,						// danger max de la place (force des flottes rebelles)
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
 		public int $typeOfBase = 0,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
@@ -93,6 +91,12 @@ class Planet extends Place implements SystemUpdatable, \JsonSerializable
 		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $updatedAt = new \DateTimeImmutable(),
 	) {
+		parent::__construct($id, $system, $position, $updatedAt);
+	}
+
+	public function getType(): PlaceType
+	{
+		return PlaceType::Planet;
 	}
 
 	public function getShipStorage(): array
@@ -181,6 +185,20 @@ class Planet extends Place implements SystemUpdatable, \JsonSerializable
 		};
 
 		return $this;
+	}
+
+	public function getMaxResources(): int
+	{
+		return intval(
+			ceil($this->population / static::COEFFPOPRESOURCE)
+			* static::COEFFMAXRESOURCE
+			* ($this->maxDanger + 1)
+		);
+	}
+
+	public function getProducedResources(): int
+	{
+		return intval(floor(static::COEFFRESOURCE * $this->population));
 	}
 
 	public function lastUpdatedBySystemAt(): \DateTimeImmutable

@@ -280,7 +280,7 @@ readonly class PlayerCreditUpdateHandler
 
 	private function payFactionTax(Planet $base, int $populationTax, PlayerFinancialReport $playerFinancialReport): int
 	{
-		if (null === ($sectorFaction = $base->place->system->sector->faction)) {
+		if (null === ($sectorFaction = $base->system->sector->faction)) {
 			return 0;
 		}
 
@@ -295,6 +295,6 @@ readonly class PlayerCreditUpdateHandler
 
 	private function getFactionTax(Planet $base, int $populationTax): int
 	{
-		return PercentageApplier::toInt($base->place->system->sector->tax, $populationTax);
+		return PercentageApplier::toInt($base->system->sector->tax, $populationTax);
 	}
 }

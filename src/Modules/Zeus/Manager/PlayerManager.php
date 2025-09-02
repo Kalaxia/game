@@ -77,7 +77,7 @@ readonly class PlayerManager
 		$placeFound = false;
 		$placeId = null;
 		foreach ($sectors as $sector) {
-			$placeIds = $this->placeRepository->findPlacesIdsForANewBase($sector);
+			$placeIds = $this->planetRepository->getCandidatePlanetsForNewPlayers($sector);
 			if ([] !== $placeIds) {
 				$placeFound = true;
 				$placeId = $placeIds[random_int(0, count($placeIds) - 1)];
@@ -102,25 +102,21 @@ readonly class PlayerManager
 				$technos->setTechnology(TechnologyId::BASE_QUANTITY, 0);
 			}
 
-			$place = $this->placeRepository->get($placeId) ?? throw new \LogicException('Place not found');
+			$planet = $this->planetRepository->get($placeId)
+				?? throw new \LogicException('Planet not found');
 
 			// attribute new base and place to player
-			$ob = new Planet(
-				id: Uuid::v4(),
-				place: $place,
-				player: $player,
-				name: 'Colonie',
-				// @TODO transform these hardcoded values into config
-				iSchool: 500,
-				iAntiSpy: 500,
-				resourcesStorage: 1000,
-			);
+			$planet->player = $player;
+			$planet->name = 'Colonie';
+			$planet->iSchool = 500;
+			$planet->iAntiSpy = 500;
+			$planet->resourcesStorage = 1000;
 
-			$this->updatePlanetPoints->updatePoints($ob);
+			$this->updatePlanetPoints->updatePoints($planet);
 
-			$this->planetRepository->save($ob);
+			$this->planetRepository->save($planet);
 
-			$this->placeManager->turnAsSpawnPlace($placeId, $player);
+			$this->placeManager->turnAsSpawnPlace($planet);
 
 			// envoi d'une notif
 			$notif = NotificationBuilder::new()

@@ -20,7 +20,7 @@ readonly class PopulationTaxHandler
 
 	public function getPopulationTax(Planet $base): PopulationTax
 	{
-		$tax = ((180 * $base->place->population) + 1500) * $this->playerTaxCoeff;
+		$tax = ((180 * $base->population) + 1500) * $this->playerTaxCoeff;
 		$tax *= PlaceResource::get($base->typeOfBase, 'tax');
 
 		$bonus = intval($this->bonusApplier->apply($tax, PlayerBonusId::POPULATION_TAX));

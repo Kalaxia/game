@@ -55,10 +55,10 @@ class ViewTechnosphere extends AbstractController
 		$technology = $technologyRepository->getPlayerTechnology($currentPlayer);
 
 		// session avec les technos de cette base
-		$baseTechnologyQueues = $technologyQueueRepository->getPlaceQueues($currentPlanet->place);
+		$baseTechnologyQueues = $technologyQueueRepository->getPlanetQueues($currentPlanet);
 		$playerTechnologyQueues = $technologyQueueRepository->getPlayerQueues($currentPlayer);
 
-		$coef = $currentPlanet->place->coefHistory;
+		$coef = $currentPlanet->coefHistory;
 		$coefBonus = Game::getImprovementFromScientificCoef($coef);
 		$techBonus = $currentPlayerBonusRegistry->getPlayerBonus()->bonuses->get(PlayerBonusId::TECHNOSPHERE_SPEED);
 		$factionBonus = 0;
@@ -69,8 +69,8 @@ class ViewTechnosphere extends AbstractController
 		$totalBonus = $coefBonus + $techBonus + $factionBonus;
 
 		return $this->render('pages/athena/base/building/technosphere.html.twig', [
-			'has_financial_technologies' => in_array($currentPlanet->typeOfBase, [Planet::TYP_COMMERCIAL, Planet::TYP_CAPITAL]),
-			'has_military_technologies' => in_array($currentPlanet->typeOfBase, [Planet::TYP_MILITARY, Planet::TYP_CAPITAL]),
+			'has_financial_technologies' => in_array($currentPlanet->typeOfBase, [Planet::BASE_TYPE_COMMERCIAL, Planet::BASE_TYPE_CAPITAL]),
+			'has_military_technologies' => in_array($currentPlanet->typeOfBase, [Planet::BASE_TYPE_MILITARY, Planet::BASE_TYPE_CAPITAL]),
 			'planet_queues' => $baseTechnologyQueues,
 			'player_queues' => $playerTechnologyQueues,
 			'available_queues' => $planetHelper->getBuildingInfo(PlanetResource::TECHNOSPHERE, 'level', $currentPlanet->levelTechnosphere, 'nbQueues'),
@@ -141,7 +141,7 @@ class ViewTechnosphere extends AbstractController
 			$timeToBuild = $this->technologyHelper->getInfo($technologyId, 'time', $nextLevel);
 			$timeToBuild -= round($timeToBuild * $totalBonus / 100);
 			// warning : $totalBonus est défini plus haut (ne pas inverser les blocs de code !)
-			$timeToBuild = ($this->getTimeCost)($technologyId, $nextLevel, $currentBase->place->coefHistory);
+			$timeToBuild = ($this->getTimeCost)($technologyId, $nextLevel, $currentBase->coefHistory);
 
 			$column = $this->technologyHelper->getInfo($technologyId, 'column');
 

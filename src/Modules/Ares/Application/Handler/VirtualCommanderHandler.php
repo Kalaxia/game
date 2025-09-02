@@ -4,7 +4,7 @@ namespace App\Modules\Ares\Application\Handler;
 
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\Squadron;
-use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Resource\SquadronResource;
 use Symfony\Component\Uid\Uuid;
 
@@ -16,7 +16,7 @@ readonly class VirtualCommanderHandler
 
 	}
 
-	public function createVirtualCommander(Place $place): Commander
+	public function createVirtualCommander(Planet $place): Commander
 	{
 		$vCommander = new Commander(
 			id: Uuid::v4(),
@@ -56,18 +56,18 @@ readonly class VirtualCommanderHandler
 		return $vCommander;
 	}
 
-	private function getVirtualCommanderLevel(Place $place): int
+	private function getVirtualCommanderLevel(Planet $place): int
 	{
 		return intval(ceil((
-			(($place->maxDanger / (Place::DANGERMAX / Place::LEVELMAXVCOMMANDER)) * 9)
-			+ ($place->population / (Place::POPMAX / Place::LEVELMAXVCOMMANDER))
+			(($place->maxDanger / (Planet::DANGERMAX / Planet::LEVELMAXVCOMMANDER)) * 9)
+			+ ($place->population / (Planet::POPMAX / Planet::LEVELMAXVCOMMANDER))
 		) / 10));
 	}
 
 	/**
 	 * @return list<int>
 	 */
-	private function getVirtualCommanderSquadronShips(Commander $commander, Place $place, int $squadronId): array
+	private function getVirtualCommanderSquadronShips(Commander $commander, Planet $place, int $squadronId): array
 	{
 		$level = $commander->level;
 		$compositionsCount = count(SquadronResource::$squadrons);

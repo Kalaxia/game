@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Gaia\Domain\Enum;
 
+use App\Modules\Gaia\Domain\Entity\Asteroid;
+use App\Modules\Gaia\Domain\Entity\EmptyPlace;
+use App\Modules\Gaia\Domain\Entity\GasPlanet;
+use App\Modules\Gaia\Domain\Entity\GasPocket;
+use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Domain\Entity\Ruin;
+
 enum PlaceType: int
 {
 	case Planet = 1;
@@ -53,6 +60,18 @@ enum PlaceType: int
 				'credits' => 0,
 				'history' => 0,
 			],
+		};
+	}
+
+	public function getClassName(): string
+	{
+		return match ($this) {
+			self::Planet => Planet::class,
+			self::GasPlanet => GasPlanet::class,
+			self::Ruin => Ruin::class,
+			self::GasPocket => GasPocket::class,
+			self::Asteroid => Asteroid::class,
+			self::Empty => EmptyPlace::class,
 		};
 	}
 }

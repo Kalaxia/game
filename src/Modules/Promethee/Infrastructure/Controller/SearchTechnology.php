@@ -48,7 +48,7 @@ class SearchTechnology extends AbstractController
 		$technos = $technologyRepository->getPlayerTechnology($currentPlayer);
 		$targetLevel = $technos->getTechnology($identifier) + 1;
 		// @TODO I think this piece of code is dead
-		$technologyQueues = $technologyQueueRepository->getPlaceQueues($currentPlanet->place);
+		$technologyQueues = $technologyQueueRepository->getPlanetQueues($currentPlanet);
 		$nbTechnologyQueues = count($technologyQueues);
 		foreach ($technologyQueues as $technologyQueue) {
 			if ($technologyQueue->technology == $identifier) {

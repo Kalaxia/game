@@ -26,10 +26,10 @@ readonly class GetCommercialRouteIncome
 
 	public function __invoke(Planet $from, Planet $to, ?Player $player = null): int
 	{
-		$bonusA = (!$from->place->system->sector->id->equals($to->place->system->sector->id)) ? $this->sectorBonus : 1;
+		$bonusA = (!$from->system->sector->id->equals($to->system->sector->id)) ? $this->sectorBonus : 1;
 		$bonusB = (!$from->player->faction->id->equals($to->player->faction->id)) ? $this->factionBonus : 1;
 
-		$distance = ($this->getDistanceBetweenPlaces)($from->place, $to->place);
+		$distance = ($this->getDistanceBetweenPlaces)($from, $to);
 
 		$income = CommercialRoute::COEF_INCOME_2 * sqrt(min($distance, 100) * CommercialRoute::COEF_INCOME_1);
 

@@ -33,7 +33,7 @@ class CancelTechnologyQueue extends AbstractController
 		if (!$technologyHelper->isATechnology($identifier)) {
 			throw new BadRequestHttpException('la technologie indiquée n\'est pas valide');
 		}
-		$placeTechnologyQueues = $technologyQueueRepository->getPlaceQueues($currentBase->place);
+		$placeTechnologyQueues = $technologyQueueRepository->getPlanetQueues($currentBase);
 
 		$index = $startedAt = null;
 		$targetLevel = 0;

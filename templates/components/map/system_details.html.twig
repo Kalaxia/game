@@ -31,7 +31,7 @@
 		</div>
 
 		{% for place in places %}
-			{% set playerFactionIdentifier = place.base.player.faction.identifier ?? 0 %}
+			{% set playerFactionIdentifier = place.player.faction.identifier ?? 0 %}
 			{% set position = place.position - 1 %}
 
 			<div
@@ -42,13 +42,13 @@
 				<div class="grid grid-rows-3 px-6 py-4"
 					 data-target="{{ position }}">
 					<div class="flex justify-center">
-						{% if place.base is not null %}
-							<twig:Avatar :player="place.base.player" class="!w-12 !h-12 rounded-full border-2 border-medium{{ place.base.player.faction.identifier }}" />
+						{% if place.player is not null %}
+							<twig:Avatar :player="place.player" class="!w-12 !h-12 rounded-full border-2 border-medium{{ place.player.faction.identifier }}" />
 						{% endif %}
 					</div>
 
 					<div class="flex justify-center items-center">
-						{% if place.typeOfPlace == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
+						{% if place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
 							<img class="w-16 h-16" src="{{ asset('images/legacy/planet/Tempered.png') }}" alt="planet" />
 						{% else %}
 							{% if place.resources > 10000000 %}

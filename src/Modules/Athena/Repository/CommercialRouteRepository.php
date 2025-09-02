@@ -61,8 +61,8 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 					LIMIT 40
 				SQL,
 				[
-					'system_x' => $planet->place->system->xPosition,
-					'system_y' => $planet->place->system->yPosition,
+					'system_x' => $planet->system->xPosition,
+					'system_y' => $planet->system->yPosition,
 					'player_id' => $player->id,
 					'min_distance' => $minDistance,
 					'max_distance' => $maxDistance,
@@ -81,9 +81,7 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 		$qb
 			->select()
 			->leftJoin('cr.originBase', 'ob')
-			->join('ob.place', 'obp')
 			->leftJoin('cr.destinationBase', 'db')
-			->join('db.place', 'dbp')
 			->where('db.player = :player')
 			->orWhere('ob.player = :player')
 			->setParameter('player', $player);

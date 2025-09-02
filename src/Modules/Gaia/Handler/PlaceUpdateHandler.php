@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Gaia\Handler;
 
-use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
-use App\Modules\Gaia\Message\PlaceUpdateMessage;
+use App\Modules\Gaia\Message\PlanetUpdateMessage;
 use App\Modules\Shared\Application\Service\CountMissingSystemUpdates;
 use Psr\Clock\ClockInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -21,10 +21,10 @@ readonly class PlaceUpdateHandler
 	) {
 	}
 
-	public function __invoke(PlaceUpdateMessage $message): void
+	public function __invoke(PlanetUpdateMessage $message): void
 	{
-		$place = $this->placeRepository->get($message->placeId)
-			?? throw new \RuntimeException(sprintf('Place %s not found', $message->placeId));
+		$place = $this->placeRepository->get($message->planetId)
+			?? throw new \RuntimeException(sprintf('Place %s not found', $message->planetId));
 
 		$missingUpdatesCount = ($this->countMissingSystemUpdates)($place);
 		if (0 === $missingUpdatesCount) {
@@ -37,7 +37,7 @@ readonly class PlaceUpdateHandler
 			$place->getMaxResources(),
 		);
 		$place->danger = min(
-			$place->danger + Place::REPOPDANGER * $missingUpdatesCount,
+			$place->danger + Planet::REPOPDANGER * $missingUpdatesCount,
 			$place->maxDanger,
 		);
 

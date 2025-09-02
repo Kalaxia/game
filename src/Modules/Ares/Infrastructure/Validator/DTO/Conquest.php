@@ -6,7 +6,7 @@ namespace App\Modules\Ares\Infrastructure\Validator\DTO;
 
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Athena\Infrastructure\Validator\DTO\HasBasesCount;
-use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Infrastructure\Validator\DTO\HasPlace;
 use App\Modules\Promethee\Infrastructure\Validator\DTO\HasTechnology;
 use App\Modules\Promethee\Model\Technology;
@@ -17,7 +17,7 @@ readonly class Conquest implements HasCommander, HasPlace, HasBasesCount, HasTec
 		private Commander  $commander,
 		private Technology $attackerTechnology,
 		private int        $attackerBasesCount,
-		private Place      $targetedPlace,
+		private Planet     $targetedPlace,
 	) {
 
 	}
@@ -27,7 +27,7 @@ readonly class Conquest implements HasCommander, HasPlace, HasBasesCount, HasTec
 		return $this->commander;
 	}
 
-	public function getPlace(): Place
+	public function getPlace(): Planet
 	{
 		return $this->targetedPlace;
 	}

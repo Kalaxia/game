@@ -168,17 +168,13 @@ readonly class PlayerFactory
 		$this->researchRepository->save($rs);
 
 		// choix de la place
-		$candidatePlaces = $this->placeRepository->findPlacesIdsForANewBase($sector);
+		$candidatePlaces = $this->planetRepository->getCandidatePlanetsForNewPlayers($sector);
 
 		$placeId = $candidatePlaces[random_int(0, count($candidatePlaces) - 1)];
-		$place = $this->placeRepository->get($placeId);
-		// CREATION DE LA BASE ORBITALE
-		$planet = new Planet(
-			id: Uuid::v4(),
-			place: $place,
-			player: $player,
-			name: $baseName,
-		);
+		$planet = $this->planetRepository->get($placeId);
+
+		$planet->player = $player;
+		$planet->name = $baseName;
 
 		// création des premiers bâtiments
 		if ($highMode) {
@@ -236,11 +232,11 @@ readonly class PlayerFactory
 
 		$this->planetRepository->save($planet);
 
-		$this->placeManager->turnAsSpawnPlace($place, $player);
+		$this->placeManager->turnAsSpawnPlace($planet);
 
 		$this->entityManager->commit();
 
-		$this->eventDispatcher->dispatch(new PlaceOwnerChangeEvent($place));
+		$this->eventDispatcher->dispatch(new PlaceOwnerChangeEvent($planet));
 
 		// modification de la place
 

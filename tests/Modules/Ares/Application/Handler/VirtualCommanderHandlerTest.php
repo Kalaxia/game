@@ -4,7 +4,7 @@ namespace App\Tests\Modules\Ares\Application\Handler;
 
 use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Application\Handler\VirtualCommanderHandler;
-use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Entity\Sector;
 use App\Modules\Gaia\Domain\Entity\System;
 use App\Modules\Gaia\Domain\Enum\PlaceType;
@@ -16,7 +16,7 @@ class VirtualCommanderHandlerTest extends KernelTestCase
 	/**
 	 * @dataProvider provideData
 	 */
-	public function testCreateVirtualCommander(Place $place, int $expectedSquadronsCount, int $expectedPev): void
+	public function testCreateVirtualCommander(Planet $place, int $expectedSquadronsCount, int $expectedPev): void
 	{
 		static::bootKernel();
 
@@ -92,8 +92,8 @@ class VirtualCommanderHandlerTest extends KernelTestCase
 		int $position,
 		int $historyCoeff,
 		int $resourcesCoeff,
-	): Place {
-		return new Place(
+	): Planet {
+		return new Planet(
 			id: Uuid::v4(),
 			player: null,
 			base: null,

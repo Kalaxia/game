@@ -9,28 +9,23 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'galaxy__places')]
-#[ORM\MappedSuperclass]
 #[ORM\InheritanceType('JOINED')]
-#[ORM\DiscriminatorColumn(name: 'type', type: 'smallint', enumType: PlaceType::class, length: 2)]
+#[ORM\DiscriminatorColumn(name: 'type_of_place', type: 'smallint', enumType: PlaceType::class, length: 2)]
 #[ORM\DiscriminatorMap([
 	PlaceType::Planet->value => Planet::class,
-	PlaceType::Ruin->value => UninhabitedPlace::class,
-	PlaceType::Asteroid->value => UninhabitedPlace::class,
-	PlaceType::GasPocket->value => UninhabitedPlace::class,
-	PlaceType::GasPlanet->value => UninhabitedPlace::class,
-	PlaceType::Empty->value => Place::class,
+	PlaceType::Ruin->value => Ruin::class,
+	PlaceType::Asteroid->value => Asteroid::class,
+	PlaceType::GasPocket->value => GasPocket::class,
+	PlaceType::GasPlanet->value => GasPlanet::class,
+	PlaceType::Empty->value => EmptyPlace::class,
 ])]
-class Place implements SystemUpdatable
+abstract class Place implements SystemUpdatable
 {
 	public const COEFFMAXRESOURCE = 600;
 	public const COEFFRESOURCE = 2;
 	public const REPOPDANGER = 2;
 	public const COEFFPOPRESOURCE = 50;
 	public const COEFFDANGER = 5;
-
-	// typeOfPlace
-	public const TERRESTRIAL = 1;
-	public const EMPTYZONE = 6; // zone vide
 
 	// CONST PNJ COMMANDER
 	public const LEVELMAXVCOMMANDER = 20;
@@ -71,29 +66,14 @@ class Place implements SystemUpdatable
 		public Uuid        $id,
 		#[ORM\ManyToOne(targetEntity: System::class)]
 		public System      $system,
-		#[ORM\Column(type: 'smallint', enumType: PlaceType::class, options: ['unsigned' => true])]
-		public PlaceType   $typeOfPlace,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int         $position,
 		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $updatedAt,
 	) {
-			
 	}
 
-	public function getMaxResources(): int
-	{
-		return intval(
-			ceil($this->population / static::COEFFPOPRESOURCE)
-			* static::COEFFMAXRESOURCE
-			* ($this->maxDanger + 1)
-		);
-	}
-
-	public function getProducedResources(): int
-	{
-		return intval(floor(static::COEFFRESOURCE * $this->population));
-	}
+	abstract public function getType(): PlaceType;
 
 	public function lastUpdatedBySystemAt(): \DateTimeImmutable
 	{

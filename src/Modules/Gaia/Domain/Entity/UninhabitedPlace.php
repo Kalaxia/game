@@ -10,20 +10,20 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'galaxy__uninhabited_places')]
-class UninhabitedPlace extends Place
+abstract class UninhabitedPlace extends Place
 {
 	public function __construct(
 		Uuid $id,
 		System $system,
-		PlaceType $typeOfPlace,
 		int $position,
 		\DateTimeImmutable $updatedAt,
 		#[ORM\Column(type: 'integer', options: ['unsigned' => true, 'default' => 0])]
 		public int $resources,
-		#[ORM\Column(type: 'integer', options: ['unsigned' => true])]
+		#[ORM\Column(type: 'float', options: ['unsigned' => true])]
 		public float $credits,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int $history,
 	) {
+		parent::__construct($id, $system, $position, $updatedAt);
 	}
 }

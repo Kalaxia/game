@@ -25,7 +25,7 @@ class ViewBuildingPanel extends AbstractController
 		}
 
 		$currentLevel = $buildingLevelHandler->getBuildingLevel($currentPlanet, $identifier);
-		$max = $planetHelper->getBuildingInfo($identifier, 'maxLevel', Planet::TYP_CAPITAL);
+		$max = $planetHelper->getBuildingInfo($identifier, 'maxLevel', Planet::BASE_TYPE_CAPITAL);
 
 		$noteQuantity = 0;
 		$footnoteArray = [];

@@ -1,7 +1,7 @@
 <div id="own-base" class="absolute w-full h-full z-[500] left-0 top-0 group-[.sector-only]/map:hidden">
 	<svg viewBox="0, 0, {{ map_size }}, {{ map_size }}" xmlns="http://www.w3.org/2000/svg">
 		{% for planet in player_planets %}
-			{% set planet_system = planet.place.system %}
+			{% set planet_system = planet.system %}
 			{% set centerX = planet_system.xPosition * galaxy_configuration.scale %}
 			{% set centerY = planet_system.yPosition * galaxy_configuration.scale %}
 

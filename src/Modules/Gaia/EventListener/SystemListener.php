@@ -20,7 +20,7 @@ readonly class SystemListener
 	public function onPlaceOwnerChange(PlaceOwnerChangeEvent $event): void
 	{
 		$scores = [];
-		$system = $event->getPlace()->system;
+		$system = $event->planet->system;
 		$planets = $this->planetRepository->getSystemPlanets($system);
 
 		foreach ($planets as $planet) {

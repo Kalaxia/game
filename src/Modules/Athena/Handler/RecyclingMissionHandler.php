@@ -72,13 +72,10 @@ readonly class RecyclingMissionHandler
 			return;
 		}
 
-		if (PlaceType::Empty === $targetPlace->typeOfPlace) {
+		if (PlaceType::Empty === $targetPlace->getType()) {
 			$this->logger->debug('Mission {missionId} target has become empty',[
 				'missionId' => $mission->id->toRfc4122(),
 			]);
-			// the place become an empty place
-			$targetPlace->resources = 0;
-
 			// stop the mission
 			$mission->statement = RecyclingMission::ST_DELETED;
 
@@ -94,7 +91,7 @@ readonly class RecyclingMissionHandler
 					NotificationBuilder::divider(),
 					'Vos recycleurs restent donc stationnés sur votre ',
 					NotificationBuilder::link(
-						$this->urlGenerator->generate('map', ['place' => $mission->base->place->id]),
+						$this->urlGenerator->generate('map', ['place' => $mission->base->id]),
 						'base orbitale',
 					),
 					' le temps que vous programmiez une autre mission.',
@@ -131,7 +128,7 @@ readonly class RecyclingMissionHandler
 					NotificationBuilder::divider(),
 					'Vos recycleurs restent donc stationnés sur votre ',
 					NotificationBuilder::link(
-						$this->urlGenerator->generate('map', ['place' => $planet->place->id]),
+						$this->urlGenerator->generate('map', ['place' => $planet->id]),
 						'base orbitale',
 					),
 					' le temps que vous programmiez une autre mission.',
@@ -158,7 +155,7 @@ readonly class RecyclingMissionHandler
 					NotificationBuilder::divider(),
 					'Vos recycleurs restent donc stationnés sur votre ',
 					NotificationBuilder::link(
-						$this->urlGenerator->generate('map', ['place' => $mission->base->place->id]),
+						$this->urlGenerator->generate('map', ['place' => $mission->base->id]),
 						'base orbitale',
 					),
 					' le temps que vous programmiez une autre mission.',
@@ -221,7 +218,7 @@ readonly class RecyclingMissionHandler
 		]);
 
 		// update the cycle time in case the time mode has changed or new bonuses apply since the previous occurrence
-		$mission->cycleTime = ($this->getMissionTime)($planet->place, $targetPlace, $player);
+		$mission->cycleTime = ($this->getMissionTime)($planet, $targetPlace, $player);
 		$mission->endedAt = $this->durationHandler->getDurationEnd($mission->endedAt, $mission->cycleTime);
 		// Schedule the next mission if there is still resources
 		if (!$mission->isDeleted()) {

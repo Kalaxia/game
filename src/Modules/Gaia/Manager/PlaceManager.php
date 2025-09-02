@@ -6,9 +6,12 @@ use App\Classes\Library\Format;
 use App\Classes\Library\Game;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\Report;
+use App\Modules\Gaia\Domain\Entity\EmptyPlace;
 use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
+use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
@@ -19,6 +22,7 @@ readonly class PlaceManager
 {
 	public function __construct(
 		private NotificationRepositoryInterface $notificationRepository,
+		private PlanetRepositoryInterface        $planetRepository,
 		private PlaceRepositoryInterface        $placeRepository,
 		private UrlGeneratorInterface           $urlGenerator,
 	) {
@@ -26,24 +30,30 @@ readonly class PlaceManager
 
 	public function turnAsEmptyPlace(Place $place): void
 	{
-		$place->typeOfPlace = PlaceType::Empty;
+		$emptyPlace = new EmptyPlace(
+			id: $place->id,
+			system: $place->system,
+			position: $place->position,
+			updatedAt: new \DateTimeImmutable(),
+		);
 
-		$this->placeRepository->save($place);
+		$this->placeRepository->remove($place);
+		$this->placeRepository->save($emptyPlace);
 	}
 
-	public function turnAsSpawnPlace(Place $place, Player $player): void
+	public function turnAsSpawnPlace(Planet $planet): void
 	{
-		$place->coefResources = 60;
-		$place->coefHistory = 20;
-		$place->population = 50;
+		$planet->coefResources = 60;
+		$planet->coefHistory = 20;
+		$planet->population = 50;
 
-		$this->placeRepository->save($place);
+		$this->planetRepository->save($planet);
 	}
 
-	public function sendNotif(Place $place, int $case, Commander $commander, Report|null $report = null): void
+	public function sendNotif(Planet $place, int $case, Commander $commander, Report|null $report = null): void
 	{
 		$notifications = match ($case) {
-			Place::CHANGESUCCESS => [
+			Planet::CHANGESUCCESS => [
 				NotificationBuilder::new()
 					->setTitle('Déplacement réussi')
 					->setContent(NotificationBuilder::paragraph(
@@ -55,13 +65,13 @@ readonly class PlaceManager
 						' est arrivé sur ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						'.',
 					))
 					->for($commander->player),
 			],
-			Place::CHANGEFAIL => [
+			Planet::CHANGEFAIL => [
 				NotificationBuilder::new()
 					->setTitle('Déplacement réussi')
 					->setContent(NotificationBuilder::paragraph(
@@ -73,13 +83,13 @@ readonly class PlaceManager
 						' s\'est posé sur ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						'. Il est en garnison car il n\'y avait pas assez de place en orbite.',
 					))
 					->for($commander->player),
 			],
-			Place::CHANGELOST => [
+			Planet::CHANGELOST => [
 				NotificationBuilder::new()
 					->setTitle('Déplacement raté')
 					->setContent(NotificationBuilder::paragraph(
@@ -91,13 +101,13 @@ readonly class PlaceManager
 						' n\'est pas arrivé sur ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						'. Cette base ne vous appartient pas. Elle a pu être conquise entre temps.',
 					))
 					->for($commander->player),
 			],
-			Place::LOOTEMPTYSSUCCESS => [
+			Planet::LOOTEMPTYSSUCCESS => [
 				NotificationBuilder::new()
 					->setTitle('Pillage réussi')
 					->setContent(NotificationBuilder::paragraph(
@@ -136,7 +146,7 @@ readonly class PlaceManager
 					))
 					->for($commander->player),
 			],
-			Place::LOOTEMPTYFAIL => [
+			Planet::LOOTEMPTYFAIL => [
 				NotificationBuilder::new()
 					->setTitle('Pillage raté')
 					->setContent(NotificationBuilder::paragraph(
@@ -166,7 +176,7 @@ readonly class PlaceManager
 					))
 					->for($commander->player)
 			],
-			Place::LOOTPLAYERWHITBATTLESUCCESS => [
+			Planet::LOOTPLAYERWHITBATTLESUCCESS => [
 				NotificationBuilder::new()
 					->setTitle('Pillage réussi')
 					->setContent(NotificationBuilder::paragraph(
@@ -178,12 +188,12 @@ readonly class PlaceManager
 						' a pillé la planète ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						' appartenant au joueur ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('embassy', ['player' => $place->base->player]),
-							$place->base->player->name,
+							$this->urlGenerator->generate('embassy', ['player' => $place->player]),
+							$place->player->name,
 						),
 						'.',
 						NotificationBuilder::divider(),
@@ -217,7 +227,7 @@ readonly class PlaceManager
 						' a pillé votre planète ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						'.',
 						NotificationBuilder::divider(),
@@ -232,9 +242,9 @@ readonly class PlaceManager
 							'voir le rapport',
 						),
 					))
-					->for($place->base->player)
+					->for($place->player)
 			],
-			Place::LOOTPLAYERWHITBATTLEFAIL => [
+			Planet::LOOTPLAYERWHITBATTLEFAIL => [
 				NotificationBuilder::new()
 					->setTitle('Pillage raté')
 					->setContent(NotificationBuilder::paragraph(
@@ -246,12 +256,12 @@ readonly class PlaceManager
 						' est tombé lors du pillage de la planète ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						' appartenant au joueur ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('embassy', ['player' => $place->base->player]),
-							$place->base->player->name,
+							$this->urlGenerator->generate('embassy', ['player' => $place->player]),
+							$place->player->name,
 						),
 						'.',
 						NotificationBuilder::divider(),
@@ -270,13 +280,13 @@ readonly class PlaceManager
 						NotificationBuilder::bold($commander->name),
 						' appartenant au joueur ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('embassy', ['player' => $place->base->player]),
-							$place->base->player->name,
+							$this->urlGenerator->generate('embassy', ['player' => $place->player]),
+							$place->player->name,
 						),
 						' a attaqué votre planète ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						'.',
 						NotificationBuilder::divider(),
@@ -287,9 +297,9 @@ readonly class PlaceManager
 							'voir le rapport',
 						),
 					))
-					->for($place->base->player),
+					->for($place->player),
 			],
-			Place::LOOTPLAYERWHITOUTBATTLESUCCESS => [
+			Planet::LOOTPLAYERWHITOUTBATTLESUCCESS => [
 				NotificationBuilder::new()
 					->setTitle('Pillage réussi')
 					->setContent(NotificationBuilder::paragraph(
@@ -301,12 +311,12 @@ readonly class PlaceManager
 						' a pillé la planète non défendue ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						' appartenant au joueur ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('embassy', ['player' => $place->base->player]),
-							$place->base->player->name,
+							$this->urlGenerator->generate('embassy', ['player' => $place->player]),
+							$place->player->name,
 						),
 						'.',
 						NotificationBuilder::divider(),
@@ -335,7 +345,7 @@ readonly class PlaceManager
 						' a pillé votre planète ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						'. Aucune flotte n\'était en position pour la défendre. ',
 						NotificationBuilder::divider(),
@@ -345,9 +355,9 @@ readonly class PlaceManager
 							'ressources pillées',
 						),
 					)
-					->for($place->base->player)
+					->for($place->player)
 			],
-			Place::LOOTLOST => [
+			Planet::LOOTLOST => [
 				NotificationBuilder::new()
 					->setTitle('Erreur de coordonnées')
 					->setContent(NotificationBuilder::paragraph(
@@ -359,13 +369,13 @@ readonly class PlaceManager
 						' n\'a pas attaqué la planète ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						' car son joueur est de votre faction, sous la protection débutant ou un allié.',
 					))
 					->for($commander->player)
 			],
-			Place::CONQUEREMPTYSSUCCESS => [
+			Planet::CONQUEREMPTYSSUCCESS => [
 				NotificationBuilder::new()
 					->setTitle('Colonisation réussie')
 					->setContent(NotificationBuilder::paragraph(
@@ -391,7 +401,7 @@ readonly class PlaceManager
 						),
 						'Votre empire s\'étend, administrez votre ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('switchplanet', ['planetId' => $place->base->id]),
+							$this->urlGenerator->generate('switchplanet', ['planetId' => $place->id]),
 							'nouvelle planète',
 						),
 						'.',
@@ -403,7 +413,7 @@ readonly class PlaceManager
 					))
 					->for($commander->player)
 			],
-			Place::CONQUEREMPTYFAIL => [
+			Planet::CONQUEREMPTYFAIL => [
 				NotificationBuilder::new()
 					->setTitle('Colonisation ratée')
 					->setContent(NotificationBuilder::paragraph(
@@ -433,7 +443,7 @@ readonly class PlaceManager
 					))
 					->for($commander->player),
 			],
-			Place::CONQUERPLAYERWHITOUTBATTLESUCCESS => [
+			Planet::CONQUERPLAYERWHITOUTBATTLESUCCESS => [
 				NotificationBuilder::new()
 					->setTitle('Conquête réussie')
 					->setContent(
@@ -445,12 +455,12 @@ readonly class PlaceManager
 						' a conquis la planète non défendue ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						' appartenant au joueur ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('embassy', ['player' => $place->base->player]),
-							$place->base->player->name,
+							$this->urlGenerator->generate('embassy', ['player' => $place->player]),
+							$place->player->name,
 						),
 						'.',
 						NotificationBuilder::divider(),
@@ -461,7 +471,7 @@ readonly class PlaceManager
 						),
 						'Elle est désormais votre, vous pouvez l\'administrer ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('switchplanet', ['planetId' => $place->base->id]),
+							$this->urlGenerator->generate('switchplanet', ['planetId' => $place->id]),
 							'ici',
 						),
 						'.',
@@ -480,15 +490,15 @@ readonly class PlaceManager
 						' a conquis votre planète non défendue ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						'.',
 						NotificationBuilder::divider(),
 						'Impliquez votre faction dans une action punitive envers votre assaillant.',
 					))
-					->for($place->base->player),
+					->for($place->player),
 			],
-			Place::CONQUERLOST => [
+			Planet::CONQUERLOST => [
 				NotificationBuilder::new()
 					->setTitle('Erreur de coordonnées')
 					->setContent(NotificationBuilder::paragraph(
@@ -500,13 +510,13 @@ readonly class PlaceManager
 						' n\'a pas attaqué la planète ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						' car le joueur est dans votre faction, sous la protection débutant ou votre allié.',
 					))
 					->for($commander->player)
 			],
-			Place::COMEBACK => [
+			Planet::COMEBACK => [
 				NotificationBuilder::new()
 					->setTitle('Rapport de retour')
 					->setContent(NotificationBuilder::paragraph(
@@ -518,7 +528,7 @@ readonly class PlaceManager
 						' est de retour sur votre base ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						' et rapporte ',
 						NotificationBuilder::bold(Format::number($commander->resources)),
@@ -537,12 +547,12 @@ readonly class PlaceManager
 	/**
 	 * @param list<Uuid> $reports
 	 */
-	public function sendNotifForConquest(Place $place, int $case, Commander $commander, array $reports = []): void
+	public function sendNotifForConquest(Planet $place, int $case, Commander $commander, array $reports = []): void
 	{
 		$nbrBattle = count($reports);
 
 		$notifications = match ($case) {
-			Place::CONQUERPLAYERWHITBATTLESUCCESS => [
+			Planet::CONQUERPLAYERWHITBATTLESUCCESS => [
 				NotificationBuilder::new()
 					->setTitle('Conquête réussie')
 					->setContent(NotificationBuilder::paragraph(
@@ -554,12 +564,12 @@ readonly class PlaceManager
 						' a conquis la planète ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						' appartenant au joueur ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('embassy', ['player' => $place->base->player]),
-							$place->base->player->name,
+							$this->urlGenerator->generate('embassy', ['player' => $place->player]),
+							$place->player->name,
 						),
 						'.',
 						NotificationBuilder::divider(),
@@ -573,7 +583,7 @@ readonly class PlaceManager
 						NotificationBuilder::divider(),
 						'Elle est désormais vôtre, vous pouvez l\'administrer ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('switchplanet', ['planetId' => $place->base->id]),
+							$this->urlGenerator->generate('switchplanet', ['planetId' => $place->id]),
 							'ici',
 						),
 						'.',
@@ -604,7 +614,7 @@ readonly class PlaceManager
 						' a conquis votre planète ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						'.',
 						NotificationBuilder::divider(),
@@ -624,9 +634,9 @@ readonly class PlaceManager
 							array_keys($reports),
 						),
 					))
-					->for($place->base->player)
+					->for($place->player)
 			],
-			Place::CONQUERPLAYERWHITBATTLEFAIL => [
+			Planet::CONQUERPLAYERWHITBATTLEFAIL => [
 				NotificationBuilder::new()
 					->setTitle('Conquête ratée')
 					->setContent(NotificationBuilder::paragraph(
@@ -638,12 +648,12 @@ readonly class PlaceManager
 						' est tombé lors de la tentive de conquête de la planète ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						' appartenant au joueur ',
 						NotificationBuilder::link(
-							$this->urlGenerator->generate('embassy', ['player' => $place->base->player]),
-							$place->base->player->name,
+							$this->urlGenerator->generate('embassy', ['player' => $place->player]),
+							$place->player->name,
 						),
 						'.',
 						NotificationBuilder::divider(),
@@ -677,7 +687,7 @@ readonly class PlaceManager
 						' a tenté de conquérir votre planète ',
 						NotificationBuilder::link(
 							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->base->name,
+							$place->name,
 						),
 						'.',
 						NotificationBuilder::divider(),
@@ -697,7 +707,7 @@ readonly class PlaceManager
 							array_keys($reports),
 						),
 					))
-					->for($place->base->player)
+					->for($place->player)
 			],
 			default => throw new \RuntimeException(sprintf('Unknown notification type %s', $case)),
 		};

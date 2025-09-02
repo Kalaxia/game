@@ -11,7 +11,6 @@ use App\Modules\Ares\Model\Commander;
 use App\Modules\Artemis\Domain\Repository\SpyReportRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\RecyclingMissionRepositoryInterface;
-use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Entity\System;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
@@ -59,7 +58,7 @@ class MapController extends AbstractController
 		if (null !== $defaultPosition['system']) {
 			$system = $defaultPosition['system'];
 			$places = $this->placeRepository->getSystemPlaces($system);
-			$placesIds = array_map(fn (Place $place) => $place->id, $places);
+			$placesIds = array_map(fn (Planet $place) => $place->id, $places);
 
 			$basesCount = $planetManager->countPlayerPlanets($movingCommanders);
 
@@ -97,15 +96,15 @@ class MapController extends AbstractController
 	}
 
 	/**
-	 * @return array{ x: int, y: int, system: System|null, place: Place|null, system_id: Uuid|null }
+	 * @return array{ x: int, y: int, system: System|null, place: Planet|null, system_id: Uuid|null }
 	 */
 	protected function getDefaultPosition(
         Request $request,
         Planet  $currentBase,
 	): array {
 		// map default position
-		$x = $currentBase->place->system->xPosition;
-		$y = $currentBase->place->system->yPosition;
+		$x = $currentBase->system->xPosition;
+		$y = $currentBase->system->yPosition;
 		$systemId = null;
 		$system = $place = null;
 

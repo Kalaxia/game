@@ -11,7 +11,7 @@
 
 namespace App\Modules\Promethee\Model;
 
-use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Model\QueueableInterface;
 use Symfony\Component\Uid\Uuid;
@@ -19,11 +19,11 @@ use Symfony\Component\Uid\Uuid;
 class TechnologyQueue implements QueueableInterface
 {
 	public function __construct(
-		public Uuid $id,
-		public Player $player,
-		public Place $place,
-		public int $technology,
-		public int $targetLevel,
+		public Uuid               $id,
+		public Player             $player,
+		public Planet             $place,
+		public int                $technology,
+		public int                $targetLevel,
 		public \DateTimeImmutable $createdAt,
 		public \DateTimeImmutable $startedAt,
 		public \DateTimeImmutable $endedAt,

@@ -45,15 +45,15 @@ class PlanetExtension extends AbstractExtension
     public function getFilters(): array
 	{
 		return [
-			new TwigFilter('base_demography', fn (Planet $planet) => Game::getSizeOfPlanet($planet->place->population)),
+			new TwigFilter('base_demography', fn (Planet $planet) => Game::getSizeOfPlanet($planet->population)),
 			new TwigFilter('base_type', fn (Planet $planet) => PlaceResource::get($planet->typeOfBase, 'name')),
 			new TwigFilter('scalar_base_type', fn (string $type) => PlaceResource::get($type, 'name')),
 			new TwigFilter('base_storage_percent', fn (Planet $planet) => Format::numberFormat($planet->resourcesStorage / ($this->getMaxStorage)($planet) * 100)),
 			new TwigFilter('base_coords', fn (Planet $planet) => Game::formatCoord(
-				$planet->place->system->xPosition,
-				$planet->place->system->yPosition,
-				$planet->place->position,
-				$planet->place->system->sector->identifier,
+				$planet->system->xPosition,
+				$planet->system->yPosition,
+				$planet->position,
+				$planet->system->sector->identifier,
 			)),
 			// @TODO Factorize that coords call
 			new TwigFilter('spy_report_coords', fn (SpyReport $spyReport) => Game::formatCoord($spyReport->place->system->xPosition, $spyReport->place->system->yPosition, $spyReport->place->position, $spyReport->place->system->sector->identifier)),
@@ -77,7 +77,7 @@ class PlanetExtension extends AbstractExtension
 					$level ?? $planet->levelRefinery,
 					'refiningCoefficient'
 				),
-				$planet->place->coefResources,
+				$planet->coefResources,
 			)),
 			new TwigFunction('get_building_info', fn (int $buildingNumber, string $info, int $level = 0, string $sub = 'default') => $this->planetHelper->getInfo($buildingNumber, $info, $level, $sub)),
 			new TwigFunction('get_building_resource_cost', fn (int $buildingNumber, int $level) => $this->buildingDataHandler->getBuildingResourceCost($buildingNumber, $level)),
@@ -92,7 +92,7 @@ class PlanetExtension extends AbstractExtension
 			// @TODO Improve that part
 			new TwigFunction('get_planet_image', fn (Planet $planet) => sprintf(
 				'1-%s',
-				Game::getSizeOfPlanet($planet->place->population),
+				Game::getSizeOfPlanet($planet->population),
 			)),
 			// @TODO move to a rightful place
 			new TwigFunction('get_ship_transaction_cost', fn (Transaction $transaction) => ($this->getShipCategoriesConfiguration)($transaction->identifier, 'cost') * $this->shipCostReduction * $transaction->quantity),

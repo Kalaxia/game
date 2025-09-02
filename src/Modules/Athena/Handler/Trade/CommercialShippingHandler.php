@@ -66,9 +66,9 @@ readonly class CommercialShippingHandler
 						(1 === $cs->shipQuantity)
 							? 'Votre vaisseau commercial est de retour sur votre '
 							: 'Vos vaisseaux commerciaux sont de retour sur votre ',
-						NotificationBuilder::link($this->urlGenerator->generate('map', ['place' => $planet->place->id]), 'base orbitale'),
+						NotificationBuilder::link($this->urlGenerator->generate('map', ['place' => $planet->id]), 'base orbitale'),
 						' après avoir livré du matériel sur une autre ',
-						NotificationBuilder::link($this->urlGenerator->generate('map', ['place' => $destOB->place->id]), 'base'),
+						NotificationBuilder::link($this->urlGenerator->generate('map', ['place' => $destOB->id]), 'base'),
 						NotificationBuilder::divider(),
 						(1 === $cs->shipQuantity)
 							? 'Votre vaisseau de commerce est à nouveau disponible pour faire d\'autres transactions ou routes commerciales.'

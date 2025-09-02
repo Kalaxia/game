@@ -36,7 +36,7 @@
 							:href="path('fleet_archives', {'report': report.id})"
 							picto="images/legacy/picto/Combat.svg"
 							:isActive="app.request.query.get('report') == report.id"
-							:placeName="report_data.title ~ ' de ' ~ (place.base.name ?? 'planète rebelle')"
+							:placeName="report_data.title ~ ' de ' ~ (place.name ?? 'planète rebelle')"
 							:createdAt="report.foughtAt"
 							/>
 					{% endfor %}

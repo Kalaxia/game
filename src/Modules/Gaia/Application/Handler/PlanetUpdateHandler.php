@@ -102,7 +102,7 @@ readonly class PlanetUpdateHandler
 				$planet->levelRefinery,
 				'refiningCoefficient'
 			),
-			$planet->place->coefResources,
+			$planet->coefResources,
 		);
 		$addResources += $this->bonusApplier->apply($addResources, PlayerBonusId::REFINERY_REFINING, $playerBonus);
 

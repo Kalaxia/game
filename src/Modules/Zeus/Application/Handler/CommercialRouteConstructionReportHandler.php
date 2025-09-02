@@ -28,8 +28,8 @@ readonly class CommercialRouteConstructionReportHandler
 		foreach ($commercialRoutes as $commercialRoute) {
 			$playerFinancialReport->commercialRoutesConstructions += ($this->getCommercialRoutePrice)(
 				($this->getDistanceBetweenPlaces)(
-					$commercialRoute->originBase->place,
-					$commercialRoute->destinationBase->place,
+					$commercialRoute->originBase,
+					$commercialRoute->destinationBase,
 				),
 				$playerFinancialReport->player,
 			);

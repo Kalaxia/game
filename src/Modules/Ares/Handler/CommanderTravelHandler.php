@@ -11,7 +11,7 @@ use App\Modules\Ares\Manager\ConquestManager;
 use App\Modules\Ares\Manager\LootManager;
 use App\Modules\Ares\Message\CommanderTravelMessage;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Manager\PlaceManager;
 use App\Modules\Gaia\Manager\PlanetManager;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -49,7 +49,7 @@ readonly class CommanderTravelHandler
 
 	protected function moveBack(Commander $commander): void
 	{
-		$this->placeManager->sendNotif($commander->destinationPlace, Place::COMEBACK, $commander);
+		$this->placeManager->sendNotif($commander->destinationPlace, Planet::COMEBACK, $commander);
 
 		$this->commanderManager->endTravel($commander, Commander::AFFECTED);
 

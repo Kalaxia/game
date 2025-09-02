@@ -149,10 +149,10 @@ class TechnologyHelper
 					// arg1 est le type de la base
 				case 'baseType':
 					return match ($arg1) {
-						Planet::TYP_NEUTRAL => in_array($this->getInfo($techno, 'column'), [1, 2, 3]),
-						Planet::TYP_COMMERCIAL => in_array($this->getInfo($techno, 'column'), [1, 2, 3, 4, 5]),
-						Planet::TYP_MILITARY => in_array($this->getInfo($techno, 'column'), [1, 2, 3, 6, 7]),
-						Planet::TYP_CAPITAL => in_array($this->getInfo($techno, 'column'), [1, 2, 3, 4, 5, 6, 7]),
+						Planet::BASE_TYPE_COLONY => in_array($this->getInfo($techno, 'column'), [1, 2, 3]),
+						Planet::BASE_TYPE_COMMERCIAL => in_array($this->getInfo($techno, 'column'), [1, 2, 3, 4, 5]),
+						Planet::BASE_TYPE_MILITARY => in_array($this->getInfo($techno, 'column'), [1, 2, 3, 6, 7]),
+						Planet::BASE_TYPE_CAPITAL => in_array($this->getInfo($techno, 'column'), [1, 2, 3, 4, 5, 6, 7]),
 						default => false,
 					};
 				default:

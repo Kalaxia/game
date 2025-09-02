@@ -2,12 +2,12 @@
 
 namespace App\Modules\Ares\Domain\Specification\Player;
 
-use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 
 class CanRecycle extends PlayerSpecification
 {
 	/**
-	 * @param Place $candidate
+	 * @param Planet $candidate
 	 */
 	public function isSatisfiedBy($candidate): bool
 	{

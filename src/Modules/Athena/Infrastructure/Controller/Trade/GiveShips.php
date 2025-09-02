@@ -133,8 +133,8 @@ class GiveShips extends AbstractController
 			shipQuantity: $commercialShipQuantity,
 			departureDate: $departure,
 			arrivalDate: $getTravelDuration(
-				origin: $currentPlanet->place,
-				destination: $otherBase->place,
+				origin: $currentPlanet,
+				destination: $otherBase,
 				player: $currentPlayer,
 				departureDate: $departure,
 				travelType: TravelType::CommercialShipping,
@@ -169,7 +169,7 @@ class GiveShips extends AbstractController
 						NotificationBuilder::bold(Format::numberFormat($ships)),
 						' ' . $translator->trans(sprintf('ship_categories.%s.name', $shipIdentifier)) . ' depuis sa base ',
 						NotificationBuilder::link(
-							$this->generateUrl('map', ['place' => $currentPlanet->place->id]),
+							$this->generateUrl('map', ['place' => $currentPlanet->id]),
 							$currentPlanet->name,
 						),
 						'.',
