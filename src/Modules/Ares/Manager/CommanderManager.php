@@ -17,7 +17,6 @@ use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\LiveReport;
 use App\Modules\Ares\Model\Report;
 use App\Modules\Artemis\Application\Handler\AntiSpyHandler;
-use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Manager\PlaceManager;
 use App\Modules\Zeus\Manager\PlayerBonusManager;
@@ -115,8 +114,7 @@ readonly class CommanderManager implements SchedulerInterface
 	public function uChangeBase(Commander $commander): void
 	{
 		$place = $commander->destinationPlace;
-		$base = $place->base;
-		$placeCommanders = $this->commanderRepository->getPlanetCommanders($base);
+		$placeCommanders = $this->commanderRepository->getPlanetCommanders($place);
 		// @WARNING check if this is the right property to use, originally rplanetId to Place
 		$commanderPlace = $commander->startPlace;
 		$player = $commander->player;
@@ -125,7 +123,7 @@ readonly class CommanderManager implements SchedulerInterface
 		// on pose la flotte si il y a assez de place
 		// sinon on met la flotte dans les hangars
 		// TODO replace with specification
-		if ($base === null || $base->player->id !== $commander->player->id) {
+		if ($place === null || $place->player->id !== $commander->player->id) {
 			// retour forcé
 			($this->moveFleet)(
 				commander: $commander,
@@ -133,13 +131,13 @@ readonly class CommanderManager implements SchedulerInterface
 				destination: $commanderPlace,
 				mission: CommanderMission::Back,
 			);
-			$this->placeManager->sendNotif($place, Place::CHANGELOST, $commander);
+			$this->placeManager->sendNotif($place, Planet::CHANGELOST, $commander);
 			$this->entityManager->flush();
 
 			return;
 		}
 		$maxCom =
-			($place->base->isMilitaryBase() || $place->base->isCapital())
+			($place->isMilitaryBase() || $place->isCapital())
 			? Planet::MAXCOMMANDERMILITARY
 			: Planet::MAXCOMMANDERSTANDARD
 		;
@@ -170,24 +168,24 @@ readonly class CommanderManager implements SchedulerInterface
 
 			// changer rBase commander
 			// @TODO update that
-			$commander->base = $base;
+			$commander->base = $place;
 			$this->endTravel($commander, Commander::AFFECTED);
 
 			// envoi de notif
-			$this->placeManager->sendNotif($place, Place::CHANGESUCCESS, $commander);
+			$this->placeManager->sendNotif($place, Planet::CHANGESUCCESS, $commander);
 		} else {
 			// changer rBase commander
-			$commander->base = $base;
+			$commander->base = $place;
 			$this->endTravel($commander, Commander::RESERVE);
 
 			$this->emptySquadrons($commander);
 
 			// envoi de notif
-			$this->placeManager->sendNotif($place, Place::CHANGEFAIL, $commander);
+			$this->placeManager->sendNotif($place, Planet::CHANGEFAIL, $commander);
 		}
 
 		// modifier le rPlayer (ne se modifie pas si c'est le même)
-		$commander->player = $base->player;
+		$commander->player = $place->player;
 
 		$this->entityManager->flush();
 	}
@@ -202,7 +200,7 @@ readonly class CommanderManager implements SchedulerInterface
 		$commander->statement = $statement;
 	}
 
-	public function lootAnEmptyPlace(Place $place, Commander $commander, PlayerBonus $playerBonus): void
+	public function lootAnEmptyPlace(Planet $place, Commander $commander, PlayerBonus $playerBonus): void
 	{
 		$bonus = $playerBonus->bonuses->get(PlayerBonusId::SHIP_CONTAINER);
 
@@ -217,7 +215,7 @@ readonly class CommanderManager implements SchedulerInterface
 		LiveReport::$resources = $resourcesLooted;
 	}
 
-	public function startFight(Place $place, Commander $commander, ?Commander $enemyCommander = null): void
+	public function startFight(Planet $place, Commander $commander, ?Commander $enemyCommander = null): void
 	{
 		if (null === $enemyCommander) {
 			$enemyCommander = $this->virtualCommanderHandler->createVirtualCommander($place);
@@ -225,7 +223,7 @@ readonly class CommanderManager implements SchedulerInterface
 		$this->fightManager->startFight($commander, $enemyCommander);
 	}
 
-	public function createReport(Place $place): Report
+	public function createReport(Planet $place): Report
 	{
 		$report = $this->reportFactory->create($place);
 

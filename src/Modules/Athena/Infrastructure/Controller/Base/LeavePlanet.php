@@ -68,7 +68,7 @@ class LeavePlanet extends AbstractController
 
 		// change base type if it is a capital
 		if ($currentPlanet->isCapital()) {
-			$newType = (0 === random_int(0, 1)) ? Planet::TYP_COMMERCIAL : Planet::TYP_MILITARY;
+			$newType = (0 === random_int(0, 1)) ? Planet::BASE_TYPE_COMMERCIAL : Planet::BASE_TYPE_MILITARY;
 			// delete extra buildings
 			for ($i = 0; $i < PlanetResource::BUILDING_QUANTITY; ++$i) {
 				$maxLevel = $planetHelper->getBuildingInfo($i, 'maxLevel', $newType);
@@ -79,12 +79,10 @@ class LeavePlanet extends AbstractController
 			// change base type
 			$currentPlanet->typeOfBase = $newType;
 		}
-		$place = $currentPlanet->place;
-
 		$planetManager->changeOwner($currentPlanet, null);
 		$entityManager->flush();
 
-		$eventDispatcher->dispatch(new PlaceOwnerChangeEvent($place));
+		$eventDispatcher->dispatch(new PlaceOwnerChangeEvent($currentPlanet));
 
 		$this->addFlash('success', 'Base abandonnée');
 

@@ -49,7 +49,7 @@ class FastView
 	{
 		$this->planet = $planet;
 		$this->buildingQueues = $this->buildingQueueRepository->getPlanetQueues($planet);
-		$this->technologyQueues = $this->technologyQueueRepository->getPlaceQueues($planet->place);
+		$this->technologyQueues = $this->technologyQueueRepository->getPlanetQueues($planet);
 		$this->dock1ShipQueues = $this->shipQueueRepository->getByBaseAndDockType($planet, 1);
 		$this->dock2ShipQueues = $this->shipQueueRepository->getByBaseAndDockType($planet, 2);
 

@@ -42,13 +42,13 @@ readonly class TransactionManager
 			// TODO check if round's precision argument is not missing there
 			$rate = round(($this->calculateRate)($transaction) / $currentRate * 100);
 		}
-		$transactionSystem = $transaction->base->place->system;
-		$baseSystem = $ob->place->system;
+		$transactionSystem = $transaction->base->system;
+		$baseSystem = $ob->system;
 
 		$departureDate = new \DateTimeImmutable();
 		$arrivalDate = ($this->getTravelDuration)(
-			origin: $transaction->base->place,
-			destination: $ob->place,
+			origin: $transaction->base,
+			destination: $ob,
 			departureDate: $departureDate,
 			travelType: TravelType::CommercialShipping,
 			player: $transaction->player,

@@ -44,7 +44,7 @@ class Refuse extends AbstractController
 
 		// rend les crédits au proposant
 		$price = $getCommercialRoutePrice(
-			$getDistanceBetweenPlaces($proposerBase->place, $refusingBase->place),
+			$getDistanceBetweenPlaces($proposerBase, $refusingBase),
 			$proposerBase->player,
 		);
 		$playerManager->increaseCredit($proposerBase->player, $price);
@@ -59,12 +59,12 @@ class Refuse extends AbstractController
 				),
 				' a refusé la route commerciale proposée entre ',
 				NotificationBuilder::link(
-					$this->generateUrl('map', ['place' => $refusingBase->place->id]),
+					$this->generateUrl('map', ['place' => $refusingBase->id]),
 					$refusingBase->name,
 				),
 				' et ',
 				NotificationBuilder::link(
-					$this->generateUrl('map', ['place' => $proposerBase->place->id]),
+					$this->generateUrl('map', ['place' => $proposerBase->id]),
 					$proposerBase->name,
 				),
 				'.',

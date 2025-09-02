@@ -6,7 +6,7 @@ use App\Modules\Gaia\Handler\PlaceUpdateHandler;
 use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\PlaceFactory;
 use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\SectorFactory;
 use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\SystemFactory;
-use App\Modules\Gaia\Message\PlaceUpdateMessage;
+use App\Modules\Gaia\Message\PlanetUpdateMessage;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Generator;
@@ -42,7 +42,7 @@ class PlaceUpdateHandlerTest extends KernelTestCase
 			'coefResources' => $placeData['resources_coeff'],
 		])->object();
 
-		$updatePlace(new PlaceUpdateMessage($place->id));
+		$updatePlace(new PlanetUpdateMessage($place->id));
 
 		static::assertSame($expectedResources, $place->resources);
 		static::assertSame($expectedDanger, $place->danger);

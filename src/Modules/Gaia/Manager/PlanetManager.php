@@ -74,7 +74,7 @@ readonly class PlanetManager
 		$this->commercialRouteManager->removeBaseRoutes($base);
 
 		// suppression des technologies en cours de développement
-		foreach ($this->technologyQueueRepository->getPlaceQueues($base->place) as $queue) {
+		foreach ($this->technologyQueueRepository->getPlanetQueues($base) as $queue) {
 			$this->technologyQueueRepository->remove($queue);
 		}
 

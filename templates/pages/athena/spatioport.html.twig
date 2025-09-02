@@ -197,7 +197,7 @@
 									</twig:NumberBox>
 
 									<twig:NumberBox label="Population touchée">
-										{{ (route.originBase.place.population + route.destinationBase.place.population)|number }} millions
+										{{ (route.originBase.population + route.destinationBase.population)|number }} millions
 									</twig:NumberBox>
 
 									{% if not route.isProposed %}
@@ -279,7 +279,7 @@
 									</twig:NumberBox>
 
 									<twig:NumberBox label="Population touchée">
-										{{ (route.originBase.place.population + route.destinationBase.place.population)|number }} millions
+										{{ (route.originBase.population + route.destinationBase.population)|number }} millions
 									</twig:NumberBox>
 
 									{% if not route.isProposed %}

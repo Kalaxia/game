@@ -8,6 +8,7 @@ use App\Modules\Gaia\Domain\Entity\System;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Specification\SelectorSpecification;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -15,6 +16,11 @@ use Symfony\Component\Uid\Uuid;
  */
 interface PlanetRepositoryInterface extends EntityRepositoryInterface
 {
+	/**
+	 * @return Collection<Planet>
+	 */
+	public function getAll(): Collection;
+
 	public function get(Uuid $id): Planet|null;
 
 	/**
@@ -38,4 +44,9 @@ interface PlanetRepositoryInterface extends EntityRepositoryInterface
 	 * @return list<Planet>
 	 */
 	public function getSystemPlanets(System $system): array;
+
+	/**
+	 * @return list<Uuid>
+	 */
+	public function getCandidatePlanetsForNewPlayers(Sector $sector): array;
 }

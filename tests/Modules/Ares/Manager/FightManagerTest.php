@@ -7,7 +7,7 @@ use App\Modules\Ares\Manager\FightManager;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\LiveReport;
 use App\Modules\Ares\Model\Squadron;
-use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Entity\Sector;
 use App\Modules\Gaia\Domain\Entity\System;
 use App\Modules\Gaia\Domain\Enum\PlaceType;
@@ -81,9 +81,9 @@ class FightManagerTest extends KernelTestCase
 		);
 	}
 
-	private function getPlaceMock(): Place
+	private function getPlaceMock(): Planet
 	{
-		return new Place(
+		return new Planet(
 			id: Uuid::v4(),
 			player: null,
 			base: null,

@@ -18,7 +18,7 @@ readonly class SectorListener
 
 	public function onPlaceOwnerChange(PlaceOwnerChangeEvent $event): void
 	{
-		$system = $event->getPlace()->system;
+		$system = $event->planet->system;
 
 		$this->sectorManager->calculateOwnership($system->sector);
 	}

@@ -7,11 +7,11 @@
 			<div class="flex items-center bg-gray-700 py-1 px-2">
 				<div class="grow">
 					<span class="value" style="font-variant: all-small-caps">{{ planet.name }}</span><br>
-					<span class="text-xs">secteur {{ planet.place.system.sector.identifier }}</span>
+					<span class="text-xs">secteur {{ planet.system.sector.identifier }}</span>
 				</div>
 
 				<span class="group-link">
-					<a href="{{ path('map', {'place': planet.place.id }) }}" class="hb lt" title="voir sur la carte">
+					<a href="{{ path('map', {'place': planet.id }) }}" class="hb lt" title="voir sur la carte">
 						<img src="{{ asset('images/legacy/picto/arrow_right.svg') }}" class="w-4" alt="→" />
 					</a>
 				</span>

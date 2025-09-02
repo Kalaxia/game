@@ -96,8 +96,8 @@ class GiveResources extends AbstractController
 			statement: CommercialShipping::ST_GOING,
 			departureDate: $departure,
 			arrivalDate: $getTravelDuration(
-				origin: $currentPlanet->place,
-				destination: $otherPlanet->place,
+				origin: $currentPlanet,
+				destination: $otherPlanet,
 				departureDate: $departure,
 				travelType: TravelType::CommercialShipping,
 				player: $currentPlayer
@@ -125,7 +125,7 @@ class GiveResources extends AbstractController
 						NotificationBuilder::bold(Format::numberFormat($resource)),
 						' ressources depuis sa base ',
 						NotificationBuilder::link(
-							$this->generateUrl('map', ['place' => $currentPlanet->place->id]),
+							$this->generateUrl('map', ['place' => $currentPlanet->id]),
 							$currentPlanet->name,
 						),
 						'.',

@@ -75,7 +75,7 @@ class Propose extends AbstractController
 		if ($currentBase->player->id === $otherBase->player->id) {
 			throw new ConflictHttpException('Vous ne pouvez pas créer de route commerciale avec votre propre planète');
 		}
-		$distance = $getDistanceBetweenPlaces($currentBase->place, $otherBase->place);
+		$distance = $getDistanceBetweenPlaces($currentBase, $otherBase);
 
 		$price = $getCommercialRoutePrice($distance, $currentPlayer);
 
@@ -118,12 +118,12 @@ class Propose extends AbstractController
 				),
 				' vous propose une route commerciale liant ',
 				NotificationBuilder::link(
-					$this->generateUrl('map', ['place' => $currentBase->place->id]),
+					$this->generateUrl('map', ['place' => $currentBase->id]),
 					$currentBase->name,
 				),
 				' et ',
 				NotificationBuilder::link(
-					$this->generateUrl('map', ['place' => $otherBase->place->id]),
+					$this->generateUrl('map', ['place' => $otherBase->id]),
 					$otherBase->name,
 				),
 				'.',

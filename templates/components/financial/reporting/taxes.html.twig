@@ -18,12 +18,12 @@
 			{% for planet in player_planets %}
 				{% set planet_tax = get_planet_tax(planet, tax_coeff) %}
 				{# @TODO move that logic somewhere legit #}
-				{% set planet_tax_out = planet_tax.total * planet.place.system.sector.tax / 100 %}
+				{% set planet_tax_out = planet_tax.total * planet.system.sector.tax / 100 %}
 
 				<li class="py-2">
 					<span class="label">
 						<span style="font-variant: all-small-caps">{{ planet.name }}</span>
-						[{{ planet.place.system.sector.tax }}% de taxe]
+						[{{ planet.system.sector.tax }}% de taxe]
 					</span><br>
 					<span class="text-sm flex items-center gap-x-2 py-1">
 						{{- planet_tax_out|number -}}

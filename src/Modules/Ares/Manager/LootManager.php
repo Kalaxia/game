@@ -12,7 +12,6 @@ use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\LiveReport;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Manager\PlaceManager;
 use App\Modules\Gaia\Manager\PlanetManager;
@@ -75,12 +74,12 @@ readonly class LootManager
 					destination: $commanderPlace,
 					mission: CommanderMission::Back,
 				);
-				$this->placeManager->sendNotif($place, Place::LOOTEMPTYSSUCCESS, $commander, $report);
+				$this->placeManager->sendNotif($place, Planet::LOOTEMPTYSSUCCESS, $commander, $report);
 			} else {
 				// si il est mort
 				// création du rapport de combat
 				$report = $this->commanderManager->createReport($place);
-				$this->placeManager->sendNotif($place, Place::LOOTEMPTYFAIL, $commander, $report);
+				$this->placeManager->sendNotif($place, Planet::LOOTEMPTYFAIL, $commander, $report);
 
 				// réduction de la force de la planète
 				// TODO Factorize in a service
@@ -90,12 +89,12 @@ readonly class LootManager
 			// si il y a une base d'un joueur
 		} else {
 			// TODO Move to Specification class
-			LiveReport::$isLegal = $commanderColor->canAttackLegally($place->base->player->faction);
+			LiveReport::$isLegal = $commanderColor->canAttackLegally($place->player->faction);
 
 			// planète à joueur : si $this->rColor != commandant->rColor
 			// si il peut l'attaquer
 			// TODO move to spec
-			if ((!$place->base->player->faction->id->equals($commander->player->faction->id) && $place->base->player->level > 1 && Color::ALLY !== $commanderColor->relations[$place->base->player->faction->identifier]) || null === $place->base) {
+			if ((!$place->player->faction->id->equals($commander->player->faction->id) && $place->player->level > 1 && Color::ALLY !== $commanderColor->relations[$place->player->faction->identifier]) || null === $place->base) {
 				$dCommanders = [];
 				foreach ($placeCommanders as $dCommander) {
 					if ($dCommander->isAffected() && 1 == $dCommander->line) {
@@ -126,14 +125,14 @@ readonly class LootManager
 						// création du rapport
 						$report = $this->commanderManager->createReport($place);
 
-						$this->placeManager->sendNotif($place, Place::LOOTPLAYERWHITBATTLESUCCESS, $commander, $report);
+						$this->placeManager->sendNotif($place, Planet::LOOTPLAYERWHITBATTLESUCCESS, $commander, $report);
 
 					// défaite
 					} else {
 						// création du rapport
 						$report = $this->commanderManager->createReport($place);
 
-						$this->placeManager->sendNotif($place, Place::LOOTPLAYERWHITBATTLEFAIL, $commander, $report);
+						$this->placeManager->sendNotif($place, Planet::LOOTPLAYERWHITBATTLEFAIL, $commander, $report);
 					}
 				} else {
 					$this->lootAPlayerPlace($commander, $playerBonus, $placeBase);
@@ -143,11 +142,11 @@ readonly class LootManager
 						destination: $commanderPlace,
 						mission: CommanderMission::Back,
 					);
-					$this->placeManager->sendNotif($place, Place::LOOTPLAYERWHITOUTBATTLESUCCESS, $commander);
+					$this->placeManager->sendNotif($place, Planet::LOOTPLAYERWHITOUTBATTLESUCCESS, $commander);
 				}
 			} else {
 				// si c'est la même couleur
-				if ($place->base->player->id === $commander->player->id) {
+				if ($place->player->id === $commander->player->id) {
 					// si c'est une de nos planètes
 					// on tente de se poser
 					$this->commanderManager->uChangeBase($commander);
@@ -159,7 +158,7 @@ readonly class LootManager
 						destination: $commanderPlace,
 						mission: CommanderMission::Back,
 					);
-					$this->placeManager->sendNotif($place, Place::CHANGELOST, $commander);
+					$this->placeManager->sendNotif($place, Planet::CHANGELOST, $commander);
 				}
 			}
 		}

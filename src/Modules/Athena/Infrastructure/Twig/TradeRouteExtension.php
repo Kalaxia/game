@@ -28,8 +28,8 @@ class TradeRouteExtension extends AbstractExtension
 			new TwigFunction('get_route_price', fn (float $distance) => ($this->getCommercialRoutePrice)($distance, $this->currentPlayerRegistry->get())),
 			new TwigFunction('get_route_income', fn (Planet $from, Planet $to) => ($this->getCommercialRouteIncome)($from, $to, $this->currentPlayerRegistry->get())),
 			new TwigFunction('get_route_distance', fn (CommercialRoute $commercialRoute) => ($this->getDistanceBetweenPlaces)(
-				$commercialRoute->originBase->place,
-				$commercialRoute->destinationBase->place,
+				$commercialRoute->originBase,
+				$commercialRoute->destinationBase,
 			)),
 		];
 	}

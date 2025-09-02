@@ -1,5 +1,5 @@
 <div id="systems" class="absolute z-[900] w-full group-[.sector-only]/map:z-0 transition-[z-index] ease-in duration-500">
-	{% set current_player_planets_sector_ids = player_planets|map(b => b.place.system) %}
+	{% set current_player_planets_sector_ids = player_planets|map(p => p.system) %}
 
 	{% for system in systems %}
 		{% set has_bases_in = system.id in current_player_planets_sector_ids %}

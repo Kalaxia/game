@@ -3,7 +3,6 @@
 namespace App\Modules\Artemis\Application\Handler;
 
 use App\Modules\Artemis\Model\SpyReport;
-use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
@@ -14,9 +13,9 @@ abstract readonly class SpyingHandler
 {
 	abstract protected function processSpyingMission(SpyReport $spyReport): void;
 
-	abstract protected function getAntiSpyCoeff(Place $place): int;
+	abstract protected function getAntiSpyCoeff(Planet $place): int;
 
-	public function spy(Place $place, Player $player, int $price): SpyReport
+	public function spy(Planet $place, Player $player, int $price): SpyReport
 	{
 		$antiSpy = $this->getAntiSpyCoeff($place);
 
@@ -27,16 +26,16 @@ abstract readonly class SpyingHandler
 			player: $player,
 			place: $place,
 			price: $price,
-			placeFaction: $place->base?->player->faction,
-			placeType: $place->typeOfPlace,
-			baseType: $place->base?->typeOfBase ?? Planet::TYP_NEUTRAL,
-			placeName: $place->base?->name ?? 'Planète rebelle',
-			points: $place->base?->points ?? 0,
-			targetPlayer: $place->base?->player,
-			targetPlayerLevel: $place->base?->player->level,
+			placeFaction: $place->player->faction,
+			placeType: $place->getType(),
+			baseType: $place->typeOfBase ?? Planet::BASE_TYPE_COLONY,
+			placeName: $place->name ?? 'Planète rebelle',
+			points: $place->points ?? 0,
+			targetPlayer: $place->player,
+			targetPlayerLevel: $place->player->level,
 			resources: 0,
-			shipStorage: $place->base?->getShipStorage() ?? [],
-			antiSpyInvest: $place->base?->iAntiSpy ?? 0,
+			shipStorage: $place->getShipStorage() ?? [],
+			antiSpyInvest: $place->iAntiSpy ?? 0,
 			commercialRouteIncome: 0,
 			commanders: [],
 			successRate: $successRate,

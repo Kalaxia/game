@@ -4,7 +4,6 @@ namespace App\Modules\Ares\Model;
 
 use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Domain\Model\ShipCategory;
-use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Shared\Domain\Model\SystemUpdatable;
 use App\Modules\Zeus\Model\Player;
@@ -30,8 +29,8 @@ class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatabl
 	public \DateTimeImmutable|null $arrivedAt = null;
 	public int $resources = 0;
 	public CommanderMission|null $travelType = null;
-	public Place|null $startPlace = null;
-	public Place|null $destinationPlace = null;
+	public Planet|null $startPlace = null;
+	public Planet|null $destinationPlace = null;
 	// Tableau d'objets squadron
 	/**
 	 * @var list<Squadron>

@@ -70,7 +70,7 @@ class Accept extends AbstractController
 		}
 		// compute bonus if the player is from Negore
 		// TODO move to BonusApplier logic
-		$distance = $getDistanceBetweenPlaces($proposerBase->place, $acceptorBase->place);
+		$distance = $getDistanceBetweenPlaces($proposerBase, $acceptorBase);
 		$price = $getCommercialRoutePrice($distance, $currentPlayer);
 		if (ColorResource::FALKIRR === $currentPlayer->faction->identifier) {
 			$bonus = PercentageApplier::toFloat($price, ColorResource::BONUS_NEGORA_ROUTE);
@@ -101,12 +101,12 @@ class Accept extends AbstractController
 					),
 					' a accepté la route commerciale proposée entre ',
 					NotificationBuilder::link(
-						$this->generateUrl('map', ['place' => $acceptorBase->place->id]),
+						$this->generateUrl('map', ['place' => $acceptorBase->id]),
 						$acceptorBase->name,
 					),
 					' et ',
 					NotificationBuilder::link(
-						$this->generateUrl('map', ['place' => $proposerBase->place->id]),
+						$this->generateUrl('map', ['place' => $proposerBase->id]),
 						$proposerBase->name,
 					),
 					'.',

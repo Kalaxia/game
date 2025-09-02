@@ -27,12 +27,14 @@
 
 			<twig:H3>Informations</twig:H3>
 
+			{% set f = faction %}
+
 			<twig:NumberBox label="Nombre de points de la faction">
-				{{ faction.points|number }}
+				{{ f.points|number }}
 			</twig:NumberBox>
 
 			<twig:NumberBox label="Richesse de la faction">
-				{{ faction.credits|number }}
+				{{ f.credits|number }}
 			</twig:NumberBox>
 
 			<twig:NumberBox label="Nombre de points des territoires contrôlés">

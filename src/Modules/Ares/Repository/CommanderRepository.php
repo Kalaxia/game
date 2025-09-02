@@ -7,7 +7,6 @@ namespace App\Modules\Ares\Repository;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use App\Modules\Zeus\Model\Player;
@@ -16,6 +15,9 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * @extends DoctrineRepository<Commander>
+ */
 class CommanderRepository extends DoctrineRepository implements CommanderRepositoryInterface
 {
 	public function __construct(ManagerRegistry $registry)
@@ -92,8 +94,7 @@ class CommanderRepository extends DoctrineRepository implements CommanderReposit
 		$qb = $this->createQueryBuilder('c');
 
 		return $qb
-			->join('c.destinationPlace', 'dp')
-			->join('dp.base', 'base')
+			->join('c.destinationPlace', 'base')
 			->join('base.player', 'player')
 			->andWhere('base.player = :player')
 			->andWhere('c.player != :player')
@@ -112,7 +113,7 @@ class CommanderRepository extends DoctrineRepository implements CommanderReposit
 		]);
 	}
 
-	public function getIncomingCommanders(Place $place): array
+	public function getIncomingCommanders(Planet $place): array
 	{
 		return $this->findBy([
 			'destinationPlace' => $place,

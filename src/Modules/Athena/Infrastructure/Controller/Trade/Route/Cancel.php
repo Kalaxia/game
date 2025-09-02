@@ -41,7 +41,7 @@ class Cancel extends AbstractController
 		$linkedBase = $cr->destinationBase;
 
 		// rend 80% des crédits investis
-		$commercialRoutePrice = $getCommercialRoutePrice($getDistanceBetweenPlaces($cr->originBase->place, $cr->destinationBase->place), $currentPlayer);
+		$commercialRoutePrice = $getCommercialRoutePrice($getDistanceBetweenPlaces($cr->originBase, $cr->destinationBase), $currentPlayer);
 		$playerManager->increaseCredit($currentPlayer, round($commercialRoutePrice * $routeCancelRefund));
 
 		// notification
@@ -54,12 +54,12 @@ class Cancel extends AbstractController
 				),
 				' a finalement retiré la proposition de route commerciale faite entre ',
 				NotificationBuilder::link(
-					$this->generateUrl('map', ['place' => $linkedBase->place->id]),
+					$this->generateUrl('map', ['place' => $linkedBase->id]),
 					$linkedBase->name,
 				),
 				' et ',
 				NotificationBuilder::link(
-					$this->generateUrl('map', ['place' => $proposerBase->place->id]),
+					$this->generateUrl('map', ['place' => $proposerBase->id]),
 					$proposerBase->name,
 				),
 			))

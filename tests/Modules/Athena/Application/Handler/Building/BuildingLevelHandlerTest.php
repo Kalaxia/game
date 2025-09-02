@@ -4,7 +4,6 @@ namespace App\Tests\Modules\Athena\Application\Handler\Building;
 
 use App\Modules\Athena\Application\Handler\Building\BuildingLevelHandler;
 use App\Modules\Athena\Model\BuildingQueue;
-use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Entity\Sector;
 use App\Modules\Gaia\Domain\Entity\System;
@@ -183,7 +182,7 @@ class BuildingLevelHandlerTest extends TestCase
 	{
 		return new Planet(
 			id: Uuid::v4(),
-			place: new Place(
+			place: new Planet(
 				id: Uuid::v4(),
 				base: null,
 				system: new System(

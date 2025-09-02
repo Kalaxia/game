@@ -2,12 +2,12 @@
 
 <div class="w-full border-l-2 border-stone-900 min-w-80">
 	<div class="flex items-center justify-around p-4 border-b-2 border-stone-900">
-		{% if place.typeOfPlace == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
-			{% if place.base.player is not defined and place.typeOfPlace != enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
+		{% if place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
+			{% if place.player is not defined and place.type != enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
 				{% set tooltip = 'Vous ne pouvez pas attaquer une planète non-habitable' %}
-			{% elseif place.typeOfPlace == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet and place.base is not null and place.base.player.faction.id == current_player.faction.id %}
+			{% elseif place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet and place.player is not null and place.player.faction.id == current_player.faction.id %}
 				{% set tooltip = 'Vous ne pouvez pas attaquer un joueur de votre faction' %}
-			{% elseif place.typeOfPlace == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet and place.base is not null and place.base.player.level == 1 %}
+			{% elseif place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet and place.player is not null and place.player.level == 1 %}
 				{% set tooltip = 'Ce joueur est sous protection débutant' %}
 			{% else %}
 				{% set tooltip = '' %}
@@ -24,15 +24,15 @@
 			{% set total_bases = get_player_planets_count(moving_commanders) %}
 
 			{# TODO Replace with specification #}
-			{% if place.base is null and place.typeOfPlace != enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
+			{% if place.type != enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
 				{% set tooltip = 'Vous ne pouvez pas coloniser une planète non-habitable.' %}
-			{% elseif place.typeOfPlace == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet and place.base is not null and place.base.player.faction.id == current_player.faction.id %}
+			{% elseif place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet and place.player is not null and place.player.faction.id == current_player.faction.id %}
 				{% set tooltip = 'Vous ne pouvez pas conquérir un joueur de votre faction.' %}
-			{% elseif place.typeOfPlace == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet and place.base is not null and place.base.player.level <= 3 %}
+			{% elseif place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet and place.player is not null and place.player.level <= 3 %}
 				{% set tooltip = 'Vous ne pouvez pas conquérir un joueur de niveau 3 ou inférieur.' %}
-			{% elseif place.base is null and technologies.getTechnology(constant('App\\Modules\\Promethee\\Model\\TechnologyId::COLONIZATION')) == 0 %}
+			{% elseif place.player is null and technologies.getTechnology(constant('App\\Modules\\Promethee\\Model\\TechnologyId::COLONIZATION')) == 0 %}
 				{% set tooltip = 'Vous devez développer la technologie colonisation.' %}
-			{% elseif place.base is not null and technologies.getTechnology(constant('App\\Modules\\Promethee\\Model\\TechnologyId::COLONIZATION')) == 0 %}
+			{% elseif place.player is not null and technologies.getTechnology(constant('App\\Modules\\Promethee\\Model\\TechnologyId::CONQUEST')) == 0 %}
 				{% set tooltip = 'Vous devez développer la technologie conquête.' %}
 			{% elseif total_bases >= max_bases %}
 				{% set tooltip = 'Vous devez améliorer le niveau de la technologie administration étendue pour disposer de planète supplémentaire.' %}
@@ -44,14 +44,14 @@
 				data-action="click->map--action-box#chooseAction"
 				data-action-id="2"
 				:disabled="can_player_attack_place(current_player, place) == false"
-				:name="'Lancer une ' ~ (place.base is null ? 'colonisation' : 'conquête')"
+				:name="'Lancer une ' ~ (place.player is null ? 'colonisation' : 'conquête')"
 				:tooltip="tooltip"
 				picto="images/map/conquer.svg" />
 
 
 			{% if place.id == current_planet.id %}
 				{% set tooltip = 'Vous ne pouvez pas déplacer une flotte sur votre planète de départ' %}
-			{% elseif place.base is not null and place.base.player.faction.id != current_player.faction.id %}
+			{% elseif place.player is not null and place.player.faction.id != current_player.faction.id %}
 				{% set tooltip = 'Vous ne pouvez donner une de vos flotte qu\'a un membre de votre faction' %}
 			{% else %}
 				{% set tooltip = '' %}
@@ -59,19 +59,19 @@
 			<twig:PlaceAction
 				data-action="click->map--action-box#chooseAction"
 				data-action-id="3"
-				:name="place.base is not null and place.base.player.id == current_planet.player.id ? 'Déplacer une flotte' : 'Donner votre flotte'"
+				:name="place.player is not null and place.player.id == current_planet.player.id ? 'Déplacer une flotte' : 'Donner votre flotte'"
 				:tooltip="tooltip"
 				:disabled="can_player_move_to_place(current_player, place, current_planet) == false"
 				picto="images/legacy/picto/ships/Fleet.svg" />
 
 
-			{% if place.base is null %}
+			{% if place.player is null %}
 				{% set tooltip = 'Vous ne pouvez proposer une route commerciale qu\'à des joueurs.' %}
-			{% elseif place.id == current_planet.place.id %}
+			{% elseif place.id == current_planet.id %}
 				{% set tooltip = 'Vous ne pouvez pas proposer une route commerciale sur votre propre base.' %}
 			{% elseif current_planet.levelSpatioport == 0 %}
 				{% set tooltip = 'Il vous faut un spatioport pour proposer une route commerciale.' %}
-			{% elseif place.base.levelSpatioport == 0 %}
+			{% elseif place.levelSpatioport == 0 %}
 				{% set tooltip = 'Le joueur ne dispose pas d\'un spatioport.' %}
 			{% else %}
 				{% set tooltip = '' %}
@@ -85,9 +85,9 @@
 				:tooltip="tooltip"
 				picto="images/legacy/picto/B_Merc_64px.png" />
 
-			{% if place.base is not null and place.base.player.faction.id == current_player.faction.id %}
+			{% if place.player is not null and place.player.faction.id == current_player.faction.id %}
 				{% set tooltip = 'Vous ne pouvez pas espionner un joueur de votre faction' %}
-			{% elseif place.base is null and place.typeOfPlace != enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
+			{% elseif place.player is null and place.type != enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
 				{% set tooltip = 'Vous ne pouvez pas espionner une planète non-habitable' %}
 			{% else %}
 				{% set tooltip = '' %}
@@ -102,7 +102,7 @@
 		{% else %}
 			{% if place.system.sector.faction is not null and place.system.sector.faction.id != current_player.faction.id %}
 				{% set tooltip = 'Vous ne pouvez envoyer des recycleurs que dans des secteurs non-revendiqués ou contrôlés par votre faction.' %}
-			{% elseif place.typeOfPlace == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Empty %}
+			{% elseif place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Empty %}
 				{% set tooltip = 'Cet endroit regorgait autrefois de ressources ou de gaz mais de nombreux recycleurs sont déjà passés par là et n\'ont laissé que le vide de l\'espace.' %}
 			{% elseif current_planet.levelRecycling == 0 %}
 				{% set tooltip = 'Vous devez disposer d\'un centre de recyclage.' %}
@@ -121,7 +121,7 @@
 	</div>
 
 	<div class="h-full">
-		{% if place.typeOfPlace == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
+		{% if place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
 			<twig:PlaceActionPanel title="Lancer un pillage" id="1" :actionUrl="path('loot', {'id': '{id}', 'placeId': place.id})">
 				<twig:CommanderTile :travelTime="travel_time" :place="place">
 					<twig:block name="travel_details">
@@ -132,7 +132,7 @@
 				</twig:CommanderTile>
 			</twig:PlaceActionPanel>
 
-			{% if place.base is null %}
+			{% if place.player is null %}
 				{% set cost = colonization_cost|number %}
 				{% set action_url = path('colonize', {'id': '{id}', 'placeId': place.id}) %}
 				{% set label = 'Lancer la colonisation' %}
@@ -141,7 +141,7 @@
 				{% set action_url = path('conquer', {'id': '{id}', 'placeId': place.id}) %}
 				{% set label = 'Lancer la conquête' %}
 			{% endif %}
-			<twig:PlaceActionPanel :title="'Lancer une ' ~ (place.base is null ? 'colonisation' : 'conquête')" id="2" :actionUrl="action_url">
+			<twig:PlaceActionPanel :title="'Lancer une ' ~ (place.player is null ? 'colonisation' : 'conquête')" id="2" :actionUrl="action_url">
 				<twig:CommanderTile :travelTime="travel_time" :place="place">
 					<twig:block name="travel_details">
 						{{ parent() }}
@@ -151,12 +151,12 @@
 				</twig:CommanderTile>
 			</twig:PlaceActionPanel>
 
-			<twig:PlaceActionPanel :title="place.base is not null and place.base.player.id == current_planet.player.id ? 'Déplacer une flotte' : 'Donner votre flotte'" id="3" :actionUrl="path('move_fleet', {'id': '{id}', 'placeId': place.id})">
+			<twig:PlaceActionPanel :title="place.player is not null and place.player.id == current_planet.player.id ? 'Déplacer une flotte' : 'Donner votre flotte'" id="3" :actionUrl="path('move_fleet', {'id': '{id}', 'placeId': place.id})">
 				<twig:CommanderTile :travelTime="travel_time" :place="place">
 					<twig:block name="alerts">
 						{{ parent() }}
 
-						{% if place.base is not null and place.base.player.id != current_player.id %}
+						{% if place.player is not null and place.player.id != current_player.id %}
 							<twig:CommanderAlert identifier="lost-fleet" :factionIdentifier="current_player.faction.identifier">
 								Attention, vous perdrez votre flotte !
 							</twig:CommanderAlert>
@@ -169,17 +169,17 @@
 				</twig:CommanderTile>
 			</twig:PlaceActionPanel>
 
-			{% if place.base is not null %}
+			{% if place.player is not null %}
 				<twig:PlaceActionPanel title="Proposer une route commerciale" id="4">
 					<div class="box-content">
 						{% set commercial_route_data = get_commercial_route_data(current_planet, place) %}
 						{% set distance = get_place_distance(current_planet, place) %}
 
 						{% set price = get_route_price(distance) %}
-						{% set income = get_route_income(current_planet, place.base) %}
+						{% set income = get_route_income(current_planet, place) %}
 
 						<div class="rc">
-							{#<img src="{{ asset('build/media/map/place/place' ~ place.typeOfPlace ~ '-' ~ get_place_demography(place) ~ '.png') }}" alt="" class="planet" />#}
+							{#<img src="{{ asset('build/media/map/place/place' ~ place.type ~ '-' ~ get_place_demography(place) ~ '.png') }}" alt="" class="planet" />#}
 
 							<div class="flex justify-between mb-2">
 								<twig:NumberBox label="Revenu par relève">
@@ -215,7 +215,7 @@
 										Vous n'avez pas assez de crédits.
 									</twig:Button>
 								{% elseif commercial_route_data.slots < get_building_info(constant('App\\Modules\\Gaia\\Resource\\PlanetResource::SPATIOPORT'), 'level', current_planet.levelSpatioport, 'nbRoutesMax') %}
-									<a href="{{ path('propose_route', {'sourceBase': current_planet.id, 'destinationBase': place.base.id }) }}" class="button">
+									<a href="{{ path('propose_route', {'sourceBase': current_planet.id, 'destinationBase': place.id }) }}" class="button">
 										<twig:Button :faction="current_player.faction">
 											Proposer une route commerciale
 										</twig:Button>

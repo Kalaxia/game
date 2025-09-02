@@ -7,10 +7,13 @@ namespace App\Modules\Gaia\Infrastructure\Repository\Doctrine;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Entity\Sector;
 use App\Modules\Gaia\Domain\Entity\System;
+use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Specification\SelectorSpecification;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
@@ -23,6 +26,14 @@ class PlanetRepository extends DoctrineRepository implements PlanetRepositoryInt
 	public function __construct(ManagerRegistry $registry)
 	{
 		parent::__construct($registry, Planet::class);
+	}
+
+	public function getAll(): Collection
+	{
+		return $this->matching(
+			Criteria::create()
+				->orderBy(['id' => 'ASC'])
+		);
 	}
 
 	public function get(Uuid $id): Planet|null
@@ -59,11 +70,10 @@ class PlanetRepository extends DoctrineRepository implements PlanetRepositoryInt
 
 	public function getSectorPlanets(Sector $sector): array
 	{
-		$qb = $this->createQueryBuilder('ob');
+		$qb = $this->createQueryBuilder('p');
 
 		return $qb
-			->join('ob.place', 'place')
-			->join('place.system', 'system')
+			->join('p.system', 'system')
 			->where('system.sector = :sector')
 			->setParameter('sector', $sector->id, UuidType::NAME)
 			->getQuery()
@@ -72,13 +82,31 @@ class PlanetRepository extends DoctrineRepository implements PlanetRepositoryInt
 
 	public function getSystemPlanets(System $system): array
 	{
-		$qb = $this->createQueryBuilder('ob');
+		$qb = $this->createQueryBuilder('p');
 
 		return $qb
-			->join('ob.place', 'place')
-			->where('place.system = :system')
+			->where('p.system = :system')
 			->setParameter('system', $system->id, UuidType::NAME)
 			->getQuery()
 			->getResult();
+	}
+
+	public function getCandidatePlanetsForNewPlayers(Sector $sector): array
+	{
+		$qb = $this->createQueryBuilder('p');
+
+		$qb
+			->select('p.id')
+			->join('p.system', 'sys')
+			->where('IDENTITY(sys.sector) = :sector_id')
+			->andWhere('p.player IS NULL')
+			->setParameter('sector_id', $sector->id->toBinary())
+			->orderBy('p.population', 'ASC')
+			->setMaxResults(30);
+
+		return array_map(
+			fn (string $bytes) => Uuid::fromBinary($bytes),
+			$qb->getQuery()->getSingleColumnResult(),
+		);
 	}
 }

@@ -10,7 +10,7 @@ use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
-use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
@@ -66,7 +66,7 @@ class Loot extends AbstractController
 		$home = $commander->base;
 
 		// TODO replace with proper services
-		$length = $getDistanceBetweenPlaces($home->place, $place);
+		$length = $getDistanceBetweenPlaces($home, $place);
 
 		if (0 === $commanderArmyHandler->getPev($commander)) {
 			throw new ConflictHttpException('You cannot send a commander with an empty fleet');
@@ -83,7 +83,7 @@ class Loot extends AbstractController
 		}
 
 		// Move that part in a Specification class
-		if (null !== ($targetPlayer = $place->base?->player) && 1 === $targetPlayer->level && !in_array($place->base->player->statement, [Player::DELETED, Player::DEAD])) {
+		if (null !== ($targetPlayer = $place->player) && 1 === $targetPlayer->level && !in_array($place->player->statement, [Player::DELETED, Player::DEAD])) {
 			throw new ConflictHttpException('Vous ne pouvez pas piller un joueur actif de niveau 1.');
 		}
 
@@ -94,12 +94,12 @@ class Loot extends AbstractController
 			throw new ConflictHttpException('You cannot loot an ally planet');
 		}
 
-		if (PlaceType::Planet !== $place->typeOfPlace) {
+		if (PlaceType::Planet !== $place->getType()) {
 			throw new ConflictHttpException('This place is not inhabited');
 		}
 		$moveFleet(
 			commander: $commander,
-			origin: $home->place,
+			origin: $home,
 			destination: $place,
 			mission: CommanderMission::Loot,
 		);

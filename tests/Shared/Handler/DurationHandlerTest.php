@@ -3,7 +3,6 @@
 namespace App\Tests\Shared\Handler;
 
 use App\Modules\Athena\Model\BuildingQueue;
-use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Entity\System;
 use App\Modules\Gaia\Domain\Enum\PlaceType;
@@ -130,7 +129,7 @@ class DurationHandlerTest extends TestCase
 			id: Uuid::v4(),
 			base: new Planet(
 				id: Uuid::v4(),
-				place: new Place(
+				place: new Planet(
 					id: Uuid::v4(),
 					player: new Player(),
 					base: null,

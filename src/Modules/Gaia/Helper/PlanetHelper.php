@@ -25,8 +25,8 @@ readonly class PlanetHelper
 	public function fleetQuantity(int $typeOfBase): int
 	{
 		return match ($typeOfBase) {
-			Planet::TYP_NEUTRAL, Planet::TYP_COMMERCIAL => 2,
-			Planet::TYP_MILITARY, Planet::TYP_CAPITAL => 5,
+			Planet::BASE_TYPE_COLONY, Planet::BASE_TYPE_COMMERCIAL => 2,
+			Planet::BASE_TYPE_MILITARY, Planet::BASE_TYPE_CAPITAL => 5,
 			default => 0,
 		};
 	}
@@ -139,7 +139,7 @@ readonly class PlanetHelper
                             $this->buildingQueueRepository->getPlanetQueues($sup),
                         );
 
-                        if (1 == $level and Planet::TYP_NEUTRAL == $sup->typeOfBase and in_array($buildingId, [PlanetResource::SPATIOPORT, PlanetResource::DOCK2])) {
+                        if (1 == $level and Planet::BASE_TYPE_COLONY == $sup->typeOfBase and in_array($buildingId, [PlanetResource::SPATIOPORT, PlanetResource::DOCK2])) {
                             return 'vous devez évoluer votre colonie pour débloquer ce bâtiment';
                         }
                         if ($level > PlanetResource::$building[$buildingId]['maxLevel'][$sup->typeOfBase]) {

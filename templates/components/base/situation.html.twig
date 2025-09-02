@@ -29,8 +29,8 @@
 					<img src="{{ asset('build/media/orbitalbase/place1-' ~ current_planet|base_demography ~ '.png') }}" alt="planète" />
 
 					<div class="info bottom">
-						<strong>{{ (current_planet.place.population * 1000000)|number }}</strong> habitants<br />
-						<strong>{{ current_planet.place.coefResources }}</strong> % coeff. ressource<br />
+						<strong>{{ (current_planet.population * 1000000)|number }}</strong> habitants<br />
+						<strong>{{ current_planet.coefResources }}</strong> % coeff. ressource<br />
 						<strong>{{ science_coeff }}</strong> % de bonus scientifique
 					</div>
 				</div>

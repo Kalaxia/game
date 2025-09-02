@@ -83,13 +83,13 @@ class Colonize extends AbstractController
 
 		$place = $placeRepository->get(Uuid::fromString($placeId))
 			?? throw $this->createNotFoundException('Place not found');
-		if (PlaceType::Planet !== $place->typeOfPlace) {
+		if (PlaceType::Planet !== $place->getType()) {
 			throw new ConflictHttpException('Ce lieu n\'est pas habitable.');
 		}
 
 		$home = $commander->base;
 
-		$length = $getDistanceBetweenPlaces($home->place, $place);
+		$length = $getDistanceBetweenPlaces($home, $place);
 
 		// compute price
 		$price = $totalBases * $this->getParameter('ares.coeff.colonization_cost');
@@ -121,7 +121,7 @@ class Colonize extends AbstractController
 		}
 		$moveFleet(
 			commander: $commander,
-			origin: $home->place,
+			origin: $home,
 			destination: $place,
 			mission: CommanderMission::Colo,
 		);

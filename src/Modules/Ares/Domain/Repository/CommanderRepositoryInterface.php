@@ -4,7 +4,6 @@ namespace App\Modules\Ares\Domain\Repository;
 
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
@@ -61,7 +60,7 @@ interface CommanderRepositoryInterface extends EntityRepositoryInterface
 	/**
 	 * @return list<Commander>
 	 */
-	public function getIncomingCommanders(Place $place): array;
+	public function getIncomingCommanders(Planet $place): array;
 
 	/**
 	 * @return list<Commander>

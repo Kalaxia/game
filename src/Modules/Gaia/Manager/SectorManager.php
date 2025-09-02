@@ -42,7 +42,9 @@ readonly class SectorManager
 		$scores = [];
 
 		foreach ($planets as $planet) {
-			$player = $planet->player;
+			if (null === ($player = $planet->player)) {
+				continue;
+			}
 
 			$scores[$player->faction->identifier] =
 				(!empty($scores[$player->faction->identifier]))

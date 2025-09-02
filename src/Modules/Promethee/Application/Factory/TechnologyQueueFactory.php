@@ -38,7 +38,7 @@ readonly class TechnologyQueueFactory
 		$technologyQueue = new TechnologyQueue(
 			id: Uuid::v4(),
 			player: $planet->player,
-			place: $planet->place,
+			place: $planet,
 			technology: $identifier,
 			targetLevel: $targetLevel,
 			createdAt: $this->clock->now(),
@@ -46,7 +46,7 @@ readonly class TechnologyQueueFactory
 			endedAt: $this->durationHandler->getDurationEnd($createdAt, ($this->getTimeCost)(
 				$identifier,
 				$targetLevel,
-				$planet->place->coefHistory,
+				$planet->coefHistory,
 				$planet->player,
 			)),
 		);

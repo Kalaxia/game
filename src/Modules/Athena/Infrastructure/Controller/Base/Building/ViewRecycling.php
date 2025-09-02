@@ -73,9 +73,9 @@ class ViewRecycling extends AbstractController
 
 		// @TODO Infamous patch
 		$percent = Utils::interval(Utils::now(), date('Y-m-d H:i:s', strtotime($mission->endedAt->format('c')) - $mission->cycleTime), 's') / $mission->cycleTime * 100;
-		$travelTime = ($this->calculateTravelTime)($mission->base->place, $mission->target, TravelType::RecyclingShips, $mission->base->player);
+		$travelTime = ($this->calculateTravelTime)($mission->base, $mission->target, TravelType::RecyclingShips, $mission->base->player);
 		$beginRECY = Format::percent($travelTime, $mission->cycleTime);
-		$recyclingTime = ($this->getMissionTime)($mission->base->place, $mission->target, $mission->base->player) - ($travelTime * 2);
+		$recyclingTime = ($this->getMissionTime)($mission->base, $mission->target, $mission->base->player) - ($travelTime * 2);
 		$endRECY = Format::percent($travelTime + $recyclingTime, $mission->cycleTime);
 
 		return [

@@ -26,7 +26,7 @@ class HasRightPlanetTypeValidator extends ConstraintValidator
 		$buildingId = $value->getBuildingIdentifier();
 		$level = $value->getTargetLevel();
 
-		if (1 === $level && Planet::TYP_NEUTRAL === $planet->typeOfBase && in_array($buildingId, [PlanetResource::SPATIOPORT, PlanetResource::DOCK2])) {
+		if (1 === $level && Planet::BASE_TYPE_COLONY === $planet->typeOfBase && in_array($buildingId, [PlanetResource::SPATIOPORT, PlanetResource::DOCK2])) {
 			$this->context
 				->buildViolation('vous devez évoluer votre colonie pour débloquer ce bâtiment')
 				->addViolation();

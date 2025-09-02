@@ -63,7 +63,7 @@ class ViewHeadquarters extends AbstractController
 						'id' => $planet->id,
 						'name' => $planet->name,
 						'type' => $planet->typeOfBase,
-						'img' => '1-'.Game::getSizeOfPlanet($planet->place->population),
+						'img' => '1-'.Game::getSizeOfPlanet($planet->population),
 					],
 					'fleets' => [],
 				];

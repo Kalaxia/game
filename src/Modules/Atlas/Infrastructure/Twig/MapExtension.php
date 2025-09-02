@@ -13,7 +13,6 @@ use App\Modules\Athena\Domain\Service\Recycling\GetMissionTime;
 use App\Modules\Athena\Domain\Specification\CanPlanetTradeWithPlace;
 use App\Modules\Athena\Model\CommercialRoute;
 use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
-use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Entity\System;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;
@@ -52,10 +51,10 @@ class MapExtension extends AbstractExtension
 	{
 		return [
 			new TwigFunction('get_planet_antispy_radius', fn (Planet $base) => $this->antiSpyHandler->getAntiSpyRadius($base->antiSpyAverage)),
-			new TwigFunction('get_travel_time', function (Planet $defaultBase, Place $place) {
+			new TwigFunction('get_travel_time', function (Planet $defaultBase, Planet $place) {
 				$departureDate = new \DateTimeImmutable();
 				$arrivalDate = ($this->getTravelDuration)(
-					origin: $defaultBase->place,
+					origin: $defaultBase,
 					destination: $place,
 					departureDate: $departureDate,
 					player: $this->currentPlayerRegistry->get(),
@@ -63,45 +62,45 @@ class MapExtension extends AbstractExtension
 
 				return $this->durationHandler->getDiff($departureDate, $arrivalDate);
 			}),
-			new TwigFunction('get_place_distance', fn (Planet $defaultBase, Place $place) => ($this->getDistanceBetweenPlaces)(
-				$defaultBase->place,
+			new TwigFunction('get_place_distance', fn (Planet $defaultBase, Planet $place) => ($this->getDistanceBetweenPlaces)(
+				$defaultBase,
 				$place,
 			)),
 			new TwigFunction('get_max_travel_distance', fn () => Game::getMaxTravelDistance($this->currentPlayerBonusRegistry->getPlayerBonus())),
-			new TwigFunction('get_place_demography', fn (Place $place) => Game::getSizeOfPlanet($place->population)),
-			new TwigFunction('get_place_technosphere_improvement_coeff', fn (Place $place) => Game::getImprovementFromScientificCoef($place->coefHistory)),
-			new TwigFunction('get_commercial_route_data', fn (Planet $defaultBase, Place $place) => $this->getCommercialRouteData($defaultBase, $place)),
+			new TwigFunction('get_place_demography', fn (Planet $place) => Game::getSizeOfPlanet($place->population)),
+			new TwigFunction('get_place_technosphere_improvement_coeff', fn (Planet $place) => Game::getImprovementFromScientificCoef($place->coefHistory)),
+			new TwigFunction('get_commercial_route_data', fn (Planet $defaultBase, Planet $place) => $this->getCommercialRouteData($defaultBase, $place)),
 
-			new TwigFunction('can_player_attack_place', function (Player $player, Place $place) {
+			new TwigFunction('can_player_attack_place', function (Player $player, Planet $place) {
 				$specification = new CanPlayerAttackPlace($player);
 
 				return $specification->isSatisfiedBy($place);
 			}),
-			new TwigFunction('can_player_move_to_place', function (Player $player, Place $place, Planet $planet) {
+			new TwigFunction('can_player_move_to_place', function (Player $player, Planet $place, Planet $planet) {
 				$specification = new CanPlayerMoveToPlace($player, $planet);
 
 				return $specification->isSatisfiedBy($place);
 			}),
-			new TwigFunction('can_planet_trade_with_place', function (Planet $planet, Place $place) {
+			new TwigFunction('can_planet_trade_with_place', function (Planet $planet, Planet $place) {
 				$specification = new CanPlanetTradeWithPlace($planet);
 
 				return $specification->isSatisfiedBy($place);
 			}),
-			new TwigFunction('can_spy', function (Player $player, Place $place) {
+			new TwigFunction('can_spy', function (Player $player, Planet $place) {
 				$specification = new CanSpyPlace($player);
 
 				return $specification->isSatisfiedBy($place);
 			}),
-			new TwigFunction('can_recycle', function (Player $player, Place $place) {
+			new TwigFunction('can_recycle', function (Player $player, Planet $place) {
 				$specification = new CanRecycle($player);
 
 				return $specification->isSatisfiedBy($place);
 			}),
-			new TwigFunction('get_recycling_mission_time', fn (Planet $planet, Place $place) => ($this->getMissionTime)($planet->place, $place, $this->currentPlayerRegistry->get())),
+			new TwigFunction('get_recycling_mission_time', fn (Planet $planet, Planet $place) => ($this->getMissionTime)($planet, $place, $this->currentPlayerRegistry->get())),
 		];
 	}
 
-	private function getCommercialRouteData(Planet $defaultBase, Place $place): array
+	private function getCommercialRouteData(Planet $defaultBase, Planet $place): array
 	{
 		$routes = $this->commercialRouteRepository->getPlanetRoutes($defaultBase);
 
@@ -117,7 +116,7 @@ class MapExtension extends AbstractExtension
 			if ($route->destinationBase->id->equals($defaultBase->id) && CommercialRoute::PROPOSED == $route->statement) {
 				--$data['slots'];
 			}
-			if (!$place->id->equals($route->originBase->place->id) && !$place->id->equals($route->destinationBase->place->id)) {
+			if (!$place->id->equals($route->originBase->id) && !$place->id->equals($route->destinationBase->id)) {
 				continue;
 			}
 			$data = array_merge($data, match ($route->statement) {

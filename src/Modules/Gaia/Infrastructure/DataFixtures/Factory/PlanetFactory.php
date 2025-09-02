@@ -21,7 +21,7 @@ class PlanetFactory extends PersistentProxyObjectFactory
 			'place' => PlaceFactory::randomOrCreate(),
 			'player' => PlayerFactory::randomOrCreate(),
 			'name' => 'Colonie',
-			'typeOfBase' => Planet::TYP_NEUTRAL,
+			'typeOfBase' => Planet::BASE_TYPE_COLONY,
 			'levelGenerator' => 1,
 			'levelRefinery' => 1,
 			'levelDock1' => 1,

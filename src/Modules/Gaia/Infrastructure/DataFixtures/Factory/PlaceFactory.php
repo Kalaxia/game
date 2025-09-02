@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Gaia\Infrastructure\DataFixtures\Factory;
 
-use App\Modules\Gaia\Domain\Entity\Place;
-use App\Modules\Gaia\Domain\Enum\PlaceType;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Place>
+ * @extends PersistentProxyObjectFactory<Planet>
  */
 class PlaceFactory extends PersistentProxyObjectFactory
 {
@@ -21,7 +20,6 @@ class PlaceFactory extends PersistentProxyObjectFactory
 			'player' => null,
 			'base' => null,
 			'system' => SystemFactory::randomOrCreate(),
-			'typeOfPlace' => PlaceType::Planet,
 			'position' => self::faker()->randomNumber(1),
 			'population' => self::faker()->numberBetween(50, 250),
 			'coefResources' => self::faker()->numberBetween(30, 95),
@@ -35,6 +33,6 @@ class PlaceFactory extends PersistentProxyObjectFactory
 
 	public static function class(): string
 	{
-		return Place::class;
+		return Planet::class;
 	}
 }

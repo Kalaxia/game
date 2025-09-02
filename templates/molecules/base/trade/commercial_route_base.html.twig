@@ -1,12 +1,12 @@
 <div class="base">
 	{#<img src="{{ asset('build/media/map/place/place1-' ~ get_planet_size(base.place.population) ~ '.png') }}" alt="{{ base.name }}" class="place" />#}
 	{{ base.typeOfBase|scalar_base_type }}
-	<a href="{{ path('map', {'place': base.place.id }) }}" style="font-variant: all-small-caps">{{ base.name }}</a><br />
+	<a href="{{ path('map', {'place': base.id }) }}" style="font-variant: all-small-caps">{{ base.name }}</a><br />
 
 	<a href="{{ path('embassy', {'player': base.player.id }) }}" class="flex items-center gap-x-2">
 		<twig:Avatar :player="base.player" class="max-w-6 max-h-6" />
 		{{ base.player.name }}
 	</a>
 
-	{{ base.place.population|number }} millions de population
+	{{ base.population|number }} millions de population
 </div>

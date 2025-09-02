@@ -35,7 +35,7 @@ readonly class CurrentPlayerListener
 		$player = $this->playerRepository->get($playerId);
 		$this->currentPlayerRegistry->set($player);
 		$this->currentPlayerPlanetsRegistry->setPlanets($this->planetRepository->getPlayerPlanets($player));
-		$this->currentPlayerPlanetsRegistry->setCurrentPlanet($request->getSession()->get('playerParams')->get('base'));
+		$this->currentPlayerPlanetsRegistry->setCurrentPlanet($request->getSession()->get('playerParams')->get('planet'));
 
 		$bonus = $this->playerBonusManager->getBonusByPlayer($player);
 		$this->currentPlayerBonusRegistry->setPlayerBonus($bonus);

@@ -6,7 +6,7 @@ namespace App\Modules\Gaia\Application\Handler;
 
 use App\Classes\Library\Utils;
 use App\Modules\Gaia\Application\Message\PlaceGenerationMessage;
-use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\EmptyPlace;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Entity\UninhabitedPlace;
 use App\Modules\Gaia\Domain\Enum\PlaceType;
@@ -81,18 +81,17 @@ final readonly class PlaceGenerationHandler
 
 			// TODO DANGER
 			$danger = match ($message->sectorDanger) {
-				GalaxyConfiguration::DNG_CASUAL => random_int(0, Place::DNG_CASUAL),
-				GalaxyConfiguration::DNG_EASY => random_int(3, Place::DNG_EASY),
-				GalaxyConfiguration::DNG_MEDIUM => random_int(6, Place::DNG_MEDIUM),
-				GalaxyConfiguration::DNG_HARD => random_int(9, Place::DNG_HARD),
-				GalaxyConfiguration::DNG_VERY_HARD => random_int(12, Place::DNG_VERY_HARD),
+				GalaxyConfiguration::DNG_CASUAL => random_int(0, Planet::DNG_CASUAL),
+				GalaxyConfiguration::DNG_EASY => random_int(3, Planet::DNG_EASY),
+				GalaxyConfiguration::DNG_MEDIUM => random_int(6, Planet::DNG_MEDIUM),
+				GalaxyConfiguration::DNG_HARD => random_int(9, Planet::DNG_HARD),
+				GalaxyConfiguration::DNG_VERY_HARD => random_int(12, Planet::DNG_VERY_HARD),
 				default => 0,
 			};
 
 			$place = new Planet(
 				id: Uuid::v4(),
 				system: $system,
-				typeOfPlace: $type,
 				position: $message->position,
 				player: null,
 				name: null,
@@ -105,10 +104,9 @@ final readonly class PlaceGenerationHandler
 				updatedAt: new \DateTimeImmutable('-259200 seconds'),
 			);
 		} elseif (PlaceType::Empty === $type) {
-			$place = new Place(
+			$place = new EmptyPlace(
 				id: Uuid::v4(),
 				system: $system,
-				typeOfPlace: $type,
 				position: $message->position,
 				updatedAt: new \DateTimeImmutable('-259200 seconds'),
 			);
@@ -121,10 +119,9 @@ final readonly class PlaceGenerationHandler
 
 			$resources = random_int(2000000, 20000000);
 
-			$place = new UninhabitedPlace(
+			$place = new ($type->getClassName())(
 				id: Uuid::v4(),
 				system: $system,
-				typeOfPlace: $type,
 				position: $message->position,
 				updatedAt: new \DateTimeImmutable('-259200 seconds'),
 				resources: $resources,

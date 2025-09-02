@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Gaia\Repository;
 
-use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Entity\Sector;
 use App\Modules\Gaia\Domain\Entity\System;
 use App\Modules\Gaia\Domain\Enum\PlaceType;
@@ -20,10 +20,10 @@ class PlaceRepository extends DoctrineRepository implements PlaceRepositoryInter
 {
 	public function __construct(ManagerRegistry $registry)
 	{
-		parent::__construct($registry, Place::class);
+		parent::__construct($registry, Planet::class);
 	}
 
-	public function get(Uuid $id): Place|null
+	public function get(Uuid $id): Planet|null
 	{
 		return $this->find($id);
 	}
@@ -40,36 +40,6 @@ class PlaceRepository extends DoctrineRepository implements PlaceRepositoryInter
 		return $this->findBy(
 			['system' => $system],
 			['position' => 'ASC'],
-		);
-	}
-
-	public function getAll(): Collection
-	{
-		return $this->matching(
-			Criteria::create()
-				->where(Criteria::expr()->eq('typeOfPlace', PlaceType::Planet))
-				->orderBy(['id' => 'ASC'])
-		);
-	}
-
-	public function findPlacesIdsForANewBase(Sector $sector): array
-	{
-		$qb = $this->createQueryBuilder('p');
-
-		$qb
-			->select('p.id')
-			->join('p.system', 'sys')
-			->where('IDENTITY(sys.sector) = :sector_id')
-			->andWhere('p.base IS NULL')
-			->andWhere('p.typeOfPlace = :type_of_place')
-			->setParameter('type_of_place', PlaceType::Planet)
-			->setParameter('sector_id', $sector->id->toBinary())
-			->orderBy('p.population', 'ASC')
-			->setMaxResults(30);
-
-		return array_map(
-			fn (string $bytes) => Uuid::fromBinary($bytes),
-			$qb->getQuery()->getSingleColumnResult(),
 		);
 	}
 

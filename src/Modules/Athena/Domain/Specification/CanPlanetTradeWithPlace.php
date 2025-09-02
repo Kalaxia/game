@@ -2,15 +2,15 @@
 
 namespace App\Modules\Athena\Domain\Specification;
 
-use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 
 class CanPlanetTradeWithPlace extends PlanetSpecification
 {
 	/**
-	 * @param Place $candidate
+	 * @param Planet $candidate
 	 */
 	public function isSatisfiedBy($candidate): bool
 	{
-		return null !== $candidate->base?->player && !$candidate->id->equals($this->planet->place->id);
+		return null !== $candidate->player && !$candidate->id->equals($this->planet->id);
 	}
 }

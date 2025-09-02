@@ -18,6 +18,7 @@ use App\Modules\Zeus\Manager\PlayerBonusManager;
 use App\Modules\Zeus\Model\PlayerBonus;
 use App\Modules\Zeus\Model\PlayerBonusId;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -28,6 +29,7 @@ readonly class PlanetUpdateHandler
 	private const int MAX_UPDATES = 10;
 	
 	public function __construct(
+		private ClockInterface            $clock,
 		private GameTimeConverter         $gameTimeConverter,
 		private BonusApplierInterface     $bonusApplier,
 		private EntityManagerInterface    $entityManager,
@@ -51,6 +53,31 @@ readonly class PlanetUpdateHandler
 			return;
 		}
 
+		if (null === $planet->player) {
+			$this->updateNpcPlanet($planet, $missingUpdatesCount);
+		} else {
+			$this->updatePlayerPlanet($planet, $missingUpdatesCount);
+		}
+	}
+
+	private function updateNpcPlanet(Planet $planet, int $missingUpdatesCount): void
+	{
+		// update time
+		$place->updatedAt = $this->clock->now();
+		$place->resources = min(
+			$place->resources + $place->getProducedResources() * $missingUpdatesCount,
+			$place->getMaxResources(),
+		);
+		$place->danger = min(
+			$place->danger + Planet::REPOPDANGER * $missingUpdatesCount,
+			$place->maxDanger,
+		);
+
+		$this->planetRepository->save($place);
+	}
+
+	private function updatePlayerPlanet(Planet $planet, int $missingUpdatesCount): void
+	{
 		$playerBonus = $this->playerBonusManager->getBonusByPlayer($planet->player);
 
 		$secondsPerGameCycle = $this->gameTimeConverter->convertGameCyclesToSeconds(1);
@@ -102,7 +129,7 @@ readonly class PlanetUpdateHandler
 				$planet->levelRefinery,
 				'refiningCoefficient'
 			),
-			$planet->place->coefResources,
+			$planet->coefResources,
 		);
 		$addResources += $this->bonusApplier->apply($addResources, PlayerBonusId::REFINERY_REFINING, $playerBonus);
 

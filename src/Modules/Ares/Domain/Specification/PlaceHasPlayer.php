@@ -2,7 +2,7 @@
 
 namespace App\Modules\Ares\Domain\Specification;
 
-use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Shared\Domain\Specification\Specification;
 
 class PlaceHasPlayer implements Specification
@@ -22,10 +22,10 @@ class PlaceHasPlayer implements Specification
 	}
 
 	/**
-	 * @param Place $candidate
+	 * @param Planet $candidate
 	 */
 	public function isSatisfiedBy($candidate): bool
 	{
-		return null !== $candidate->base?->player;
+		return null !== $candidate?->player;
 	}
 }

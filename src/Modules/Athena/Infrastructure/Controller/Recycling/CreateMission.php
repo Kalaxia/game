@@ -54,8 +54,8 @@ class CreateMission extends AbstractController
 		$destinationPlace = $placeRepository->get($targetId)
 			?? throw $this->createNotFoundException('Il y a un problème avec le lieu de départ ou d\'arrivée. Veuillez contacter un administrateur.');
 
-		$startPlace = $currentPlanet->place;
-		if (!in_array($destinationPlace->typeOfPlace, [PlaceType::GasPlanet, PlaceType::Ruin, PlaceType::GasPocket, PlaceType::Asteroid])) {
+		$startPlace = $currentPlanet;
+		if (!in_array($destinationPlace->getType(), [PlaceType::GasPlanet, PlaceType::Ruin, PlaceType::GasPocket, PlaceType::Asteroid])) {
 			throw new BadRequestHttpException('On ne peut pas recycler ce lieu, petit hacker.');
 		}
 

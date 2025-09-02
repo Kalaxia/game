@@ -2,7 +2,7 @@
 
 namespace App\Modules\Ares\Model;
 
-use App\Modules\Gaia\Domain\Entity\Place;
+use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Zeus\Model\Player;
 
 class LiveReport
@@ -16,7 +16,7 @@ class LiveReport
 	public static Player|null $rPlayerWinner = null;
 	public static Commander|null $attackerCommander = null;
 	public static Commander|null $defenderCommander = null;
-	public static Place|null $rPlace = null;
+	public static Planet|null $rPlace = null;
 	public static int $levelA = 0;
 	public static int $levelD = 0;
 	public static int $experienceA = 0;

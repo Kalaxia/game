@@ -46,12 +46,12 @@ class Move extends AbstractController
 		$place = $placeRepository->get(Uuid::fromString($placeId))
 			?? throw $this->createNotFoundException('Place not found');
 
-		if (!$commander->player->faction->id->equals($place->base?->player?->faction->id)) {
+		if (!$commander->player->faction->id->equals($place->player?->faction->id)) {
 			throw new ConflictHttpException('Vous ne pouvez pas envoyer une flotte sur une planète qui ne vous appartient pas.');
 		}
 		$home = $commander->base;
 
-		$length = $getDistanceBetweenPlaces($home->place, $place);
+		$length = $getDistanceBetweenPlaces($home, $place);
 
 		if (!$commander->isAffected()) {
 			throw new ConflictHttpException('Cet officier est déjà en déplacement.');
@@ -65,7 +65,7 @@ class Move extends AbstractController
 		}
 		$moveFleet(
 			commander: $commander,
-			origin: $home->place,
+			origin: $home,
 			destination: $place,
 			mission: CommanderMission::Move,
 		);

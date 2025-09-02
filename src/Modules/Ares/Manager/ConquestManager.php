@@ -13,7 +13,6 @@ use App\Modules\Ares\Model\LiveReport;
 use App\Modules\Ares\Model\Report;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\ColorResource;
-use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Gaia\Domain\Service\UpdatePlanetPoints;
@@ -75,7 +74,7 @@ readonly class ConquestManager
 		$commanderColor = $commander->player->faction;
 		$playerBonus = $this->playerBonusManager->getBonusByPlayer($commander->player);
 		// conquete
-		if (null !== ($placePlayer = $place->base?->player)) {
+		if (null !== ($placePlayer = $place->player)) {
 			// @TODO Replace with specification
 			if ($placePlayer->faction !== $commander->player->faction
 					&& $placePlayer->level > 3
@@ -125,9 +124,9 @@ readonly class ConquestManager
 				// victoire
 				if (!$commander->isDead()) {
 					if (0 == $nbrBattle) {
-						$this->placeManager->sendNotif($place, Place::CONQUERPLAYERWHITOUTBATTLESUCCESS, $commander, null);
+						$this->placeManager->sendNotif($place, Planet::CONQUERPLAYERWHITOUTBATTLESUCCESS, $commander, null);
 					} else {
-						$this->placeManager->sendNotifForConquest($place, Place::CONQUERPLAYERWHITBATTLESUCCESS, $commander, $reportIds);
+						$this->placeManager->sendNotifForConquest($place, Planet::CONQUERPLAYERWHITBATTLESUCCESS, $commander, $reportIds);
 					}
 					// changer l'appartenance de la base (et de la place)
 					$this->planetManager->changeOwner($placeBase, $commander->player);
@@ -152,11 +151,11 @@ readonly class ConquestManager
 						}
 					}*/
 
-					$this->placeManager->sendNotifForConquest($place, Place::CONQUERPLAYERWHITBATTLEFAIL, $commander, $reportIds);
+					$this->placeManager->sendNotifForConquest($place, Planet::CONQUERPLAYERWHITBATTLEFAIL, $commander, $reportIds);
 				}
 			} else {
 				// si c'est la même couleur
-				if ($place->base->player->faction->identifier === $commander->player->faction->identifier) {
+				if ($place->player->faction->identifier === $commander->player->faction->identifier) {
 					// si c'est une de nos planètes
 					// on tente de se poser
 					$this->commanderManager->uChangeBase($commander);
@@ -168,7 +167,7 @@ readonly class ConquestManager
 						destination: $commander->startPlace,
 						mission: CommanderMission::Back,
 					);
-					$this->placeManager->sendNotif($place, Place::CHANGELOST, $commander);
+					$this->placeManager->sendNotif($place, Planet::CHANGELOST, $commander);
 				}
 			}
 
@@ -212,7 +211,7 @@ readonly class ConquestManager
 				$place->danger = 0;
 				$place->base = $ob;
 
-				$this->placeManager->sendNotif($place, Place::CONQUEREMPTYSSUCCESS, $commander, $report);
+				$this->placeManager->sendNotif($place, Planet::CONQUEREMPTYSSUCCESS, $commander, $report);
 
 				$this->eventDispatcher->dispatch(new PlaceOwnerChangeEvent($place));
 
@@ -226,7 +225,7 @@ readonly class ConquestManager
 				$percentage = (($report->defenderPevAtEnd + 1) / ($report->defenderPevAtBeginning + 1)) * 100;
 				$place->danger = round(($percentage * $place->danger) / 100);
 
-				$this->placeManager->sendNotif($place, Place::CONQUEREMPTYFAIL, $commander);
+				$this->placeManager->sendNotif($place, Planet::CONQUEREMPTYFAIL, $commander);
 			}
 		}
 		$this->entityManager->flush();

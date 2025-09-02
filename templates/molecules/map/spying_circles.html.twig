@@ -3,7 +3,7 @@
 <div id="spying" class="absolute w-full h-full z-[400] left-0 top-0 group-[.sector-only]/map:opacity-0 transition-opacity ease-in duration-500" {% if false == app.request.cookies.get('p' ~ antispy_param, default_map_parameters[antispy_param]) %}style="display:none;"{% endif %}>
 	<svg viewBox="0, 0, {{ map_size }}, {{ map_size }}" xmlns="http://www.w3.org/2000/svg">
 		{% for planet in player_planets %}
-			{% set base_system = planet.place.system %}
+			{% set base_system = planet.system %}
 			{% set spy_radius = get_planet_antispy_radius(planet) %}
 			{% set centerX = base_system.xPosition * galaxy_configuration.scale %}
 			{% set centerY = base_system.yPosition * galaxy_configuration.scale %}

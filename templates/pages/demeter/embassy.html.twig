@@ -19,7 +19,9 @@
 		{% else %}
 			{{ include('molecules/embassy/faction_nav.html.twig') }}
 			{{ include('molecules/embassy/faction_flag.html.twig') }}
-			{{ include('molecules/embassy/faction_government.html.twig') }}
+			{{ include('molecules/embassy/faction_government.html.twig', {
+				faction
+			}) }}
 			{{ include('components/Faction/data/diplomacy/relations.html.twig') }}
 		{% endif %}
 	</twig:ContentContainer>

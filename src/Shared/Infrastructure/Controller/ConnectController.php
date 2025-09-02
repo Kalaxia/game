@@ -90,7 +90,7 @@ class ConnectController extends AbstractController
 		$session->set('playerInfo', new ArrayList());
 
 		// remplissage des paramètres utilisateur
-		$session->get('playerParams')->add('base', $playerPlanets[0]->id);
+		$session->get('playerParams')->add('planet', $playerPlanets[0]->id);
 
 		// création des tableaux de données dans le contrôleur
 

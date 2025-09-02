@@ -43,14 +43,14 @@ class Delete extends AbstractController
 			$notifReceiver = $linkedBase->player;
 			$myBaseName = $proposerBase->name;
 			$otherBaseName = $linkedBase->name;
-			$myBaseId = $proposerBase->place->id;
-			$otherBaseId = $linkedBase->place->id;
+			$myBaseId = $proposerBase->id;
+			$otherBaseId = $linkedBase->id;
 		} elseif ($cr->destinationBase->id->equals($currentBase->id)) {
 			$notifReceiver = $proposerBase->player;
 			$myBaseName = $linkedBase->name;
 			$otherBaseName = $proposerBase->name;
-			$myBaseId = $linkedBase->place->id;
-			$otherBaseId = $proposerBase->place->id;
+			$myBaseId = $linkedBase->id;
+			$otherBaseId = $proposerBase->id;
 		} else {
 			throw new ConflictHttpException('Commercial route does not belong to the current base');
 		}
