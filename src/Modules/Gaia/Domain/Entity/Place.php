@@ -9,6 +9,17 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'galaxy__places')]
+#[ORM\MappedSuperclass]
+#[ORM\InheritanceType('JOINED')]
+#[ORM\DiscriminatorColumn(name: 'type', type: 'smallint', enumType: PlaceType::class, length: 2)]
+#[ORM\DiscriminatorMap([
+	PlaceType::Planet->value => Planet::class,
+	PlaceType::Ruin->value => UninhabitedPlace::class,
+	PlaceType::Asteroid->value => UninhabitedPlace::class,
+	PlaceType::GasPocket->value => UninhabitedPlace::class,
+	PlaceType::GasPlanet->value => UninhabitedPlace::class,
+	PlaceType::Empty->value => Place::class,
+])]
 class Place implements SystemUpdatable
 {
 	public const COEFFMAXRESOURCE = 600;
@@ -58,27 +69,12 @@ class Place implements SystemUpdatable
 		#[ORM\Id]
 		#[ORM\Column(type: 'uuid')]
 		public Uuid        $id,
-		#[ORM\ManyToOne(targetEntity: Planet::class, inversedBy: 'place')]
-		#[ORM\JoinColumn(nullable: true)]
-		public Planet|null $base,
 		#[ORM\ManyToOne(targetEntity: System::class)]
 		public System      $system,
 		#[ORM\Column(type: 'smallint', enumType: PlaceType::class, options: ['unsigned' => true])]
 		public PlaceType   $typeOfPlace,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int         $position,
-		#[ORM\Column(type: 'float', options: ['unsigned' => true])]
-		public float       $population,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
-		public int         $coefResources,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
-		public int $coefHistory,
-		#[ORM\Column(type: 'integer', options: ['unsigned' => true, 'default' => 0])]
-		public int $resources, 						// de la place si $typeOfBase = 0, sinon de la base
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $danger,							// danger actuel de la place (force des flottes rebelles)
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $maxDanger,						// danger max de la place (force des flottes rebelles)
 		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $updatedAt,
 	) {
