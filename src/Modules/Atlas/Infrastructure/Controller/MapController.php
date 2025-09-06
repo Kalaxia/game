@@ -11,6 +11,7 @@ use App\Modules\Ares\Model\Commander;
 use App\Modules\Artemis\Domain\Repository\SpyReportRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\RecyclingMissionRepositoryInterface;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Entity\System;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
@@ -58,7 +59,7 @@ class MapController extends AbstractController
 		if (null !== $defaultPosition['system']) {
 			$system = $defaultPosition['system'];
 			$places = $this->placeRepository->getSystemPlaces($system);
-			$placesIds = array_map(fn (Planet $place) => $place->id, $places);
+			$placesIds = array_map(fn (Place $place) => $place->id, $places);
 
 			$basesCount = $planetManager->countPlayerPlanets($movingCommanders);
 

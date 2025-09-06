@@ -56,6 +56,11 @@ class Loot extends AbstractController
 		// @TODO simplify this hell
 		$place = $placeRepository->get(Uuid::fromString($placeId))
 			?? throw $this->createNotFoundException('Place not found');
+
+		if (!$place instanceof Planet) {
+			throw new BadRequestHttpException('The given place is not a planet, you cannot loot it');
+		}
+
 		$commander = $this->commanderRepository->get($id)
 			?? throw $this->createNotFoundException('Commander not found');
 

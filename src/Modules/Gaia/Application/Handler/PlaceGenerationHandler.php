@@ -10,6 +10,7 @@ use App\Modules\Gaia\Domain\Entity\EmptyPlace;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Entity\UninhabitedPlace;
 use App\Modules\Gaia\Domain\Enum\PlaceType;
+use App\Modules\Gaia\Domain\Enum\PlanetType;
 use App\Modules\Gaia\Domain\Enum\SystemType;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Gaia\Domain\Repository\SystemRepositoryInterface;
@@ -89,10 +90,15 @@ final readonly class PlaceGenerationHandler
 				default => 0,
 			};
 
+			$systemPlanetTypes = $system->typeOfSystem->getPlanetTypeProportions();
 			$place = new Planet(
 				id: Uuid::v4(),
 				system: $system,
 				position: $message->position,
+				planetType: PlanetType::{array_keys($systemPlanetTypes)[($this->getProportion)(
+					$systemPlanetTypes,
+					random_int(1, 100),
+				) - 1]},
 				player: null,
 				name: null,
 				population: $population,
@@ -134,6 +140,7 @@ final readonly class PlaceGenerationHandler
 
 		$this->galaxyGenerationLogger->debug('Place generated successfully', [
 			'type' => $type->name,
+			'planet_type' => $place instanceof Planet ? $place->planetType->name : 'none',
 			'position' => $message->position,
 			'system_id' => $system->id->toRfc4122(),
 			'sector_identifier' => $system->sector->identifier,

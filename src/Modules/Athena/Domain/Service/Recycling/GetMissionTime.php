@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Athena\Domain\Service\Recycling;
 
 use App\Modules\Athena\Model\RecyclingMission;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Shared\Domain\Server\TimeMode;
 use App\Modules\Travel\Domain\Model\TravelType;
@@ -21,7 +22,7 @@ readonly class GetMissionTime
 	) {
 	}
 
-	public function __invoke(Planet $startPlace, Planet $destinationPlace, Player $player)
+	public function __invoke(Place $startPlace, Place $destinationPlace, Player $player)
 	{
 		$travelTime = ($this->calculateTravelTime)($startPlace, $destinationPlace, TravelType::RecyclingShips, $player);
 

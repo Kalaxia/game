@@ -2,7 +2,7 @@
 	<header class="flex items-center gap-x-2">
 		{% if isProfileView %}
 <!--			<img src="{{ asset('build/media/map/place/place1-' ~ planet|base_demography ~ '.png') }}" alt=" {{ planet.name }}" />-->
-			<img class="w-16 h-16" src="{{ asset('images/legacy/planet/Tempered.png') }}" alt="planet" />
+			<twig:PlanetThumbnail :planet="planet" />
 
 			<div>
 				<twig:H2>{{ planet.name }}</twig:H2>

@@ -4,26 +4,25 @@ declare(strict_types=1);
 
 namespace App\Modules\Gaia\Repository;
 
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Domain\Entity\Sector;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\System;
-use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use App\Modules\Zeus\Model\Player;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * @extends DoctrineRepository<Place>
+ */
 class PlaceRepository extends DoctrineRepository implements PlaceRepositoryInterface
 {
 	public function __construct(ManagerRegistry $registry)
 	{
-		parent::__construct($registry, Planet::class);
+		parent::__construct($registry, Place::class);
 	}
 
-	public function get(Uuid $id): Planet|null
+	public function get(Uuid $id): Place|null
 	{
 		return $this->find($id);
 	}

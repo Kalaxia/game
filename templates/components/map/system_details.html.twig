@@ -42,14 +42,14 @@
 				<div class="grid grid-rows-3 px-6 py-4"
 					 data-target="{{ position }}">
 					<div class="flex justify-center">
-						{% if place.player is not null %}
+						{% if place.player is defined and place.player is not null %}
 							<twig:Avatar :player="place.player" class="!w-12 !h-12 rounded-full border-2 border-medium{{ place.player.faction.identifier }}" />
 						{% endif %}
 					</div>
 
 					<div class="flex justify-center items-center">
 						{% if place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
-							<img class="w-16 h-16" src="{{ asset('images/legacy/planet/Tempered.png') }}" alt="planet" />
+							<twig:PlanetThumbnail :planet="place" />
 						{% else %}
 							{% if place.resources > 10000000 %}
 								{% set size = 3 %}

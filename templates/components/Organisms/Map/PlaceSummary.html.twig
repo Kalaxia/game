@@ -70,19 +70,19 @@
 			<p class="flex items-center justify-between py-1">
 				<span class="text-sm font-medium">Ressources</span>
 				<span class="value">
-					{{ ((place.resources * place.coefResources)/100)|number }}
+					{{ ((place.resources * place.resources)/100)|number }}
 				</span>
 			</p>
 			<p class="flex items-center justify-between py-1">
 				<span class="text-sm font-medium">Débris</span>
 				<span class="value">
-					{{ ((place.resources * place.coefHistory)/100)|number }}
+					{{ ((place.resources * place.history)/100)|number }}
 				</span>
 			</p>
 			<p class="flex items-center justify-between py-1">
 				<span class="text-sm font-medium">Gaz noble</span>
 				<span class="value">
-					{{ ((place.resources * place.population)/100)|number }}
+					{{ ((place.resources * place.credits)/100)|number }}
 				</span>
 			</p>
 		</div>

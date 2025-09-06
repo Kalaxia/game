@@ -39,9 +39,8 @@ readonly class LootManager
 	public function loot(Commander $commander): void
 	{
 		$place = $commander->destinationPlace;
-		$placeBase = $place->base;
-		$placePlayer = $placeBase?->player;
-		$placeCommanders = null !== $placeBase ? $this->commanderRepository->getPlanetCommanders($placeBase) : [];
+		$placePlayer = $place->player;
+		$placeCommanders = null !== $place ? $this->commanderRepository->getPlanetCommanders($place) : [];
 		// @WARNING possibly not the right property to use
 		$commanderPlace = $commander->startPlace;
 		$commanderPlayer = $commander->player;
@@ -110,7 +109,7 @@ readonly class LootManager
 					// victoire
 					if (!$commander->isDead()) {
 						// piller la planète
-						$this->lootAPlayerPlace($commander, $playerBonus, $placeBase);
+						$this->lootAPlayerPlace($commander, $playerBonus, $place);
 						($this->moveFleet)(
 							commander: $commander,
 							origin: $place,
@@ -135,7 +134,7 @@ readonly class LootManager
 						$this->placeManager->sendNotif($place, Planet::LOOTPLAYERWHITBATTLEFAIL, $commander, $report);
 					}
 				} else {
-					$this->lootAPlayerPlace($commander, $playerBonus, $placeBase);
+					$this->lootAPlayerPlace($commander, $playerBonus, $place);
 					($this->moveFleet)(
 						commander: $commander,
 						origin: $place,

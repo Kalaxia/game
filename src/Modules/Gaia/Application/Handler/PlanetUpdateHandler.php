@@ -63,17 +63,17 @@ readonly class PlanetUpdateHandler
 	private function updateNpcPlanet(Planet $planet, int $missingUpdatesCount): void
 	{
 		// update time
-		$place->updatedAt = $this->clock->now();
-		$place->resources = min(
-			$place->resources + $place->getProducedResources() * $missingUpdatesCount,
-			$place->getMaxResources(),
+		$planet->updatedAt = $this->clock->now();
+		$planet->resourcesStorage = min(
+			$planet->resourcesStorage + $planet->getProducedResources() * $missingUpdatesCount,
+			$planet->getMaxResources(),
 		);
-		$place->danger = min(
-			$place->danger + Planet::REPOPDANGER * $missingUpdatesCount,
-			$place->maxDanger,
+		$planet->danger = min(
+			$planet->danger + Planet::REPOPDANGER * $missingUpdatesCount,
+			$planet->maxDanger,
 		);
 
-		$this->planetRepository->save($place);
+		$this->planetRepository->save($planet);
 	}
 
 	private function updatePlayerPlanet(Planet $planet, int $missingUpdatesCount): void

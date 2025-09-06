@@ -8,7 +8,7 @@ use App\Classes\Library\DateTimeConverter;
 use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Message\CommanderTravelMessage;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -20,7 +20,7 @@ readonly class MoveFleet
 	) {
 	}
 
-	public function __invoke(Commander $commander, Planet $origin, Planet $destination, CommanderMission $mission): void
+	public function __invoke(Commander $commander, Place $origin, Place $destination, CommanderMission $mission): void
 	{
 		$commander->destinationPlace = $destination;
 		$commander->startPlace = $origin;

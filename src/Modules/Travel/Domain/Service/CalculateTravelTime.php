@@ -7,7 +7,7 @@ namespace App\Modules\Travel\Domain\Service;
 use App\Modules\Ares\Application\Handler\GetFleetSpeed;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Shared\Domain\Server\TimeMode;
 use App\Modules\Travel\Domain\Model\TravelType;
 use App\Modules\Zeus\Manager\PlayerBonusManager;
@@ -25,7 +25,7 @@ readonly class CalculateTravelTime
 	) {
 	}
 
-	public function __invoke(Planet $from, Planet $to, TravelType $travelType, Player|null $player = null): int
+	public function __invoke(Place $from, Place $to, TravelType $travelType, Player|null $player = null): int
 	{
 		return match ($this->timeMode) {
 			TimeMode::Fast => match ($travelType) {
@@ -39,14 +39,14 @@ readonly class CalculateTravelTime
 		};
 	}
 
-	private function getTimeTravelInSystem(Planet $from, Planet $to): int
+	private function getTimeTravelInSystem(Place $from, Place $to): int
 	{
 		$distance = abs($from->position - $to->position);
 
 		return intval(round((Commander::COEFFMOVEINSYSTEM * $distance) * ((40 - $distance) / 50) + 180));
 	}
 
-	private function getTimeTravelOutOfSystem(Planet $from, Planet $to, Player|null $player): int
+	private function getTimeTravelOutOfSystem(Place $from, Place $to, Player|null $player): int
 	{
 		$playerBonus = null !== $player ? $this->playerBonusManager->getBonusByPlayer($player) : null;
 		$distance = ($this->getDistanceBetweenPlaces)($from, $to);

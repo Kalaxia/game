@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Gaia\Ui\Twig\Components\Atoms;
 
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Domain\Entity\Place;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent(
@@ -13,5 +13,5 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 )]
 class PlaceName
 {
-	public Planet $place;
+	public Place $place;
 }

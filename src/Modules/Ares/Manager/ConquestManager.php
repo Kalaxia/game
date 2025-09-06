@@ -81,8 +81,7 @@ readonly class ConquestManager
 					&& Color::ALLY != $commanderColor->relations[$placePlayer->faction->identifier]) {
 				$reportIds = [];
 				$reportArray = [];
-				$placeBase = $place->base;
-				$baseCommanders = $this->commanderRepository->getPlanetCommanders($placeBase);
+				$baseCommanders = $this->commanderRepository->getPlanetCommanders($place);
 
 				for ($nbrBattle = 0; $nbrBattle < count($baseCommanders); ++$nbrBattle) {
 					if (!$baseCommanders[$nbrBattle]->isAffected()) {
@@ -129,9 +128,9 @@ readonly class ConquestManager
 						$this->placeManager->sendNotifForConquest($place, Planet::CONQUERPLAYERWHITBATTLESUCCESS, $commander, $reportIds);
 					}
 					// changer l'appartenance de la base (et de la place)
-					$this->planetManager->changeOwner($placeBase, $commander->player);
+					$this->planetManager->changeOwner($place, $commander->player);
 
-					$commander->base = $placeBase;
+					$commander->base = $place;
 
 					$this->commanderManager->endTravel($commander, Commander::AFFECTED);
 					$commander->line = 2;
@@ -139,7 +138,7 @@ readonly class ConquestManager
 					$this->eventDispatcher->dispatch(new PlaceOwnerChangeEvent($place));
 
 					// PATCH DEGUEU POUR LES MUTLIS-COMBATS
-					$this->notificationManager->patchForMultiCombats($commander->player, $placeBase->player, $commander->getArrivalDate());
+					$this->notificationManager->patchForMultiCombats($commander->player, $place->player, $commander->getArrivalDate());
 					// défaite
 				} else {
 					// TODO check if these instructions still have use
@@ -184,24 +183,18 @@ readonly class ConquestManager
 			if (!$commander->isDead()) {
 				// créer une base
 				// TODO factorize in a service
-				$ob = new Planet(
-					id: Uuid::v4(),
-					place: $place,
-					player: $commander->player,
-					name: 'colonie',
-					// TODO transform into constant
-					iSchool: 500,
-					iAntiSpy: 500,
-					resourcesStorage: 2000,
-					createdAt: new \DateTimeImmutable(),
-					updatedAt: new \DateTimeImmutable(),
-				);
-				$this->updatePlanetPoints->updatePoints($ob);
+				$place->player = $commander->player;
+				$place->name = 'colonie';
+				$place->iSchool = 500;
+				$place->iAntiSpy = 500;
+				$place->resourcesStorage = 2000;
 
-				$this->planetRepository->save($ob);
+				$this->updatePlanetPoints->updatePoints($place);
+
+				$this->planetRepository->save($place);
 
 				// attibuer le commander à la place
-				$commander->base = $ob;
+				$commander->base = $place;
 				$this->commanderManager->endTravel($commander, Commander::AFFECTED);
 				$commander->line = 2;
 
@@ -209,7 +202,6 @@ readonly class ConquestManager
 				$report = $this->commanderManager->createReport($place);
 
 				$place->danger = 0;
-				$place->base = $ob;
 
 				$this->placeManager->sendNotif($place, Planet::CONQUEREMPTYSSUCCESS, $commander, $report);
 
@@ -223,7 +215,7 @@ readonly class ConquestManager
 				// mise à jour du danger
 				// TODO Factorize in service
 				$percentage = (($report->defenderPevAtEnd + 1) / ($report->defenderPevAtBeginning + 1)) * 100;
-				$place->danger = round(($percentage * $place->danger) / 100);
+				$place->danger = intval(round(($percentage * $place->danger) / 100));
 
 				$this->placeManager->sendNotif($place, Planet::CONQUEREMPTYFAIL, $commander);
 			}

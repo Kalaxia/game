@@ -16,7 +16,7 @@ class Sector
 		public Uuid $id,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int $identifier,
-		#[ORM\ManyToOne(targetEntity: Color::class, inversedBy: 'children')]
+		#[ORM\ManyToOne(targetEntity: Color::class)]
 		public Color|null $faction,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int $xPosition,

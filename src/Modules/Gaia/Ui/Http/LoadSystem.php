@@ -8,6 +8,7 @@ use App\Modules\Ares\Manager\ConquestManager;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Artemis\Domain\Repository\SpyReportRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\RecyclingMissionRepositoryInterface;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Gaia\Domain\Repository\SystemRepositoryInterface;
@@ -45,7 +46,7 @@ class LoadSystem extends AbstractController
 
 		$movingCommanders = $commanderRepository->getPlayerCommanders($currentPlayer, [Commander::MOVING]);
 
-		$placesIds = array_map(fn (Planet $place) => $place->id, $places);
+		$placesIds = array_map(fn (Place $place) => $place->id, $places);
 
 		$planetsCount = $planetManager->countPlayerPlanets($movingCommanders);
 

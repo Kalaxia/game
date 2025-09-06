@@ -207,9 +207,9 @@ readonly class CommanderManager implements SchedulerInterface
 		$storage = $this->commanderArmyHandler->getPevToLoot($commander) * Commander::COEFFLOOT;
 		$storage += intval(round($storage * ((2 * $bonus) / 100)));
 
-		$resourcesLooted = ($storage > $place->resources) ? $place->resources : $storage;
+		$resourcesLooted = ($storage > $place->resourcesStorage) ? $place->resourcesStorage : $storage;
 
-		$place->resources -= $resourcesLooted;
+		$place->resourcesStorage -= $resourcesLooted;
 		$commander->resources = $resourcesLooted;
 
 		LiveReport::$resources = $resourcesLooted;

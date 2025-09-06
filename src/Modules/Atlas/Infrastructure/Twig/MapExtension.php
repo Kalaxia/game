@@ -13,6 +13,7 @@ use App\Modules\Athena\Domain\Service\Recycling\GetMissionTime;
 use App\Modules\Athena\Domain\Specification\CanPlanetTradeWithPlace;
 use App\Modules\Athena\Model\CommercialRoute;
 use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Entity\System;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;
@@ -51,7 +52,7 @@ class MapExtension extends AbstractExtension
 	{
 		return [
 			new TwigFunction('get_planet_antispy_radius', fn (Planet $base) => $this->antiSpyHandler->getAntiSpyRadius($base->antiSpyAverage)),
-			new TwigFunction('get_travel_time', function (Planet $defaultBase, Planet $place) {
+			new TwigFunction('get_travel_time', function (Place $defaultBase, Place $place) {
 				$departureDate = new \DateTimeImmutable();
 				$arrivalDate = ($this->getTravelDuration)(
 					origin: $defaultBase,
@@ -62,7 +63,7 @@ class MapExtension extends AbstractExtension
 
 				return $this->durationHandler->getDiff($departureDate, $arrivalDate);
 			}),
-			new TwigFunction('get_place_distance', fn (Planet $defaultBase, Planet $place) => ($this->getDistanceBetweenPlaces)(
+			new TwigFunction('get_place_distance', fn (Place $defaultBase, Place $place) => ($this->getDistanceBetweenPlaces)(
 				$defaultBase,
 				$place,
 			)),
@@ -91,12 +92,12 @@ class MapExtension extends AbstractExtension
 
 				return $specification->isSatisfiedBy($place);
 			}),
-			new TwigFunction('can_recycle', function (Player $player, Planet $place) {
+			new TwigFunction('can_recycle', function (Player $player, Place $place) {
 				$specification = new CanRecycle($player);
 
 				return $specification->isSatisfiedBy($place);
 			}),
-			new TwigFunction('get_recycling_mission_time', fn (Planet $planet, Planet $place) => ($this->getMissionTime)($planet, $place, $this->currentPlayerRegistry->get())),
+			new TwigFunction('get_recycling_mission_time', fn (Planet $planet, Place $place) => ($this->getMissionTime)($planet, $place, $this->currentPlayerRegistry->get())),
 		];
 	}
 

@@ -2,13 +2,14 @@
 
 namespace App\Modules\Ares\Domain\Specification\Player;
 
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Entity\Planet;
 use App\Modules\Gaia\Domain\Enum\PlaceType;
 
 class CanPlayerAttackPlace extends PlayerSpecification
 {
 	/**
-	 * @param Planet $candidate
+	 * @param Place $candidate
 	 */
 	public function isSatisfiedBy($candidate): bool
 	{

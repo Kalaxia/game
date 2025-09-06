@@ -461,7 +461,7 @@ galaxy:
             !php/enum App\Modules\Gaia\Domain\Enum\SystemType::BlueGiant->value:
                 name: 'Géante Bleue'
             !php/enum App\Modules\Gaia\Domain\Enum\SystemType::YellowDwarf->value:
-                name: 'Naine Yellow'
+                name: 'Naine Jaune'
             !php/enum App\Modules\Gaia\Domain\Enum\SystemType::RedDwarf->value:
                 name: 'Naine Rouge'
     places:

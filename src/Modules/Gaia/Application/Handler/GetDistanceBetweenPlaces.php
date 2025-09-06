@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Gaia\Application\Handler;
 
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Domain\Entity\Place;
 
 readonly class GetDistanceBetweenPlaces
 {
-	public function __invoke(Planet $from, Planet $to): int
+	public function __invoke(Place $from, Place $to): int
 	{
 		return $this->getDistance(
 			$from->system->xPosition,

@@ -4,6 +4,7 @@ namespace App\Modules\Gaia\Domain\Entity;
 
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Gaia\Domain\Enum\PlaceType;
+use App\Modules\Gaia\Domain\Enum\PlanetType;
 use App\Modules\Gaia\Resource\PlanetResource;
 use App\Modules\Shared\Domain\Model\SystemUpdatable;
 use App\Modules\Zeus\Model\Player;
@@ -37,6 +38,8 @@ class Planet extends Place implements SystemUpdatable, \JsonSerializable
 		public System      $system,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int         $position,
+		#[ORM\Column(type: 'string', enumType: PlanetType::class, length: 32)]
+		public PlanetType $planetType,
 		#[ORM\ManyToOne(targetEntity: Player::class)]
 		#[ORM\JoinColumn(nullable: true)]
 		public Player|null $player = null,

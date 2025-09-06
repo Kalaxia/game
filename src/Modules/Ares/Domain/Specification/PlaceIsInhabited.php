@@ -2,7 +2,7 @@
 
 namespace App\Modules\Ares\Domain\Specification;
 
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Gaia\Domain\Entity\Place;
 use App\Modules\Gaia\Domain\Enum\PlaceType;
 use App\Shared\Domain\Specification\Specification;
 
@@ -23,7 +23,7 @@ class PlaceIsInhabited implements Specification
 	}
 
 	/**
-	 * @param Planet $candidate
+	 * @param Place $candidate
 	 */
 	public function isSatisfiedBy($candidate): bool
 	{
