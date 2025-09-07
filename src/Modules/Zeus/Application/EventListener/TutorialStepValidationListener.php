@@ -10,7 +10,7 @@ use App\Modules\Ares\Domain\Event\Fleet\SquadronUpdateEvent;
 use App\Modules\Artemis\Domain\Event\SpyEvent;
 use App\Modules\Athena\Domain\Event\NewBuildingQueueEvent;
 use App\Modules\Athena\Domain\Event\NewShipQueueEvent;
-use App\Modules\Gaia\Resource\PlanetResource;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Promethee\Domain\Event\NewTechnologyQueueEvent;
 use App\Modules\Zeus\Domain\Event\UniversityInvestmentsUpdateEvent;
 use App\Modules\Zeus\Helper\TutorialHelper;

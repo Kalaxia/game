@@ -4,7 +4,7 @@ namespace App\Modules\Athena\Domain\Repository;
 
 use App\Modules\Athena\Model\CommercialRoute;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\DBAL\Exception;

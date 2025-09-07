@@ -3,7 +3,7 @@
 namespace App\Modules\Zeus\Infrastructure\Controller;
 
 use App\Modules\Athena\Manager\CommercialRouteManager;
-use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

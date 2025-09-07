@@ -3,10 +3,10 @@
 namespace App\Tests\Shared\Handler;
 
 use App\Modules\Athena\Model\BuildingQueue;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Domain\Entity\System;
-use App\Modules\Gaia\Domain\Enum\PlaceType;
-use App\Modules\Gaia\Resource\PlanetResource;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\System;
+use App\Modules\Galaxy\Domain\Enum\PlaceType;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;
 use App\Shared\Domain\Model\DurationInterface;

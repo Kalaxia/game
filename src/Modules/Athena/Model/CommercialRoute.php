@@ -2,7 +2,7 @@
 
 namespace App\Modules\Athena\Model;
 
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use Symfony\Component\Uid\Uuid;
 
 class CommercialRoute

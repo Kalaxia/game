@@ -3,7 +3,7 @@
 namespace App\Modules\Zeus\Infrastructure\Twig;
 
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
-use App\Modules\Gaia\Manager\PlanetManager;
+use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Promethee\Helper\ResearchHelper;
 use App\Modules\Zeus\Application\Handler\Bonus\BonusApplierInterface;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;

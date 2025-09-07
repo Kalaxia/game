@@ -2,7 +2,7 @@
 
 namespace App\Modules\Ares\Model;
 
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Zeus\Model\Player;
 
 class LiveReport

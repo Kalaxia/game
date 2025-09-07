@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Athena\Domain\Service\Recycling;
 
 use App\Modules\Athena\Model\RecyclingMission;
-use App\Modules\Gaia\Domain\Entity\Place;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Domain\Server\TimeMode;
 use App\Modules\Travel\Domain\Model\TravelType;
 use App\Modules\Travel\Domain\Service\CalculateTravelTime;

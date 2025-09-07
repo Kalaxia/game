@@ -1,5 +1,5 @@
 <h5 class="text-base font-bold" style="font-variant-caps: all-small-caps">
-	{% if place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
+	{% if place.type == enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Planet %}
 		{% if place.player is not null %}
 			{{ place.name }}
 		{% else %}

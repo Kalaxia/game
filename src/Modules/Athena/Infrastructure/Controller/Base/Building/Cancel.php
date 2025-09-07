@@ -6,9 +6,9 @@ namespace App\Modules\Athena\Infrastructure\Controller\Base\Building;
 
 use App\Modules\Athena\Domain\Repository\BuildingQueueRepositoryInterface;
 use App\Modules\Athena\Manager\BuildingQueueManager;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Helper\PlanetHelper;
-use App\Modules\Gaia\Manager\PlanetManager;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Helper\PlanetHelper;
+use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;
 use Doctrine\ORM\EntityManagerInterface;

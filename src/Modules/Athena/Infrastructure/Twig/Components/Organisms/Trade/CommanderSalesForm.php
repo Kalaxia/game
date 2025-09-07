@@ -6,7 +6,7 @@ namespace App\Modules\Athena\Infrastructure\Twig\Components\Organisms\Trade;
 
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Gaia\Application\Registry\CurrentPlayerPlanetsRegistry;
+use App\Modules\Galaxy\Application\Registry\CurrentPlayerPlanetsRegistry;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent(

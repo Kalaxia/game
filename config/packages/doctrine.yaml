@@ -37,11 +37,11 @@ doctrine:
                 type: 'xml'
                 dir: '%kernel.project_dir%/config/doctrine/demeter'
                 prefix: 'App\Modules\Demeter\Model'
-            Gaia:
+            Galaxy:
                 is_bundle: false
                 type: 'attribute'
-                dir: '%kernel.project_dir%/src/Modules/Gaia/Domain/Entity'
-                prefix: 'App\Modules\Gaia\Domain\Entity'
+                dir: '%kernel.project_dir%/src/Modules/Galaxy/Domain/Entity'
+                prefix: 'App\Modules\Galaxy\Domain\Entity'
             Hephaistos:
                 is_bundle: false
                 type: 'xml'

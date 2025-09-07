@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Athena\Domain\Service\Base\Building;
 
-use App\Modules\Gaia\Helper\PlanetHelper;
+use App\Modules\Galaxy\Helper\PlanetHelper;
 
 readonly class BuildingDataHandler
 {

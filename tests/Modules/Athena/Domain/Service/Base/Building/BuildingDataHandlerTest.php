@@ -3,7 +3,7 @@
 namespace App\Tests\Modules\Athena\Domain\Service\Base\Building;
 
 use App\Modules\Athena\Domain\Service\Base\Building\BuildingDataHandler;
-use App\Modules\Gaia\Resource\PlanetResource;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

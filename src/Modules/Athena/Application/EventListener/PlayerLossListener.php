@@ -2,8 +2,8 @@
 
 namespace App\Modules\Athena\Application\EventListener;
 
-use App\Modules\Gaia\Domain\Event\PlanetOwnerChangeEvent;
-use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
+use App\Modules\Galaxy\Domain\Event\PlanetOwnerChangeEvent;
+use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Zeus\Manager\PlayerManager;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 

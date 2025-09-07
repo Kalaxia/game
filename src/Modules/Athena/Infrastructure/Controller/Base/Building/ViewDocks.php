@@ -8,7 +8,7 @@ use App\Modules\Athena\Domain\Service\Base\Ship\CountMaxShipQueues;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountMaxStorableShipPoints;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountQueuedShipPoints;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountStoredShipPoints;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
 use App\Modules\Zeus\Model\Player;

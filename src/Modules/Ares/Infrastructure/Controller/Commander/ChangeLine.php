@@ -5,7 +5,7 @@ namespace App\Modules\Ares\Infrastructure\Controller\Commander;
 use App\Modules\Ares\Domain\Event\Commander\LineChangeEvent;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Manager\CommanderManager;
-use App\Modules\Gaia\Resource\PlaceResource;
+use App\Modules\Galaxy\Resource\PlaceResource;
 use App\Modules\Zeus\Model\Player;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

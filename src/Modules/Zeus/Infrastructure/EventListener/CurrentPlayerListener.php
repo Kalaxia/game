@@ -2,8 +2,8 @@
 
 namespace App\Modules\Zeus\Infrastructure\EventListener;
 
-use App\Modules\Gaia\Application\Registry\CurrentPlayerPlanetsRegistry;
-use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
+use App\Modules\Galaxy\Application\Registry\CurrentPlayerPlanetsRegistry;
+use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerRegistry;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;

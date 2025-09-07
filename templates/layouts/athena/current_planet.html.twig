@@ -8,26 +8,26 @@
 				route="generator"
 				:isActive="app.request.get('_route') == 'generator'"
 				picto="build/media/orbitalbase/generator.png"
-				:label="get_building_info(constant('App\\Modules\\Gaia\\Resource\\PlanetResource::GENERATOR'), 'frenchName')"
+				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::GENERATOR'), 'frenchName')"
 				:badgeNumber="current_planet.levelGenerator"/>
 		{% endif %}
 		{% if current_planet.levelDock1 > 0 %}
 			<twig:SidebarItem
 				route="docks"
-				:params="{ dockType: constant('App\\Modules\\Gaia\\Domain\\Entity\\Planet::DOCK_TYPE_MANUFACTURE')}"
+				:params="{ dockType: constant('App\\Modules\\Galaxy\\Domain\\Entity\\Planet::DOCK_TYPE_MANUFACTURE')}"
 				:isActive="app.request.get('_route') == 'dock1'"
 				picto="build/media/orbitalbase/dock1.png"
-				:label="get_building_info(constant('App\\Modules\\Gaia\\Resource\\PlanetResource::DOCK1'), 'frenchName') "
+				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::DOCK1'), 'frenchName') "
 				:badgeNumber="current_planet.levelDock1" />
 		{% endif %}
 
 		{% if current_planet.levelDock2 > 0 %}
 			<twig:SidebarItem
 				route="docks"
-				:params="{dockType: constant('App\\Modules\\Gaia\\Domain\\Entity\\Planet::DOCK_TYPE_SHIPYARD')}"
+				:params="{dockType: constant('App\\Modules\\Galaxy\\Domain\\Entity\\Planet::DOCK_TYPE_SHIPYARD')}"
 				:isActive="app.request.get('_route') == 'dock2'"
 				picto="build/media/orbitalbase/dock2.png"
-				:label="get_building_info(constant('App\\Modules\\Gaia\\Resource\\PlanetResource::DOCK2'), 'frenchName')"
+				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::DOCK2'), 'frenchName')"
 				:badgeNumber="current_planet.levelDock2" />
 		{% endif %}
 
@@ -36,7 +36,7 @@
 				route="technosphere"
 				:isActive="app.request.get('_route') == 'technosphere'"
 				picto="build/media/orbitalbase/technosphere.png"
-				:label="get_building_info(constant('App\\Modules\\Gaia\\Resource\\PlanetResource::TECHNOSPHERE'), 'frenchName')"
+				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::TECHNOSPHERE'), 'frenchName')"
 				:badgeNumber="current_planet.levelTechnosphere" />
 		{% endif %}
 
@@ -45,7 +45,7 @@
 				route="trade_market"
 				:isActive="app.request.get('_route') == 'trade_market'"
 				picto="build/media/orbitalbase/commercialplateforme.png"
-				:label="get_building_info(constant('App\\Modules\\Gaia\\Resource\\PlanetResource::COMMERCIAL_PLATEFORME'), 'frenchName')"
+				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::COMMERCIAL_PLATEFORME'), 'frenchName')"
 				:badgeNumber="current_planet.levelCommercialPlateforme" />
 		{% endif %}
 
@@ -54,7 +54,7 @@
 				route="spatioport"
 				:isActive="app.request.get('_route') == 'spatioport'"
 				picto="build/media/orbitalbase/spatioport.png"
-				:label="get_building_info(constant('App\\Modules\\Gaia\\Resource\\PlanetResource::SPATIOPORT'), 'frenchName')"
+				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::SPATIOPORT'), 'frenchName')"
 				:badgeNumber="current_planet.levelSpatioport" />
 		{% endif %}
 
@@ -63,7 +63,7 @@
 				route="recycling"
 				:isActive="app.request.get('_route') == 'recycling'"
 				picto="build/media/orbitalbase/recycling.png"
-				:label="get_building_info(constant('App\\Modules\\Gaia\\Resource\\PlanetResource::RECYCLING'), 'frenchName')"
+				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::RECYCLING'), 'frenchName')"
 				:badgeNumber="current_planet.levelRecycling" />
 		{% endif %}
 
@@ -72,7 +72,7 @@
 				route="refinery"
 				:isActive="app.request.get('_route') == 'refinery'"
 				picto="build/media/orbitalbase/refinery.png"
-				:label="get_building_info(constant('App\\Modules\\Gaia\\Resource\\PlanetResource::REFINERY'), 'frenchName')"
+				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::REFINERY'), 'frenchName')"
 				:badgeNumber="current_planet.levelRefinery" />
 		{% endif %}
 
@@ -81,7 +81,7 @@
 				route="storage"
 				:isActive="app.request.get('_route') == 'storage'"
 				picto="build/media/orbitalbase/storage.png"
-				:label="get_building_info(constant('App\\Modules\\Gaia\\Resource\\PlanetResource::STORAGE'), 'frenchName')"
+				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::STORAGE'), 'frenchName')"
 				:badgeNumber="current_planet.levelStorage" />
 		{% endif %}
 

@@ -6,7 +6,7 @@
 			<header>
 				{#<img src="{{ asset('build/media/orbitalbase/refinery.png') }}" alt="" />#}
 				<twig:H2>
-					{{ get_building_info(constant('App\\Modules\\Gaia\\Resource\\PlanetResource::REFINERY'), 'frenchName') }}
+					{{ get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::REFINERY'), 'frenchName') }}
 				</twig:H2>
 				<twig:H5>Niveau {{ current_planet.levelRefinery }}</twig:H5>
 			</header>
@@ -57,7 +57,7 @@
 			</header>
 			<section>
 				<p class="text-sm">
-					{{ get_building_info(constant('App\\Modules\\Gaia\\Resource\\PlanetResource::REFINERY'), 'description')|raw }}
+					{{ get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::REFINERY'), 'description')|raw }}
 				</p>
 			</section>
 		</div>

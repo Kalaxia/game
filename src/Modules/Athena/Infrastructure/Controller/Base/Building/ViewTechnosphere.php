@@ -3,9 +3,9 @@
 namespace App\Modules\Athena\Infrastructure\Controller\Base\Building;
 
 use App\Classes\Library\Game;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Helper\PlanetHelper;
-use App\Modules\Gaia\Resource\PlanetResource;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Helper\PlanetHelper;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Promethee\Domain\Repository\ResearchRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\TechnologyQueueRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;

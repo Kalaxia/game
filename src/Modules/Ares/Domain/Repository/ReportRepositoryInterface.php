@@ -3,7 +3,7 @@
 namespace App\Modules\Ares\Domain\Repository;
 
 use App\Modules\Ares\Model\Report;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Component\Uid\Uuid;

@@ -6,7 +6,7 @@ use App\Modules\Ares\Domain\Event\Commander\AffectationEvent;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Manager\CommanderManager;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Gaia\Resource\PlaceResource;
+use App\Modules\Galaxy\Resource\PlaceResource;
 use App\Modules\Zeus\Model\Player;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

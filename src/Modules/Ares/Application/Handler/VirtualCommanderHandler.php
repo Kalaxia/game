@@ -4,8 +4,8 @@ namespace App\Modules\Ares\Application\Handler;
 
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\Squadron;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Resource\SquadronResource;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Resource\SquadronResource;
 use Symfony\Component\Uid\Uuid;
 
 readonly class VirtualCommanderHandler

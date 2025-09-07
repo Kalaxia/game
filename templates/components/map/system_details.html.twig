@@ -48,7 +48,7 @@
 					</div>
 
 					<div class="flex justify-center items-center">
-						{% if place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
+						{% if place.type == enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Planet %}
 							<twig:PlanetThumbnail :planet="place" />
 						{% else %}
 							{% if place.resources > 10000000 %}

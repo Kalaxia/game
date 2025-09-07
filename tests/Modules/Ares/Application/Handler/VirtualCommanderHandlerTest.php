@@ -4,10 +4,10 @@ namespace App\Tests\Modules\Ares\Application\Handler;
 
 use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Application\Handler\VirtualCommanderHandler;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Domain\Entity\Sector;
-use App\Modules\Gaia\Domain\Entity\System;
-use App\Modules\Gaia\Domain\Enum\PlaceType;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Sector;
+use App\Modules\Galaxy\Domain\Entity\System;
+use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Uid\Uuid;
 

@@ -3,8 +3,8 @@
 namespace App\Modules\Athena\Infrastructure\Controller\Ship;
 
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Manager\PlanetManager;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

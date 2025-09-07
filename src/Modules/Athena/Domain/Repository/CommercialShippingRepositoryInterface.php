@@ -4,7 +4,7 @@ namespace App\Modules\Athena\Domain\Repository;
 
 use App\Modules\Athena\Model\CommercialShipping;
 use App\Modules\Athena\Model\Transaction;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use Symfony\Component\Uid\Uuid;
 

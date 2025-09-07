@@ -105,7 +105,7 @@
 				{% endfor %}
 
 				{% if planet|base_max_dock1_ship_queues > dock1ShipQueues|length %}
-					<a href="{{ path('switchplanet', {'planetId': planet.id, 'page': 'docks', 'dockType': constant('App\\Modules\\Gaia\\Domain\\Entity\\Planet::DOCK_TYPE_MANUFACTURE')}) }}" class="item link">
+					<a href="{{ path('switchplanet', {'planetId': planet.id, 'page': 'docks', 'dockType': constant('App\\Modules\\Galaxy\\Domain\\Entity\\Planet::DOCK_TYPE_MANUFACTURE')}) }}" class="item link">
 						Lancer la production
 					</a>
 				{% endif %}
@@ -148,7 +148,7 @@
 					</div>
 					{% endfor %}
 					{% if planet|base_max_dock2_ship_queues > dock2ShipQueues|length %}
-						<a href="{{ path('switchplanet', {'planetId': planet.id, 'page': 'docks', 'dockType': constant('App\\Modules\\Gaia\\Domain\\Entity\\Planet::DOCK_TYPE_SHIPYARD')}) }}" class="item link">
+						<a href="{{ path('switchplanet', {'planetId': planet.id, 'page': 'docks', 'dockType': constant('App\\Modules\\Galaxy\\Domain\\Entity\\Planet::DOCK_TYPE_SHIPYARD')}) }}" class="item link">
 							Lancer la production
 						</a>
 					{% endif %}

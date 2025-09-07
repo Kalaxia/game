@@ -11,7 +11,7 @@ use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\ColorResource;
-use App\Modules\Gaia\Helper\GalaxyGenerator;
+use App\Modules\Galaxy\Helper\GalaxyGenerator;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Hermes\Domain\Repository\ConversationUserRepositoryInterface;
 use App\Modules\Hermes\Model\Conversation;
@@ -87,7 +87,7 @@ class PopulateDatabase extends Command
 		}
 
 		// --------------------------------------------------------------------------------------------
-		$output->writeln('Ajout du Joueur Gaia');
+		$output->writeln('Ajout du Joueur Galaxy');
 
 		$p = new Player();
 		$p->status = Player::STANDARD;

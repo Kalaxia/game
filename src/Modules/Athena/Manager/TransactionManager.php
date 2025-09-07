@@ -6,7 +6,7 @@ use App\Modules\Athena\Domain\Repository\CommercialTaxRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Transaction\CalculateRate;
 use App\Modules\Athena\Model\Transaction;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Application\PercentageApplier;
 use App\Modules\Travel\Domain\Model\TravelType;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;

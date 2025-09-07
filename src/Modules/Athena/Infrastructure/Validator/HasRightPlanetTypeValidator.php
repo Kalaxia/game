@@ -3,8 +3,8 @@
 namespace App\Modules\Athena\Infrastructure\Validator;
 
 use App\Modules\Athena\Infrastructure\Validator\DTO\BuildingConstructionOrder;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Resource\PlanetResource;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;

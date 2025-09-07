@@ -3,9 +3,9 @@
 namespace App\Modules\Athena\Infrastructure\Controller\Recycling;
 
 use App\Modules\Athena\Domain\Repository\RecyclingMissionRepositoryInterface;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Helper\PlanetHelper;
-use App\Modules\Gaia\Resource\PlanetResource;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Helper\PlanetHelper;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

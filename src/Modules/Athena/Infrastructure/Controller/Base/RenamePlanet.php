@@ -4,8 +4,8 @@ namespace App\Modules\Athena\Infrastructure\Controller\Base;
 
 use App\Classes\Entity\EntityManager;
 use App\Classes\Library\Parser;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Manager\PlanetManager;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Zeus\Helper\CheckName;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;

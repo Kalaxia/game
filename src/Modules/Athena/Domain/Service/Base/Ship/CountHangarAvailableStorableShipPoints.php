@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Athena\Domain\Service\Base\Ship;
 
 use App\Modules\Athena\Domain\Enum\DockType;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 
 class CountHangarAvailableStorableShipPoints
 {

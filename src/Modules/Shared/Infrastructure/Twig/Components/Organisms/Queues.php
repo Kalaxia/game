@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Shared\Infrastructure\Twig\Components\Organisms;
 
-use App\Modules\Gaia\Application\Registry\CurrentPlayerPlanetsRegistry;
-use App\Modules\Gaia\Helper\PlanetHelper;
+use App\Modules\Galaxy\Application\Registry\CurrentPlayerPlanetsRegistry;
+use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Shared\Domain\Model\QueueableInterface;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 

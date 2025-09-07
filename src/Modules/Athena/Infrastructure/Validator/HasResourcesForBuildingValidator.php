@@ -3,7 +3,7 @@
 namespace App\Modules\Athena\Infrastructure\Validator;
 
 use App\Modules\Athena\Infrastructure\Validator\DTO\BuildingConstructionOrder;
-use App\Modules\Gaia\Helper\PlanetHelper;
+use App\Modules\Galaxy\Helper\PlanetHelper;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;

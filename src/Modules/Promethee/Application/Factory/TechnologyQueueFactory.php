@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Promethee\Application\Factory;
 
 use App\Classes\Library\DateTimeConverter;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Promethee\Domain\Event\NewTechnologyQueueEvent;
 use App\Modules\Promethee\Domain\Repository\TechnologyQueueRepositoryInterface;
 use App\Modules\Promethee\Domain\Service\GetTimeCost;

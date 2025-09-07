@@ -6,7 +6,7 @@ namespace App\Modules\Athena\Infrastructure\Twig\Components\Molecules;
 
 use App\Modules\Athena\Infrastructure\Controller\Base\Building\Cancel;
 use App\Modules\Athena\Model\BuildingQueue as BuildingQueueModel;
-use App\Modules\Gaia\Helper\PlanetHelper;
+use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Shared\Infrastructure\Twig\Components\Molecules\Queue;
 use App\Shared\Application\Handler\DurationHandler;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;

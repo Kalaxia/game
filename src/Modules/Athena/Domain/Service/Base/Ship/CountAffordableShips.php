@@ -9,7 +9,7 @@ use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Athena\Domain\Enum\DockType;
 use App\Modules\Athena\Model\ShipQueue;
 use App\Modules\Demeter\Resource\ColorResource;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Application\PercentageApplier;
 
 readonly class CountAffordableShips

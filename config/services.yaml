@@ -4,7 +4,7 @@ imports:
     - { resource: ../src/Modules/Athena/Resource/config/config.yml }
     - { resource: ../src/Modules/Atlas/Resource/config/config.yml }
     - { resource: ../src/Modules/Demeter/Resource/config/config.yml }
-    - { resource: ../src/Modules/Gaia/Resource/config/config.yml }
+    - { resource: ../src/Modules/Galaxy/Resource/config/config.yml }
     - { resource: ../src/Modules/Hephaistos/Resource/config/config.yml }
     - { resource: ../src/Modules/Hermes/Resource/config/config.yml }
     - { resource: ../src/Modules/Promethee/Resource/config/config.yml }
@@ -15,7 +15,7 @@ parameters:
     log_directory: var/logs
     log_rotation: 3
     daily_script_hour: 3
-    gaia.galaxy_configuration.class: App\Modules\Gaia\Galaxy\GalaxyConfigurationV6
+    galaxy.galaxy_configuration.class: App\Modules\Galaxy\Galaxy\GalaxyConfigurationV6
     game.available_factions: [1, 2, 3, 4, 7]
 
     apimode: 'disabled'
@@ -67,7 +67,7 @@ parameters:
     # MISCELLANEOUS #
     #################
     # définition des ids des différants joueurs systèmes
-    id_gaia: 1
+    id_galaxy: 1
     id_jeanmi: 2
     shift_faction: 2
     # date de début du serveur

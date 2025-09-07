@@ -3,7 +3,7 @@
 namespace App\Modules\Artemis\Application\Handler;
 
 use App\Modules\Artemis\Model\SpyReport;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\Uid\Uuid;

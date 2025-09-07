@@ -8,11 +8,11 @@ use App\Modules\Athena\Application\Handler\CommercialRoute\GetCommercialRoutePri
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
 use App\Modules\Athena\Model\CommercialRoute;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
-use App\Modules\Gaia\Helper\PlanetHelper;
-use App\Modules\Gaia\Resource\PlanetResource;
+use App\Modules\Galaxy\Application\Handler\GetDistanceBetweenPlaces;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
+use App\Modules\Galaxy\Helper\PlanetHelper;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Manager\PlayerManager;

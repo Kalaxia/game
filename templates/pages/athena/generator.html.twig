@@ -1,6 +1,6 @@
 {% extends 'layouts/athena/current_planet.html.twig' %}
 
-{% set generator_building_number = constant('App\\Modules\\Gaia\\Resource\\PlanetResource::GENERATOR') %}
+{% set generator_building_number = constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::GENERATOR') %}
 
 {% block content %}
 	<twig:Headline :title="get_building_info(0, 'frenchName')" subTitle="niveau {{ current_planet.levelGenerator }}">
@@ -18,7 +18,7 @@
 			:refund="building_resource_refund" />
 
 		<twig:LayoutBox class="grow grid grid-cols-1 md:grid-cols-3 gap-x-2 gap-y-3 md:gap-y-2 lg:gap-4 rounded-r-xl">
-			{% for building_identifier in constant('App\\Modules\\Gaia\\Resource\\PlanetResource::BUILDINGS') %}
+			{% for building_identifier in constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::BUILDINGS') %}
 				<twig:BuildingCard
 					:planet="current_planet"
 					:buildingIdentifier="building_identifier"

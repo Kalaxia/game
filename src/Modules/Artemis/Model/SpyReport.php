@@ -3,8 +3,8 @@
 namespace App\Modules\Artemis\Model;
 
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Domain\Enum\PlaceType;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Component\Uid\Uuid;
 

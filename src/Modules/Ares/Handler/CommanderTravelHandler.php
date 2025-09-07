@@ -11,9 +11,9 @@ use App\Modules\Ares\Manager\ConquestManager;
 use App\Modules\Ares\Manager\LootManager;
 use App\Modules\Ares\Message\CommanderTravelMessage;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Manager\PlaceManager;
-use App\Modules\Gaia\Manager\PlanetManager;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Manager\PlaceManager;
+use App\Modules\Galaxy\Manager\PlanetManager;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

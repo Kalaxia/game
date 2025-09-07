@@ -2,7 +2,7 @@
 
 namespace App\Modules\Athena\Model;
 
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Model\TravellerInterface;
 use Symfony\Component\Uid\Uuid;

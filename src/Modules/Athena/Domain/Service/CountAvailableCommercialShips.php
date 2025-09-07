@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Athena\Domain\Service;
 
 use App\Modules\Athena\Domain\Repository\CommercialShippingRepositoryInterface;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Helper\PlanetHelper;
-use App\Modules\Gaia\Resource\PlanetResource;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Helper\PlanetHelper;
+use App\Modules\Galaxy\Resource\PlanetResource;
 
 readonly class CountAvailableCommercialShips
 {

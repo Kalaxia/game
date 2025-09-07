@@ -5,7 +5,7 @@
 		<many-to-one field="player" target-entity="App\Modules\Zeus\Model\Player">
 			<join-column nullable="false" />
 		</many-to-one>
-		<many-to-one field="place" target-entity="App\Modules\Gaia\Domain\Entity\Place">
+		<many-to-one field="place" target-entity="App\Modules\Galaxy\Domain\Entity\Place">
 			<join-column nullable="false" />
 		</many-to-one>
 

@@ -5,7 +5,7 @@ namespace App\Shared\Infrastructure\Controller;
 use App\Classes\Container\ArrayList;
 use App\Classes\Container\EventList;
 use App\Classes\Library\Utils;
-use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Portal\Domain\Entity\User;
 use App\Modules\Zeus\Domain\Event\PlayerConnectionEvent;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;

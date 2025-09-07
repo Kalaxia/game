@@ -9,7 +9,7 @@ use App\Modules\Athena\Domain\Service\Base\Ship\CountAffordableShips;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountShipResourceCost;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountShipTimeCost;
 use App\Modules\Athena\Helper\ShipHelper;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Promethee\Model\Technology;
 use App\Modules\Shared\Infrastructure\Twig\Components\Molecules\Card;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;

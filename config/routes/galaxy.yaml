@@ -1,0 +1,7 @@
+load_system:
+    path: /systems/{id}
+    controller: App\Modules\Galaxy\Ui\Http\LoadSystem
+
+map_sandbox:
+    path: /map-sandbox
+    controller: App\Modules\Galaxy\Ui\Http\ViewMapSandbox

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Zeus\Manager;
 
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
-use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
-use App\Modules\Gaia\Domain\Repository\SectorRepositoryInterface;
-use App\Modules\Gaia\Domain\Service\UpdatePlanetPoints;
-use App\Modules\Gaia\Manager\PlaceManager;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
+use App\Modules\Galaxy\Domain\Service\UpdatePlanetPoints;
+use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;

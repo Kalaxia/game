@@ -4,7 +4,7 @@ namespace App\Modules\Ares\Model;
 
 use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Domain\Model\ShipCategory;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Domain\Model\SystemUpdatable;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Model\TravellerInterface;

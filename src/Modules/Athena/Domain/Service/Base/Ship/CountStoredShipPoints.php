@@ -6,7 +6,7 @@ namespace App\Modules\Athena\Domain\Service\Base\Ship;
 
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Athena\Domain\Enum\DockType;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 
 readonly class CountStoredShipPoints
 {

@@ -6,7 +6,7 @@ namespace App\Modules\Hephaistos\Infrastructure\Schedule;
 
 use App\Modules\Ares\Message\CommandersSchoolExperienceMessage;
 use App\Modules\Atlas\Application\Message\RankingCreationMessage;
-use App\Modules\Gaia\Application\Message\PlanetsUpdateMessage;
+use App\Modules\Galaxy\Application\Message\PlanetsUpdateMessage;
 use App\Modules\Hephaistos\Message\DailyRoutineMessage;
 use App\Modules\Shared\Domain\Server\TimeMode;
 use App\Modules\Zeus\Message\PlayersCreditsUpdateMessage;

@@ -6,7 +6,7 @@ namespace App\Modules\Athena\Domain\Service\Base\Trade;
 
 use App\Modules\Athena\Domain\Repository\CommercialShippingRepositoryInterface;
 use App\Modules\Athena\Model\CommercialShipping;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 
 readonly class GetBaseCommercialShippingData
 {

@@ -18,7 +18,7 @@ services:
         autowire: true
         autoconfigure: true
         bind:
-            $gaiaId: '%id_gaia%'
+            $galaxyId: '%id_galaxy%'
 
     App\Modules\Zeus\:
         resource: '%kernel.project_dir%/src/Modules/Zeus/'

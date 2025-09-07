@@ -3,7 +3,7 @@
 namespace App\Modules\Ares\Domain\Event\Fleet;
 
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Resource\TutorialResource;
 use App\Shared\Domain\Event\TrackingEvent;

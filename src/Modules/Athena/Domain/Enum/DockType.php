@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Athena\Domain\Enum;
 
 use App\Modules\Ares\Domain\Model\ShipCategory;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Resource\PlanetResource;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Zeus\Model\PlayerBonusId;
 
 enum DockType: string

@@ -3,8 +3,8 @@
 namespace App\Modules\Athena\Application\Handler\Building;
 
 use App\Modules\Athena\Model\BuildingQueue;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Resource\PlanetResource;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class BuildingLevelHandler

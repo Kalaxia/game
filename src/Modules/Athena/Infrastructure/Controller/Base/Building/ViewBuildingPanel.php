@@ -6,9 +6,9 @@ use App\Classes\Library\Chronos;
 use App\Classes\Library\Format;
 use App\Classes\Library\Game;
 use App\Modules\Athena\Application\Handler\Building\BuildingLevelHandler;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Helper\PlanetHelper;
-use App\Modules\Gaia\Resource\PlanetResource;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Helper\PlanetHelper;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 

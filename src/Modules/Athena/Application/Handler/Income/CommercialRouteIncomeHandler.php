@@ -4,7 +4,7 @@ namespace App\Modules\Athena\Application\Handler\Income;
 
 use App\Modules\Athena\Domain\DTO\CommercialRouteIncome;
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Zeus\Application\Handler\Bonus\BonusApplierInterface;
 use App\Modules\Zeus\Model\PlayerBonusId;
 

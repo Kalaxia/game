@@ -2,10 +2,10 @@
 	<entity name="App\Modules\Athena\Model\RecyclingMission" table="recyclingMission">
 		<id name="id" type="uuid" />
 
-		<many-to-one field="base" target-entity="App\Modules\Gaia\Domain\Entity\Planet">
+		<many-to-one field="base" target-entity="App\Modules\Galaxy\Domain\Entity\Planet">
 			<join-column nullable="false" />
 		</many-to-one>
-		<many-to-one field="target" target-entity="App\Modules\Gaia\Domain\Entity\Place">
+		<many-to-one field="target" target-entity="App\Modules\Galaxy\Domain\Entity\Place">
 			<join-column nullable="false" />
 		</many-to-one>
 

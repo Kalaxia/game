@@ -3,8 +3,8 @@
 namespace App\Modules\Athena\Application\Handler\Tax;
 
 use App\Modules\Athena\Domain\DTO\PopulationTax;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Resource\PlaceResource;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Resource\PlaceResource;
 use App\Modules\Zeus\Application\Handler\Bonus\BonusApplierInterface;
 use App\Modules\Zeus\Model\PlayerBonusId;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;

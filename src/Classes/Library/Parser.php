@@ -2,9 +2,9 @@
 
 namespace App\Classes\Library;
 
-use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
-use App\Modules\Gaia\Manager\PlaceManager;
+use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Zeus\Manager\PlayerManager;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Service\Attribute\Required;

@@ -4,7 +4,7 @@ namespace App\Modules\Ares\Infrastructure\Controller;
 
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Gaia\Resource\PlaceResource;
+use App\Modules\Galaxy\Resource\PlaceResource;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

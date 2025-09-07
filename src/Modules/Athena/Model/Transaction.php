@@ -3,7 +3,7 @@
 namespace App\Modules\Athena\Model;
 
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;

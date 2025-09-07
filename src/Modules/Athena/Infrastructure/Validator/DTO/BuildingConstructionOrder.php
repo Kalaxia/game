@@ -2,7 +2,7 @@
 
 namespace App\Modules\Athena\Infrastructure\Validator\DTO;
 
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Promethee\Infrastructure\Validator\DTO\HasTechnology;
 use App\Modules\Promethee\Model\Technology;
 

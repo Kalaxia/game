@@ -4,7 +4,7 @@ namespace App\Modules\Athena\Infrastructure\Validator;
 
 use App\Modules\Athena\Application\Handler\Building\BuildingLevelHandler;
 use App\Modules\Athena\Infrastructure\Validator\DTO\BuildingConstructionOrder;
-use App\Modules\Gaia\Resource\PlanetResource;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Promethee\Helper\TechnologyHelper;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;

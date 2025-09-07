@@ -5,10 +5,10 @@
 		<many-to-one field="player" target-entity="App\Modules\Zeus\Model\Player">
 			<join-column nullable="true" />
 		</many-to-one>
-		<many-to-one field="originBase" target-entity="App\Modules\Gaia\Domain\Entity\Planet">
+		<many-to-one field="originBase" target-entity="App\Modules\Galaxy\Domain\Entity\Planet">
 			<join-column nullable="false" />
 		</many-to-one>
-		<many-to-one field="destinationBase" target-entity="App\Modules\Gaia\Domain\Entity\Planet" />
+		<many-to-one field="destinationBase" target-entity="App\Modules\Galaxy\Domain\Entity\Planet" />
 		<one-to-one field="transaction" target-entity="App\Modules\Athena\Model\Transaction" />
 
 		<field name="resourceTransported" type="integer" nullable="true" />

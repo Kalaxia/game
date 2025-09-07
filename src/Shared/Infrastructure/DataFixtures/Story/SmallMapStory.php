@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Shared\Infrastructure\DataFixtures\Story;
 
 use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\FactionFactory;
-use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\PlaceFactory;
-use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\PlanetFactory;
-use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\SectorFactory;
-use App\Modules\Gaia\Infrastructure\DataFixtures\Factory\SystemFactory;
+use App\Modules\Galaxy\Infrastructure\DataFixtures\Factory\PlaceFactory;
+use App\Modules\Galaxy\Infrastructure\DataFixtures\Factory\PlanetFactory;
+use App\Modules\Galaxy\Infrastructure\DataFixtures\Factory\SectorFactory;
+use App\Modules\Galaxy\Infrastructure\DataFixtures\Factory\SystemFactory;
 use Zenstruck\Foundry\Factory;
 use Zenstruck\Foundry\Story;
 

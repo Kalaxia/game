@@ -6,7 +6,7 @@ namespace App\Modules\Zeus\Application\Handler;
 
 use App\Modules\Athena\Application\Handler\CommercialRoute\GetCommercialRoutePrice;
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
-use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
+use App\Modules\Galaxy\Application\Handler\GetDistanceBetweenPlaces;
 use App\Modules\Zeus\Model\PlayerFinancialReport;
 
 readonly class CommercialRouteConstructionReportHandler

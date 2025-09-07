@@ -9,7 +9,7 @@ use App\Modules\Athena\Manager\CommercialRouteManager;
 use App\Modules\Athena\Model\BuildingQueue;
 use App\Modules\Athena\Model\ShipQueue;
 use App\Modules\Athena\Repository\BuildingQueueRepository;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Promethee\Domain\Repository\TechnologyQueueRepositoryInterface;
 use App\Modules\Promethee\Model\TechnologyQueue;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;

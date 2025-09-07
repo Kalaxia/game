@@ -7,7 +7,7 @@ namespace App\Modules\Demeter\Infrastructure\Controller;
 use App\Modules\Demeter\Domain\Repository\Forum\FactionNewsRepositoryInterface;
 use App\Modules\Demeter\Manager\ColorManager;
 use App\Modules\Demeter\Resource\LawResources;
-use App\Modules\Gaia\Domain\Repository\SectorRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\CreditTransactionRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Infrastructure\Validator\IsGovernmentMember;

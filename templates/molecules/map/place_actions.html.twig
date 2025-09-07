@@ -2,12 +2,12 @@
 
 <div class="w-full border-l-2 border-stone-900 min-w-80">
 	<div class="flex items-center justify-around p-4 border-b-2 border-stone-900">
-		{% if place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
-			{% if place.player is not defined and place.type != enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
+		{% if place.type == enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Planet %}
+			{% if place.player is not defined and place.type != enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Planet %}
 				{% set tooltip = 'Vous ne pouvez pas attaquer une planète non-habitable' %}
-			{% elseif place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet and place.player is not null and place.player.faction.id == current_player.faction.id %}
+			{% elseif place.type == enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Planet and place.player is not null and place.player.faction.id == current_player.faction.id %}
 				{% set tooltip = 'Vous ne pouvez pas attaquer un joueur de votre faction' %}
-			{% elseif place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet and place.player is not null and place.player.level == 1 %}
+			{% elseif place.type == enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Planet and place.player is not null and place.player.level == 1 %}
 				{% set tooltip = 'Ce joueur est sous protection débutant' %}
 			{% else %}
 				{% set tooltip = '' %}
@@ -24,11 +24,11 @@
 			{% set total_bases = get_player_planets_count(moving_commanders) %}
 
 			{# TODO Replace with specification #}
-			{% if place.type != enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
+			{% if place.type != enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Planet %}
 				{% set tooltip = 'Vous ne pouvez pas coloniser une planète non-habitable.' %}
-			{% elseif place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet and place.player is not null and place.player.faction.id == current_player.faction.id %}
+			{% elseif place.type == enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Planet and place.player is not null and place.player.faction.id == current_player.faction.id %}
 				{% set tooltip = 'Vous ne pouvez pas conquérir un joueur de votre faction.' %}
-			{% elseif place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet and place.player is not null and place.player.level <= 3 %}
+			{% elseif place.type == enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Planet and place.player is not null and place.player.level <= 3 %}
 				{% set tooltip = 'Vous ne pouvez pas conquérir un joueur de niveau 3 ou inférieur.' %}
 			{% elseif place.player is null and technologies.getTechnology(constant('App\\Modules\\Promethee\\Model\\TechnologyId::COLONIZATION')) == 0 %}
 				{% set tooltip = 'Vous devez développer la technologie colonisation.' %}
@@ -87,7 +87,7 @@
 
 			{% if place.player is not null and place.player.faction.id == current_player.faction.id %}
 				{% set tooltip = 'Vous ne pouvez pas espionner un joueur de votre faction' %}
-			{% elseif place.player is null and place.type != enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
+			{% elseif place.player is null and place.type != enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Planet %}
 				{% set tooltip = 'Vous ne pouvez pas espionner une planète non-habitable' %}
 			{% else %}
 				{% set tooltip = '' %}
@@ -102,7 +102,7 @@
 		{% else %}
 			{% if place.system.sector.faction is not null and place.system.sector.faction.id != current_player.faction.id %}
 				{% set tooltip = 'Vous ne pouvez envoyer des recycleurs que dans des secteurs non-revendiqués ou contrôlés par votre faction.' %}
-			{% elseif place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Empty %}
+			{% elseif place.type == enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Empty %}
 				{% set tooltip = 'Cet endroit regorgait autrefois de ressources ou de gaz mais de nombreux recycleurs sont déjà passés par là et n\'ont laissé que le vide de l\'espace.' %}
 			{% elseif current_planet.levelRecycling == 0 %}
 				{% set tooltip = 'Vous devez disposer d\'un centre de recyclage.' %}
@@ -121,7 +121,7 @@
 	</div>
 
 	<div class="h-full">
-		{% if place.type == enum('App\\Modules\\Gaia\\Domain\\Enum\\PlaceType').Planet %}
+		{% if place.type == enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Planet %}
 			<twig:PlaceActionPanel title="Lancer un pillage" id="1" :actionUrl="path('loot', {'id': '{id}', 'placeId': place.id})">
 				<twig:CommanderTile :travelTime="travel_time" :place="place">
 					<twig:block name="travel_details">
@@ -214,7 +214,7 @@
 									<twig:Button :faction="current_player.faction" disabled>
 										Vous n'avez pas assez de crédits.
 									</twig:Button>
-								{% elseif commercial_route_data.slots < get_building_info(constant('App\\Modules\\Gaia\\Resource\\PlanetResource::SPATIOPORT'), 'level', current_planet.levelSpatioport, 'nbRoutesMax') %}
+								{% elseif commercial_route_data.slots < get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::SPATIOPORT'), 'level', current_planet.levelSpatioport, 'nbRoutesMax') %}
 									<a href="{{ path('propose_route', {'sourceBase': current_planet.id, 'destinationBase': place.id }) }}" class="button">
 										<twig:Button :faction="current_player.faction">
 											Proposer une route commerciale
@@ -262,7 +262,7 @@
 			<twig:PlaceActionPanel title="Envoyer des recycleurs" id="6">
 				<div class="box-content">
 					{% set total_ships = get_building_info(
-						constant('App\\Modules\\Gaia\\Resource\\PlanetResource::RECYCLING'),
+						constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::RECYCLING'),
 						'level',
 						current_planet.levelRecycling,
 						'nbRecyclers',

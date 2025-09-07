@@ -11,7 +11,7 @@ use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountShipTimeCost;
 use App\Modules\Athena\Message\Ship\ShipQueueMessage;
 use App\Modules\Athena\Model\ShipQueue;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Shared\Application\Handler\DurationHandler;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\MessageBusInterface;

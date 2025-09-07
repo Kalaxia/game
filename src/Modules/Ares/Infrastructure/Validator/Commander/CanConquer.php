@@ -3,7 +3,7 @@
 namespace App\Modules\Ares\Infrastructure\Validator\Commander;
 
 use App\Modules\Athena\Infrastructure\Validator\CanGetNewPlanet;
-use App\Modules\Gaia\Infrastructure\Validator\BelongsToPlayer;
+use App\Modules\Galaxy\Infrastructure\Validator\BelongsToPlayer;
 use App\Modules\Promethee\Infrastructure\Validator\HasUnlockedTechnology;
 use App\Modules\Promethee\Model\TechnologyId;
 use App\Modules\Zeus\Infrastructure\Validator\CanAfford;

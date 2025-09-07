@@ -2,8 +2,8 @@
 
 namespace App\Modules\Ares\Domain\Specification;
 
-use App\Modules\Gaia\Domain\Entity\Place;
-use App\Modules\Gaia\Domain\Enum\PlaceType;
+use App\Modules\Galaxy\Domain\Entity\Place;
+use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use App\Shared\Domain\Specification\Specification;
 
 class PlaceIsInhabited implements Specification

@@ -149,7 +149,7 @@
                 <p class="text-sm">Aucun vaisseau en construction pour le moment.</p>
             {% endif %}
 
-            <a href="{{ path('docks', {'dockType': constant('App\\Modules\\Gaia\\Domain\\Entity\\Planet::DOCK_TYPE_MANUFACTURE')}) }}" class="block mt-2">
+            <a href="{{ path('docks', {'dockType': constant('App\\Modules\\Galaxy\\Domain\\Entity\\Planet::DOCK_TYPE_MANUFACTURE')}) }}" class="block mt-2">
                 <twig:Button :faction="current_player.faction">
                     vers le chantier alpha
                 </twig:Button>
@@ -196,7 +196,7 @@
                 <p class="text-sm">Aucun vaisseau en construction pour le moment.</p>
             {% endif %}
 
-            <a href="{{ path('docks', {'dockType': constant('App\\Modules\\Gaia\\Domain\\Entity\\Planet::DOCK_TYPE_SHIPYARD')}) }}" class="block mt-2">
+            <a href="{{ path('docks', {'dockType': constant('App\\Modules\\Galaxy\\Domain\\Entity\\Planet::DOCK_TYPE_SHIPYARD')}) }}" class="block mt-2">
                 <twig:Button :faction="current_player.faction">
                     vers le chantier de ligne
                 </twig:Button>

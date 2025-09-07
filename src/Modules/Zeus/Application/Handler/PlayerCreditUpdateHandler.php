@@ -6,8 +6,8 @@ use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Athena\Application\Handler\Income\CommercialRouteIncomeHandler;
 use App\Modules\Athena\Application\Handler\Tax\PopulationTaxHandler;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Domain\Repository\PlanetRepositoryInterface;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Shared\Application\PercentageApplier;
 use App\Modules\Shared\Application\Service\CountMissingSystemUpdates;
 use App\Modules\Shared\Domain\Service\GameTimeConverter;
@@ -54,7 +54,7 @@ readonly class PlayerCreditUpdateHandler
 		private CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
 		private CountMissingSystemUpdates $countMissingSystemUpdates,
 		private RecycledCreditsReportHandler $recycledCreditsReportHandler,
-		private int $gaiaId,
+		private int $galaxyId,
 	) {
 	}
 
@@ -62,7 +62,7 @@ readonly class PlayerCreditUpdateHandler
 	{
 		$player = $this->playerRepository->get($message->getPlayerId())
 			?? throw new \RuntimeException('Player not found');
-		$rebelPlayer = $this->playerRepository->get($this->gaiaId);
+		$rebelPlayer = $this->playerRepository->get($this->galaxyId);
 		$bases = $this->planetRepository->getPlayerPlanets($player);
 		$commanders = $this->commanderRepository->getPlayerCommanders(
 			$player,

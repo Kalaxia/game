@@ -454,27 +454,27 @@ ship_categories:
 galaxy:
     systems:
         types:
-            !php/enum App\Modules\Gaia\Domain\Enum\SystemType::Graveyard->value:
+            !php/enum App\Modules\Galaxy\Domain\Enum\SystemType::Graveyard->value:
                 name: 'Cimetière Spatial'
-            !php/enum App\Modules\Gaia\Domain\Enum\SystemType::Nebula->value:
+            !php/enum App\Modules\Galaxy\Domain\Enum\SystemType::Nebula->value:
                 name: 'Nébuleuse'
-            !php/enum App\Modules\Gaia\Domain\Enum\SystemType::BlueGiant->value:
+            !php/enum App\Modules\Galaxy\Domain\Enum\SystemType::BlueGiant->value:
                 name: 'Géante Bleue'
-            !php/enum App\Modules\Gaia\Domain\Enum\SystemType::YellowDwarf->value:
+            !php/enum App\Modules\Galaxy\Domain\Enum\SystemType::YellowDwarf->value:
                 name: 'Naine Jaune'
-            !php/enum App\Modules\Gaia\Domain\Enum\SystemType::RedDwarf->value:
+            !php/enum App\Modules\Galaxy\Domain\Enum\SystemType::RedDwarf->value:
                 name: 'Naine Rouge'
     places:
         types:
-            !php/enum App\Modules\Gaia\Domain\Enum\PlaceType::Planet->value:
+            !php/enum App\Modules\Galaxy\Domain\Enum\PlaceType::Planet->value:
                 name: 'planète tellurique'
-            !php/enum App\Modules\Gaia\Domain\Enum\PlaceType::GasPlanet->value:
+            !php/enum App\Modules\Galaxy\Domain\Enum\PlaceType::GasPlanet->value:
                 name: 'géante gazeuse'
-            !php/enum App\Modules\Gaia\Domain\Enum\PlaceType::Ruin->value:
+            !php/enum App\Modules\Galaxy\Domain\Enum\PlaceType::Ruin->value:
                 name: 'ruine'
-            !php/enum App\Modules\Gaia\Domain\Enum\PlaceType::GasPocket->value:
+            !php/enum App\Modules\Galaxy\Domain\Enum\PlaceType::GasPocket->value:
                 name: 'poche de gaz'
-            !php/enum App\Modules\Gaia\Domain\Enum\PlaceType::Asteroid->value:
+            !php/enum App\Modules\Galaxy\Domain\Enum\PlaceType::Asteroid->value:
                 name: "ceinture d'astéroïdes"
-            !php/enum App\Modules\Gaia\Domain\Enum\PlaceType::Empty->value:
+            !php/enum App\Modules\Galaxy\Domain\Enum\PlaceType::Empty->value:
                 name: 'zone vide'

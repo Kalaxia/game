@@ -3,7 +3,7 @@
 namespace App\Modules\Athena\Infrastructure\Controller\Base\Building;
 
 use App\Modules\Athena\Domain\Repository\BuildingQueueRepositoryInterface;
-use App\Modules\Gaia\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Promethee\Manager\TechnologyManager;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;

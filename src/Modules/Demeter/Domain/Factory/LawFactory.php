@@ -16,7 +16,7 @@ use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Law\Law;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Demeter\Resource\LawResources;
-use App\Modules\Gaia\Domain\Repository\SectorRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Shared\Domain\Server\TimeMode;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;

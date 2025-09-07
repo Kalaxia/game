@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Zeus\Infrastructure\Controller\Registration;
 
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
-use App\Modules\Gaia\Domain\Repository\SectorRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Portal\Domain\Entity\User;
 use App\Modules\Zeus\Application\Factory\PlayerFactory;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;

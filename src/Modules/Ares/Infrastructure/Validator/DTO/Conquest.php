@@ -6,8 +6,8 @@ namespace App\Modules\Ares\Infrastructure\Validator\DTO;
 
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Athena\Infrastructure\Validator\DTO\HasBasesCount;
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Infrastructure\Validator\DTO\HasPlace;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Infrastructure\Validator\DTO\HasPlace;
 use App\Modules\Promethee\Infrastructure\Validator\DTO\HasTechnology;
 use App\Modules\Promethee\Model\Technology;
 

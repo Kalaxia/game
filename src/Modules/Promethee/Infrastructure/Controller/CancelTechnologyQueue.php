@@ -2,8 +2,8 @@
 
 namespace App\Modules\Promethee\Infrastructure\Controller;
 
-use App\Modules\Gaia\Domain\Entity\Planet;
-use App\Modules\Gaia\Manager\PlanetManager;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Promethee\Domain\Repository\TechnologyQueueRepositoryInterface;
 use App\Modules\Promethee\Helper\TechnologyHelper;
 use App\Modules\Promethee\Manager\TechnologyQueueManager;
