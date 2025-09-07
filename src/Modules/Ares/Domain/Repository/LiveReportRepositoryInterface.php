@@ -4,7 +4,7 @@ namespace App\Modules\Ares\Domain\Repository;
 
 use App\Modules\Ares\Model\Report;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Component\Uid\Uuid;
@@ -22,7 +22,7 @@ interface LiveReportRepositoryInterface extends EntityRepositoryInterface
 	public function getPlayerReports(Player $player): array;
 
 	/**
-	 * @param list<Place> $places
+	 * @param list<Planet> $places
 	 *
 	 * @return list<Report>
 	 */

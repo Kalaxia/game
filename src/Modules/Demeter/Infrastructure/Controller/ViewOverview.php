@@ -11,7 +11,7 @@ use App\Modules\Demeter\Manager\Forum\FactionNewsManager;
 use App\Modules\Demeter\Manager\Law\LawManager;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Law\Law;
-use App\Modules\Gaia\Domain\Repository\SectorRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Infrastructure\Validator\IsGovernmentMember;
 use App\Modules\Zeus\Model\Player;

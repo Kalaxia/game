@@ -3,7 +3,7 @@
 namespace App\Modules\Ares\Domain\Event\Fleet;
 
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Resource\TutorialResource;
 use App\Shared\Domain\Event\TrackingEvent;
@@ -12,9 +12,9 @@ use App\Shared\Domain\Event\TutorialEvent;
 class PlannedLootEvent implements TutorialEvent, TrackingEvent
 {
 	public function __construct(
-		public readonly Place $place,
+		public readonly Planet    $place,
 		public readonly Commander $commander,
-		public readonly Player $attacker,
+		public readonly Player    $attacker,
 	) {
 	}
 

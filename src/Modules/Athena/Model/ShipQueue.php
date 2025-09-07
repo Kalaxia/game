@@ -11,19 +11,20 @@
 
 namespace App\Modules\Athena\Model;
 
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Shared\Domain\Model\QueueableInterface;
 use Symfony\Component\Uid\Uuid;
 
 class ShipQueue implements QueueableInterface
 {
 	public function __construct(
-		public Uuid $id,
-		public OrbitalBase $base,
-		public \DateTimeImmutable $startedAt,
+		public Uuid                    $id,
+		public Planet                  $base,
+		public \DateTimeImmutable      $startedAt,
 		public \DateTimeImmutable|null $endedAt = null,
-		public int $dockType = 0,
-		public int $shipNumber = 0,
-		public int $quantity = 1,
+		public int                     $dockType = 0,
+		public int                     $shipNumber = 0,
+		public int                     $quantity = 1,
 	) {
 	}
 

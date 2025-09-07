@@ -2,9 +2,9 @@
 
 namespace App\Modules\Athena\Infrastructure\Validator\DTO;
 
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 
 interface HasBase
 {
-	public function getBase(): OrbitalBase;
+	public function getPlanet(): Planet;
 }

@@ -5,7 +5,7 @@ namespace App\Modules\Athena\Infrastructure\Validator;
 use App\Modules\Athena\Application\Handler\Building\BuildingLevelHandler;
 use App\Modules\Athena\Domain\Repository\BuildingQueueRepositoryInterface;
 use App\Modules\Athena\Infrastructure\Validator\DTO\BuildingConstructionOrder;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -33,12 +33,12 @@ class IsValidTargetLevelValidator extends ConstraintValidator
 			throw new UnexpectedValueException($value, BuildingConstructionOrder::class);
 		}
 
-		$orbitalBase = $value->getBase();
+		$planet = $value->getPlanet();
 		$buildingId = $value->getBuildingIdentifier();
 		$level = $value->getTargetLevel();
 
-		if (OrbitalBaseResource::GENERATOR === $buildingId) {
-			if ($level > OrbitalBaseResource::$building[$buildingId]['maxLevel'][$orbitalBase->typeOfBase]) {
+		if (PlanetResource::GENERATOR === $buildingId) {
+			if ($level > PlanetResource::$building[$buildingId]['maxLevel'][$planet->typeOfBase]) {
 				$this->context
 					->buildViolation('niveau maximum atteint')
 					->addViolation();
@@ -46,13 +46,13 @@ class IsValidTargetLevelValidator extends ConstraintValidator
 			return;
 		}
 		$realGeneratorLevel = $this->buildingLevelHandler->getBuildingRealLevel(
-			$orbitalBase,
-			OrbitalBaseResource::GENERATOR,
-			$this->buildingQueueRepository->getBaseQueues($orbitalBase),
+			$planet,
+			PlanetResource::GENERATOR,
+			$this->buildingQueueRepository->getPlanetQueues($planet),
 		);
 		$requiredGeneratorLevel = $this->buildingLevelHandler->getRequiredGeneratorLevel($buildingId);
 
-		if ($level > OrbitalBaseResource::$building[$buildingId]['maxLevel'][$orbitalBase->typeOfBase]) {
+		if ($level > PlanetResource::$building[$buildingId]['maxLevel'][$planet->typeOfBase]) {
 			$this->context
 				->buildViolation('niveau maximum atteint')
 				->addViolation();

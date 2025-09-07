@@ -5,7 +5,7 @@ namespace App\Modules\Demeter\Handler\Law;
 use App\Modules\Demeter\Domain\Repository\Law\LawRepositoryInterface;
 use App\Modules\Demeter\Message\Law\SectorTaxesResultMessage;
 use App\Modules\Demeter\Model\Law\Law;
-use App\Modules\Gaia\Domain\Repository\SectorRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Uid\Uuid;
 

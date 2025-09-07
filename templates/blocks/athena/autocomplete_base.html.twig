@@ -1,5 +1,5 @@
 {% for place in places %}
 	<img class="img" src="{{ asset('build/media/avatar/small/' ~ place.player.avatar ~ '.png') }}" alt="{{ place.player.avatar }}" />
 	<span class="value-2">{{ place.player.name }}</span>
-	<span class="value-1"><span class="ac_value" data-id="{{ place.base.id }}">{{ place.base.name }}</span> (secteur {{ place.system.sector.identifier }})</span>
+	<span class="value-1"><span class="ac_value" data-id="{{ place.id }}">{{ place.name }}</span> (secteur {{ place.system.sector.identifier }})</span>
 {% endfor %}

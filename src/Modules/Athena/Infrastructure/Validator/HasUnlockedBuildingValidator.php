@@ -4,7 +4,7 @@ namespace App\Modules\Athena\Infrastructure\Validator;
 
 use App\Modules\Athena\Application\Handler\Building\BuildingLevelHandler;
 use App\Modules\Athena\Infrastructure\Validator\DTO\BuildingConstructionOrder;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Promethee\Helper\TechnologyHelper;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -37,7 +37,7 @@ class HasUnlockedBuildingValidator extends ConstraintValidator
 	{
 		$neededGeneratorLevel = $this->buildingLevelHandler->getRequiredGeneratorLevel($value->getBuildingIdentifier());
 
-		if (!$neededGeneratorLevel > $value->getBase()->levelGenerator) {
+		if (!$neededGeneratorLevel > $value->getPlanet()->levelGenerator) {
 			$this->context->buildViolation('Le générateur n\'a pas le niveau requis')
 				->addViolation();
 		}
@@ -45,7 +45,7 @@ class HasUnlockedBuildingValidator extends ConstraintValidator
 
 	private function checkTechnologyRequirement(BuildingConstructionOrder $buildingConstructionOrder): void
 	{
-		$data = OrbitalBaseResource::$building[$buildingConstructionOrder->getBuildingIdentifier()];
+		$data = PlanetResource::$building[$buildingConstructionOrder->getBuildingIdentifier()];
 
 		if (!array_key_exists('techno', $data)) {
 			return;

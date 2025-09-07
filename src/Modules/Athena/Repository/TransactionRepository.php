@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Athena\Repository;
 
 use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\Common\Collections\Collection;
@@ -66,10 +66,10 @@ class TransactionRepository extends DoctrineRepository implements TransactionRep
 		]);
 	}
 
-	public function getBasePropositions(OrbitalBase $base): array
+	public function getPlanetPropositions(Planet $planet): array
 	{
 		return $this->findBy([
-			'base' => $base,
+			'base' => $planet,
 			'statement' => Transaction::ST_PROPOSED,
 		]);
 	}

@@ -8,10 +8,10 @@ use App\Classes\Library\Utils;
 use App\Modules\Athena\Domain\Repository\RecyclingLogRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\RecyclingMissionRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Recycling\GetMissionTime;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\RecyclingMission;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Helper\PlanetHelper;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Travel\Domain\Model\TravelType;
 use App\Modules\Travel\Domain\Service\CalculateTravelTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,29 +26,29 @@ class ViewRecycling extends AbstractController
 	}
 
 	public function __invoke(
-		OrbitalBase                         $currentBase,
-		OrbitalBaseHelper                   $orbitalBaseHelper,
-		RecyclingMissionRepositoryInterface $recyclingMissionRepository,
-		RecyclingLogRepositoryInterface     $recyclingLogRepository,
+        Planet                              $currentPlanet,
+        PlanetHelper                        $planetHelper,
+        RecyclingMissionRepositoryInterface $recyclingMissionRepository,
+        RecyclingLogRepositoryInterface     $recyclingLogRepository,
 	): Response {
-		if (0 === $currentBase->levelRecycling) {
+		if (0 === $currentPlanet->levelRecycling) {
 			return $this->redirectToRoute('base_overview');
 		}
 
 		// load recycling missions
-		$baseMissions = $recyclingMissionRepository->getBaseActiveMissions($currentBase);
-		$missionsLogs = $recyclingLogRepository->getBaseActiveMissionsLogs($currentBase);
-		$missionQuantity = count($baseMissions);
+		$planetMissions = $recyclingMissionRepository->getPlanetActiveMissions($currentPlanet);
+		$missionsLogs = $recyclingLogRepository->getBaseActiveMissionsLogs($currentPlanet);
+		$missionQuantity = count($planetMissions);
 
-		$totalRecyclers = $orbitalBaseHelper->getBuildingInfo(
-			OrbitalBaseResource::RECYCLING,
+		$totalRecyclers = $planetHelper->getBuildingInfo(
+			PlanetResource::RECYCLING,
 			'level',
-			$currentBase->levelRecycling,
+			$currentPlanet->levelRecycling,
 			'nbRecyclers'
 		);
 		$busyRecyclers = 0;
 
-		foreach ($baseMissions as $mission) {
+		foreach ($planetMissions as $mission) {
 			$busyRecyclers += $mission->recyclerQuantity;
 			$busyRecyclers += $mission->addToNextMission;
 		}
@@ -56,7 +56,7 @@ class ViewRecycling extends AbstractController
 		$freeRecyclers = $totalRecyclers - $busyRecyclers;
 
 		return $this->render('pages/athena/base/building/recycling.html.twig', [
-			'base_missions' => array_map(fn (RecyclingMission $rm) => $this->getData($rm), $baseMissions),
+			'base_missions' => array_map(fn (RecyclingMission $rm) => $this->getData($rm), $planetMissions),
 			'mission_logs' => $missionsLogs,
 			'mission_quantity' => $missionQuantity,
 			'free_recyclers' => $freeRecyclers,
@@ -73,9 +73,9 @@ class ViewRecycling extends AbstractController
 
 		// @TODO Infamous patch
 		$percent = Utils::interval(Utils::now(), date('Y-m-d H:i:s', strtotime($mission->endedAt->format('c')) - $mission->cycleTime), 's') / $mission->cycleTime * 100;
-		$travelTime = ($this->calculateTravelTime)($mission->base->place, $mission->target, TravelType::RecyclingShips, $mission->base->player);
+		$travelTime = ($this->calculateTravelTime)($mission->base, $mission->target, TravelType::RecyclingShips, $mission->base->player);
 		$beginRECY = Format::percent($travelTime, $mission->cycleTime);
-		$recyclingTime = ($this->getMissionTime)($mission->base->place, $mission->target, $mission->base->player) - ($travelTime * 2);
+		$recyclingTime = ($this->getMissionTime)($mission->base, $mission->target, $mission->base->player) - ($travelTime * 2);
 		$endRECY = Format::percent($travelTime + $recyclingTime, $mission->cycleTime);
 
 		return [

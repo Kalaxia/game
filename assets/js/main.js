@@ -867,7 +867,7 @@ jQuery(document).ready(function($) {
 
 	// using module
 	$('.autocomplete-player').autocomplete(game.path + 'api/players/search');
-	$('.autocomplete-orbitalbase').autocomplete(game.path + 'api/bases/search');
+	$('.autocomplete-orbitalbase').autocomplete(game.path + 'api/planets/search');
 
 	// confirm box
 	$('.confirm').live('click', function(e) {

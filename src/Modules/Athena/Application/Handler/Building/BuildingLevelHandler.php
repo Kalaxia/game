@@ -3,42 +3,42 @@
 namespace App\Modules\Athena\Application\Handler\Building;
 
 use App\Modules\Athena\Model\BuildingQueue;
-use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class BuildingLevelHandler
 {
-	public function increaseBuildingLevel(OrbitalBase $orbitalBase, int $buildingIdentifier): void
+	public function increaseBuildingLevel(Planet $planet, int $buildingIdentifier): void
 	{
-		$this->updateBuildingLevel($orbitalBase, $buildingIdentifier, fn (int $level) => $level + 1);
+		$this->updateBuildingLevel($planet, $buildingIdentifier, fn (int $level) => $level + 1);
 	}
 
-	public function decreaseBuildingLevel(OrbitalBase $orbitalBase, int $buildingIdentifier): void
+	public function decreaseBuildingLevel(Planet $planet, int $buildingIdentifier): void
 	{
-		$this->updateBuildingLevel($orbitalBase, $buildingIdentifier, fn (int $level) => max($level - 1, 0));
+		$this->updateBuildingLevel($planet, $buildingIdentifier, fn (int $level) => max($level - 1, 0));
 	}
 
-	private function updateBuildingLevel(OrbitalBase $orbitalBase, int $buildingIdentifier, callable $updateLevel): void
+	private function updateBuildingLevel(Planet $planet, int $buildingIdentifier, callable $updateLevel): void
 	{
 		$propertyAccessor = PropertyAccess::createPropertyAccessor();
 		$levelField = $this->getBuildingLevelField($buildingIdentifier);
 
 		$propertyAccessor->setValue(
-			$orbitalBase,
+			$planet,
 			$levelField,
-			$updateLevel($propertyAccessor->getValue($orbitalBase, $levelField)),
+			$updateLevel($propertyAccessor->getValue($planet, $levelField)),
 		);
 	}
 
-	public function getBuildingLevel(OrbitalBase $base, int $buildingIdentifier): int
+	public function getBuildingLevel(Planet $planet, int $buildingIdentifier): int
 	{
 		$propertyAccessor = PropertyAccess::createPropertyAccessor();
 
-		return $propertyAccessor->getValue($base, $this->getBuildingLevelField($buildingIdentifier));
+		return $propertyAccessor->getValue($planet, $this->getBuildingLevelField($buildingIdentifier));
 	}
 
-	public function getBuildingRealLevel(OrbitalBase $base, int $buildingIdentifier, array $buildingQueues): int
+	public function getBuildingRealLevel(Planet $planet, int $buildingIdentifier, array $buildingQueues): int
 	{
 		return array_reduce(
 			$buildingQueues,
@@ -49,21 +49,21 @@ class BuildingLevelHandler
 
 				return ($level < $buildingQueue->targetLevel) ? $buildingQueue->targetLevel : $level;
 			},
-			$this->getBuildingLevel($base, $buildingIdentifier),
+			$this->getBuildingLevel($planet, $buildingIdentifier),
 		);
 	}
 
 	public function getRequiredGeneratorLevel(int $buildingIdentifier): int
 	{
 		return match ($buildingIdentifier) {
-			OrbitalBaseResource::GENERATOR,
-			OrbitalBaseResource::STORAGE,
-			OrbitalBaseResource::DOCK1,
-			OrbitalBaseResource::REFINERY,
-			OrbitalBaseResource::TECHNOSPHERE => 0,
-			OrbitalBaseResource::DOCK2, OrbitalBaseResource::SPATIOPORT => 20,
-			OrbitalBaseResource::DOCK3 => 30,
-			OrbitalBaseResource::COMMERCIAL_PLATEFORME, OrbitalBaseResource::RECYCLING => 10,
+			PlanetResource::GENERATOR,
+			PlanetResource::STORAGE,
+			PlanetResource::DOCK1,
+			PlanetResource::REFINERY,
+			PlanetResource::TECHNOSPHERE => 0,
+			PlanetResource::DOCK2, PlanetResource::SPATIOPORT => 20,
+			PlanetResource::DOCK3 => 30,
+			PlanetResource::COMMERCIAL_PLATEFORME, PlanetResource::RECYCLING => 10,
 			// no break
 			default => throw new \LogicException('Invalid building Identifier'),
 		};
@@ -71,7 +71,7 @@ class BuildingLevelHandler
 
 	private function getBuildingLevelField(int $buildingIdentifier): string
 	{
-		$buildingName = OrbitalBaseResource::$building[$buildingIdentifier]['name']
+		$buildingName = PlanetResource::$building[$buildingIdentifier]['name']
 			?? throw new \LogicException(sprintf('Building identifier %s is not valid', $buildingIdentifier));
 
 		return sprintf('level%s', ucfirst($buildingName));

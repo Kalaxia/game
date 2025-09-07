@@ -1,6 +1,7 @@
 monolog:
     channels:
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+        - galaxy_generation
 
 when@dev:
     monolog:
@@ -18,6 +19,11 @@ when@dev:
             #chromephp:
             #    type: chromephp
             #    level: info
+            galaxy_generation:
+                type: stream
+                path: "%kernel.logs_dir%/galaxy_generation.log"
+                level: debug
+                channels: ["galaxy_generation"]
             console:
                 type: console
                 process_psr_3_messages: false

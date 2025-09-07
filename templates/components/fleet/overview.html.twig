@@ -22,13 +22,13 @@
 					<tr>
 						<td rowspan="{{ base.fleets|length + 2 }}" class="base">
 							<a href="{{ path('map', {'place': base.info.id}) }}">
-								{{ get_base_type_info(base.info.type, 'name') }}<br />
+								{{ get_planet_type_info(base.info.type, 'name') }}<br />
 								<strong>{{ base.info.name }}</strong>
 							</a>
 						</td>
 	
 						<td class="large">
-							<a href="{{ path('switchbase', {'baseId': base.info.id, 'page': 'docks', 'dockType': constant('App\\Modules\\Athena\\Model\\OrbitalBase::DOCK_TYPE_MANUFACTURE')}) }}">
+							<a href="{{ path('switchplanet', {'planetId': base.info.id, 'page': 'docks', 'dockType': constant('App\\Modules\\Galaxy\\Domain\\Entity\\Planet::DOCK_TYPE_MANUFACTURE')}) }}">
 								Vaisseaux dans les hangars
 							</a>
 						</td>

@@ -10,8 +10,8 @@ use App\Modules\Athena\Domain\Event\NewShipQueueEvent;
 use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountShipTimeCost;
 use App\Modules\Athena\Message\Ship\ShipQueueMessage;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\ShipQueue;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Shared\Application\Handler\DurationHandler;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -29,16 +29,16 @@ readonly class ShipQueueFactory
 	}
 
 	public function create(
-		OrbitalBase $orbitalBase,
-		int $shipIdentifier,
-		DockType $dockType,
-		int $quantity,
-		\DateTimeImmutable $startedAt,
+        Planet             $planet,
+        int                $shipIdentifier,
+        DockType           $dockType,
+        int                $quantity,
+        \DateTimeImmutable $startedAt,
 	): ShipQueue {
 
 		$shipQueue = new ShipQueue(
 			id: Uuid::v4(),
-			base: $orbitalBase,
+			base: $planet,
 			startedAt: $startedAt,
 			endedAt: $this->durationHandler->getDurationEnd($startedAt, ($this->countShipTimeCost)(
 				identifier: $shipIdentifier,

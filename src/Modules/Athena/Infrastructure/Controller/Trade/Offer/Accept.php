@@ -10,8 +10,8 @@ use App\Modules\Athena\Domain\Service\Transaction\CalculateNewRate;
 use App\Modules\Athena\Manager\TransactionManager;
 use App\Modules\Athena\Message\Trade\CommercialShippingMessage;
 use App\Modules\Athena\Model\CommercialShipping;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Travel\Domain\Model\TravelType;
@@ -31,20 +31,20 @@ use Symfony\Component\Uid\Uuid;
 class Accept extends AbstractController
 {
 	public function __invoke(
-		Request                               $request,
-		OrbitalBase                           $currentBase,
-		Player                                $currentPlayer,
-		CalculateNewRate					  $calculateNewRate,
-		GetTravelDuration                     $getTravelDuration,
-		TransactionManager                    $transactionManager,
-		CommercialShippingRepositoryInterface $commercialShippingRepository,
-		HubInterface $mercure,
-		MessageBusInterface                   $messageBus,
-		NotificationRepositoryInterface       $notificationRepository,
-		PlayerManager                         $playerManager,
-		TransactionRepositoryInterface        $transactionRepository,
-		EntityManagerInterface $entityManager,
-		Uuid $id,
+        Request                               $request,
+        Planet                                $currentBase,
+        Player                                $currentPlayer,
+        CalculateNewRate                      $calculateNewRate,
+        GetTravelDuration                     $getTravelDuration,
+        TransactionManager                    $transactionManager,
+        CommercialShippingRepositoryInterface $commercialShippingRepository,
+        HubInterface                          $mercure,
+        MessageBusInterface                   $messageBus,
+        NotificationRepositoryInterface       $notificationRepository,
+        PlayerManager                         $playerManager,
+        TransactionRepositoryInterface        $transactionRepository,
+        EntityManagerInterface $entityManager,
+        Uuid $id,
 	): Response {
 		if (0 === $currentBase->levelCommercialPlateforme) {
 			throw $this->createAccessDeniedException('YOu cannot accept offers without a trading platform');
@@ -72,11 +72,11 @@ class Accept extends AbstractController
 		$playerManager->increaseCredit($seller, $transaction->price);
 
 		// transfert des crédits aux alliances
-		if (null !== ($exportFaction = $transaction->base->place->system->sector->faction)) {
+		if (null !== ($exportFaction = $transaction->base->system->sector->faction)) {
 			$exportFaction->increaseCredit($transactionData['export_tax']);
 		}
 
-		if (null !== ($importFaction = $currentBase->place->system->sector->faction)) {
+		if (null !== ($importFaction = $currentBase->system->sector->faction)) {
 			$importFaction->increaseCredit($transactionData['import_tax']);
 		}
 
@@ -88,8 +88,8 @@ class Accept extends AbstractController
 		$commercialShipping->destinationBase = $currentBase;
 		$commercialShipping->departureDate = new \DateTimeImmutable();
 		$commercialShipping->arrivalDate = $getTravelDuration(
-			$commercialShipping->originBase->place,
-			$currentBase->place,
+			$commercialShipping->originBase,
+			$currentBase,
 			$commercialShipping->departureDate,
 			TravelType::CommercialShipping,
 			$commercialShipping->player,
@@ -114,9 +114,9 @@ class Accept extends AbstractController
 			->setContent(NotificationBuilder::paragraph(
 				NotificationBuilder::link($this->generateUrl('embassy', ['player' => $currentPlayer->id]), $currentPlayer->name),
 				' a accepté une de vos propositions dans le marché. Des vaisseaux commerciaux viennent de partir de votre ',
-				NotificationBuilder::link($this->generateUrl('map', ['place' => $commercialShipping->originBase->place->id]), 'base'),
+				NotificationBuilder::link($this->generateUrl('map', ['place' => $commercialShipping->originBase->id]), 'base'),
 				' et se dirigent vers ',
-				NotificationBuilder::link($this->generateUrl('map', ['place' => $currentBase->place->id]), $currentBase->name),
+				NotificationBuilder::link($this->generateUrl('map', ['place' => $currentBase->id]), $currentBase->name),
 				' pour acheminer la marchandise. ',
 				NotificationBuilder::divider(),
 				sprintf(
@@ -126,7 +126,7 @@ class Accept extends AbstractController
 				),
 				NotificationBuilder::divider(),
 				NotificationBuilder::link(
-					$this->generateUrl('switchbase', ['baseId' => $commercialShipping->originBase->id, 'page' => 'sell']),
+					$this->generateUrl('switchplanet', ['planetId' => $commercialShipping->originBase->id, 'page' => 'sell']),
 					'En savoir plus ?',
 				),
 			))

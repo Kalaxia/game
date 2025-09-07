@@ -3,7 +3,7 @@
 namespace App\Modules\Athena\Infrastructure\Validator;
 
 use App\Modules\Athena\Infrastructure\Validator\DTO\BuildingConstructionOrder;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -24,9 +24,9 @@ class HasFreeBuildingSlotsValidator extends ConstraintValidator
 			throw new UnexpectedValueException($value, BuildingConstructionOrder::class);
 		}
 
-		$orbitalBase = $value->getBase();
+		$planet = $value->getPlanet();
 
-		$maxQueues = OrbitalBaseResource::$building[OrbitalBaseResource::GENERATOR]['level'][$orbitalBase->levelGenerator - 1][3];
+		$maxQueues = PlanetResource::$building[PlanetResource::GENERATOR]['level'][$planet->levelGenerator - 1][3];
 
 		if ($constraint->buildingQueuesCount >= $maxQueues) {
 			$this->context->buildViolation('La file d\'attente est pleine')

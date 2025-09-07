@@ -6,14 +6,14 @@ use App\Classes\Library\DateTimeConverter;
 use App\Classes\Library\Format;
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Athena\Domain\Repository\CommercialShippingRepositoryInterface;
-use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
 use App\Modules\Athena\Domain\Service\CountNeededCommercialShips;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
 use App\Modules\Athena\Message\Trade\CommercialShippingMessage;
 use App\Modules\Athena\Model\CommercialShipping;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
+use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Travel\Domain\Model\TravelType;
@@ -31,27 +31,27 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class GiveShips extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		GetTravelDuration $getTravelDuration,
-		Player $currentPlayer,
-		OrbitalBase $currentBase,
-		CommercialShippingRepositoryInterface $commercialShippingRepository,
-		MessageBusInterface $messageBus,
-		OrbitalBaseRepositoryInterface $orbitalBaseRepository,
-		OrbitalBaseHelper $orbitalBaseHelper,
-		TransactionRepositoryInterface $transactionRepository,
-		NotificationRepositoryInterface $notificationRepository,
-		CountNeededCommercialShips $countNeededCommercialShips,
-		TranslatorInterface $translator,
+        Request                               $request,
+        GetTravelDuration                     $getTravelDuration,
+        Player                                $currentPlayer,
+        Planet                                $currentPlanet,
+        CommercialShippingRepositoryInterface $commercialShippingRepository,
+        MessageBusInterface                   $messageBus,
+        PlanetRepositoryInterface             $planetRepository,
+        PlanetHelper                          $planetHelper,
+        TransactionRepositoryInterface        $transactionRepository,
+        NotificationRepositoryInterface       $notificationRepository,
+        CountNeededCommercialShips            $countNeededCommercialShips,
+        TranslatorInterface                   $translator,
 	): Response {
-		$baseId = $request->request->get('baseId') ?? throw new BadRequestHttpException('Missing base id');
+		$planetId = $request->request->get('planetId') ?? throw new BadRequestHttpException('Missing base id');
 
-		if (!Uuid::isValid($baseId)) {
+		if (!Uuid::isValid($planetId)) {
 			throw new BadRequestHttpException('Invalid base id');
 		}
 
-		$baseUuid = Uuid::fromString($baseId);
-		if ($currentBase->id->equals($baseUuid)) {
+		$baseUuid = Uuid::fromString($planetId);
+		if ($currentPlanet->id->equals($baseUuid)) {
 			throw new BadRequestHttpException('You cannot send ships to your current base');
 		}
 
@@ -79,18 +79,18 @@ class GiveShips extends AbstractController
 			throw new BadRequestHttpException('Invalid ship quantity');
 		}
 
-		if ($currentBase->getShipStorage()[$shipIdentifier] < $ships) {
+		if ($currentPlanet->getShipStorage()[$shipIdentifier] < $ships) {
 			throw new ConflictHttpException('You do not have enough ships');
 		}
 
 		$commercialShipQuantity = $countNeededCommercialShips(Transaction::TYP_SHIP, $ships, $shipIdentifier);
-		$totalShips = $orbitalBaseHelper->getBuildingInfo(6, 'level', $currentBase->levelCommercialPlateforme, 'nbCommercialShip');
+		$totalShips = $planetHelper->getBuildingInfo(6, 'level', $currentPlanet->levelCommercialPlateforme, 'nbCommercialShip');
 		$usedShips = 0;
 
 		// TODO make service
-		$commercialShippings = $commercialShippingRepository->getByBase($currentBase);
+		$commercialShippings = $commercialShippingRepository->getByPlanet($currentPlanet);
 		foreach ($commercialShippings as $commercialShipping) {
-			if ($commercialShipping->originBase->id->equals($currentBase->id)) {
+			if ($commercialShipping->originBase->id->equals($currentPlanet->id)) {
 				$usedShips += $commercialShipping->shipQuantity;
 			}
 		}
@@ -108,7 +108,7 @@ class GiveShips extends AbstractController
 		$tr = new Transaction(
 			id: Uuid::v4(),
 			player: $currentPlayer,
-			base: $currentBase,
+			base: $currentPlanet,
 			type: Transaction::TYP_SHIP,
 			quantity: $ships,
 			identifier: $shipIdentifier,
@@ -120,21 +120,21 @@ class GiveShips extends AbstractController
 		$transactionRepository->save($tr);
 
 		$departure = new \DateTimeImmutable();
-		$otherBase = $orbitalBaseRepository->get($baseUuid)
+		$otherBase = $planetRepository->get($baseUuid)
 			?? throw $this->createNotFoundException('Destination base not found');
 
 		$cs = new CommercialShipping(
 			id: Uuid::v4(),
 			player: $currentPlayer,
-			originBase: $currentBase,
+			originBase: $currentPlanet,
 			destinationBase: $otherBase,
 			transaction: $tr,
 			resourceTransported: 0,
 			shipQuantity: $commercialShipQuantity,
 			departureDate: $departure,
 			arrivalDate: $getTravelDuration(
-				origin: $currentBase->place,
-				destination: $otherBase->place,
+				origin: $currentPlanet,
+				destination: $otherBase,
 				player: $currentPlayer,
 				departureDate: $departure,
 				travelType: TravelType::CommercialShipping,
@@ -149,11 +149,11 @@ class GiveShips extends AbstractController
 			[DateTimeConverter::to_delay_stamp($cs->getArrivalDate())],
 		);
 
-		$currentBase->removeShips($shipIdentifier, $ships);
+		$currentPlanet->removeShips($shipIdentifier, $ships);
 
-		$orbitalBaseRepository->save($currentBase);
+		$planetRepository->save($currentPlanet);
 
-		if ($currentBase->player->id !== $otherBase->player->id) {
+		if ($currentPlanet->player->id !== $otherBase->player->id) {
 
 			$notification = NotificationBuilder::new()
 				->setTitle('Envoi de vaisseaux')
@@ -169,8 +169,8 @@ class GiveShips extends AbstractController
 						NotificationBuilder::bold(Format::numberFormat($ships)),
 						' ' . $translator->trans(sprintf('ship_categories.%s.name', $shipIdentifier)) . ' depuis sa base ',
 						NotificationBuilder::link(
-							$this->generateUrl('map', ['place' => $currentBase->place->id]),
-							$currentBase->name,
+							$this->generateUrl('map', ['place' => $currentPlanet->id]),
+							$currentPlanet->name,
 						),
 						'.',
 					),
@@ -178,7 +178,7 @@ class GiveShips extends AbstractController
 						'Quand le convoi arrivera, les vaisseaux seront placés dans votre hangar.',
 						NotificationBuilder::divider(),
 						NotificationBuilder::link(
-							$this->generateUrl('switchbase', ['baseId' => $otherBase->id, 'page' => 'market']),
+							$this->generateUrl('switchplanet', ['planetId' => $otherBase->id, 'page' => 'market']),
 							'vers la place du commerce →',
 						),
 					)

@@ -1,4 +1,4 @@
-{% set transaction_data = get_transaction_data(transaction, current_base, current_rate) %}
+{% set transaction_data = get_transaction_data(transaction, current_planet, current_rate) %}
 
 <div
 	id="transaction-{{ transaction.id }}"
@@ -55,11 +55,11 @@
 		</p>
 		<p>
 			depuis
-			<a href="{{ path('map', {'place': transaction.base.place.id }) }}">
+			<a href="{{ path('map', {'place': transaction.base.id }) }}">
 				{{ transaction.base.name }}
 			</a>
-			<span class="text-light{{ transaction.base.place.system.sector.faction.identifier }}">
-				[secteur {{ transaction.base.place.system.sector.identifier }}]
+			<span class="text-light{{ transaction.base.system.sector.faction.identifier }}">
+				[secteur {{ transaction.base.system.sector.identifier }}]
 			</span>
 		</p>
 	</section>

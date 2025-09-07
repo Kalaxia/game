@@ -35,34 +35,4 @@ class ColorResource
 	public const BONUS_NEGORA_ROUTE = 3;		// price 3% less for the price of a commercial route
 	public const BONUS_CARDAN_COLO = 10;		// price 10% less for colo or conquest
 	public const BONUS_APHERA_TECHNO = 2;		// 4% less time to build technologies
-
-	public static function getInfo(int $id, string $info): mixed
-	{
-		if ($id <= count(self::$colors)) {
-			if (in_array($info, [
-				'id',
-				'officialName',
-				'popularName',
-				'government',
-				'demonym',
-				'factionPoint',
-				'status',
-				'regime',
-				'devise',
-				'desc1',
-				'desc2',
-				'desc3',
-				'desc4',
-				'bonus',
-				'mandateDuration',
-				'senateDesc',
-				'campaignDesc', ])) {
-				return self::$colors[$id][$info];
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
 }

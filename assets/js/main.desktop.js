@@ -830,7 +830,7 @@ jQuery(document).ready(function($) {
 					wswBox.box = container.find('.modal');
 
 					$('.autocomplete-player').autocomplete(game.path + 'api/players/search');
-					$('.autocomplete-orbitalbase').autocomplete(game.path + 'api/bases/search');
+					$('.autocomplete-orbitalbase').autocomplete(game.path + 'api/planets/search');
 				}).fail(function() {
 					alertController.add(101, 'chargement des données interrompu');
 				});

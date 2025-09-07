@@ -7,7 +7,7 @@ use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Artemis\Model\SpyReport;
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 
 readonly class PlayerSpyingHandler extends SpyingHandler
 {
@@ -20,15 +20,15 @@ readonly class PlayerSpyingHandler extends SpyingHandler
 
 	protected function processSpyingMission(SpyReport $spyReport): void
 	{
-		$orbitalBase = $spyReport->place->base;
+		$planet = $spyReport->place;
 
-		$spyReport->resources = $orbitalBase->resourcesStorage;
+		$spyReport->resources = $planet->resourcesStorage;
 
-		$spyReport->commercialRouteIncome = $this->commercialRouteRepository->getBaseIncome($orbitalBase);
+		$spyReport->commercialRouteIncome = $this->commercialRouteRepository->getPlanetIncome($planet);
 
 		$commandersArray = [];
-		$commanders = $this->commanderRepository->getBaseCommanders(
-			$orbitalBase,
+		$commanders = $this->commanderRepository->getPlanetCommanders(
+			$planet,
 			[Commander::AFFECTED, Commander::MOVING],
 		);
 
@@ -46,8 +46,8 @@ readonly class PlayerSpyingHandler extends SpyingHandler
 		$spyReport->commanders = $commandersArray;
 	}
 
-	protected function getAntiSpyCoeff(Place $place): int
+	protected function getAntiSpyCoeff(Planet $place): int
 	{
-		return $place->base->antiSpyAverage;
+		return $place->antiSpyAverage;
 	}
 }

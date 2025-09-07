@@ -450,3 +450,31 @@ ship_categories:
                 other {# croiseurs lourds}
             }
         description: 'Le croiseur lourd est le type prédominant de croiseur de la galaxie de l’Œil. Conçu par le vieil Empire pour mettre un terme à la rébellion des périodes de troubles, il est le vaisseau de combat le plus massif du chantier de ligne. En effet, sa construction nécessite énormément de matériel et de main-d’œuvre. De plus, le Phénix est piloté par un équipage de plus de 300 personnes. <br /><br />Cet appareil, très gros, est difficile à manœuvrer dans les combats de mêlée. Cependant il est d’une efficacité redoutable en dernière ligne de vos escadrilles.'
+
+galaxy:
+    systems:
+        types:
+            !php/enum App\Modules\Galaxy\Domain\Enum\SystemType::Graveyard->value:
+                name: 'Cimetière Spatial'
+            !php/enum App\Modules\Galaxy\Domain\Enum\SystemType::Nebula->value:
+                name: 'Nébuleuse'
+            !php/enum App\Modules\Galaxy\Domain\Enum\SystemType::BlueGiant->value:
+                name: 'Géante Bleue'
+            !php/enum App\Modules\Galaxy\Domain\Enum\SystemType::YellowDwarf->value:
+                name: 'Naine Jaune'
+            !php/enum App\Modules\Galaxy\Domain\Enum\SystemType::RedDwarf->value:
+                name: 'Naine Rouge'
+    places:
+        types:
+            !php/enum App\Modules\Galaxy\Domain\Enum\PlaceType::Planet->value:
+                name: 'planète tellurique'
+            !php/enum App\Modules\Galaxy\Domain\Enum\PlaceType::GasPlanet->value:
+                name: 'géante gazeuse'
+            !php/enum App\Modules\Galaxy\Domain\Enum\PlaceType::Ruin->value:
+                name: 'ruine'
+            !php/enum App\Modules\Galaxy\Domain\Enum\PlaceType::GasPocket->value:
+                name: 'poche de gaz'
+            !php/enum App\Modules\Galaxy\Domain\Enum\PlaceType::Asteroid->value:
+                name: "ceinture d'astéroïdes"
+            !php/enum App\Modules\Galaxy\Domain\Enum\PlaceType::Empty->value:
+                name: 'zone vide'

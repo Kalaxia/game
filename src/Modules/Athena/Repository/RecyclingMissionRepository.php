@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Athena\Repository;
 
 use App\Modules\Athena\Domain\Repository\RecyclingMissionRepositoryInterface;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\RecyclingMission;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
@@ -28,27 +28,27 @@ class RecyclingMissionRepository extends DoctrineRepository implements Recycling
 		return $this->findAll();
 	}
 
-	public function getBaseMissions(OrbitalBase $base): array
+	public function getBaseMissions(Planet $base): array
 	{
 		return $this->findBy(['base' => $base]);
 	}
 
-	public function getBaseActiveMissions(OrbitalBase $base): array
+	public function getPlanetActiveMissions(Planet $planet): array
 	{
 		return $this->findBy([
-			'base' => $base,
+			'base' => $planet,
 			'statement' => [RecyclingMission::ST_ACTIVE, RecyclingMission::ST_BEING_DELETED],
 		]);
 	}
 
-	public function removeBaseMissions(OrbitalBase $base): void
+	public function removePlanetMissions(Planet $planet): void
 	{
 		$qb = $this->createQueryBuilder('rm');
 
 		$qb
 			->delete()
 			->where('rm.base = :base')
-			->setParameter('base', $base);
+			->setParameter('base', $planet);
 
 		$qb->getQuery()->getResult();
 	}

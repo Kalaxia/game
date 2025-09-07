@@ -11,39 +11,37 @@ use App\Modules\Ares\Domain\Repository\ReportRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\LiveReport;
 use App\Modules\Ares\Model\Report;
-use App\Modules\Athena\Application\Handler\OrbitalBasePointsHandler;
-use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\ColorResource;
-use App\Modules\Gaia\Event\PlaceOwnerChangeEvent;
-use App\Modules\Gaia\Manager\PlaceManager;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Event\PlanetOwnerChangeEvent;
+use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
+use App\Modules\Galaxy\Domain\Service\UpdatePlanetPoints;
+use App\Modules\Galaxy\Manager\PlaceManager;
+use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Hermes\Manager\NotificationManager;
 use App\Modules\Zeus\Manager\PlayerBonusManager;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 readonly class ConquestManager
 {
 	public function __construct(
-		private CommanderManager $commanderManager,
+		private CommanderManager             $commanderManager,
 		private CommanderRepositoryInterface $commanderRepository,
-		private MoveFleet $moveFleet,
-		private PlaceManager $placeManager,
-		private OrbitalBasePointsHandler $orbitalBasePointsHandler,
-		private OrbitalBaseManager $orbitalBaseManager,
-		private OrbitalBaseRepositoryInterface $orbitalBaseRepository,
-		private PlayerBonusManager $playerBonusManager,
-		private ReportRepositoryInterface $reportRepository,
-		private EntityManagerInterface $entityManager,
-		private EventDispatcherInterface $eventDispatcher,
-		private NotificationManager $notificationManager,
-		private int $colonizationCost,
-		private int $conquestCost,
+		private MoveFleet                    $moveFleet,
+		private PlaceManager                 $placeManager,
+		private UpdatePlanetPoints           $updatePlanetPoints,
+		private PlanetManager                $planetManager,
+		private PlanetRepositoryInterface    $planetRepository,
+		private PlayerBonusManager           $playerBonusManager,
+		private ReportRepositoryInterface    $reportRepository,
+		private EntityManagerInterface       $entityManager,
+		private EventDispatcherInterface     $eventDispatcher,
+		private NotificationManager          $notificationManager,
+		private int                          $colonizationCost,
+		private int                          $conquestCost,
 	) {
 	}
 
@@ -82,8 +80,7 @@ readonly class ConquestManager
 					&& Color::ALLY != $commanderColor->relations[$placePlayer->faction->identifier]) {
 				$reportIds = [];
 				$reportArray = [];
-				$placeBase = $place->base;
-				$baseCommanders = $this->commanderRepository->getBaseCommanders($placeBase);
+				$baseCommanders = $this->commanderRepository->getPlanetCommanders($place);
 
 				for ($nbrBattle = 0; $nbrBattle < count($baseCommanders); ++$nbrBattle) {
 					if (!$baseCommanders[$nbrBattle]->isAffected()) {
@@ -125,22 +122,19 @@ readonly class ConquestManager
 				// victoire
 				if (!$commander->isDead()) {
 					if (0 == $nbrBattle) {
-						$this->placeManager->sendNotif($place, Place::CONQUERPLAYERWHITOUTBATTLESUCCESS, $commander, null);
+						$this->placeManager->sendNotif($place, Planet::CONQUERPLAYERWHITOUTBATTLESUCCESS, $commander, null);
 					} else {
-						$this->placeManager->sendNotifForConquest($place, Place::CONQUERPLAYERWHITBATTLESUCCESS, $commander, $reportIds);
+						$this->placeManager->sendNotifForConquest($place, Planet::CONQUERPLAYERWHITBATTLESUCCESS, $commander, $reportIds);
 					}
-
-					$place->player = $commander->player;
-
 					// changer l'appartenance de la base (et de la place)
-					$this->orbitalBaseManager->changeOwner($placeBase, $commander->player);
+					$this->planetManager->changeOwner($place, $commander->player);
 
-					$commander->base = $placeBase;
+					$commander->base = $place;
 
 					$this->commanderManager->endTravel($commander, Commander::AFFECTED);
 					$commander->line = 2;
 
-					$this->eventDispatcher->dispatch(new PlaceOwnerChangeEvent($place));
+					$this->eventDispatcher->dispatch(new PlanetOwnerChangeEvent($place, $placePlayer));
 
 					// PATCH DEGUEU POUR LES MUTLIS-COMBATS
 					$this->notificationManager->patchForMultiCombats($commander->player, $place->player, $commander->getArrivalDate());
@@ -155,7 +149,7 @@ readonly class ConquestManager
 						}
 					}*/
 
-					$this->placeManager->sendNotifForConquest($place, Place::CONQUERPLAYERWHITBATTLEFAIL, $commander, $reportIds);
+					$this->placeManager->sendNotifForConquest($place, Planet::CONQUERPLAYERWHITBATTLEFAIL, $commander, $reportIds);
 				}
 			} else {
 				// si c'est la même couleur
@@ -171,7 +165,7 @@ readonly class ConquestManager
 						destination: $commander->startPlace,
 						mission: CommanderMission::Back,
 					);
-					$this->placeManager->sendNotif($place, Place::CHANGELOST, $commander);
+					$this->placeManager->sendNotif($place, Planet::CHANGELOST, $commander);
 				}
 			}
 
@@ -186,28 +180,20 @@ readonly class ConquestManager
 
 			// victoire
 			if (!$commander->isDead()) {
-				$place->player = $commander->player;
-
 				// créer une base
 				// TODO factorize in a service
-				$ob = new OrbitalBase(
-					id: Uuid::v4(),
-					place: $place,
-					player: $commander->player,
-					name: 'colonie',
-					// TODO transform into constant
-					iSchool: 500,
-					iAntiSpy: 500,
-					resourcesStorage: 2000,
-					createdAt: new \DateTimeImmutable(),
-					updatedAt: new \DateTimeImmutable(),
-				);
-				$this->orbitalBasePointsHandler->updatePoints($ob);
+				$place->player = $commander->player;
+				$place->name = 'colonie';
+				$place->iSchool = 500;
+				$place->iAntiSpy = 500;
+				$place->resourcesStorage = 2000;
 
-				$this->orbitalBaseRepository->save($ob);
+				$this->updatePlanetPoints->updatePoints($place);
+
+				$this->planetRepository->save($place);
 
 				// attibuer le commander à la place
-				$commander->base = $ob;
+				$commander->base = $place;
 				$this->commanderManager->endTravel($commander, Commander::AFFECTED);
 				$commander->line = 2;
 
@@ -215,11 +201,10 @@ readonly class ConquestManager
 				$report = $this->commanderManager->createReport($place);
 
 				$place->danger = 0;
-				$place->base = $ob;
 
-				$this->placeManager->sendNotif($place, Place::CONQUEREMPTYSSUCCESS, $commander, $report);
+				$this->placeManager->sendNotif($place, Planet::CONQUEREMPTYSSUCCESS, $commander, $report);
 
-				$this->eventDispatcher->dispatch(new PlaceOwnerChangeEvent($place));
+				$this->eventDispatcher->dispatch(new PlanetOwnerChangeEvent($place));
 
 				// défaite
 			} else {
@@ -229,9 +214,9 @@ readonly class ConquestManager
 				// mise à jour du danger
 				// TODO Factorize in service
 				$percentage = (($report->defenderPevAtEnd + 1) / ($report->defenderPevAtBeginning + 1)) * 100;
-				$place->danger = round(($percentage * $place->danger) / 100);
+				$place->danger = intval(round(($percentage * $place->danger) / 100));
 
-				$this->placeManager->sendNotif($place, Place::CONQUEREMPTYFAIL, $commander);
+				$this->placeManager->sendNotif($place, Planet::CONQUEREMPTYFAIL, $commander);
 			}
 		}
 		$this->entityManager->flush();

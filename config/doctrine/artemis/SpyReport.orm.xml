@@ -10,7 +10,7 @@
 			<join-column nullable="false" />
 		</many-to-one>
 
-		<many-to-one field="place" target-entity="App\Modules\Gaia\Model\Place">
+		<many-to-one field="place" target-entity="App\Modules\Galaxy\Domain\Entity\Place">
 			<join-column nullable="false" />
 		</many-to-one>
 
@@ -19,7 +19,7 @@
 		<many-to-one field="targetPlayer" target-entity="App\Modules\Zeus\Model\Player" />
 
 		<field name="price" type="integer" />
-		<field name="placeType" type="integer" />
+		<field name="placeType" type="integer" enum-type="App\Modules\Galaxy\Domain\Enum\PlaceType" />
 		<field name="baseType" type="integer" nullable="true" />
 		<field name="placeName" length="124" nullable="true" />
 		<field name="resources" type="integer" />

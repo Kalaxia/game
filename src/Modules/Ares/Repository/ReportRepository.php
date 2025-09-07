@@ -6,12 +6,11 @@ namespace App\Modules\Ares\Repository;
 
 use App\Modules\Ares\Domain\Repository\ReportRepositoryInterface;
 use App\Modules\Ares\Model\Report;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
 class ReportRepository extends DoctrineRepository implements ReportRepositoryInterface
@@ -26,7 +25,7 @@ class ReportRepository extends DoctrineRepository implements ReportRepositoryInt
 		return $this->find($id);
 	}
 
-	public function getByAttackerAndPlace(Player $attacker, Place $place, \DateTimeImmutable $dFight): array
+	public function getByAttackerAndPlace(Player $attacker, Planet $place, \DateTimeImmutable $dFight): array
 	{
 		return $this->findBy([
 			'attacker' => $attacker,

@@ -6,8 +6,8 @@ namespace App\Modules\Artemis\Application\Handler;
 
 use App\Classes\Library\Game;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Application\Handler\GetDistanceBetweenPlaces;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;
 use App\Shared\Application\Handler\DurationHandler;
 
@@ -36,7 +36,7 @@ readonly class AntiSpyHandler
 	 *
 	 * @return list<\DateTimeImmutable|true>
 	 */
-	public function getAntiSpyEntryTime(Place $startPlace, Place $destinationPlace, Commander $commander): array
+	public function getAntiSpyEntryTime(Planet $startPlace, Planet $destinationPlace, Commander $commander): array
 	{
 		$arrivalDate = $commander->getArrivalDate();
 		// dans le même système
@@ -58,7 +58,7 @@ readonly class AntiSpyHandler
 		$distance = ($this->getDistanceBetweenPlaces)($startPlace, $destinationPlace);
 		$distanceRemaining = $this->getRemainingSeconds($distance, $ratioRemaining);
 
-		$antiSpyRadius = $this->getAntiSpyRadius($destinationPlace->base->iAntiSpy, 1);
+		$antiSpyRadius = $this->getAntiSpyRadius($destinationPlace->iAntiSpy, Game::ANTISPY_GAME_MODE);
 
 		if ($distanceRemaining < $antiSpyRadius / 3) {
 			return [true, true, true];

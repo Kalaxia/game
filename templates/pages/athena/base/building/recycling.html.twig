@@ -1,7 +1,7 @@
-{% extends 'layouts/athena/current_base.html.twig' %}
+{% extends 'layouts/athena/current_planet.html.twig' %}
 
 {% block content %}
-	{% set building_number = constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::RECYCLING') %}
+	{% set building_number = constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::RECYCLING') %}
 	{% set recycler_capacity = constant('App\\Modules\\Athena\\Model\\RecyclingMission::RECYCLER_CAPACTIY') %}
 
 	<div class="flex gap-x-4">
@@ -9,7 +9,7 @@
 			<header>
 				{#<img src="{{ asset('build/media/orbitalbase/recycling.png') }}" alt="" />#}
 				<twig:H2>{{ get_building_info(building_number, 'frenchName') }}</twig:H2>
-				<twig:H5>Niveau {{ current_base.levelRecycling }}</twig:H5>
+				<twig:H5>Niveau {{ current_planet.levelRecycling }}</twig:H5>
 			</header>
 
 			<section class="mt-4">
@@ -59,7 +59,7 @@
 
 						<p class="desc">
 							La mission recycle la
-							<strong>{{ get_place_type(mission.target.typeOfPlace) }}</strong>
+							<strong>{{ ('galaxy.places.types.' ~ mission.target.type.value ~ '.name')|trans }}</strong>
 							située aux coordonnées
 							<strong>
 								<a href="{{ path('map', {'place': mission.target.id }) }}">{{ mission_data.coords }}</a>

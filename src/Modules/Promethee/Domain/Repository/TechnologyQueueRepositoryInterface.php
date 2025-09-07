@@ -2,7 +2,7 @@
 
 namespace App\Modules\Promethee\Domain\Repository;
 
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Promethee\Model\TechnologyQueue;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
@@ -27,7 +27,7 @@ interface TechnologyQueueRepositoryInterface extends EntityRepositoryInterface
 	 * TODO Replace Place argument with OrbitalBase
 	 * @return list<TechnologyQueue>
 	 */
-	public function getPlaceQueues(Place $place): array;
+	public function getPlanetQueues(Planet $planet): array;
 
 	/**
 	 * @return list<TechnologyQueue>

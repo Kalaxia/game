@@ -11,12 +11,10 @@ use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\LiveReport;
-use App\Modules\Ares\Model\Report;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Manager\PlaceManager;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Manager\PlaceManager;
+use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Zeus\Manager\PlayerBonusManager;
 use App\Modules\Zeus\Model\PlayerBonus;
 use App\Modules\Zeus\Model\PlayerBonusId;
@@ -30,11 +28,11 @@ readonly class LootManager
 		private EventDispatcherInterface     $eventDispatcher,
 		private CommanderManager             $commanderManager,
 		private CommanderRepositoryInterface $commanderRepository,
-		private MoveFleet $moveFleet,
-		private OrbitalBaseManager           $orbitalBaseManager,
+		private MoveFleet                    $moveFleet,
+		private PlanetManager                $planetManager,
 		private PlaceManager                 $placeManager,
 		private PlayerBonusManager           $playerBonusManager,
-		private CommanderArmyHandler $commanderArmyHandler,
+		private CommanderArmyHandler         $commanderArmyHandler,
 	) {
 	}
 
@@ -42,8 +40,7 @@ readonly class LootManager
 	{
 		$place = $commander->destinationPlace;
 		$placePlayer = $place->player;
-		$placeBase = $place->base;
-		$placeCommanders = null !== $placeBase ? $this->commanderRepository->getBaseCommanders($placeBase) : [];
+		$placeCommanders = null !== $place ? $this->commanderRepository->getPlanetCommanders($place) : [];
 		// @WARNING possibly not the right property to use
 		$commanderPlace = $commander->startPlace;
 		$commanderPlayer = $commander->player;
@@ -76,12 +73,12 @@ readonly class LootManager
 					destination: $commanderPlace,
 					mission: CommanderMission::Back,
 				);
-				$this->placeManager->sendNotif($place, Place::LOOTEMPTYSSUCCESS, $commander, $report);
+				$this->placeManager->sendNotif($place, Planet::LOOTEMPTYSSUCCESS, $commander, $report);
 			} else {
 				// si il est mort
 				// création du rapport de combat
 				$report = $this->commanderManager->createReport($place);
-				$this->placeManager->sendNotif($place, Place::LOOTEMPTYFAIL, $commander, $report);
+				$this->placeManager->sendNotif($place, Planet::LOOTEMPTYFAIL, $commander, $report);
 
 				// réduction de la force de la planète
 				// TODO Factorize in a service
@@ -96,7 +93,7 @@ readonly class LootManager
 			// planète à joueur : si $this->rColor != commandant->rColor
 			// si il peut l'attaquer
 			// TODO move to spec
-			if ((!$place->player->faction->id->equals($commander->player->faction->id) && $place->player->level > 1 && Color::ALLY !== $commanderColor->relations[$place->player->faction->identifier]) || null === $place->player) {
+			if ((!$place->player->faction->id->equals($commander->player->faction->id) && $place->player->level > 1 && Color::ALLY !== $commanderColor->relations[$place->player->faction->identifier]) || null === $place->base) {
 				$dCommanders = [];
 				foreach ($placeCommanders as $dCommander) {
 					if ($dCommander->isAffected() && 1 == $dCommander->line) {
@@ -112,7 +109,7 @@ readonly class LootManager
 					// victoire
 					if (!$commander->isDead()) {
 						// piller la planète
-						$this->lootAPlayerPlace($commander, $playerBonus, $placeBase);
+						$this->lootAPlayerPlace($commander, $playerBonus, $place);
 						($this->moveFleet)(
 							commander: $commander,
 							origin: $place,
@@ -127,24 +124,24 @@ readonly class LootManager
 						// création du rapport
 						$report = $this->commanderManager->createReport($place);
 
-						$this->placeManager->sendNotif($place, Place::LOOTPLAYERWHITBATTLESUCCESS, $commander, $report);
+						$this->placeManager->sendNotif($place, Planet::LOOTPLAYERWHITBATTLESUCCESS, $commander, $report);
 
 					// défaite
 					} else {
 						// création du rapport
 						$report = $this->commanderManager->createReport($place);
 
-						$this->placeManager->sendNotif($place, Place::LOOTPLAYERWHITBATTLEFAIL, $commander, $report);
+						$this->placeManager->sendNotif($place, Planet::LOOTPLAYERWHITBATTLEFAIL, $commander, $report);
 					}
 				} else {
-					$this->lootAPlayerPlace($commander, $playerBonus, $placeBase);
+					$this->lootAPlayerPlace($commander, $playerBonus, $place);
 					($this->moveFleet)(
 						commander: $commander,
 						origin: $place,
 						destination: $commanderPlace,
 						mission: CommanderMission::Back,
 					);
-					$this->placeManager->sendNotif($place, Place::LOOTPLAYERWHITOUTBATTLESUCCESS, $commander);
+					$this->placeManager->sendNotif($place, Planet::LOOTPLAYERWHITOUTBATTLESUCCESS, $commander);
 				}
 			} else {
 				// si c'est la même couleur
@@ -160,7 +157,7 @@ readonly class LootManager
 						destination: $commanderPlace,
 						mission: CommanderMission::Back,
 					);
-					$this->placeManager->sendNotif($place, Place::CHANGELOST, $commander);
+					$this->placeManager->sendNotif($place, Planet::CHANGELOST, $commander);
 				}
 			}
 		}
@@ -169,7 +166,7 @@ readonly class LootManager
 		$this->entityManager->flush();
 	}
 
-	public function lootAPlayerPlace(Commander $commander, PlayerBonus $playerBonus, OrbitalBase $placeBase): void
+	public function lootAPlayerPlace(Commander $commander, PlayerBonus $playerBonus, Planet $placeBase): void
 	{
 		$bonus = $playerBonus->bonuses->get(PlayerBonusId::SHIP_CONTAINER);
 
@@ -181,7 +178,7 @@ readonly class LootManager
 		$resourcesLooted = ($storage > $resourcesToLoot) ? $resourcesToLoot : $storage;
 
 		if ($resourcesLooted > 0) {
-			$this->orbitalBaseManager->decreaseResources($placeBase, $resourcesLooted);
+			$this->planetManager->decreaseResources($placeBase, $resourcesLooted);
 			$commander->resources = $resourcesLooted;
 
 			LiveReport::$resources = $resourcesLooted;

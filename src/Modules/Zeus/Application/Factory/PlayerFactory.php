@@ -3,15 +3,13 @@
 namespace App\Modules\Zeus\Application\Factory;
 
 use App\Modules\Ares\Domain\Model\ShipCategory;
-use App\Modules\Ares\Model\Ship;
-use App\Modules\Athena\Application\Handler\OrbitalBasePointsHandler;
-use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Repository\OrbitalBaseRepository;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
-use App\Modules\Gaia\Event\PlaceOwnerChangeEvent;
-use App\Modules\Gaia\Manager\PlaceManager;
-use App\Modules\Gaia\Model\Sector;
+use App\Modules\Galaxy\Domain\Entity\Sector;
+use App\Modules\Galaxy\Domain\Event\PlanetOwnerChangeEvent;
+use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
+use App\Modules\Galaxy\Domain\Service\UpdatePlanetPoints;
+use App\Modules\Galaxy\Infrastructure\Repository\Doctrine\PlanetRepository;
+use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Hermes\Domain\Repository\ConversationUserRepositoryInterface;
@@ -35,23 +33,23 @@ use Symfony\Component\Uid\Uuid;
 readonly class PlayerFactory
 {
 	public function __construct(
-		private EntityManagerInterface $entityManager,
-		private ConversationRepositoryInterface $conversationRepository,
+		private EntityManagerInterface              $entityManager,
+		private ConversationRepositoryInterface     $conversationRepository,
 		private ConversationUserRepositoryInterface $conversationUserRepository,
-		private EventDispatcherInterface $eventDispatcher,
-		private PlayerManager $playerManager,
-		private PlayerRepositoryInterface $playerRepository,
-		private NotificationRepositoryInterface $notificationRepository,
-		private OrbitalBaseRepository $orbitalBaseRepository,
-		private OrbitalBasePointsHandler $orbitalBasePointsHandler,
-		private ResearchHelper $researchHelper,
-		private ResearchRepositoryInterface $researchRepository,
-		private PlaceRepositoryInterface $placeRepository,
-		private PlaceManager $placeManager,
-		private TechnologyRepositoryInterface $technologyRepository,
-		private UrlGeneratorInterface $urlGenerator,
+		private EventDispatcherInterface            $eventDispatcher,
+		private PlayerManager                       $playerManager,
+		private PlayerRepositoryInterface           $playerRepository,
+		private NotificationRepositoryInterface     $notificationRepository,
+		private PlanetRepository                    $planetRepository,
+		private UpdatePlanetPoints                  $updatePlanetPoints,
+		private ResearchHelper                      $researchHelper,
+		private ResearchRepositoryInterface         $researchRepository,
+		private PlaceRepositoryInterface            $placeRepository,
+		private PlaceManager                        $placeManager,
+		private TechnologyRepositoryInterface       $technologyRepository,
+		private UrlGeneratorInterface               $urlGenerator,
 		#[Autowire('%id_jeanmi%')]
-		private int $jeanMiId,
+		private int                                 $jeanMiId,
 	) {
 	}
 
@@ -169,79 +167,75 @@ readonly class PlayerFactory
 		$this->researchRepository->save($rs);
 
 		// choix de la place
-		$candidatePlaces = $this->placeRepository->findPlacesIdsForANewBase($sector);
+		$candidatePlaces = $this->planetRepository->getCandidatePlanetsForNewPlayers($sector);
 
 		$placeId = $candidatePlaces[random_int(0, count($candidatePlaces) - 1)];
-		$place = $this->placeRepository->get($placeId);
-		// CREATION DE LA BASE ORBITALE
-		$ob = new OrbitalBase(
-			id: Uuid::v4(),
-			place: $place,
-			player: $player,
-			name: $baseName,
-		);
+		$planet = $this->planetRepository->get($placeId);
+
+		$planet->player = $player;
+		$planet->name = $baseName;
 
 		// création des premiers bâtiments
 		if ($highMode) {
 			// batiments haut-level
-			$ob->levelGenerator = 35;
-			$ob->levelRefinery = 35;
-			$ob->levelDock1 = 35;
-			$ob->levelDock2 = 10;
-			$ob->levelDock3 = 0;
-			$ob->levelTechnosphere = 35;
-			$ob->levelCommercialPlateforme = 10;
-			$ob->levelStorage = 35;
-			$ob->levelRecycling = 15;
-			$ob->levelSpatioport = 10;
-			$ob->resourcesStorage = 3000000;
+			$planet->levelGenerator = 35;
+			$planet->levelRefinery = 35;
+			$planet->levelDock1 = 35;
+			$planet->levelDock2 = 10;
+			$planet->levelDock3 = 0;
+			$planet->levelTechnosphere = 35;
+			$planet->levelCommercialPlateforme = 10;
+			$planet->levelStorage = 35;
+			$planet->levelRecycling = 15;
+			$planet->levelSpatioport = 10;
+			$planet->resourcesStorage = 3000000;
 
 			// remplir le dock
-			$ob->addShips(ShipCategory::LightFighter, 50);
-			$ob->addShips(ShipCategory::Fighter, 50);
-			$ob->addShips(ShipCategory::HeavyFighter, 10);
-			$ob->addShips(ShipCategory::LightCorvette, 10);
-			$ob->addShips(ShipCategory::Corvette, 5);
-			$ob->addShips(ShipCategory::HeavyCorvette, 5);
-			$ob->addShips(ShipCategory::LightFrigate, 2);
-			$ob->addShips(ShipCategory::Frigate, 2);
-			$ob->addShips(ShipCategory::Destroyer, 1);
-			$ob->addShips(ShipCategory::HeavyDestroyer, 1);
-			$ob->addShips(ShipCategory::Cruiser, 0);
-			$ob->addShips(ShipCategory::HeavyCruiser, 0);
+			$planet->addShips(ShipCategory::LightFighter, 50);
+			$planet->addShips(ShipCategory::Fighter, 50);
+			$planet->addShips(ShipCategory::HeavyFighter, 10);
+			$planet->addShips(ShipCategory::LightCorvette, 10);
+			$planet->addShips(ShipCategory::Corvette, 5);
+			$planet->addShips(ShipCategory::HeavyCorvette, 5);
+			$planet->addShips(ShipCategory::LightFrigate, 2);
+			$planet->addShips(ShipCategory::Frigate, 2);
+			$planet->addShips(ShipCategory::Destroyer, 1);
+			$planet->addShips(ShipCategory::HeavyDestroyer, 1);
+			$planet->addShips(ShipCategory::Cruiser, 0);
+			$planet->addShips(ShipCategory::HeavyCruiser, 0);
 		} else {
-			$ob->levelGenerator = 1;
-			$ob->levelRefinery = 1;
-			$ob->levelDock1 = 0;
-			$ob->levelDock2 = 0;
-			$ob->levelDock3 = 0;
-			$ob->levelTechnosphere = 0;
-			$ob->levelCommercialPlateforme = 0;
-			$ob->levelStorage = 1;
-			$ob->levelRecycling = 0;
-			$ob->levelSpatioport = 0;
-			$ob->resourcesStorage = 1000;
+			$planet->levelGenerator = 1;
+			$planet->levelRefinery = 1;
+			$planet->levelDock1 = 0;
+			$planet->levelDock2 = 0;
+			$planet->levelDock3 = 0;
+			$planet->levelTechnosphere = 0;
+			$planet->levelCommercialPlateforme = 0;
+			$planet->levelStorage = 1;
+			$planet->levelRecycling = 0;
+			$planet->levelSpatioport = 0;
+			$planet->resourcesStorage = 1000;
 		}
 
-		$this->orbitalBasePointsHandler->updatePoints($ob);
+		$this->updatePlanetPoints->updatePoints($planet);
 
 		// initialisation des investissement
-		$ob->iSchool = 500;
-		$ob->iAntiSpy = 500;
+		$planet->iSchool = 500;
+		$planet->iAntiSpy = 500;
 
 		// ajout de la base
-		$ob->updatedAt = new \DateTimeImmutable();
-		$ob->createdAt = new \DateTimeImmutable();
+		$planet->updatedAt = new \DateTimeImmutable();
+		$planet->createdAt = new \DateTimeImmutable();
 
 		$this->createPlayerTechnology($player, $highMode);
 
-		$this->orbitalBaseRepository->save($ob);
+		$this->planetRepository->save($planet);
 
-		$this->placeManager->turnAsSpawnPlace($place, $player);
+		$this->placeManager->turnAsSpawnPlace($planet);
 
 		$this->entityManager->commit();
 
-		$this->eventDispatcher->dispatch(new PlaceOwnerChangeEvent($place));
+		$this->eventDispatcher->dispatch(new PlanetOwnerChangeEvent($planet));
 
 		// modification de la place
 

@@ -2,8 +2,8 @@
 
 namespace App\Modules\Promethee\Infrastructure\Controller;
 
-use App\Modules\Athena\Manager\OrbitalBaseManager;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Promethee\Domain\Repository\TechnologyQueueRepositoryInterface;
 use App\Modules\Promethee\Helper\TechnologyHelper;
 use App\Modules\Promethee\Manager\TechnologyQueueManager;
@@ -19,21 +19,21 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 class CancelTechnologyQueue extends AbstractController
 {
 	public function __invoke(
-		DurationHandler $durationHandler,
-		Request $request,
-		Player $currentPlayer,
-		OrbitalBase $currentBase,
-		TechnologyHelper $technologyHelper,
-		TechnologyQueueManager $technologyQueueManager,
+		DurationHandler                    $durationHandler,
+		Request                            $request,
+		Player                             $currentPlayer,
+		Planet                             $currentBase,
+		TechnologyHelper                   $technologyHelper,
+		TechnologyQueueManager             $technologyQueueManager,
 		TechnologyQueueRepositoryInterface $technologyQueueRepository,
-		PlayerManager $playerManager,
-		OrbitalBaseManager $orbitalBaseManager,
-		int $identifier,
+		PlayerManager                      $playerManager,
+		PlanetManager                      $planetManager,
+		int                                $identifier,
 	): Response {
 		if (!$technologyHelper->isATechnology($identifier)) {
 			throw new BadRequestHttpException('la technologie indiquée n\'est pas valide');
 		}
-		$placeTechnologyQueues = $technologyQueueRepository->getPlaceQueues($currentBase->place);
+		$placeTechnologyQueues = $technologyQueueRepository->getPlanetQueues($currentBase);
 
 		$index = $startedAt = null;
 		$targetLevel = 0;
@@ -79,7 +79,7 @@ class CancelTechnologyQueue extends AbstractController
 		// rends les ressources et les crédits au joueur
 		$resourcePrice = $technologyHelper->getInfo($identifier, 'resource', $targetLevel);
 		$resourcePrice = intval(round($resourcePrice * $technologyResourceRefund));
-		$orbitalBaseManager->increaseResources($currentBase, $resourcePrice);
+		$planetManager->increaseResources($currentBase, $resourcePrice);
 		$creditPrice = $technologyHelper->getInfo($identifier, 'credit', $targetLevel);
 		$creditPrice = intval(round($creditPrice * $technologyCreditRefund));
 		$playerManager->increaseCredit($currentPlayer, $creditPrice);

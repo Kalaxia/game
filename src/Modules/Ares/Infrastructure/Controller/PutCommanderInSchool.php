@@ -4,7 +4,7 @@ namespace App\Modules\Ares\Infrastructure\Controller;
 
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Gaia\Resource\PlaceResource;
+use App\Modules\Galaxy\Resource\PlaceResource;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,12 +25,12 @@ class PutCommanderInSchool extends AbstractController
 		if (null === ($commander = $commanderRepository->get($id)) || $commander->player->id !== $currentPlayer->id) {
 			throw new BadRequestHttpException('Ce commandant n\'existe pas ou ne vous appartient pas');
 		}
-		$orbitalBase = $commander->base;
+		$planet = $commander->base;
 
 		if ($commander->isInReserve()) {
-			$commanders = $commanderRepository->getBaseCommanders($commander->base, [Commander::INSCHOOL]);
+			$commanders = $commanderRepository->getPlanetCommanders($commander->base, [Commander::INSCHOOL]);
 
-			if (count($commanders) >= PlaceResource::get($orbitalBase->typeOfBase, 'school-size')) {
+			if (count($commanders) >= PlaceResource::get($planet->typeOfBase, 'school-size')) {
 				throw new ConflictHttpException('Votre école est déjà pleine.');
 			}
 			$commander->statement = Commander::INSCHOOL;

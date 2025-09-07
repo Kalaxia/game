@@ -7,11 +7,11 @@ use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Infrastructure\Validator\Commander\CanConquer;
 use App\Modules\Ares\Infrastructure\Validator\DTO\Conquest;
-use App\Modules\Athena\Application\Handler\CountPlayerBases;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Resource\ColorResource;
-use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
+use App\Modules\Galaxy\Domain\Service\CountPlayerPlanets;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Zeus\Manager\PlayerManager;
 use App\Modules\Zeus\Model\Player;
@@ -27,19 +27,19 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class Conquer extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		Player $currentPlayer,
-		OrbitalBase $orbitalBase,
-		CountPlayerBases $countPlayerBases,
-		CommanderRepositoryInterface $commanderRepository,
-		GetFactionsConfiguration $getFactionsConfiguration,
-		MoveFleet $moveFleet,
-		PlaceRepositoryInterface $placeRepository,
-		PlayerManager $playerManager,
+		Request                       $request,
+		Player                        $currentPlayer,
+		Planet                        $planet,
+		CountPlayerPlanets            $countPlayerBases,
+		CommanderRepositoryInterface  $commanderRepository,
+		GetFactionsConfiguration      $getFactionsConfiguration,
+		MoveFleet                     $moveFleet,
+		PlaceRepositoryInterface      $placeRepository,
+		PlayerManager                 $playerManager,
 		TechnologyRepositoryInterface $technologyRepository,
-		EntityManagerInterface $entityManager,
-		ValidatorInterface $validator,
-		Uuid $id,
+		EntityManagerInterface        $entityManager,
+		ValidatorInterface            $validator,
+		Uuid                          $id,
 	): Response {
 		$conquestCost = $this->getParameter('ares.coeff.conquest_cost');
 		$placeId = $request->query->get('placeId') ?? throw new BadRequestHttpException('Missing place id');
@@ -83,7 +83,7 @@ class Conquer extends AbstractController
 
 		$moveFleet(
 			commander: $commander,
-			origin: $commander->base->place,
+			origin: $commander->base,
 			destination: $place,
 			mission: CommanderMission::Colo,
 		);

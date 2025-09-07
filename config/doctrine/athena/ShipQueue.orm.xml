@@ -2,7 +2,7 @@
 	<entity name="App\Modules\Athena\Model\ShipQueue" table="shipQueue">
 		<id name="id" column="id" type="uuid" />
 
-		<many-to-one field="base" target-entity="App\Modules\Athena\Model\OrbitalBase">
+		<many-to-one field="base" target-entity="App\Modules\Galaxy\Domain\Entity\Planet">
 			<join-column nullable="false" />
 		</many-to-one>
 

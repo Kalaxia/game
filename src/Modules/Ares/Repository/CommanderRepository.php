@@ -6,9 +6,8 @@ namespace App\Modules\Ares\Repository;
 
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Specification\SelectorSpecification;
@@ -16,6 +15,9 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * @extends DoctrineRepository<Commander>
+ */
 class CommanderRepository extends DoctrineRepository implements CommanderRepositoryInterface
 {
 	public function __construct(ManagerRegistry $registry)
@@ -71,18 +73,18 @@ class CommanderRepository extends DoctrineRepository implements CommanderReposit
 			->getResult();
 	}
 
-	public function getBaseCommanders(OrbitalBase $orbitalBase, array $statements = [], array $orderBy = []): array
+	public function getPlanetCommanders(Planet $planet, array $statements = [], array $orderBy = []): array
 	{
 		return $this->findBy([
-			'base' => $orbitalBase,
+			'base' => $planet,
 			'statement' => $statements,
 		], $orderBy);
 	}
 
-	public function getCommandersByLine(OrbitalBase $orbitalBase, int $line): array
+	public function getCommandersByLine(Planet $planet, int $line): array
 	{
 		return $this->findBy([
-			'base' => $orbitalBase,
+			'base' => $planet,
 			'line' => $line,
 		]);
 	}
@@ -92,9 +94,9 @@ class CommanderRepository extends DoctrineRepository implements CommanderReposit
 		$qb = $this->createQueryBuilder('c');
 
 		return $qb
-			->join('c.destinationPlace', 'dp')
-			->join('dp.player', 'player')
-			->andWhere('dp.player = :player')
+			->join('c.destinationPlace', 'base')
+			->join('base.player', 'player')
+			->andWhere('base.player = :player')
 			->andWhere('c.player != :player')
 			->andWhere($qb->expr()->eq('c.statement', Commander::MOVING))
 			->andWhere($qb->expr()->in('c.travelType', [Commander::COLO, Commander::LOOT]))
@@ -111,7 +113,7 @@ class CommanderRepository extends DoctrineRepository implements CommanderReposit
 		]);
 	}
 
-	public function getIncomingCommanders(Place $place): array
+	public function getIncomingCommanders(Planet $place): array
 	{
 		return $this->findBy([
 			'destinationPlace' => $place,
@@ -119,16 +121,16 @@ class CommanderRepository extends DoctrineRepository implements CommanderReposit
 		], ['dArrival' => 'ASC']);
 	}
 
-	public function countCommandersByLine(OrbitalBase $orbitalBase, int $line): int
+	public function countCommandersByLine(Planet $planet, int $line): int
 	{
 		$qb = $this->createQueryBuilder('c');
 
 		return $qb
 			->select('COUNT(c)')
-			->andWhere('c.base = :orbital_base')
+			->andWhere('c.base = :planet')
 			->andWhere('c.line = :line')
 			->andWhere($qb->expr()->in('c.statement', [Commander::AFFECTED, Commander::MOVING]))
-			->setParameter('orbital_base', $orbitalBase->id, UuidType::NAME)
+			->setParameter('planet', $planet->id, UuidType::NAME)
 			->setParameter('line', $line)
 			->getQuery()
 			->getSingleScalarResult();

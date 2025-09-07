@@ -1,4 +1,4 @@
-{% extends 'layouts/athena/current_base.html.twig' %}
+{% extends 'layouts/athena/current_planet.html.twig' %}
 
 {% block content %}
 	<div class="flex gap-x-4">
@@ -6,13 +6,13 @@
 			<header>
 				{#<img src="{{ asset('build/media/orbitalbase/refinery.png') }}" alt="" />#}
 				<twig:H2>
-					{{ get_building_info(constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::REFINERY'), 'frenchName') }}
+					{{ get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::REFINERY'), 'frenchName') }}
 				</twig:H2>
-				<twig:H5>Niveau {{ current_base.levelRefinery }}</twig:H5>
+				<twig:H5>Niveau {{ current_planet.levelRefinery }}</twig:H5>
 			</header>
 			<section class="mt-4">
 				{# @TODO factorize with toolbar.html.twig #}
-				{% set production = get_base_production(current_base) %}
+				{% set production = get_planet_production(current_planet) %}
 				<twig:NumberBox label="production par relève" :bonus="((production * refining_bonus) / 100)">
 					{{ production|number }}
 					{#<img alt="ressources" src="{{ asset('build/media/resources/resource.png') }}" class="icon-color">#}
@@ -21,7 +21,7 @@
 				<hr class="my-2" />
 
 				<twig:NumberBox label="coefficient ressource de la planète">
-					{{ current_base.place.coefResources }} %
+					{{ current_planet.coefResources }} %
 				</twig:NumberBox>
 
 				<twig:NumberBox label="bonus technologique de production">
@@ -38,10 +38,10 @@
 			<section>
 				<twig:H3>Production par relève</twig:H3>
 				<div class="flex flex-col divide-y divide-gray-500">
-					{% set refinery_level = current_base.levelRefinery %}
+					{% set refinery_level = current_planet.levelRefinery %}
 
 					{% for level in get_building_level_range(refinery_level) %}
-						{% set production = get_base_production(current_base, level) %}
+						{% set production = get_planet_production(current_planet, level) %}
 						<twig:NumberBox :label="'niveau ' ~ level" :bonus="refining_bonus > 0 ? ((production * refining_bonus) / 100) : 0" :class="'p-2 ' ~ ((level == refinery_level) ? 'bg-gray-800' : '')">
 							{{ production|number }}
 							{#<img class="icon-color" src="{{ asset('build/media/resources/resource.png') }}" alt="crédits" />#}
@@ -57,7 +57,7 @@
 			</header>
 			<section>
 				<p class="text-sm">
-					{{ get_building_info(constant('App\\Modules\\Athena\\Resource\\OrbitalBaseResource::REFINERY'), 'description')|raw }}
+					{{ get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::REFINERY'), 'description')|raw }}
 				</p>
 			</section>
 		</div>

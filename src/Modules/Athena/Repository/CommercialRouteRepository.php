@@ -6,12 +6,11 @@ namespace App\Modules\Athena\Repository;
 
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
 use App\Modules\Athena\Model\CommercialRoute;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Demeter\Model\Color;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\DBAL\Exception;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query\Expr;
@@ -32,7 +31,7 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 		return $this->find($id);
 	}
 
-	public function searchCandidates(Player $player, OrbitalBase $orbitalBase, array $factions, int $minDistance, int $maxDistance): array
+	public function searchCandidates(Player $player, Planet $planet, array $factions, int $minDistance, int $maxDistance): array
 	{
 		$factionIdentifiers = sprintf("(%s)", implode(',', $factions));
 
@@ -62,8 +61,8 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 					LIMIT 40
 				SQL,
 				[
-					'system_x' => $orbitalBase->place->system->xPosition,
-					'system_y' => $orbitalBase->place->system->yPosition,
+					'system_x' => $planet->system->xPosition,
+					'system_y' => $planet->system->yPosition,
 					'player_id' => $player->id,
 					'min_distance' => $minDistance,
 					'max_distance' => $maxDistance,
@@ -82,9 +81,7 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 		$qb
 			->select()
 			->leftJoin('cr.originBase', 'ob')
-			->join('ob.place', 'obp')
 			->leftJoin('cr.destinationBase', 'db')
-			->join('db.place', 'dbp')
 			->where('db.player = :player')
 			->orWhere('ob.player = :player')
 			->setParameter('player', $player);
@@ -171,61 +168,61 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 		return $qb->getQuery()->getSingleResult();
 	}
 
-	public function getByIdAndBase(Uuid $id, OrbitalBase $base): CommercialRoute|null
+	public function getByIdAndPlanet(Uuid $id, Planet $planet): CommercialRoute|null
 	{
 		return $this->findOneBy([
 			'id' => $id,
-			'originBase' => $base,
+			'originBase' => $planet,
 		]);
 	}
 
-	public function getByIdAndDistantBase(Uuid $id, OrbitalBase $base): CommercialRoute|null
+	public function getByIdAndDistantPlanet(Uuid $id, Planet $planet): CommercialRoute|null
 	{
 		return $this->findOneBy([
 			'id' => $id,
-			'destinationBase' => $base,
+			'destinationBase' => $planet,
 		]);
 	}
 
 	/**
 	 * @return list<CommercialRoute>
 	 */
-	public function getByBase(OrbitalBase $base): array
+	public function getByPlanet(Planet $planet): array
 	{
 		return $this->findBy([
-			'originBase' => $base,
+			'originBase' => $planet,
 		]);
 	}
 
 	/**
 	 * @return list<CommercialRoute>
 	 */
-	public function getByDistantBase(OrbitalBase $base): array
+	public function getByDistantPlanet(Planet $planet): array
 	{
 		return $this->findBy([
-			'destinationBase' => $base,
+			'destinationBase' => $planet,
 		]);
 	}
 
-	public function getBaseRoutes(OrbitalBase $base): array
+	public function getPlanetRoutes(Planet $planet): array
 	{
 		$qb = $this->createQueryBuilder('cr');
 
 		return $qb
 			->where($this->getBaseEndpointsExpr($qb))
-			->setParameter('base', $base->id, UuidType::NAME)
+			->setParameter('base', $planet->id, UuidType::NAME)
 			->getQuery()
 			->getResult();
 	}
 
-	public function getExistingRoute(OrbitalBase $base, OrbitalBase $distantBase): CommercialRoute|null
+	public function getExistingRoute(Planet $planet, Planet $distantPlanet): CommercialRoute|null
 	{
 		$qb = $this->createQueryBuilder('cr');
 
 		return $qb
 			->where($this->getBoundBasesStatement($qb))
-			->setParameter('base', $base)
-			->setParameter('distant_base', $distantBase)
+			->setParameter('base', $planet)
+			->setParameter('distant_base', $distantPlanet)
 			->getQuery()
 			->getOneOrNullResult();
 	}
@@ -234,7 +231,7 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 	 * @throws NonUniqueResultException
 	 * @throws NoResultException
 	 */
-	public function getBaseIncome(OrbitalBase $base): int
+	public function getPlanetIncome(Planet $planet): int
 	{
 		$qb = $this->createQueryBuilder('cr');
 
@@ -246,7 +243,7 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 					$qb->expr()->eq('cr.statement', CommercialRoute::ACTIVE),
 				),
 			)
-			->setParameter('base', $base->id, UuidType::NAME);
+			->setParameter('base', $planet->id, UuidType::NAME);
 
 		return intval($qb->getQuery()->getSingleScalarResult() ?? 0);
 	}
@@ -255,7 +252,7 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 	 * @throws NonUniqueResultException
 	 * @throws NoResultException
 	 */
-	public function countBaseRoutes(Orbitalbase $base, array $statements = []): int
+	public function countPlanetRoutes(Planet $planet, array $statements = []): int
 	{
 		$qb = $this->createQueryBuilder('cr');
 
@@ -267,7 +264,7 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 					([] !== $statements) ? $qb->expr()->in('cr.statement', $statements) : null,
 				),
 			)
-			->setParameter('base', $base->id, UuidType::NAME);
+			->setParameter('base', $planet->id, UuidType::NAME);
 
 		return intval($qb->getQuery()->getSingleScalarResult() ?? 0);
 	}

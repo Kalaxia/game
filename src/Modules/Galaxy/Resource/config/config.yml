@@ -1,0 +1,23 @@
+---
+parameters:
+    galaxy.limit_conquest_sector: 4
+    galaxy.scores: [1, 3, 5, 10]
+    galaxy.sector_minimal_score: 10
+    
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Modules\Galaxy\:
+        resource: '%kernel.project_dir%/src/Modules/Galaxy/'
+        exclude:
+            - '../../Message'
+            - '../../Model'
+            - '../../Resource'
+
+    App\Modules\Galaxy\Helper\GalaxyGenerator: ~
+            
+    App\Modules\Galaxy\Galaxy\GalaxyConfiguration:
+        public: true
+        class: "%galaxy.galaxy_configuration.class%"

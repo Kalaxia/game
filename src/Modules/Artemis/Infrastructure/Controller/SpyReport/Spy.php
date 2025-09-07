@@ -7,8 +7,9 @@ use App\Modules\Artemis\Application\Handler\PlayerSpyingHandler;
 use App\Modules\Artemis\Application\Handler\SpyingHandler;
 use App\Modules\Artemis\Domain\Event\SpyEvent;
 use App\Modules\Artemis\Domain\Repository\SpyReportRepositoryInterface;
-use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Enum\PlaceType;
+use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Zeus\Manager\PlayerManager;
 use App\Modules\Zeus\Model\Player;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -37,7 +38,7 @@ class Spy extends AbstractController
 		SpyReportRepositoryInterface $spyReportRepository,
 		EventDispatcherInterface $eventDispatcher,
 	): Response {
-		$placeId = $request->query->get('baseId') ?? throw new BadRequestHttpException('Missing place ID');
+		$placeId = $request->query->get('planetId') ?? throw new BadRequestHttpException('Missing place ID');
 
 		if (!Uuid::isValid($placeId)) {
 			throw new BadRequestHttpException('Place ID must be a valid UUID');
@@ -55,7 +56,7 @@ class Spy extends AbstractController
 		$place = $placeRepository->get(Uuid::fromString($placeId)) ?? throw $this->createNotFoundException('Place not found');
 
 		// TODO convert into specification/Voter
-		if (Place::TERRESTRIAL !== $place->typeOfPlace || $place->player?->faction->id->equals($currentPlayer->faction->id)) {
+		if (PlaceType::Planet !== $place->getType() || $place->player->faction->id->equals($currentPlayer->faction->id)) {
 			throw new ConflictHttpException('You cannot spy this place');
 		}
 		$spyReport = $this->getSpyingHandler($place)->spy($place, $currentPlayer, $price);
@@ -71,7 +72,7 @@ class Spy extends AbstractController
 		return $this->redirectToRoute('spy_reports', ['report' => $spyReport->id]);
 	}
 
-	public function getSpyingHandler(Place $place): SpyingHandler
+	public function getSpyingHandler(Planet $place): SpyingHandler
 	{
 		return $this->spyingHandlers->get(
 			null !== $place->player

@@ -4,10 +4,11 @@ namespace App\Tests\Modules\Athena\Application\Handler\Building;
 
 use App\Modules\Athena\Application\Handler\Building\BuildingLevelHandler;
 use App\Modules\Athena\Model\BuildingQueue;
-use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
-use App\Modules\Gaia\Model\Place;
-use App\Modules\Gaia\Model\System;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\Sector;
+use App\Modules\Galaxy\Domain\Entity\System;
+use App\Modules\Galaxy\Domain\Enum\PlaceType;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Zeus\Model\Player;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
@@ -23,65 +24,65 @@ class BuildingLevelHandlerTest extends TestCase
 
 	public function testIncreaseBuildingLevel(): void
 	{
-		$orbitalBase = static::generateOrbitalBase();
+		$planet = static::generatePlanet();
 
-		$this->buildingLevelHandler->increaseBuildingLevel($orbitalBase, OrbitalBaseResource::GENERATOR);
-		$this->buildingLevelHandler->increaseBuildingLevel($orbitalBase, OrbitalBaseResource::SPATIOPORT);
-		$this->buildingLevelHandler->increaseBuildingLevel($orbitalBase, OrbitalBaseResource::REFINERY);
+		$this->buildingLevelHandler->increaseBuildingLevel($planet, PlanetResource::GENERATOR);
+		$this->buildingLevelHandler->increaseBuildingLevel($planet, PlanetResource::SPATIOPORT);
+		$this->buildingLevelHandler->increaseBuildingLevel($planet, PlanetResource::REFINERY);
 
-		static::assertEquals(4, $orbitalBase->levelGenerator);
-		static::assertEquals(1, $orbitalBase->levelSpatioport);
-		static::assertEquals(3, $orbitalBase->levelRefinery);
+		static::assertEquals(4, $planet->levelGenerator);
+		static::assertEquals(1, $planet->levelSpatioport);
+		static::assertEquals(3, $planet->levelRefinery);
 
-		$this->buildingLevelHandler->increaseBuildingLevel($orbitalBase, OrbitalBaseResource::GENERATOR);
+		$this->buildingLevelHandler->increaseBuildingLevel($planet, PlanetResource::GENERATOR);
 
-		static::assertEquals(5, $orbitalBase->levelGenerator);
+		static::assertEquals(5, $planet->levelGenerator);
 	}
 
 	public function testDecreaseBuildingLevel(): void
 	{
-		$orbitalBase = static::generateOrbitalBase();
+		$planet = static::generatePlanet();
 
-		$this->buildingLevelHandler->decreaseBuildingLevel($orbitalBase, OrbitalBaseResource::GENERATOR);
-		$this->buildingLevelHandler->decreaseBuildingLevel($orbitalBase, OrbitalBaseResource::SPATIOPORT);
-		$this->buildingLevelHandler->decreaseBuildingLevel($orbitalBase, OrbitalBaseResource::REFINERY);
+		$this->buildingLevelHandler->decreaseBuildingLevel($planet, PlanetResource::GENERATOR);
+		$this->buildingLevelHandler->decreaseBuildingLevel($planet, PlanetResource::SPATIOPORT);
+		$this->buildingLevelHandler->decreaseBuildingLevel($planet, PlanetResource::REFINERY);
 
-		static::assertEquals(2, $orbitalBase->levelGenerator);
-		static::assertEquals(0, $orbitalBase->levelSpatioport);
-		static::assertEquals(1, $orbitalBase->levelRefinery);
+		static::assertEquals(2, $planet->levelGenerator);
+		static::assertEquals(0, $planet->levelSpatioport);
+		static::assertEquals(1, $planet->levelRefinery);
 
-		$this->buildingLevelHandler->decreaseBuildingLevel($orbitalBase, OrbitalBaseResource::GENERATOR);
+		$this->buildingLevelHandler->decreaseBuildingLevel($planet, PlanetResource::GENERATOR);
 
-		static::assertEquals(1, $orbitalBase->levelGenerator);
+		static::assertEquals(1, $planet->levelGenerator);
 	}
 
 	public function testGetBuildingLevel(): void
 	{
-		$orbitalBase = $this->generateOrbitalBase();
+		$planet = $this->generatePlanet();
 
 		static::assertEquals(
-			$orbitalBase->levelGenerator,
-			$this->buildingLevelHandler->getBuildingLevel($orbitalBase, OrbitalBaseResource::GENERATOR),
+			$planet->levelGenerator,
+			$this->buildingLevelHandler->getBuildingLevel($planet, PlanetResource::GENERATOR),
 		);
 
 		static::assertEquals(
-			$orbitalBase->levelRefinery,
-			$this->buildingLevelHandler->getBuildingLevel($orbitalBase, OrbitalBaseResource::REFINERY),
+			$planet->levelRefinery,
+			$this->buildingLevelHandler->getBuildingLevel($planet, PlanetResource::REFINERY),
 		);
 
 		static::assertEquals(
-			$orbitalBase->levelStorage,
-			$this->buildingLevelHandler->getBuildingLevel($orbitalBase, OrbitalBaseResource::STORAGE),
+			$planet->levelStorage,
+			$this->buildingLevelHandler->getBuildingLevel($planet, PlanetResource::STORAGE),
 		);
 
 		static::assertEquals(
-			$orbitalBase->levelDock1,
-			$this->buildingLevelHandler->getBuildingLevel($orbitalBase, OrbitalBaseResource::DOCK1),
+			$planet->levelDock1,
+			$this->buildingLevelHandler->getBuildingLevel($planet, PlanetResource::DOCK1),
 		);
 
 		static::assertEquals(
-			$orbitalBase->levelCommercialPlateforme,
-			$this->buildingLevelHandler->getBuildingLevel($orbitalBase, OrbitalBaseResource::COMMERCIAL_PLATEFORME),
+			$planet->levelCommercialPlateforme,
+			$this->buildingLevelHandler->getBuildingLevel($planet, PlanetResource::COMMERCIAL_PLATEFORME),
 		);
 	}
 
@@ -91,13 +92,13 @@ class BuildingLevelHandlerTest extends TestCase
 	 * @dataProvider provideData
 	 */
 	public function testGetBuildingRealLevel(
-		OrbitalBase $orbitalBase,
-		array $buildingQueues,
-		int $buildingIdentifier,
-		int $expectedRealLevel,
+		Planet $planet,
+		array  $buildingQueues,
+		int    $buildingIdentifier,
+		int    $expectedRealLevel,
 	): void {
 		$realLevel = $this->buildingLevelHandler->getBuildingRealLevel(
-			$orbitalBase,
+			$planet,
 			$buildingIdentifier,
 			$buildingQueues,
 		);
@@ -107,93 +108,92 @@ class BuildingLevelHandlerTest extends TestCase
 
 	public function testGetInvalidBuildingLevel(): void
 	{
-		$orbitalBase = static::generateOrbitalBase();
+		$planet = static::generatePlanet();
 
 		static::expectException(\LogicException::class);
 		static::expectExceptionMessage('Building identifier 99 is not valid');
 
-		$this->buildingLevelHandler->getBuildingLevel($orbitalBase, 99);
+		$this->buildingLevelHandler->getBuildingLevel($planet, 99);
 	}
 
 	public function testGetInvalidBuildingRealLevel(): void
 	{
-		$orbitalBase = static::generateOrbitalBase();
-		$buildingQueues = static::generateBuildingQueues($orbitalBase);
+		$planet = static::generatePlanet();
+		$buildingQueues = static::generateBuildingQueues($planet);
 
 		static::expectException(\LogicException::class);
 		static::expectExceptionMessage('Building identifier 99 is not valid');
 
-		$this->buildingLevelHandler->getBuildingRealLevel($orbitalBase, 99, $buildingQueues);
+		$this->buildingLevelHandler->getBuildingRealLevel($planet, 99, $buildingQueues);
 	}
 
 	/**
-	 * @return \Generator{0: OrbitalBase, 1: list<BuildingQueue>, 2: int, 3: int}
+	 * @return \Generator{0: Planet, 1: list<BuildingQueue>, 2: int, 3: int}
 	 */
 	public static function provideData(): \Generator
 	{
-		$orbitalBase = static::generateOrbitalBase();
-		$buildingQueues = static::generateBuildingQueues($orbitalBase);
+		$planet = static::generatePlanet();
+		$buildingQueues = static::generateBuildingQueues($planet);
 
 		yield [
-			$orbitalBase,
+			$planet,
 			$buildingQueues,
-			OrbitalBaseResource::GENERATOR,
+			PlanetResource::GENERATOR,
 			7,
 		];
 
 		yield [
-			$orbitalBase,
+			$planet,
 			$buildingQueues,
-			OrbitalBaseResource::REFINERY,
+			PlanetResource::REFINERY,
 			4,
 		];
 
 		yield [
-			$orbitalBase,
+			$planet,
 			$buildingQueues,
-			OrbitalBaseResource::COMMERCIAL_PLATEFORME,
+			PlanetResource::COMMERCIAL_PLATEFORME,
 			1,
 		];
 
 		yield [
-			$orbitalBase,
+			$planet,
 			$buildingQueues,
-			OrbitalBaseResource::DOCK1,
+			PlanetResource::DOCK1,
 			2,
 		];
 
 		yield [
-			$orbitalBase,
+			$planet,
 			$buildingQueues,
-			OrbitalBaseResource::STORAGE,
+			PlanetResource::STORAGE,
 			5,
 		];
 
 		yield [
-			$orbitalBase,
+			$planet,
 			$buildingQueues,
-			OrbitalBaseResource::DOCK2,
+			PlanetResource::DOCK2,
 			0,
 		];
 	}
 
-	private static function generateOrbitalBase(): OrbitalBase
+	private static function generatePlanet(): Planet
 	{
-		return new OrbitalBase(
+		return new Planet(
 			id: Uuid::v4(),
-			place: new Place(
+			place: new Planet(
 				id: Uuid::v4(),
-				player: new Player(),
 				base: null,
 				system: new System(
 					id: Uuid::v4(),
-					sector: null,
+					sector: new Sector(),
 					faction: null,
 					xPosition: 10,
 					yPosition: 20,
 					typeOfSystem: 0,
 				),
-				typeOfPlace: Place::TERRESTRIAL,
+				typeOfPlace: PlaceType::Planet,
 				position: 1,
 				population: 100,
 				coefResources: 60,
@@ -215,28 +215,28 @@ class BuildingLevelHandlerTest extends TestCase
 	/**
 	 * @return list<BuildingQueue>
 	 */
-	private static function generateBuildingQueues(OrbitalBase $orbitalBase): array
+	private static function generateBuildingQueues(Planet $planet): array
 	{
 		return [
-			static::generateBuildingQueue($orbitalBase, OrbitalBaseResource::GENERATOR, 6),
-			static::generateBuildingQueue($orbitalBase, OrbitalBaseResource::GENERATOR, 5),
-			static::generateBuildingQueue($orbitalBase, OrbitalBaseResource::REFINERY, 4),
-			static::generateBuildingQueue($orbitalBase, OrbitalBaseResource::GENERATOR, 7),
-			static::generateBuildingQueue($orbitalBase, OrbitalBaseResource::REFINERY, 3),
-			static::generateBuildingQueue($orbitalBase, OrbitalBaseResource::COMMERCIAL_PLATEFORME, 1),
-			static::generateBuildingQueue($orbitalBase, OrbitalBaseResource::DOCK1, 1),
-			static::generateBuildingQueue($orbitalBase, OrbitalBaseResource::DOCK1, 2),
+			static::generateBuildingQueue($planet, PlanetResource::GENERATOR, 6),
+			static::generateBuildingQueue($planet, PlanetResource::GENERATOR, 5),
+			static::generateBuildingQueue($planet, PlanetResource::REFINERY, 4),
+			static::generateBuildingQueue($planet, PlanetResource::GENERATOR, 7),
+			static::generateBuildingQueue($planet, PlanetResource::REFINERY, 3),
+			static::generateBuildingQueue($planet, PlanetResource::COMMERCIAL_PLATEFORME, 1),
+			static::generateBuildingQueue($planet, PlanetResource::DOCK1, 1),
+			static::generateBuildingQueue($planet, PlanetResource::DOCK1, 2),
 		];
 	}
 
 	private static function generateBuildingQueue(
-		OrbitalBase $orbitalBase,
-		int $buildingIdentifier,
-		int $targetLevel,
+		Planet $planet,
+		int    $buildingIdentifier,
+		int    $targetLevel,
 	): BuildingQueue {
 		return new BuildingQueue(
 			id: Uuid::v4(),
-			base: $orbitalBase,
+			base: $planet,
 			buildingNumber: $buildingIdentifier,
 			targetLevel: $targetLevel,
 			startedAt: new \DateTimeImmutable(),

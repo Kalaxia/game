@@ -33,7 +33,7 @@ readonly class CommercialShippingHandler
 		$cs = $this->commercialShippingRepository->get($message->getCommercialShippingId())
 			?? throw new \RuntimeException(sprintf('Commercial shipping %s not found', $message->getCommercialShippingId()));
 		$transaction = $cs->transaction;
-		$orbitalBase = $cs->originBase;
+		$planet = $cs->originBase;
 		$destOB = $cs->destinationBase;
 		$commander = (null !== $transaction && Transaction::TYP_COMMANDER === $transaction->type)
 				? $transaction->commander
@@ -66,9 +66,9 @@ readonly class CommercialShippingHandler
 						(1 === $cs->shipQuantity)
 							? 'Votre vaisseau commercial est de retour sur votre '
 							: 'Vos vaisseaux commerciaux sont de retour sur votre ',
-						NotificationBuilder::link($this->urlGenerator->generate('map', ['place' => $orbitalBase->place->id]), 'base orbitale'),
+						NotificationBuilder::link($this->urlGenerator->generate('map', ['place' => $planet->id]), 'base orbitale'),
 						' après avoir livré du matériel sur une autre ',
-						NotificationBuilder::link($this->urlGenerator->generate('map', ['place' => $destOB->place->id]), 'base'),
+						NotificationBuilder::link($this->urlGenerator->generate('map', ['place' => $destOB->id]), 'base'),
 						NotificationBuilder::divider(),
 						(1 === $cs->shipQuantity)
 							? 'Votre vaisseau de commerce est à nouveau disponible pour faire d\'autres transactions ou routes commerciales.'

@@ -2,7 +2,7 @@
 
 namespace App\Modules\Athena\Infrastructure\Controller\Base;
 
-use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +18,7 @@ class AutocompleteBase extends AbstractController
 			throw new BadRequestHttpException('Missing search parameter');
 		}
 
-		return $this->render('blocks/athena/autocomplete_base.html.twig', [
+		return $this->render('blocks/athena/autocomplete_planet.html.twig', [
 			'places' => $placeRepository->search($search),
 		]);
 	}

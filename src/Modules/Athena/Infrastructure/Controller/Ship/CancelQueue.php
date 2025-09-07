@@ -4,9 +4,9 @@ namespace App\Modules\Athena\Infrastructure\Controller\Ship;
 
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
 use App\Modules\Athena\Manager\ShipQueueManager;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,15 +20,15 @@ class CancelQueue extends AbstractController
 	public const ROUTE_NAME = 'cancel_ship_queue';
 
 	public function __invoke(
-		Request $request,
-		DurationHandler $durationHandler,
-		Player $currentPlayer,
-		OrbitalBase $currentBase,
-		OrbitalBaseManager $orbitalBaseManager,
-		ShipQueueManager $shipQueueManager,
-		ShipQueueRepositoryInterface $shipQueueRepository,
+		Request                        $request,
+		DurationHandler                $durationHandler,
+		Player                         $currentPlayer,
+		Planet                         $currentBase,
+		PlanetManager                  $planetManager,
+		ShipQueueManager               $shipQueueManager,
+		ShipQueueRepositoryInterface   $shipQueueRepository,
 		GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
-		Uuid $id,
+		Uuid                           $id,
 	): Response {
 		$dock = $request->query->get('dock') ?? throw new BadRequestHttpException('Missing dock parameter');
 
@@ -91,7 +91,7 @@ class CancelQueue extends AbstractController
 		$shipResourceRefund = $this->getParameter('athena.building.ship_queue_resource_refund');
 		$resourcePrice *= $shipResourceRefund;
 
-		$orbitalBaseManager->increaseResources($currentBase, $resourcePrice, true);
+		$planetManager->increaseResources($currentBase, $resourcePrice, true);
 
 		$this->addFlash('success', 'Commande annulée, vous récupérez le '.$shipResourceRefund * 100 .'% du montant investi pour la construction');
 

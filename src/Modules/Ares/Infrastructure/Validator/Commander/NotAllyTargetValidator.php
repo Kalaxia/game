@@ -4,7 +4,7 @@ namespace App\Modules\Ares\Infrastructure\Validator\Commander;
 
 use App\Modules\Ares\Infrastructure\Validator\DTO\HasCommander;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Infrastructure\Validator\DTO\HasPlace;
+use App\Modules\Galaxy\Infrastructure\Validator\DTO\HasPlace;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -30,7 +30,7 @@ class NotAllyTargetValidator extends ConstraintValidator
 		$place = $value->getPlace();
 		$faction = $commander->player->faction;
 
-		if (null === $place->player) {
+		if (null === $place->base) {
 			return;
 		}
 

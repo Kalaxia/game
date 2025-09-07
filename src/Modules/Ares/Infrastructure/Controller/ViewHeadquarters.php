@@ -6,7 +6,7 @@ use App\Classes\Container\Params;
 use App\Classes\Library\Game;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Athena\Application\Registry\CurrentPlayerBasesRegistry;
+use App\Modules\Galaxy\Application\Registry\CurrentPlayerPlanetsRegistry;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +17,7 @@ use Symfony\Component\Uid\Uuid;
 class ViewHeadquarters extends AbstractController
 {
 	public function __construct(
-		private readonly CurrentPlayerBasesRegistry $currentPlayerBasesRegistry,
+		private readonly CurrentPlayerPlanetsRegistry $currentPlayerBasesRegistry,
 		private readonly CommanderRepositoryInterface $commanderRepository,
 	) {
 
@@ -56,14 +56,14 @@ class ViewHeadquarters extends AbstractController
 	): array {
 		$session = $request->getSession();
 		$obsets = [];
-		foreach ($this->currentPlayerBasesRegistry->all() as $orbitalBase) {
-			if ($request->cookies->get('p'.Params::LIST_ALL_FLEET, Params::$params[Params::LIST_ALL_FLEET]) || $orbitalBase->id->equals($this->currentPlayerBasesRegistry->current()->id)) {
+		foreach ($this->currentPlayerBasesRegistry->all() as $planet) {
+			if ($request->cookies->get('p'.Params::LIST_ALL_FLEET, Params::$params[Params::LIST_ALL_FLEET]) || $planet->id->equals($this->currentPlayerBasesRegistry->current()->id)) {
 				$obsets[] = [
 					'info' => [
-						'id' => $orbitalBase->id,
-						'name' => $orbitalBase->name,
-						'type' => $orbitalBase->typeOfBase,
-						'img' => '1-'.Game::getSizeOfPlanet($orbitalBase->place->population),
+						'id' => $planet->id,
+						'name' => $planet->name,
+						'type' => $planet->typeOfBase,
+						'img' => '1-'.Game::getSizeOfPlanet($planet->population),
 					],
 					'fleets' => [],
 				];

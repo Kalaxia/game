@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Shared\Infrastructure\Twig\Components\Organisms;
 
-use App\Modules\Athena\Application\Registry\CurrentPlayerBasesRegistry;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
+use App\Modules\Galaxy\Application\Registry\CurrentPlayerPlanetsRegistry;
+use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Shared\Domain\Model\QueueableInterface;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
@@ -25,15 +25,15 @@ final class Queues
 	public float $refund;
 
 	public function __construct(
-		private readonly CurrentPlayerBasesRegistry $currentPlayerBasesRegistry,
-		private readonly OrbitalBaseHelper $orbitalBaseHelper,
+		private readonly CurrentPlayerPlanetsRegistry $currentPlayerBasesRegistry,
+		private readonly PlanetHelper                 $planetHelper,
 	) {
 	}
 
 	public function mount(int $buildingIdentifier, int $buildingLevel): void
 	{
 		$this->buildingIdentifier = $buildingIdentifier;
-		$this->availableQueuesCount = $this->orbitalBaseHelper->getBuildingInfo(
+		$this->availableQueuesCount = $this->planetHelper->getBuildingInfo(
 			$buildingIdentifier,
 			'level',
 			$buildingLevel,

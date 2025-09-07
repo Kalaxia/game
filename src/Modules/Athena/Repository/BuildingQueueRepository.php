@@ -6,7 +6,7 @@ namespace App\Modules\Athena\Repository;
 
 use App\Modules\Athena\Domain\Repository\BuildingQueueRepositoryInterface;
 use App\Modules\Athena\Model\BuildingQueue;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
@@ -23,10 +23,10 @@ class BuildingQueueRepository extends DoctrineRepository implements BuildingQueu
 		return $this->find($id);
 	}
 
-	public function getBaseQueues(OrbitalBase $orbitalBase): array
+	public function getPlanetQueues(Planet $planet): array
 	{
 		return $this->findBy([
-			'base' => $orbitalBase,
+			'base' => $planet,
 		], [
 			'startedAt' => 'ASC',
 		]);

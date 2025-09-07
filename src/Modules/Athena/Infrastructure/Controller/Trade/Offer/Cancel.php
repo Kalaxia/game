@@ -7,10 +7,10 @@ use App\Modules\Athena\Domain\Repository\CommercialShippingRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Base\GetMaxResourceStorage;
 use App\Modules\Athena\Domain\Service\Base\Trade\GetBaseCommercialShippingData;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
 use App\Modules\Athena\Model\Transaction;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Galaxy\Helper\PlanetHelper;
+use App\Modules\Galaxy\Manager\PlanetManager;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Zeus\Manager\PlayerManager;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,9 +28,9 @@ class Cancel extends AbstractController
         Request                               $request,
         Player                                $currentPlayer,
         GetMaxResourceStorage                 $getMaxStorage,
-		GetBaseCommercialShippingData		  $getBaseCommercialShippingData,
-		OrbitalBaseHelper                     $orbitalBaseHelper,
-        OrbitalBaseManager                    $orbitalBaseManager,
+        GetBaseCommercialShippingData         $getBaseCommercialShippingData,
+        PlanetHelper                          $planetHelper,
+        PlanetManager                         $planetManager,
         PlayerManager                         $playerManager,
         HubInterface                          $mercure,
         CommercialShippingRepositoryInterface $commercialShippingRepository,
@@ -52,7 +52,7 @@ class Cancel extends AbstractController
 			throw $this->createAccessDeniedException('This transaction does not belong to you');
 		}
 
-		$base = $transaction->base;
+		$planet = $transaction->base;
 
 		if (!$currentPlayer->canAfford($transaction->getPriceToCancelOffer())) {
 			throw new ConflictHttpException('You cannot afford the cancellation fee');
@@ -60,15 +60,15 @@ class Cancel extends AbstractController
 
 		switch ($transaction->type) {
 			case Transaction::TYP_RESOURCE:
-				$storageSpace = $getMaxStorage($base) - $base->resourcesStorage;
+				$storageSpace = $getMaxStorage($planet) - $planet->resourcesStorage;
 
 				if ($storageSpace < $transaction->quantity) {
 					throw new ConflictHttpException('Vous n\'avez pas assez de place dans votre Stockage pour stocker les ressources. Videz un peu le hangar et revenez plus tard pour annuler cette offre.');
 				}
-				$orbitalBaseManager->increaseResources($base, $transaction->quantity, true);
+				$planetManager->increaseResources($planet, $transaction->quantity, true);
 				break;
 			case Transaction::TYP_SHIP:
-				$base->addShips($transaction->identifier, $transaction->quantity);
+				$planet->addShips($transaction->identifier, $transaction->quantity);
 				break;
 			case Transaction::TYP_COMMANDER:
 				$transaction->commander->statement = Commander::RESERVE;
@@ -96,7 +96,7 @@ class Cancel extends AbstractController
 
 		$mercure->publish(new Update(
 			'/trade-offers',
-			$this->renderView('components/base/trade/turbo/broadcast/remove_transaction.stream.html.twig', [
+			$this->renderView('components/planet/trade/turbo/broadcast/remove_transaction.stream.html.twig', [
 				'transaction' => $transaction,
 			]),
 		));
@@ -104,13 +104,13 @@ class Cancel extends AbstractController
 		if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
 			$request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-			return $this->render('components/base/trade/turbo/remove_transaction.stream.html.twig', [
+			return $this->render('components/planet/trade/turbo/remove_transaction.stream.html.twig', [
 				'commercial_shipping' => $commercialShipping,
-				'used_ships' => $getBaseCommercialShippingData($base)['used_ships'],
-				'max_ships' => $orbitalBaseHelper->getInfo(
-					OrbitalBaseResource::COMMERCIAL_PLATEFORME,
+				'used_ships' => $getBaseCommercialShippingData($planet)['used_ships'],
+				'max_ships' => $planetHelper->getInfo(
+					PlanetResource::COMMERCIAL_PLATEFORME,
 					'level',
-					$base->levelCommercialPlateforme,
+					$planet->levelCommercialPlateforme,
 					'nbCommercialShip',
 				),
 			]);

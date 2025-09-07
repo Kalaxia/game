@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Promethee\Repository;
 
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Promethee\Domain\Repository\TechnologyQueueRepositoryInterface;
 use App\Modules\Promethee\Model\TechnologyQueue;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
@@ -39,10 +39,10 @@ class TechnologyQueueRepository extends DoctrineRepository implements Technology
 		return $this->findAll();
 	}
 
-	public function getPlaceQueues(Place $place): array
+	public function getPlanetQueues(Planet $planet): array
 	{
 		return $this->findBy([
-			'place' => $place,
+			'place' => $planet,
 		]);
 	}
 

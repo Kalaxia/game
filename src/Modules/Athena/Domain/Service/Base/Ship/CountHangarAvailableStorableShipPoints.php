@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Athena\Domain\Service\Base\Ship;
 
 use App\Modules\Athena\Domain\Enum\DockType;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 
 class CountHangarAvailableStorableShipPoints
 {
@@ -16,10 +16,10 @@ class CountHangarAvailableStorableShipPoints
 	) {
 	}
 
-	public function __invoke(OrbitalBase $orbitalBase, array $shipQueues, DockType $dockType): int
+	public function __invoke(Planet $planet, array $shipQueues, DockType $dockType): int
 	{
-		$maxStorableShipPoints = ($this->countMaxStorableShipPoints)($orbitalBase, $dockType);
-		$storedShipPoints = ($this->countStoredShipPoints)($orbitalBase, $dockType);
+		$maxStorableShipPoints = ($this->countMaxStorableShipPoints)($planet, $dockType);
+		$storedShipPoints = ($this->countStoredShipPoints)($planet, $dockType);
 		$queuedShipPoints = ($this->countQueuedShipPoints)($shipQueues);
 
 		return $maxStorableShipPoints - $storedShipPoints - $queuedShipPoints;

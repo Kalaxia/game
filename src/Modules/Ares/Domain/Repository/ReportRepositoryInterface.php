@@ -3,7 +3,7 @@
 namespace App\Modules\Ares\Domain\Repository;
 
 use App\Modules\Ares\Model\Report;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Component\Uid\Uuid;
@@ -18,7 +18,7 @@ interface ReportRepositoryInterface extends EntityRepositoryInterface
 	/**
 	 * @return list<Report>
 	 */
-	public function getByAttackerAndPlace(Player $attacker, Place $place, \DateTimeImmutable $dFight): array;
+	public function getByAttackerAndPlace(Player $attacker, Planet $place, \DateTimeImmutable $dFight): array;
 
 	/**
 	 * @param Uuid[] $places

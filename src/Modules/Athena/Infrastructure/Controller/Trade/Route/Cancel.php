@@ -4,11 +4,10 @@ namespace App\Modules\Athena\Infrastructure\Controller\Trade\Route;
 
 use App\Modules\Athena\Application\Handler\CommercialRoute\GetCommercialRoutePrice;
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
-use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
+use App\Modules\Galaxy\Application\Handler\GetDistanceBetweenPlaces;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
-use App\Modules\Hermes\Model\Notification;
 use App\Modules\Zeus\Manager\PlayerManager;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,17 +19,17 @@ use Symfony\Component\Uid\Uuid;
 class Cancel extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		Player $currentPlayer,
-		CommercialRouteRepositoryInterface $commercialRouteRepository,
-		GetDistanceBetweenPlaces $getDistanceBetweenPlaces,
-		GetCommercialRoutePrice $getCommercialRoutePrice,
-		PlayerManager $playerManager,
-		NotificationRepositoryInterface $notificationRepository,
-		OrbitalBase $currentBase,
-		Uuid $id,
+        Request                            $request,
+        Player                             $currentPlayer,
+        CommercialRouteRepositoryInterface $commercialRouteRepository,
+        GetDistanceBetweenPlaces           $getDistanceBetweenPlaces,
+        GetCommercialRoutePrice            $getCommercialRoutePrice,
+        PlayerManager                      $playerManager,
+        NotificationRepositoryInterface    $notificationRepository,
+        Planet                             $currentBase,
+        Uuid                               $id,
 	): Response {
-		$cr = $commercialRouteRepository->getByIdAndBase($id, $currentBase);
+		$cr = $commercialRouteRepository->getByIdAndPlanet($id, $currentBase);
 		if (null === $cr) {
 			throw $this->createNotFoundException('Commercial route not found');
 		}
@@ -42,7 +41,7 @@ class Cancel extends AbstractController
 		$linkedBase = $cr->destinationBase;
 
 		// rend 80% des crédits investis
-		$commercialRoutePrice = $getCommercialRoutePrice($getDistanceBetweenPlaces($cr->originBase->place, $cr->destinationBase->place), $currentPlayer);
+		$commercialRoutePrice = $getCommercialRoutePrice($getDistanceBetweenPlaces($cr->originBase, $cr->destinationBase), $currentPlayer);
 		$playerManager->increaseCredit($currentPlayer, round($commercialRoutePrice * $routeCancelRefund));
 
 		// notification
@@ -55,12 +54,12 @@ class Cancel extends AbstractController
 				),
 				' a finalement retiré la proposition de route commerciale faite entre ',
 				NotificationBuilder::link(
-					$this->generateUrl('map', ['place' => $linkedBase->place->id]),
+					$this->generateUrl('map', ['place' => $linkedBase->id]),
 					$linkedBase->name,
 				),
 				' et ',
 				NotificationBuilder::link(
-					$this->generateUrl('map', ['place' => $proposerBase->place->id]),
+					$this->generateUrl('map', ['place' => $proposerBase->id]),
 					$proposerBase->name,
 				),
 			))

@@ -3,11 +3,10 @@
 namespace App\Modules\Athena\Infrastructure\Controller\Base\Building;
 
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
-use App\Modules\Ares\Manager\CommanderManager;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Resource\SchoolClassResource;
-use App\Modules\Gaia\Resource\PlaceResource;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Resource\PlaceResource;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
 use App\Modules\Zeus\Helper\CheckName;
 use App\Modules\Zeus\Model\PlayerBonusId;
@@ -18,22 +17,22 @@ use Symfony\Component\HttpFoundation\Response;
 class ViewSchool extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
-		OrbitalBase $currentBase,
-		CommanderRepositoryInterface $commanderRepository,
+        Request                      $request,
+        CurrentPlayerBonusRegistry   $currentPlayerBonusRegistry,
+        Planet                       $currentBase,
+        CommanderRepositoryInterface $commanderRepository,
 	): Response {
 		$commanderInvestBonus = $currentPlayerBonusRegistry->getPlayerBonus()->bonuses->get(PlayerBonusId::COMMANDER_INVEST);
 
 		$invest = $currentBase->iSchool * $commanderInvestBonus / 100;
 
 		return $this->render('pages/athena/school.html.twig', [
-			'commanders' => $commanderRepository->getBaseCommanders(
+			'commanders' => $commanderRepository->getPlanetCommanders(
 				$currentBase,
 				[Commander::INSCHOOL],
 				['experience' => 'DESC'],
 			),
-			'reserve_commanders' => $commanderRepository->getBaseCommanders(
+			'reserve_commanders' => $commanderRepository->getPlanetCommanders(
 				$currentBase,
 				[Commander::RESERVE],
 				['experience' => 'DESC'],

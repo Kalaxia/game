@@ -14,7 +14,7 @@
 	</div>
 	<div id="base-tiles" class="ml-2">
 		{% for i in range(0, 11) %}
-			<twig:ShipTransferTile :identifier="i" :quantity="current_base.getShipStorage()[i]" side="base" />
+			<twig:ShipTransferTile :identifier="i" :quantity="current_planet.getShipStorage()[i]" side="base" />
 		{% endfor %}
 	</div>
 </div>

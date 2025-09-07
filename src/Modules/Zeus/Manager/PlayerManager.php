@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Zeus\Manager;
 
-use App\Modules\Athena\Application\Handler\OrbitalBasePointsHandler;
-use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
-use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
-use App\Modules\Gaia\Domain\Repository\SectorRepositoryInterface;
-use App\Modules\Gaia\Manager\PlaceManager;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
+use App\Modules\Galaxy\Domain\Service\UpdatePlanetPoints;
+use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
@@ -19,30 +19,30 @@ use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 // @TODO Remove bounds to sessions
 // TODO reapply readonly when service has been simplified
 readonly class PlayerManager
 {
 	public function __construct(
-		private PlayerRepositoryInterface $playerRepository,
-		private EventDispatcherInterface $eventDispatcher,
-		private EntityManagerInterface $entityManager,
-		private OrbitalBasePointsHandler $orbitalBasePointsHandler,
-		private OrbitalBaseRepositoryInterface $orbitalBaseRepository,
-		private PlaceManager $placeManager,
-		private PlaceRepositoryInterface $placeRepository,
+		private PlayerRepositoryInterface       $playerRepository,
+		private EventDispatcherInterface        $eventDispatcher,
+		private EntityManagerInterface          $entityManager,
+		private UpdatePlanetPoints              $updatePlanetPoints,
+		private PlanetRepositoryInterface       $planetRepository,
+		private PlaceManager                    $placeManager,
+		private PlaceRepositoryInterface        $placeRepository,
 		private NotificationRepositoryInterface $notificationRepository,
-		private SectorRepositoryInterface $sectorRepository,
-		private TechnologyRepositoryInterface $technologyRepository,
-		private UrlGeneratorInterface $urlGenerator,
+		private SectorRepositoryInterface       $sectorRepository,
+		private TechnologyRepositoryInterface   $technologyRepository,
+		private UrlGeneratorInterface           $urlGenerator,
 		#[Autowire('%zeus.player.base_level%')]
-		private int $playerBaseLevel,
+		private int                             $playerBaseLevel,
 		#[Autowire('%server_id%')]
-		private int $serverId,
+		private int                             $serverId,
 	) {
 	}
 
@@ -77,7 +77,7 @@ readonly class PlayerManager
 		$placeFound = false;
 		$placeId = null;
 		foreach ($sectors as $sector) {
-			$placeIds = $this->placeRepository->findPlacesIdsForANewBase($sector);
+			$placeIds = $this->planetRepository->getCandidatePlanetsForNewPlayers($sector);
 			if ([] !== $placeIds) {
 				$placeFound = true;
 				$placeId = $placeIds[random_int(0, count($placeIds) - 1)];
@@ -102,25 +102,21 @@ readonly class PlayerManager
 				$technos->setTechnology(TechnologyId::BASE_QUANTITY, 0);
 			}
 
-			$place = $this->placeRepository->get($placeId) ?? throw new \LogicException('Place not found');
+			$planet = $this->planetRepository->get($placeId)
+				?? throw new \LogicException('Planet not found');
 
 			// attribute new base and place to player
-			$ob = new OrbitalBase(
-				id: Uuid::v4(),
-				place: $place,
-				player: $player,
-				name: 'Colonie',
-				// @TODO transform these hardcoded values into config
-				iSchool: 500,
-				iAntiSpy: 500,
-				resourcesStorage: 1000,
-			);
+			$planet->player = $player;
+			$planet->name = 'Colonie';
+			$planet->iSchool = 500;
+			$planet->iAntiSpy = 500;
+			$planet->resourcesStorage = 1000;
 
-			$this->orbitalBasePointsHandler->updatePoints($ob);
+			$this->updatePlanetPoints->updatePoints($planet);
 
-			$this->orbitalBaseRepository->save($ob);
+			$this->planetRepository->save($planet);
 
-			$this->placeManager->turnAsSpawnPlace($placeId, $player);
+			$this->placeManager->turnAsSpawnPlace($planet);
 
 			// envoi d'une notif
 			$notif = NotificationBuilder::new()

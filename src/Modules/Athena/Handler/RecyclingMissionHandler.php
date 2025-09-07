@@ -11,12 +11,12 @@ use App\Modules\Athena\Domain\Service\Recycling\GetMissionTime;
 use App\Modules\Athena\Domain\Service\Recycling\RecycleCredits;
 use App\Modules\Athena\Domain\Service\Recycling\RecycleResources;
 use App\Modules\Athena\Domain\Service\Recycling\RecycleShips;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
 use App\Modules\Athena\Message\RecyclingMissionMessage;
 use App\Modules\Athena\Model\RecyclingLog;
 use App\Modules\Athena\Model\RecyclingMission;
-use App\Modules\Gaia\Manager\PlaceManager;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Enum\PlaceType;
+use App\Modules\Galaxy\Manager\PlaceManager;
+use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Manager\PlayerManager;
@@ -32,19 +32,19 @@ use Symfony\Component\Uid\Uuid;
 readonly class RecyclingMissionHandler
 {
 	public function __construct(
-		private DurationHandler $durationHandler,
-		private EntityManagerInterface $entityManager,
-		private OrbitalBaseManager                  $orbitalBaseManager,
+		private DurationHandler                     $durationHandler,
+		private EntityManagerInterface              $entityManager,
+		private PlanetManager                       $planetManager,
 		private PlaceManager                        $placeManager,
 		private PlayerManager                       $playerManager,
-		private GetMissionTime	$getMissionTime,
-		private NotificationRepositoryInterface                 $notificationRepository,
+		private GetMissionTime                      $getMissionTime,
+		private NotificationRepositoryInterface     $notificationRepository,
 		private RecyclingMissionRepositoryInterface $recyclingMissionRepository,
 		private RecyclingLogRepositoryInterface     $recyclingLogRepository,
 		private MessageBusInterface                 $messageBus,
-		private ExtractPoints $extractPoints,
-		private RecycleResources $recycleResources,
-		private RecycleCredits $recycleCredits,
+		private ExtractPoints                       $extractPoints,
+		private RecycleResources                    $recycleResources,
+		private RecycleCredits                      $recycleCredits,
 		private RecycleShips $recycleShips,
 		private UrlGeneratorInterface $urlGenerator,
 		private LoggerInterface $logger,
@@ -54,7 +54,7 @@ readonly class RecyclingMissionHandler
 	public function __invoke(RecyclingMissionMessage $message): void
 	{
 		$mission = $this->recyclingMissionRepository->get($message->getRecyclingMissionId());
-		$orbitalBase = $mission->base;
+		$planet = $mission->base;
 		$targetPlace = $mission->target;
 
 		$this->logger->debug('Processing recycling mission {missionId}. Initial target resources : {targetResources}', [
@@ -62,7 +62,7 @@ readonly class RecyclingMissionHandler
 			'targetResources' => $targetPlace->resources,
 		]);
 
-		$player = $orbitalBase->player;
+		$player = $planet->player;
 
 		if (null === $player || !$player->isAlive()) {
 			$mission->stop();
@@ -72,13 +72,10 @@ readonly class RecyclingMissionHandler
 			return;
 		}
 
-		if (Place::EMPTYZONE === $targetPlace->typeOfPlace) {
+		if (PlaceType::Empty === $targetPlace->getType()) {
 			$this->logger->debug('Mission {missionId} target has become empty',[
 				'missionId' => $mission->id->toRfc4122(),
 			]);
-			// the place become an empty place
-			$targetPlace->resources = 0;
-
 			// stop the mission
 			$mission->statement = RecyclingMission::ST_DELETED;
 
@@ -94,7 +91,7 @@ readonly class RecyclingMissionHandler
 					NotificationBuilder::divider(),
 					'Vos recycleurs restent donc stationnés sur votre ',
 					NotificationBuilder::link(
-						$this->urlGenerator->generate('map', ['place' => $mission->base->place->id]),
+						$this->urlGenerator->generate('map', ['place' => $mission->base->id]),
 						'base orbitale',
 					),
 					' le temps que vous programmiez une autre mission.',
@@ -131,7 +128,7 @@ readonly class RecyclingMissionHandler
 					NotificationBuilder::divider(),
 					'Vos recycleurs restent donc stationnés sur votre ',
 					NotificationBuilder::link(
-						$this->urlGenerator->generate('map', ['place' => $orbitalBase->place->id]),
+						$this->urlGenerator->generate('map', ['place' => $planet->id]),
 						'base orbitale',
 					),
 					' le temps que vous programmiez une autre mission.',
@@ -158,7 +155,7 @@ readonly class RecyclingMissionHandler
 					NotificationBuilder::divider(),
 					'Vos recycleurs restent donc stationnés sur votre ',
 					NotificationBuilder::link(
-						$this->urlGenerator->generate('map', ['place' => $mission->base->place->id]),
+						$this->urlGenerator->generate('map', ['place' => $mission->base->id]),
 						'base orbitale',
 					),
 					' le temps que vous programmiez une autre mission.',
@@ -196,10 +193,10 @@ readonly class RecyclingMissionHandler
 
 		$this->recyclingLogRepository->save($rl);
 
-		// give to the orbitalBase ($orbitalBase) and player what was recycled
-		$this->orbitalBaseManager->increaseResources($orbitalBase, $resourceRecycled);
+		// give to the planet ($planet) and player what was recycled
+		$this->planetManager->increaseResources($planet, $resourceRecycled);
 		foreach (ShipCategory::cases() as $shipCategory) {
-			$orbitalBase->addShips($shipCategory, $buyShip[$shipCategory->value]);
+			$planet->addShips($shipCategory, $buyShip[$shipCategory->value]);
 		}
 		$this->playerManager->increaseCredit($player, $creditRecycled);
 
@@ -221,7 +218,7 @@ readonly class RecyclingMissionHandler
 		]);
 
 		// update the cycle time in case the time mode has changed or new bonuses apply since the previous occurrence
-		$mission->cycleTime = ($this->getMissionTime)($orbitalBase->place, $targetPlace, $player);
+		$mission->cycleTime = ($this->getMissionTime)($planet, $targetPlace, $player);
 		$mission->endedAt = $this->durationHandler->getDurationEnd($mission->endedAt, $mission->cycleTime);
 		// Schedule the next mission if there is still resources
 		if (!$mission->isDeleted()) {

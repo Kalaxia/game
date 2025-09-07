@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Ares\Domain\Specification;
 
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Specification\Specification;
 
@@ -15,10 +15,10 @@ readonly class PlaceHavePlayersFaction implements Specification
 	}
 
 	/**
-	 * @param Place $candidate
+	 * @param Planet $candidate
 	 */
 	public function isSatisfiedBy($candidate): bool
 	{
-		return $this->player->faction->id->equals($candidate->player->faction->id);
+		return $this->player->faction->id->equals($candidate->player?->faction->id);
 	}
 }

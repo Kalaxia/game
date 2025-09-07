@@ -2,9 +2,9 @@
 
 namespace App\Classes\Library;
 
-use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
-use App\Modules\Gaia\Manager\PlaceManager;
+use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Zeus\Manager\PlayerManager;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Service\Attribute\Required;
@@ -151,8 +151,8 @@ class Parser
 			'#\[\#(.+)\]#isU',
 			function ($m) {
 				if (($place = $this->placeRepository->get($m[1]))) {
-					if ($place->getTypeOfBase() > 0) {
-						return '<a href="'.$this->urlGenerator->generate('map', ['place' => $place->id]).'" class="color'.$place->player->faction->identifier.' hb lt" title="voir la planète">'.$place->base->name.'</a>';
+					if ($place->player !== null) {
+						return '<a href="'.$this->urlGenerator->generate('map', ['place' => $place->id]).'" class="color'.$place->player->faction->identifier.' hb lt" title="voir la planète">'.$place->name.'</a>';
 					} else {
 						return '<a href="'.$this->urlGenerator->generate('map', ['place' => $place->id]).'" class="hb lt" title="voir la planète">planète rebelle</a>';
 					}

@@ -10,7 +10,7 @@ use App\Modules\Ares\Domain\Event\Fleet\SquadronUpdateEvent;
 use App\Modules\Artemis\Domain\Event\SpyEvent;
 use App\Modules\Athena\Domain\Event\NewBuildingQueueEvent;
 use App\Modules\Athena\Domain\Event\NewShipQueueEvent;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Promethee\Domain\Event\NewTechnologyQueueEvent;
 use App\Modules\Zeus\Domain\Event\UniversityInvestmentsUpdateEvent;
 use App\Modules\Zeus\Helper\TutorialHelper;
@@ -33,26 +33,26 @@ class TutorialStepValidationListener
 		$targetLevel = $buildingQueue->targetLevel;
 
 		$data = match ($buildingQueue->buildingNumber) {
-			OrbitalBaseResource::GENERATOR => [
+			PlanetResource::GENERATOR => [
 				TutorialResource::GENERATOR_LEVEL_2 => 2,
 			],
-			OrbitalBaseResource::DOCK1 => [
+			PlanetResource::DOCK1 => [
 				TutorialResource::DOCK1_LEVEL_1 => 1,
 				TutorialResource::DOCK1_LEVEL_6 => 6,
 				TutorialResource::DOCK1_LEVEL_15 => 15,
 			],
-			OrbitalBaseResource::REFINERY => [
+			PlanetResource::REFINERY => [
 				TutorialResource::REFINERY_LEVEL_3 => 3,
 				TutorialResource::REFINERY_LEVEL_10 => 10,
 				TutorialResource::REFINERY_LEVEL_16 => 16,
 				TutorialResource::REFINERY_LEVEL_20 => 20,
 			],
-			OrbitalBaseResource::STORAGE => [
+			PlanetResource::STORAGE => [
 				TutorialResource::STORAGE_LEVEL_3 => 3,
 				TutorialResource::STORAGE_LEVEL_8 => 8,
 				TutorialResource::STORAGE_LEVEL_12 => 12,
 			],
-			OrbitalBaseResource::TECHNOSPHERE => [
+			PlanetResource::TECHNOSPHERE => [
 				TutorialResource::TECHNOSPHERE_LEVEL_1 => 1,
 				TutorialResource::TECHNOSPHERE_LEVEL_6 => 6,
 			],

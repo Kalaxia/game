@@ -11,11 +11,11 @@ use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Athena\Application\Handler\Tax\PopulationTaxHandler;
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
-use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
 use App\Modules\Athena\Model\CommercialRoute;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Zeus\Application\Handler\Bonus\BonusApplierInterface;
 use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Model\PlayerBonusId;
@@ -38,14 +38,14 @@ class ViewInvestments extends AbstractController
 	}
 
 	public function __invoke(
-		Player $currentPlayer,
-		CommanderRepositoryInterface $commanderRepository,
-		OrbitalBaseRepositoryInterface $orbitalBaseRepository,
+		Player                         $currentPlayer,
+		CommanderRepositoryInterface   $commanderRepository,
+		PlanetRepositoryInterface      $planetRepository,
 		TransactionRepositoryInterface $transactionRepository,
 	): Response {
 		$taxCoeff = $this->getParameter('zeus.player.tax_coeff');
 
-		$playerBases = $orbitalBaseRepository->getPlayerBases($currentPlayer);
+		$playerPlanets = $planetRepository->getPlayerPlanets($currentPlayer);
 
 		$commanders = $commanderRepository->getPlayerCommanders(
 			$currentPlayer,
@@ -55,7 +55,7 @@ class ViewInvestments extends AbstractController
 
 		$transactions = $transactionRepository->getPlayerPropositions($currentPlayer, Transaction::TYP_SHIP);
 
-		$basesData = $this->getBasesData($playerBases, $taxCoeff);
+		$basesData = $this->getBasesData($playerPlanets, $taxCoeff);
 
 		return $this->render('pages/athena/financial/investments.html.twig', [
 			'commanders' => $commanders,
@@ -69,13 +69,13 @@ class ViewInvestments extends AbstractController
 
 				return $carry;
 			}, []),
-			'player_bases' => $playerBases,
+			'player_planets' => $playerPlanets,
 			'tax_coeff' => $taxCoeff,
 			'transactions' => $transactions,
-			'bases_data' => $basesData,
+			'planets_data' => $basesData,
 			'investments_data' => $this->getInvestmentsData(
 				$currentPlayer,
-				$playerBases,
+				$playerPlanets,
 				$commanders,
 				$transactions,
 				$basesData,
@@ -85,7 +85,7 @@ class ViewInvestments extends AbstractController
 	}
 
 	/**
-	 * @param list<OrbitalBase> $bases
+	 * @param list<Planet> $bases
 	 * @return array<string, array{
 	 *     tax_income: int,
 	 *     tax_income_bonus: int,
@@ -97,16 +97,16 @@ class ViewInvestments extends AbstractController
 	 */
 	private function getBasesData(array $bases, int $taxCoeff): array
 	{
-		return array_reduce($bases, function (array $carry, OrbitalBase $base) {
-			$routesIncome = $this->commercialRouteRepository->getBaseIncome($base);
+		return array_reduce($bases, function (array $carry, Planet $base) {
+			$routesIncome = $this->commercialRouteRepository->getPlanetIncome($base);
 			$populationTax = $this->populationTaxHandler->getPopulationTax($base);
 
 			$carry[$base->id->toRfc4122()] = [
 				'tax_income' => $populationTax->initial,
 				'tax_income_bonus' => $populationTax->bonus,
 				// @TODO possible non pertinent retrieval of bases count. Why filtering by statement for the count and not for the retrieval ?
-				'routes' => $this->commercialRouteRepository->getBaseRoutes($base),
-				'routes_count' => $this->commercialRouteRepository->countBaseRoutes($base, [CommercialRoute::ACTIVE]),
+				'routes' => $this->commercialRouteRepository->getPlanetRoutes($base),
+				'routes_count' => $this->commercialRouteRepository->countPlanetRoutes($base, [CommercialRoute::ACTIVE]),
 				'routes_income' => $routesIncome,
 				'routes_income_bonus' => $this->bonusApplier->apply($routesIncome, PlayerBonusId::COMMERCIAL_INCOME),
 			];
@@ -116,7 +116,7 @@ class ViewInvestments extends AbstractController
 	}
 
 	/**
-	 * @param OrbitalBase[]      $playerBases
+	 * @param Planet[]      $playerBases
 	 * @param Commander[]        $commanders
 	 * @param Transaction[]      $transactions
 	 * @param array<string, array{
@@ -154,7 +154,7 @@ class ViewInvestments extends AbstractController
 			$populationTax = $this->populationTaxHandler->getPopulationTax($base);
 			$data['totalTaxIn'] += $populationTax->initial;
 			$data['totalTaxInBonus'] += $populationTax->bonus;
-			$data['totalTaxOut'] += $populationTax->getTotal() * $base->place->system->sector->tax / 100;
+			$data['totalTaxOut'] += $populationTax->getTotal() * $base->system->sector->tax / 100;
 			$data['totalInvest'] += $base->iSchool + $base->iAntiSpy;
 			$data['totalShipsFees'] += ($this->calculateFleetCost)($base->getShipStorage(), false);
 

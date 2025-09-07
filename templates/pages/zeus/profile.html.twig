@@ -17,8 +17,8 @@
 		<twig:Character :player="current_player" />
 
 		{# obFastView component #}
-		{% for orbital_base in player_bases %}
-			<twig:FastView :orbitalBase="orbital_base" :index="loop.index" :isProfileView="true" />
+		{% for planet in player_planets %}
+			<twig:FastView :planet="planet" :index="loop.index" :isProfileView="true" />
 		{% endfor %}
 	</twig:ContentContainer>
 {% endblock body %}

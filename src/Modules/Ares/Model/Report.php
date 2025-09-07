@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Ares\Model;
 
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Component\Uid\Uuid;
 
@@ -38,23 +38,23 @@ class Report
 	 * @param array $squadrons
 	 */
 	public function __construct(
-		public Uuid $id,
-		public Player $attacker,
-		public Player|null $defender,
-		public Player|null $winner,
+		public Uuid           $id,
+		public Player         $attacker,
+		public Player|null    $defender,
+		public Player|null    $winner,
 		public Commander|null $attackerCommander,
 		public Commander|null $defenderCommander,
-		public Place $place,
-		public int $type,
-		public int $attackerLevel,
-		public int $defenderLevel,
-		public int $attackerExperience,
-		public int $defenderExperience,
-		public int $attackerPalmares,
-		public int $defenderPalmares,
-		public int $resources,
-		public int $attackerCommanderExperience,
-		public int $defenderCommanderExperience,
+		public Planet         $place,
+		public int            $type,
+		public int            $attackerLevel,
+		public int            $defenderLevel,
+		public int            $attackerExperience,
+		public int            $defenderExperience,
+		public int            $attackerPalmares,
+		public int            $defenderPalmares,
+		public int            $resources,
+		public int            $attackerCommanderExperience,
+		public int            $defenderCommanderExperience,
 		public int $earnedExperience,
 		public bool $isLegal,
 		public int $round,
@@ -63,7 +63,7 @@ class Report
 	) {
 	}
 
-	public static function fromLiveReport(Place $place): self
+	public static function fromLiveReport(Planet $place): self
 	{
 		$report = new self(
 			id: Uuid::v4(),

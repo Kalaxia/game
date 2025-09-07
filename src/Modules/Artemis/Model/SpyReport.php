@@ -3,7 +3,8 @@
 namespace App\Modules\Artemis\Model;
 
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Component\Uid\Uuid;
 
@@ -26,19 +27,19 @@ class SpyReport
 	public const STEP_DOCK = 99;
 
 	public function __construct(
-		public Uuid $id,
-		public Player $player,
-		public Place $place,
-		public int $price,
-		public Color|null $placeFaction,
-		public int $placeType,
-		public int|null $baseType,
+		public Uuid        $id,
+		public Player      $player,
+		public Planet      $place,
+		public int         $price,
+		public Color|null  $placeFaction,
+		public PlaceType   $placeType,
+		public int|null    $baseType,
 		public string|null $placeName,
-		public int $points,
+		public int         $points,
 		public Player|null $targetPlayer,
-		public int|null $targetPlayerLevel,
-		public int $resources,
-		public array $shipStorage,
+		public int|null    $targetPlayerLevel,
+		public int         $resources,
+		public array       $shipStorage,
 		public int|null $antiSpyInvest,
 		public int|null $commercialRouteIncome,
 		public int $successRate,

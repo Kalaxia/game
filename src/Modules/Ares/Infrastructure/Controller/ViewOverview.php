@@ -4,8 +4,8 @@ namespace App\Modules\Ares\Infrastructure\Controller;
 
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Athena\Application\Registry\CurrentPlayerBasesRegistry;
-use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
+use App\Modules\Galaxy\Application\Registry\CurrentPlayerPlanetsRegistry;
+use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,9 +13,9 @@ use Symfony\Component\HttpFoundation\Response;
 class ViewOverview extends AbstractController
 {
 	public function __construct(
-		private readonly CurrentPlayerBasesRegistry $currentPlayerBasesRegistry,
+		private readonly CurrentPlayerPlanetsRegistry $currentPlayerPlanetsRegistry,
 		private readonly CommanderRepositoryInterface $commanderRepository,
-		private readonly OrbitalBaseRepositoryInterface $orbitalBaseRepository,
+		private readonly PlanetRepositoryInterface    $planetRepository,
 	) {
 	}
 
@@ -30,12 +30,12 @@ class ViewOverview extends AbstractController
 	{
 		// set d'orbitale base
 		$obsets = [];
-		foreach ($this->currentPlayerBasesRegistry->all() as $orbitalBase) {
+		foreach ($this->currentPlayerPlanetsRegistry->all() as $planet) {
 			$obsets[] = [
 				'info' => [
-					'id' => $orbitalBase->id->toRfc4122(),
-					'name' => $orbitalBase->name,
-					'type' => $orbitalBase->typeOfBase,
+					'id' => $planet->id->toRfc4122(),
+					'name' => $planet->name,
+					'type' => $planet->typeOfBase,
 				],
 			];
 		}
@@ -55,12 +55,12 @@ class ViewOverview extends AbstractController
 			}
 		}
 		// ship in dock
-		$playerBases = $this->orbitalBaseRepository->getPlayerBases($currentPlayer);
+		$playerPlanets = $this->planetRepository->getPlayerPlanets($currentPlayer);
 
 		for ($i = 0; $i < count($obsets); ++$i) {
-			foreach ($playerBases as $orbitalBase) {
-				if ($orbitalBase->id->toRfc4122() == $obsets[$i]['info']['id']) {
-					$obsets[$i]['dock'] = $orbitalBase->getShipStorage();
+			foreach ($playerPlanets as $planet) {
+				if ($planet->id->toRfc4122() == $obsets[$i]['info']['id']) {
+					$obsets[$i]['dock'] = $planet->getShipStorage();
 				}
 			}
 		}

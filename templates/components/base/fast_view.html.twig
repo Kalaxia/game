@@ -1,10 +1,10 @@
 <div class="component">
 	{% if fast_view_profile %}
 		<div class="head skin-1">
-			<img src="{{ asset('build/media/map/place/place1-' ~ orbital_base|base_demography ~ '.png') }}" alt=" {{ orbital_base.name }}" />
-			<h2>{{ orbital_base.name }}</h2>
+			<img src="{{ asset('build/media/map/place/place1-' ~ planet|base_demography ~ '.png') }}" alt=" {{ planet.name }}" />
+			<h2>{{ planet.name }}</h2>
 			<em>
-				{{ orbital_base|base_type }} — {{ orbital_base.points}} points
+				{{ planet|base_type }} — {{ planet.points}} points
 			</em>
 		</div>
 	{% else %}
@@ -15,8 +15,8 @@
 	<div class="fix-body">
 		<div class="body">
 			{# pending commercial routes display #}
-			{% if orbital_base.levelSpatioport > 0 and commercial_routes_data.waiting_for_me is defined and commercial_routes_data.waiting_for_me != 0 %}
-				<a href="{{ path('switchbase', {'baseId': orbital_base.id, 'page': 'spatioport'}) }}" class="alert">
+			{% if planet.levelSpatioport > 0 and commercial_routes_data.waiting_for_me is defined and commercial_routes_data.waiting_for_me != 0 %}
+				<a href="{{ path('switchplanet', {'planetId': planet.id, 'page': 'spatioport'}) }}" class="alert">
 					{% set plural = commercial_routes_data.waiting_for_me|plural %}
 					Vous avez {{ commercial_routes_data.waiting_for_me }} proposition{{ plural }} commerciale{{ plural }}
 				</a>
@@ -26,15 +26,15 @@
 			<div class="number-box">
 				<span class="label">Ressources en stock</span>
 				<span class="value">
-					{{ orbital_base.resourcesStorage|number }}
+					{{ planet.resourcesStorage|number }}
 				 	<img alt="ressources" src="{{ asset('build/media/resources/resource.png') }}" class="icon-color">
 				</span>
 
-				<span class="progress-bar hb bl" title="remplissage : {{ orbital_base|base_storage_percent }}%">
-					<span style="width: {{ orbital_base|base_storage_percent }}%;" class="content"></span>
+				<span class="progress-bar hb bl" title="remplissage : {{ planet|base_storage_percent }}%">
+					<span style="width: {{ planet|base_storage_percent }}%;" class="content"></span>
 				</span>
 				<span class="group-link">
-					<a href="{{ path('switchbase', {'baseId': orbital_base.id, 'page': 'refinery'}) }}" class="link hb lt" title="vers la raffinerie">→</a>
+					<a href="{{ path('switchplanet', {'planetId': planet.id, 'page': 'refinery'}) }}" class="link hb lt" title="vers la raffinerie">→</a>
 				</span>
 			</div>
 
@@ -69,14 +69,14 @@
 						{% endif %}
 					</div>
 				{% endfor %}
-				{% if orbital_base|base_max_building_queues > building_queues|length %}
-					<a href="{{ path('switchbase', { 'baseId': orbital_base.id, 'page': 'generator'}) }}" class="item link">
+				{% if planet|base_max_building_queues > building_queues|length %}
+					<a href="{{ path('switchplanet', { 'planetId': planet.id, 'page': 'generator'}) }}" class="item link">
 						Construire un bâtiment
 					</a>
 				{% endif %}
 			</div>
 
-			{% if orbital_base.levelDock1 > 0 %}
+			{% if planet.levelDock1 > 0 %}
 				<h4>Chantier Alpha</h4>
 
 				{% set realSizeQueue = 0 %}
@@ -111,15 +111,15 @@
 						{% endif %}
 						</div>
 					{% endfor %}
-					{% if orbital_base|base_max_dock1_ship_queues > dock1_ship_queues|length %}
-						<a href="{{ path('switchbase', {'baseId': orbital_base.id, 'page': 'docks', 'dockType': constant('App\\Modules\\Athena\\Model\\OrbitalBase::DOCK_TYPE_MANUFACTURE')}) }}" class="item link">
+					{% if planet|base_max_dock1_ship_queues > dock1_ship_queues|length %}
+						<a href="{{ path('switchplanet', {'planetId': planet.id, 'page': 'docks', 'dockType': constant('App\\Modules\\Galaxy\\Domain\\Entity\\Planet::DOCK_TYPE_MANUFACTURE')}) }}" class="item link">
 							Lancer la production
 						</a>
 					{% endif %}
 				</div>
 			{% endif %}
 
-			{% if orbital_base.levelDock2 > 0 %}
+			{% if planet.levelDock2 > 0 %}
 				<h4>Chantier de Ligne</h4>
 
 				{% set realSizeQueue = 0 %}
@@ -154,15 +154,15 @@
 						{% endif %}
 						</div>
 					{% endfor %}
-					{% if orbital_base|base_max_dock2_ship_queues > dock2_ship_queues|length %}
-						<a href="{{ path('switchbase', {'baseId': orbital_base.id, 'page': 'docks', 'dockType': constant('App\\Modules\\Athena\\Model\\OrbitalBase::DOCK_TYPE_SHIPYARD')}) }}" class="item link">
+					{% if planet|base_max_dock2_ship_queues > dock2_ship_queues|length %}
+						<a href="{{ path('switchplanet', {'planetId': planet.id, 'page': 'docks', 'dockType': constant('App\\Modules\\Galaxy\\Domain\\Entity\\Planet::DOCK_TYPE_SHIPYARD')}) }}" class="item link">
 							Lancer la production
 						</a>
 					{% endif %}
 				</div>
 			{% endif %}
 
-			{% if orbital_base.levelTechnosphere > 0 %}
+			{% if planet.levelTechnosphere > 0 %}
 				<h4>Technosphère</h4>
 
 				{% set realSizeQueue = 0 %}
@@ -199,15 +199,15 @@
 							{% endif %}
 						</div>
 					{% endfor %}
-					{% if orbital_base|base_max_technology_queues > technology_queues|length %}
-						<a href="{{ path('switchbase', {'baseId': orbital_base.id, 'page': 'technosphere'}) }}" class="item link">
+					{% if planet|base_max_technology_queues > technology_queues|length %}
+						<a href="{{ path('switchplanet', {'planetId': planet.id, 'page': 'technosphere'}) }}" class="item link">
 							Développer une technologie
 						</a>
 					{% endif %}
 				</div>
 			{% endif %}
 
-			{% if orbital_base.levelSpatioport > 0 %}
+			{% if planet.levelSpatioport > 0 %}
 				<h4>Spatioport</h4>
 
 				<div class="number-box">
@@ -222,7 +222,7 @@
 					</span>
 
 					<span class="group-link">
-						<a href="{{ path('switchbase', {'baseId': orbital_base.id, 'page': 'spatioport'}) }}" class="link hb lt" title="vers le spatioport">→</a>
+						<a href="{{ path('switchplanet', {'planetId': planet.id, 'page': 'spatioport'}) }}" class="link hb lt" title="vers le spatioport">→</a>
 					</span>
 				</div>
 			{% endif %}

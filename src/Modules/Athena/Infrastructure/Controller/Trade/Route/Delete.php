@@ -4,8 +4,7 @@ namespace App\Modules\Athena\Infrastructure\Controller\Trade\Route;
 
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
 use App\Modules\Athena\Manager\CommercialRouteManager;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Hermes\Manager\NotificationManager;
@@ -18,15 +17,14 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 class Delete extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		Player $currentPlayer,
-		OrbitalBase $currentBase,
-		CommercialRouteManager $commercialRouteManager,
+		Request                            $request,
+		Player                             $currentPlayer,
+		Planet                             $currentBase,
+		CommercialRouteManager             $commercialRouteManager,
 		CommercialRouteRepositoryInterface $commercialRouteRepository,
-		OrbitalBaseManager $orbitalBaseManager,
-		NotificationManager $notificationManager,
-		NotificationRepositoryInterface $notificationRepository,
-		int $id,
+		NotificationManager                $notificationManager,
+		NotificationRepositoryInterface    $notificationRepository,
+		int                                $id,
 	): Response {
 		$cr = $commercialRouteRepository->get($id)
 			?? throw $this->createNotFoundException('Commercial route not found');
@@ -45,14 +43,14 @@ class Delete extends AbstractController
 			$notifReceiver = $linkedBase->player;
 			$myBaseName = $proposerBase->name;
 			$otherBaseName = $linkedBase->name;
-			$myBaseId = $proposerBase->place->id;
-			$otherBaseId = $linkedBase->place->id;
+			$myBaseId = $proposerBase->id;
+			$otherBaseId = $linkedBase->id;
 		} elseif ($cr->destinationBase->id->equals($currentBase->id)) {
 			$notifReceiver = $proposerBase->player;
 			$myBaseName = $linkedBase->name;
 			$otherBaseName = $proposerBase->name;
-			$myBaseId = $linkedBase->place->id;
-			$otherBaseId = $proposerBase->place->id;
+			$myBaseId = $linkedBase->id;
+			$otherBaseId = $proposerBase->id;
 		} else {
 			throw new ConflictHttpException('Commercial route does not belong to the current base');
 		}

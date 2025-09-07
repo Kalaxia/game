@@ -10,13 +10,12 @@ use App\Modules\Ares\Domain\Specification\Player\CanSpyPlace;
 use App\Modules\Artemis\Application\Handler\AntiSpyHandler;
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Recycling\GetMissionTime;
-use App\Modules\Athena\Domain\Specification\CanOrbitalBaseTradeWithPlace;
+use App\Modules\Athena\Domain\Specification\CanPlanetTradeWithPlace;
 use App\Modules\Athena\Model\CommercialRoute;
-use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
-use App\Modules\Gaia\Model\Place;
-use App\Modules\Gaia\Model\System;
-use App\Modules\Gaia\Resource\SystemResource;
+use App\Modules\Galaxy\Application\Handler\GetDistanceBetweenPlaces;
+use App\Modules\Galaxy\Domain\Entity\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\System;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerRegistry;
@@ -52,11 +51,11 @@ class MapExtension extends AbstractExtension
     public function getFunctions(): array
 	{
 		return [
-			new TwigFunction('get_base_antispy_radius', fn (OrbitalBase $base) => $this->antiSpyHandler->getAntiSpyRadius($base->antiSpyAverage)),
-			new TwigFunction('get_travel_time', function (OrbitalBase $defaultBase, Place $place) {
+			new TwigFunction('get_planet_antispy_radius', fn (Planet $base) => $this->antiSpyHandler->getAntiSpyRadius($base->antiSpyAverage)),
+			new TwigFunction('get_travel_time', function (Place $defaultBase, Place $place) {
 				$departureDate = new \DateTimeImmutable();
 				$arrivalDate = ($this->getTravelDuration)(
-					origin: $defaultBase->place,
+					origin: $defaultBase,
 					destination: $place,
 					departureDate: $departureDate,
 					player: $this->currentPlayerRegistry->get(),
@@ -64,33 +63,31 @@ class MapExtension extends AbstractExtension
 
 				return $this->durationHandler->getDiff($departureDate, $arrivalDate);
 			}),
-			new TwigFunction('get_place_type', fn (string $type) => Game::convertPlaceType($type)),
-			new TwigFunction('get_system_info', fn (int $systemType, string $info) => SystemResource::getInfo($systemType, $info)),
-			new TwigFunction('get_place_distance', fn (OrbitalBase $defaultBase, Place $place) => ($this->getDistanceBetweenPlaces)(
-				$defaultBase->place,
+			new TwigFunction('get_place_distance', fn (Place $defaultBase, Place $place) => ($this->getDistanceBetweenPlaces)(
+				$defaultBase,
 				$place,
 			)),
 			new TwigFunction('get_max_travel_distance', fn () => Game::getMaxTravelDistance($this->currentPlayerBonusRegistry->getPlayerBonus())),
-			new TwigFunction('get_place_demography', fn (Place $place) => Game::getSizeOfPlanet($place->population)),
-			new TwigFunction('get_place_technosphere_improvement_coeff', fn (Place $place) => Game::getImprovementFromScientificCoef($place->coefHistory)),
-			new TwigFunction('get_commercial_route_data', fn (OrbitalBase $defaultBase, Place $place) => $this->getCommercialRouteData($defaultBase, $place)),
+			new TwigFunction('get_place_demography', fn (Planet $place) => Game::getSizeOfPlanet($place->population)),
+			new TwigFunction('get_place_technosphere_improvement_coeff', fn (Planet $place) => Game::getImprovementFromScientificCoef($place->coefHistory)),
+			new TwigFunction('get_commercial_route_data', fn (Planet $defaultBase, Planet $place) => $this->getCommercialRouteData($defaultBase, $place)),
 
-			new TwigFunction('can_player_attack_place', function (Player $player, Place $place) {
+			new TwigFunction('can_player_attack_place', function (Player $player, Planet $place) {
 				$specification = new CanPlayerAttackPlace($player);
 
 				return $specification->isSatisfiedBy($place);
 			}),
-			new TwigFunction('can_player_move_to_place', function (Player $player, Place $place, OrbitalBase $orbitalBase) {
-				$specification = new CanPlayerMoveToPlace($player, $orbitalBase);
+			new TwigFunction('can_player_move_to_place', function (Player $player, Planet $place, Planet $planet) {
+				$specification = new CanPlayerMoveToPlace($player, $planet);
 
 				return $specification->isSatisfiedBy($place);
 			}),
-			new TwigFunction('can_orbital_base_trade_with_place', function (OrbitalBase $orbitalBase, Place $place) {
-				$specification = new CanOrbitalBaseTradeWithPlace($orbitalBase);
+			new TwigFunction('can_planet_trade_with_place', function (Planet $planet, Planet $place) {
+				$specification = new CanPlanetTradeWithPlace($planet);
 
 				return $specification->isSatisfiedBy($place);
 			}),
-			new TwigFunction('can_spy', function (Player $player, Place $place) {
+			new TwigFunction('can_spy', function (Player $player, Planet $place) {
 				$specification = new CanSpyPlace($player);
 
 				return $specification->isSatisfiedBy($place);
@@ -100,13 +97,13 @@ class MapExtension extends AbstractExtension
 
 				return $specification->isSatisfiedBy($place);
 			}),
-			new TwigFunction('get_recycling_mission_time', fn (OrbitalBase $orbitalBase, Place $place) => ($this->getMissionTime)($orbitalBase->place, $place, $this->currentPlayerRegistry->get())),
+			new TwigFunction('get_recycling_mission_time', fn (Planet $planet, Place $place) => ($this->getMissionTime)($planet, $place, $this->currentPlayerRegistry->get())),
 		];
 	}
 
-	private function getCommercialRouteData(OrbitalBase $defaultBase, Place $place): array
+	private function getCommercialRouteData(Planet $defaultBase, Planet $place): array
 	{
-		$routes = $this->commercialRouteRepository->getBaseRoutes($defaultBase);
+		$routes = $this->commercialRouteRepository->getPlanetRoutes($defaultBase);
 
 		$data = [
 			'proposed' => false,
@@ -120,7 +117,7 @@ class MapExtension extends AbstractExtension
 			if ($route->destinationBase->id->equals($defaultBase->id) && CommercialRoute::PROPOSED == $route->statement) {
 				--$data['slots'];
 			}
-			if (!$place->id->equals($route->originBase->place->id) && !$place->id->equals($route->destinationBase->place->id)) {
+			if (!$place->id->equals($route->originBase->id) && !$place->id->equals($route->destinationBase->id)) {
 				continue;
 			}
 			$data = array_merge($data, match ($route->statement) {

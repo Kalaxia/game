@@ -3,13 +3,13 @@
 		<div class="body">
 			<div class="situation-content place1">
 				<div class="flex items-center float-right">
-					<a href="{{ path('map', { 'placeId': current_base.id }) }}">
+					<a href="{{ path('map', { 'placeId': current_planet.id }) }}">
 						<twig:Button :faction="current_player.faction">
 							Centrer sur la carte
 						</twig:Button>
 					</a>
-					<form action="{{ path('rename_base') }}" method="POST" class="flex items-center">
-						<twig:Input type="text" name="name" value="{{ current_base.name }}" />
+					<form action="{{ path('rename_planet') }}" method="POST" class="flex items-center">
+						<twig:Input type="text" name="name" value="{{ current_planet.name }}" />
 						<twig:Button :faction="current_player.faction" type="submit">
 							Ok
 						</twig:Button>
@@ -18,19 +18,19 @@
 
 				<div class="stellar">
 					<div class="info top">
-						{{ current_base|base_type }}<br />
-						<strong>{{ current_base.name }}</strong><br />
-						{{ current_base.points|number}} points
+						{{ current_planet|base_type }}<br />
+						<strong>{{ current_planet.name }}</strong><br />
+						{{ current_planet.points|number}} points
 					</div>
 					<div class="info middle">
 						coordonnées<br />
-						<strong>{{ current_base|base_coords }}</strong>
+						<strong>{{ current_planet|base_coords }}</strong>
 					</div>
-					<img src="{{ asset('build/media/orbitalbase/place1-' ~ current_base|base_demography ~ '.png') }}" alt="planète" />
+					<img src="{{ asset('build/media/orbitalbase/place1-' ~ current_planet|base_demography ~ '.png') }}" alt="planète" />
 
 					<div class="info bottom">
-						<strong>{{ (current_base.place.population * 1000000)|number }}</strong> habitants<br />
-						<strong>{{ current_base.place.coefResources }}</strong> % coeff. ressource<br />
+						<strong>{{ (current_planet.population * 1000000)|number }}</strong> habitants<br />
+						<strong>{{ current_planet.coefResources }}</strong> % coeff. ressource<br />
 						<strong>{{ science_coeff }}</strong> % de bonus scientifique
 					</div>
 				</div>

@@ -17,9 +17,8 @@ use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\LiveReport;
 use App\Modules\Ares\Model\Report;
 use App\Modules\Artemis\Application\Handler\AntiSpyHandler;
-use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Gaia\Manager\PlaceManager;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Zeus\Manager\PlayerBonusManager;
 use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Model\PlayerBonus;
@@ -85,12 +84,12 @@ readonly class CommanderManager implements SchedulerInterface
 	public function emptySquadrons(Commander $commander): void
 	{
 		$this->commanderArmyHandler->setArmy($commander);
-		$orbitalBase = $commander->base;
+		$planet = $commander->base;
 
 		$nbSquadrons = count($commander->squadronsIds);
 		for ($i = 0; $i < $nbSquadrons; ++$i) {
 			for ($j = 0; $j < 12; ++$j) {
-				$orbitalBase->addShips($j, $commander->getSquadron($i)->getShipQuantity($j));
+				$planet->addShips($j, $commander->getSquadron($i)->getShipQuantity($j));
 			}
 			$commander->getSquadron($i)->emptySquadron();
 		}
@@ -115,9 +114,8 @@ readonly class CommanderManager implements SchedulerInterface
 	public function uChangeBase(Commander $commander): void
 	{
 		$place = $commander->destinationPlace;
-		$base = $place->base;
-		$placeCommanders = $this->commanderRepository->getBaseCommanders($base);
-		// @WARNING check if this is the right property to use, originally rbaseId to Place
+		$placeCommanders = $this->commanderRepository->getPlanetCommanders($place);
+		// @WARNING check if this is the right property to use, originally rplanetId to Place
 		$commanderPlace = $commander->startPlace;
 		$player = $commander->player;
 		$playerBonus = $this->playerBonusManager->getBonusByPlayer($player);
@@ -125,7 +123,7 @@ readonly class CommanderManager implements SchedulerInterface
 		// on pose la flotte si il y a assez de place
 		// sinon on met la flotte dans les hangars
 		// TODO replace with specification
-		if ($place->player->id !== $commander->player->id || Place::TYP_ORBITALBASE !== $place->typeOfPlace) {
+		if ($place === null || $place->player->id !== $commander->player->id) {
 			// retour forcé
 			($this->moveFleet)(
 				commander: $commander,
@@ -133,15 +131,15 @@ readonly class CommanderManager implements SchedulerInterface
 				destination: $commanderPlace,
 				mission: CommanderMission::Back,
 			);
-			$this->placeManager->sendNotif($place, Place::CHANGELOST, $commander);
+			$this->placeManager->sendNotif($place, Planet::CHANGELOST, $commander);
 			$this->entityManager->flush();
 
 			return;
 		}
 		$maxCom =
-			($place->base->isMilitaryBase() || $place->base->isCapital())
-			? OrbitalBase::MAXCOMMANDERMILITARY
-			: OrbitalBase::MAXCOMMANDERSTANDARD
+			($place->isMilitaryBase() || $place->isCapital())
+			? Planet::MAXCOMMANDERMILITARY
+			: Planet::MAXCOMMANDERSTANDARD
 		;
 
 		// si place a assez de case libre :
@@ -154,7 +152,7 @@ readonly class CommanderManager implements SchedulerInterface
 				}
 			}
 
-			if (OrbitalBase::MAXCOMMANDERMILITARY == $maxCom) {
+			if (Planet::MAXCOMMANDERMILITARY == $maxCom) {
 				if ($comLine2 < 2) {
 					$commander->line = 2;
 				} else {
@@ -170,24 +168,24 @@ readonly class CommanderManager implements SchedulerInterface
 
 			// changer rBase commander
 			// @TODO update that
-			$commander->base = $base;
+			$commander->base = $place;
 			$this->endTravel($commander, Commander::AFFECTED);
 
 			// envoi de notif
-			$this->placeManager->sendNotif($place, Place::CHANGESUCCESS, $commander);
+			$this->placeManager->sendNotif($place, Planet::CHANGESUCCESS, $commander);
 		} else {
 			// changer rBase commander
-			$commander->base = $base;
+			$commander->base = $place;
 			$this->endTravel($commander, Commander::RESERVE);
 
 			$this->emptySquadrons($commander);
 
 			// envoi de notif
-			$this->placeManager->sendNotif($place, Place::CHANGEFAIL, $commander);
+			$this->placeManager->sendNotif($place, Planet::CHANGEFAIL, $commander);
 		}
 
 		// modifier le rPlayer (ne se modifie pas si c'est le même)
-		$commander->player = $base->player;
+		$commander->player = $place->player;
 
 		$this->entityManager->flush();
 	}
@@ -202,22 +200,22 @@ readonly class CommanderManager implements SchedulerInterface
 		$commander->statement = $statement;
 	}
 
-	public function lootAnEmptyPlace(Place $place, Commander $commander, PlayerBonus $playerBonus): void
+	public function lootAnEmptyPlace(Planet $place, Commander $commander, PlayerBonus $playerBonus): void
 	{
 		$bonus = $playerBonus->bonuses->get(PlayerBonusId::SHIP_CONTAINER);
 
 		$storage = $this->commanderArmyHandler->getPevToLoot($commander) * Commander::COEFFLOOT;
 		$storage += intval(round($storage * ((2 * $bonus) / 100)));
 
-		$resourcesLooted = ($storage > $place->resources) ? $place->resources : $storage;
+		$resourcesLooted = ($storage > $place->resourcesStorage) ? $place->resourcesStorage : $storage;
 
-		$place->resources -= $resourcesLooted;
+		$place->resourcesStorage -= $resourcesLooted;
 		$commander->resources = $resourcesLooted;
 
 		LiveReport::$resources = $resourcesLooted;
 	}
 
-	public function startFight(Place $place, Commander $commander, ?Commander $enemyCommander = null): void
+	public function startFight(Planet $place, Commander $commander, ?Commander $enemyCommander = null): void
 	{
 		if (null === $enemyCommander) {
 			$enemyCommander = $this->virtualCommanderHandler->createVirtualCommander($place);
@@ -225,7 +223,7 @@ readonly class CommanderManager implements SchedulerInterface
 		$this->fightManager->startFight($commander, $enemyCommander);
 	}
 
-	public function createReport(Place $place): Report
+	public function createReport(Planet $place): Report
 	{
 		$report = $this->reportFactory->create($place);
 

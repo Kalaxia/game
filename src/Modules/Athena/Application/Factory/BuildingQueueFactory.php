@@ -10,7 +10,7 @@ use App\Modules\Athena\Domain\Repository\BuildingQueueRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Base\Building\GetTimeCost;
 use App\Modules\Athena\Message\Building\BuildingQueueMessage;
 use App\Modules\Athena\Model\BuildingQueue;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Shared\Application\Handler\DurationHandler;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -28,15 +28,15 @@ readonly class BuildingQueueFactory
 	}
 
 	public function create(
-		OrbitalBase $orbitalBase,
-		int $identifier,
-		int $targetLevel,
-		\DateTimeImmutable $startedAt,
+        Planet             $planet,
+        int                $identifier,
+        int                $targetLevel,
+        \DateTimeImmutable $startedAt,
 	): BuildingQueue {
 		// build the new building
 		$buildingQueue = new BuildingQueue(
 			id: Uuid::v4(),
-			base: $orbitalBase,
+			base: $planet,
 			buildingNumber: $identifier,
 			targetLevel: $targetLevel,
 			startedAt: $startedAt,

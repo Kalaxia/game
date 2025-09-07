@@ -1,11 +1,11 @@
 <h5 class="text-base font-bold" style="font-variant-caps: all-small-caps">
-	{% if place.typeOfPlace == 1 %}
-		{% if place.base is not null %}
-			{{ place.base.name }}
+	{% if place.type == enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Planet %}
+		{% if place.player is not null %}
+			{{ place.name }}
 		{% else %}
 			Planète rebelle
 		{% endif %}
 	{% else %}
-		{{ get_place_type(place.typeOfPlace) }}
+		{{ ('galaxy.places.types.' ~ place.type.value ~ '.name')|trans }}
 	{% endif %}
 </h5>

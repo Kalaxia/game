@@ -7,8 +7,8 @@ use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Manager\CommanderManager;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
-use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
+use App\Modules\Galaxy\Application\Handler\GetDistanceBetweenPlaces;
+use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -51,7 +51,7 @@ class Move extends AbstractController
 		}
 		$home = $commander->base;
 
-		$length = $getDistanceBetweenPlaces($home->place, $place);
+		$length = $getDistanceBetweenPlaces($home, $place);
 
 		if (!$commander->isAffected()) {
 			throw new ConflictHttpException('Cet officier est déjà en déplacement.');
@@ -65,7 +65,7 @@ class Move extends AbstractController
 		}
 		$moveFleet(
 			commander: $commander,
-			origin: $home->place,
+			origin: $home,
 			destination: $place,
 			mission: CommanderMission::Move,
 		);

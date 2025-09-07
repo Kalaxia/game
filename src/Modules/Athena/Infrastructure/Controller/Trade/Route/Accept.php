@@ -5,13 +5,13 @@ namespace App\Modules\Athena\Infrastructure\Controller\Trade\Route;
 use App\Classes\Library\Format;
 use App\Modules\Athena\Application\Handler\CommercialRoute\GetCommercialRoutePrice;
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
 use App\Modules\Athena\Model\CommercialRoute;
-use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\ColorResource;
-use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
+use App\Modules\Galaxy\Application\Handler\GetDistanceBetweenPlaces;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Helper\PlanetHelper;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Shared\Application\PercentageApplier;
@@ -27,21 +27,21 @@ use Symfony\Component\Uid\Uuid;
 class Accept extends AbstractController
 {
 	public function __invoke(
-		Request                            $request,
-		Player                             $currentPlayer,
-		OrbitalBase                        $currentBase,
-		GetDistanceBetweenPlaces $getDistanceBetweenPlaces,
-		GetCommercialRoutePrice			   $getCommercialRoutePrice,
-		CommercialRouteRepositoryInterface $commercialRouteRepository,
-		OrbitalBaseHelper                  $orbitalBaseHelper,
-		PlayerManager                      $playerManager,
-		NotificationRepositoryInterface    $notificationRepository,
-		EntityManagerInterface             $entityManager,
-		Uuid                               $id,
+        Request                            $request,
+        Player                             $currentPlayer,
+        Planet                             $currentBase,
+        GetDistanceBetweenPlaces           $getDistanceBetweenPlaces,
+        GetCommercialRoutePrice            $getCommercialRoutePrice,
+        CommercialRouteRepositoryInterface $commercialRouteRepository,
+        PlanetHelper                       $planetHelper,
+        PlayerManager                      $playerManager,
+        NotificationRepositoryInterface    $notificationRepository,
+        EntityManagerInterface             $entityManager,
+        Uuid                               $id,
 	): Response {
 		$routeExperienceCoeff = $this->getParameter('athena.trade.experience_coeff');
 
-		if (null === ($cr = $commercialRouteRepository->getByIdAndDistantBase($id, $currentBase))) {
+		if (null === ($cr = $commercialRouteRepository->getByIdAndDistantPlanet($id, $currentBase))) {
 			throw $this->createNotFoundException('Commercial route not found');
 		}
 
@@ -58,19 +58,19 @@ class Accept extends AbstractController
 		$proposerBase = $cr->originBase;
 		$acceptorBase = $cr->destinationBase;
 
-		$nbrMaxCommercialRoute = $orbitalBaseHelper->getBuildingInfo(
-			OrbitalBaseResource::SPATIOPORT,
+		$nbrMaxCommercialRoute = $planetHelper->getBuildingInfo(
+			PlanetResource::SPATIOPORT,
 			'level',
 			$acceptorBase->levelSpatioport,
 			'nbRoutesMax',
 		);
 
-		if ($commercialRouteRepository->countBaseRoutes($acceptorBase, [CommercialRoute::STANDBY, CommercialRoute::ACTIVE]) > $nbrMaxCommercialRoute) {
+		if ($commercialRouteRepository->countPlanetRoutes($acceptorBase, [CommercialRoute::STANDBY, CommercialRoute::ACTIVE]) > $nbrMaxCommercialRoute) {
 			throw new ConflictHttpException('You do not have any slot left for a new route');
 		}
 		// compute bonus if the player is from Negore
 		// TODO move to BonusApplier logic
-		$distance = $getDistanceBetweenPlaces($proposerBase->place, $acceptorBase->place);
+		$distance = $getDistanceBetweenPlaces($proposerBase, $acceptorBase);
 		$price = $getCommercialRoutePrice($distance, $currentPlayer);
 		if (ColorResource::FALKIRR === $currentPlayer->faction->identifier) {
 			$bonus = PercentageApplier::toFloat($price, ColorResource::BONUS_NEGORA_ROUTE);
@@ -101,12 +101,12 @@ class Accept extends AbstractController
 					),
 					' a accepté la route commerciale proposée entre ',
 					NotificationBuilder::link(
-						$this->generateUrl('map', ['place' => $acceptorBase->place->id]),
+						$this->generateUrl('map', ['place' => $acceptorBase->id]),
 						$acceptorBase->name,
 					),
 					' et ',
 					NotificationBuilder::link(
-						$this->generateUrl('map', ['place' => $proposerBase->place->id]),
+						$this->generateUrl('map', ['place' => $proposerBase->id]),
 						$proposerBase->name,
 					),
 					'.',
@@ -119,7 +119,7 @@ class Accept extends AbstractController
 					NotificationBuilder::resourceBox('xp', $exp, 'expérience gagnée'),
 					NotificationBuilder::divider(),
 					NotificationBuilder::link(
-						$this->generateUrl('switchbase', ['baseId' => $proposerBase->id, 'page' => 'spatioport']),
+						$this->generateUrl('switchplanet', ['planetId' => $proposerBase->id, 'page' => 'spatioport']),
 						'En savoir plus ?',
 					)
 				)

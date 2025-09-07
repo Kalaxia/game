@@ -8,7 +8,7 @@ use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Ares\Model\LiveReport;
 use App\Modules\Ares\Model\Report;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use Symfony\Component\Uid\Uuid;
 
 readonly class ReportFactory
@@ -20,7 +20,7 @@ readonly class ReportFactory
 	/**
 	 * TODO Avoid having LiveReport using static
 	 */
-	public function create(Place $place): Report
+	public function create(Planet $place): Report
 	{
 
 		$report = new Report(

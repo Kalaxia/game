@@ -14,19 +14,19 @@
 
 	<section class="mt-4">
 		<ul class="flex flex-col divide-y divide-gray-500 border-y border-gray-500">
-			{% for base in player_bases %}
-				{% set base_data = bases_data[base.id.toRfc4122()] %}
-				{% set base_tax_income = base_data.tax_income %}
-				{% set base_tax_income_bonus = base_data.tax_income_bonus %}
+			{% for planet in player_planets %}
+				{% set planet_data = planets_data[planet.id.toRfc4122()] %}
+				{% set planet_tax_income = planet_data.tax_income %}
+				{% set planet_tax_income_bonus = planet_data.tax_income_bonus %}
 				<li class="py-2">
 					<span class="label">
-						<span style="font-variant: all-small-caps">{{ base.name }}</span>
-						<span class="text-sm">[{{ base.place.population|number }} Mio hab.]</span>
+						<span style="font-variant: all-small-caps">{{ planet.name }}</span>
+						<span class="text-sm">[{{ planet.population|number }} Mio hab.]</span>
 					</span><br>
 					<span class="flex gap-x-2 items-center mt-2">
-						<span class="text-sm">{{- base_tax_income|number -}}</span>
-						{% if base_tax_income_bonus > 0 %}
-							<sup class="bonus bg-medium{{ current_player.faction.identifier }} px-1 rounded-md text-xs">+{{ base_tax_income_bonus|number }}</sup>
+						<span class="text-sm">{{- planet_tax_income|number -}}</span>
+						{% if planet_tax_income_bonus > 0 %}
+							<sup class="bonus bg-medium{{ current_player.faction.identifier }} px-1 rounded-md text-xs">+{{ planet_tax_income_bonus|number }}</sup>
 						{% endif %}
 						<img class="inline w-4 h-4" src="{{ asset('images/legacy/picto/G_P_Mon_64px.png') }}" alt="crédits" />
 					</span>

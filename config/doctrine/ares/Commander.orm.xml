@@ -8,13 +8,13 @@
 		<many-to-one field="player" target-entity="App\Modules\Zeus\Model\Player">
 			<join-column nullable="true" />
 		</many-to-one>
-		<many-to-one field="base" target-entity="App\Modules\Athena\Model\OrbitalBase">
+		<many-to-one field="base" target-entity="App\Modules\Galaxy\Domain\Entity\Planet">
 			<join-column nullable="true" />
 		</many-to-one>
-		<many-to-one field="startPlace" target-entity="App\Modules\Gaia\Model\Place">
+		<many-to-one field="startPlace" target-entity="App\Modules\Galaxy\Domain\Entity\Planet">
 			<join-column nullable="true" />
 		</many-to-one>
-		<many-to-one field="destinationPlace" target-entity="App\Modules\Gaia\Model\Place">
+		<many-to-one field="destinationPlace" target-entity="App\Modules\Galaxy\Domain\Entity\Planet">
 			<join-column nullable="true" />
 		</many-to-one>
 		<one-to-many field="squadrons" target-entity="App\Modules\Ares\Model\Squadron" mapped-by="commander" />

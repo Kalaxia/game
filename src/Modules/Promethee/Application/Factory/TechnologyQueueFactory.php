@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Promethee\Application\Factory;
 
 use App\Classes\Library\DateTimeConverter;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Promethee\Domain\Event\NewTechnologyQueueEvent;
 use App\Modules\Promethee\Domain\Repository\TechnologyQueueRepositoryInterface;
 use App\Modules\Promethee\Domain\Service\GetTimeCost;
@@ -30,15 +30,15 @@ readonly class TechnologyQueueFactory
 	}
 
 	public function create(
-		OrbitalBase        $orbitalBase,
-		int                $identifier,
-		int                $targetLevel,
-		\DateTimeImmutable $createdAt,
+        Planet             $planet,
+        int                $identifier,
+        int                $targetLevel,
+        \DateTimeImmutable $createdAt,
 	): TechnologyQueue {
 		$technologyQueue = new TechnologyQueue(
 			id: Uuid::v4(),
-			player: $orbitalBase->player,
-			place: $orbitalBase->place,
+			player: $planet->player,
+			place: $planet,
 			technology: $identifier,
 			targetLevel: $targetLevel,
 			createdAt: $this->clock->now(),
@@ -46,8 +46,8 @@ readonly class TechnologyQueueFactory
 			endedAt: $this->durationHandler->getDurationEnd($createdAt, ($this->getTimeCost)(
 				$identifier,
 				$targetLevel,
-				$orbitalBase->place->coefHistory,
-				$orbitalBase->player,
+				$planet->coefHistory,
+				$planet->player,
 			)),
 		);
 

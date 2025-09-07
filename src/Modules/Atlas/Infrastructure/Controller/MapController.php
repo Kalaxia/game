@@ -10,16 +10,16 @@ use App\Modules\Ares\Manager\ConquestManager;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Artemis\Domain\Repository\SpyReportRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
-use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\RecyclingMissionRepositoryInterface;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
-use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
-use App\Modules\Gaia\Domain\Repository\SectorRepositoryInterface;
-use App\Modules\Gaia\Domain\Repository\SystemRepositoryInterface;
-use App\Modules\Gaia\Galaxy\GalaxyConfiguration;
-use App\Modules\Gaia\Model\Place;
-use App\Modules\Gaia\Model\System;
+use App\Modules\Galaxy\Domain\Entity\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\System;
+use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\SystemRepositoryInterface;
+use App\Modules\Galaxy\Galaxy\GalaxyConfiguration;
+use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -37,15 +37,15 @@ class MapController extends AbstractController
 
 	public function __invoke(
 		Request                             $request,
-		OrbitalBase                         $currentBase,
+		Planet                              $currentBase,
 		Player                              $currentPlayer,
 		ConquestManager                     $conquestManager,
 		CommanderManager                    $commanderManager,
 		CommanderRepositoryInterface        $commanderRepository,
 		CommercialRouteRepositoryInterface  $commercialRouteRepository,
 		SectorRepositoryInterface           $sectorRepository,
-		OrbitalBaseRepositoryInterface      $orbitalBaseRepository,
-		OrbitalBaseManager					$orbitalBaseManager,
+		PlanetRepositoryInterface           $planetRepository,
+		PlanetManager                       $planetManager,
 		TechnologyRepositoryInterface       $technologyRepository,
 		RecyclingMissionRepositoryInterface $recyclingMissionRepository,
 		GalaxyConfiguration                 $galaxyConfiguration,
@@ -61,13 +61,13 @@ class MapController extends AbstractController
 			$places = $this->placeRepository->getSystemPlaces($system);
 			$placesIds = array_map(fn (Place $place) => $place->id, $places);
 
-			$basesCount = $orbitalBaseManager->getPlayerBasesCount($movingCommanders);
+			$basesCount = $planetManager->countPlayerPlanets($movingCommanders);
 
 			$selectedSystemData = [
 				'system' => $defaultPosition['system'],
 				'places' => $places,
 				'technologies' => $technologyRepository->getPlayerTechnology($currentPlayer),
-				'recycling_missions' => $recyclingMissionRepository->getBaseActiveMissions($currentBase),
+				'recycling_missions' => $recyclingMissionRepository->getPlanetActiveMissions($currentBase),
 				'spy_reports' => $spyReportRepository->getSystemReports($currentPlayer, $placesIds),
 				'combat_reports' => $reportRepository->getAttackReportsByPlaces($currentPlayer, $placesIds),
 				'colonization_cost' => $conquestManager->getColonizationCost($currentPlayer, $basesCount),
@@ -78,12 +78,12 @@ class MapController extends AbstractController
 		return $this->render('pages/atlas/map.html.twig', array_merge([
 			'sectors' => $sectorRepository->getAll(),
 			'systems' => $this->systemRepository->getAll(),
-			'player_bases' => $orbitalBaseRepository->getPlayerBases($currentPlayer),
+			'player_planets' => $planetRepository->getPlayerPlanets($currentPlayer),
 			'default_position' => $defaultPosition,
 			'default_map_parameters' => Params::$params,
 			'galaxy_configuration' => $galaxyConfiguration,
 			'commercial_routes' => $commercialRouteRepository->getAllPlayerRoutes($currentPlayer),
-			'local_commanders' => $commanderRepository->getBaseCommanders(
+			'local_commanders' => $commanderRepository->getPlanetCommanders(
 				$currentBase,
 				[Commander::AFFECTED, Commander::MOVING],
 				['line' => 'DESC'],
@@ -97,15 +97,15 @@ class MapController extends AbstractController
 	}
 
 	/**
-	 * @return array{ x: int, y: int, system: System|null, place: Place|null, system_id: Uuid|null }
+	 * @return array{ x: int, y: int, system: System|null, place: Planet|null, system_id: Uuid|null }
 	 */
 	protected function getDefaultPosition(
-		Request     $request,
-		OrbitalBase $currentBase,
+        Request $request,
+        Planet  $currentBase,
 	): array {
 		// map default position
-		$x = $currentBase->place->system->xPosition;
-		$y = $currentBase->place->system->yPosition;
+		$x = $currentBase->system->xPosition;
+		$y = $currentBase->system->yPosition;
 		$systemId = null;
 		$system = $place = null;
 

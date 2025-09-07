@@ -7,14 +7,12 @@ use App\Modules\Ares\Application\Handler\Movement\MoveFleet;
 use App\Modules\Ares\Domain\Event\Fleet\PlannedLootEvent;
 use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
-use App\Modules\Ares\Manager\CommanderManager;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
-use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
-use App\Modules\Gaia\Model\Place;
-use App\Modules\Travel\Domain\Model\TravelType;
-use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
+use App\Modules\Galaxy\Application\Handler\GetDistanceBetweenPlaces;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Enum\PlaceType;
+use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -58,6 +56,11 @@ class Loot extends AbstractController
 		// @TODO simplify this hell
 		$place = $placeRepository->get(Uuid::fromString($placeId))
 			?? throw $this->createNotFoundException('Place not found');
+
+		if (!$place instanceof Planet) {
+			throw new BadRequestHttpException('The given place is not a planet, you cannot loot it');
+		}
+
 		$commander = $this->commanderRepository->get($id)
 			?? throw $this->createNotFoundException('Commander not found');
 
@@ -68,7 +71,7 @@ class Loot extends AbstractController
 		$home = $commander->base;
 
 		// TODO replace with proper services
-		$length = $getDistanceBetweenPlaces($home->place, $place);
+		$length = $getDistanceBetweenPlaces($home, $place);
 
 		if (0 === $commanderArmyHandler->getPev($commander)) {
 			throw new ConflictHttpException('You cannot send a commander with an empty fleet');
@@ -96,12 +99,12 @@ class Loot extends AbstractController
 			throw new ConflictHttpException('You cannot loot an ally planet');
 		}
 
-		if (Place::TERRESTRIAL !== $place->typeOfPlace) {
+		if (PlaceType::Planet !== $place->getType()) {
 			throw new ConflictHttpException('This place is not inhabited');
 		}
 		$moveFleet(
 			commander: $commander,
-			origin: $home->place,
+			origin: $home,
 			destination: $place,
 			mission: CommanderMission::Loot,
 		);

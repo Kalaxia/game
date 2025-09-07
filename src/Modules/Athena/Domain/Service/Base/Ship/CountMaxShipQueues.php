@@ -5,22 +5,22 @@ declare(strict_types=1);
 namespace App\Modules\Athena\Domain\Service\Base\Ship;
 
 use App\Modules\Athena\Domain\Enum\DockType;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Helper\PlanetHelper;
 
 readonly class CountMaxShipQueues
 {
-	public function __construct(private OrbitalBaseHelper $orbitalBaseHelper)
+	public function __construct(private PlanetHelper $planetHelper)
 	{
 
 	}
 
-	public function __invoke(OrbitalBase $orbitalBase, DockType $dockType): int
+	public function __invoke(Planet $planet, DockType $dockType): int
 	{
-		return $this->orbitalBaseHelper->getBuildingInfo(
+		return $this->planetHelper->getBuildingInfo(
 			$dockType->getBuildingNumber(),
 			'level',
-			$dockType->getLevel($orbitalBase),
+			$dockType->getLevel($planet),
 			'nbQueues',
 		);
 	}

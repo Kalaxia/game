@@ -3,10 +3,9 @@
 namespace App\Modules\Athena\Infrastructure\Controller\Base\Building;
 
 use App\Classes\Library\Game;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
-use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
-use App\Modules\Demeter\Resource\ColorResource;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Helper\PlanetHelper;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Promethee\Domain\Repository\ResearchRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\TechnologyQueueRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
@@ -37,17 +36,17 @@ class ViewTechnosphere extends AbstractController
 	}
 
 	public function __invoke(
-		Request $request,
-		OrbitalBase $currentBase,
-		CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
-		Player $currentPlayer,
-		TechnologyManager $technologyManager,
-		TechnologyQueueManager $technologyQueueManager,
-		TechnologyQueueRepositoryInterface $technologyQueueRepository,
-		TechnologyRepositoryInterface $technologyRepository,
-		OrbitalBaseHelper $orbitalBaseHelper,
+        Request                            $request,
+        Planet                             $currentPlanet,
+        CurrentPlayerBonusRegistry         $currentPlayerBonusRegistry,
+        Player                             $currentPlayer,
+        TechnologyManager                  $technologyManager,
+        TechnologyQueueManager             $technologyQueueManager,
+        TechnologyQueueRepositoryInterface $technologyQueueRepository,
+        TechnologyRepositoryInterface      $technologyRepository,
+        PlanetHelper                       $planetHelper,
 	): Response {
-		if ($currentBase->levelTechnosphere === 0) {
+		if ($currentPlanet->levelTechnosphere === 0) {
 			return $this->redirectToRoute('base_overview');
 		}
 
@@ -56,10 +55,10 @@ class ViewTechnosphere extends AbstractController
 		$technology = $technologyRepository->getPlayerTechnology($currentPlayer);
 
 		// session avec les technos de cette base
-		$baseTechnologyQueues = $technologyQueueRepository->getPlaceQueues($currentBase->place);
+		$baseTechnologyQueues = $technologyQueueRepository->getPlanetQueues($currentPlanet);
 		$playerTechnologyQueues = $technologyQueueRepository->getPlayerQueues($currentPlayer);
 
-		$coef = $currentBase->place->coefHistory;
+		$coef = $currentPlanet->coefHistory;
 		$coefBonus = Game::getImprovementFromScientificCoef($coef);
 		$techBonus = $currentPlayerBonusRegistry->getPlayerBonus()->bonuses->get(PlayerBonusId::TECHNOSPHERE_SPEED);
 		$factionBonus = 0;
@@ -70,16 +69,16 @@ class ViewTechnosphere extends AbstractController
 		$totalBonus = $coefBonus + $techBonus + $factionBonus;
 
 		return $this->render('pages/athena/base/building/technosphere.html.twig', [
-			'has_financial_technologies' => in_array($currentBase->typeOfBase, [OrbitalBase::TYP_COMMERCIAL, OrbitalBase::TYP_CAPITAL]),
-			'has_military_technologies' => in_array($currentBase->typeOfBase, [OrbitalBase::TYP_MILITARY, OrbitalBase::TYP_CAPITAL]),
-			'base_queues' => $baseTechnologyQueues,
+			'has_financial_technologies' => in_array($currentPlanet->typeOfBase, [Planet::BASE_TYPE_COMMERCIAL, Planet::BASE_TYPE_CAPITAL]),
+			'has_military_technologies' => in_array($currentPlanet->typeOfBase, [Planet::BASE_TYPE_MILITARY, Planet::BASE_TYPE_CAPITAL]),
+			'planet_queues' => $baseTechnologyQueues,
 			'player_queues' => $playerTechnologyQueues,
-			'available_queues' => $orbitalBaseHelper->getBuildingInfo(OrbitalBaseResource::TECHNOSPHERE, 'level', $currentBase->levelTechnosphere, 'nbQueues'),
+			'available_queues' => $planetHelper->getBuildingInfo(PlanetResource::TECHNOSPHERE, 'level', $currentPlanet->levelTechnosphere, 'nbQueues'),
 			'total_bonus' => $totalBonus,
 			'technology_resource_refund' => $technologyResourceRefund,
 			'technologies_data' => $this->getTechnologiesData(
 				$currentPlayer,
-				$currentBase,
+				$currentPlanet,
 				$technology,
 				$baseTechnologyQueues,
 				$playerTechnologyQueues,
@@ -93,12 +92,12 @@ class ViewTechnosphere extends AbstractController
 	 * @param list<TechnologyQueue> $playerTechnologyQueues
 	 */
 	private function getTechnologiesData(
-		Player $currentPlayer,
-		OrbitalBase $currentBase,
-		Technology $technology,
-		array $baseTechnologyQueues,
-		array $playerTechnologyQueues,
-		int $totalBonus,
+        Player     $currentPlayer,
+        Planet     $currentBase,
+        Technology $technology,
+        array      $baseTechnologyQueues,
+        array      $playerTechnologyQueues,
+        int        $totalBonus,
 	): array {
 		$data = [];
 
@@ -142,7 +141,7 @@ class ViewTechnosphere extends AbstractController
 			$timeToBuild = $this->technologyHelper->getInfo($technologyId, 'time', $nextLevel);
 			$timeToBuild -= round($timeToBuild * $totalBonus / 100);
 			// warning : $totalBonus est défini plus haut (ne pas inverser les blocs de code !)
-			$timeToBuild = ($this->getTimeCost)($technologyId, $nextLevel, $currentBase->place->coefHistory);
+			$timeToBuild = ($this->getTimeCost)($technologyId, $nextLevel, $currentBase->coefHistory);
 
 			$column = $this->technologyHelper->getInfo($technologyId, 'column');
 

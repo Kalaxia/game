@@ -2,8 +2,8 @@
 
 namespace App\Modules\Zeus\Infrastructure\EventListener;
 
-use App\Modules\Athena\Application\Registry\CurrentPlayerBasesRegistry;
-use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
+use App\Modules\Galaxy\Application\Registry\CurrentPlayerPlanetsRegistry;
+use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerRegistry;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
@@ -15,12 +15,12 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 readonly class CurrentPlayerListener
 {
 	public function __construct(
-		private PlayerRepositoryInterface $playerRepository,
-		private PlayerBonusManager $playerBonusManager,
-		private OrbitalBaseRepositoryInterface $orbitalBaseRepository,
-		private CurrentPlayerRegistry $currentPlayerRegistry,
-		private CurrentPlayerBasesRegistry $currentPlayerBasesRegistry,
-		private CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
+		private PlayerRepositoryInterface    $playerRepository,
+		private PlayerBonusManager           $playerBonusManager,
+		private PlanetRepositoryInterface    $planetRepository,
+		private CurrentPlayerRegistry        $currentPlayerRegistry,
+		private CurrentPlayerPlanetsRegistry $currentPlayerPlanetsRegistry,
+		private CurrentPlayerBonusRegistry   $currentPlayerBonusRegistry,
 	) {
 	}
 
@@ -34,8 +34,8 @@ readonly class CurrentPlayerListener
 
 		$player = $this->playerRepository->get($playerId);
 		$this->currentPlayerRegistry->set($player);
-		$this->currentPlayerBasesRegistry->setBases($this->orbitalBaseRepository->getPlayerBases($player));
-		$this->currentPlayerBasesRegistry->setCurrentBase($request->getSession()->get('playerParams')->get('base'));
+		$this->currentPlayerPlanetsRegistry->setPlanets($this->planetRepository->getPlayerPlanets($player));
+		$this->currentPlayerPlanetsRegistry->setCurrentPlanet($request->getSession()->get('playerParams')->get('planet'));
 
 		$bonus = $this->playerBonusManager->getBonusByPlayer($player);
 		$this->currentPlayerBonusRegistry->setPlayerBonus($bonus);

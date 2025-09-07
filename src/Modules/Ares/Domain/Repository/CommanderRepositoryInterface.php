@@ -3,9 +3,8 @@
 namespace App\Modules\Ares\Domain\Repository;
 
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Gaia\Model\Place;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Specification\SelectorSpecification;
@@ -46,7 +45,7 @@ interface CommanderRepositoryInterface extends EntityRepositoryInterface
 	 *
 	 * @return list<Commander>
 	 */
-	public function getBaseCommanders(OrbitalBase $orbitalBase, array $statements = [], array $orderBy = []): array;
+	public function getPlanetCommanders(Planet $planet, array $statements = [], array $orderBy = []): array;
 
 	/**
 	 * @return list<Commander>
@@ -61,14 +60,14 @@ interface CommanderRepositoryInterface extends EntityRepositoryInterface
 	/**
 	 * @return list<Commander>
 	 */
-	public function getIncomingCommanders(Place $place): array;
+	public function getIncomingCommanders(Planet $place): array;
 
 	/**
 	 * @return list<Commander>
 	 */
-	public function getCommandersByLine(OrbitalBase $orbitalBase, int $line): array;
+	public function getCommandersByLine(Planet $planet, int $line): array;
 
-	public function countCommandersByLine(OrbitalBase $orbitalBase, int $line): int;
+	public function countCommandersByLine(Planet $planet, int $line): int;
 
 	/**
 	 * @return array{nb: int, avgLevel: int}

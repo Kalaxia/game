@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Athena\Infrastructure\Twig\Components\Molecules;
 
-use App\Modules\Gaia\Resource\PlaceResource;
+use App\Modules\Galaxy\Resource\PlaceResource;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent(

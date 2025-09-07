@@ -3,18 +3,16 @@
 namespace App\Modules\Athena\Infrastructure\Controller\Trade\Route;
 
 use App\Classes\Library\Format;
-use App\Classes\Library\Game;
 use App\Modules\Athena\Application\Handler\CommercialRoute\GetCommercialRouteIncome;
 use App\Modules\Athena\Application\Handler\CommercialRoute\GetCommercialRoutePrice;
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
-use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
 use App\Modules\Athena\Model\CommercialRoute;
-use App\Modules\Athena\Model\OrbitalBase;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Demeter\Resource\ColorResource;
-use App\Modules\Gaia\Application\Handler\GetDistanceBetweenPlaces;
+use App\Modules\Galaxy\Application\Handler\GetDistanceBetweenPlaces;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
+use App\Modules\Galaxy\Helper\PlanetHelper;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Manager\PlayerManager;
@@ -29,17 +27,17 @@ use Symfony\Component\Uid\Uuid;
 class Propose extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		OrbitalBase $currentBase,
-		Player $currentPlayer,
-		GetDistanceBetweenPlaces $getDistanceBetweenPlaces,
-		GetCommercialRoutePrice $getCommercialRoutePrice,
-		GetCommercialRouteIncome $getCommercialRouteIncome,
-		OrbitalBaseHelper $orbitalBaseHelper,
-		OrbitalBaseRepositoryInterface $orbitalBaseRepository,
-		CommercialRouteRepositoryInterface $commercialRouteRepository,
-		NotificationRepositoryInterface $notificationRepository,
-		PlayerManager $playerManager,
+        Request                            $request,
+        Planet                             $currentBase,
+        Player                             $currentPlayer,
+        GetDistanceBetweenPlaces           $getDistanceBetweenPlaces,
+        GetCommercialRoutePrice            $getCommercialRoutePrice,
+        GetCommercialRouteIncome           $getCommercialRouteIncome,
+        PlanetHelper                       $planetHelper,
+        PlanetRepositoryInterface          $planetRepository,
+        CommercialRouteRepositoryInterface $commercialRouteRepository,
+        NotificationRepositoryInterface    $notificationRepository,
+        PlayerManager                      $playerManager,
 	): Response {
 		if (0 === $currentBase->levelSpatioport) {
 			throw $this->createAccessDeniedException('You cannot propose a trading route without a spatioport');
@@ -52,16 +50,16 @@ class Propose extends AbstractController
 			throw new BadRequestHttpException('Invalid destination base ID');
 		}
 
-		$otherBase = $orbitalBaseRepository->get(Uuid::fromString($baseTo))
+		$otherBase = $planetRepository->get(Uuid::fromString($baseTo))
 			?? throw $this->createNotFoundException('Destination base not found');
 
-		$nbrMaxCommercialRoute = $orbitalBaseHelper->getBuildingInfo(OrbitalBaseResource::SPATIOPORT, 'level', $currentBase->levelSpatioport, 'nbRoutesMax');
+		$nbrMaxCommercialRoute = $planetHelper->getBuildingInfo(PlanetResource::SPATIOPORT, 'level', $currentBase->levelSpatioport, 'nbRoutesMax');
 
 		// Check if a route already exists between these two bases
 		$alreadyARoute = null !== $commercialRouteRepository->getExistingRoute($currentBase, $otherBase);
 
 		// TODO transform into validation constraint
-		if (($commercialRouteRepository->countBaseRoutes($currentBase) >= $nbrMaxCommercialRoute) || $alreadyARoute || $otherBase->levelSpatioport === 0) {
+		if (($commercialRouteRepository->countPlanetRoutes($currentBase) >= $nbrMaxCommercialRoute) || $alreadyARoute || $otherBase->levelSpatioport === 0) {
 			throw new ConflictHttpException('Impossible de proposer une route commerciale');
 		}
 		$player = $otherBase->player;
@@ -77,7 +75,7 @@ class Propose extends AbstractController
 		if ($currentBase->player->id === $otherBase->player->id) {
 			throw new ConflictHttpException('Vous ne pouvez pas créer de route commerciale avec votre propre planète');
 		}
-		$distance = $getDistanceBetweenPlaces($currentBase->place, $otherBase->place);
+		$distance = $getDistanceBetweenPlaces($currentBase, $otherBase);
 
 		$price = $getCommercialRoutePrice($distance, $currentPlayer);
 
@@ -120,12 +118,12 @@ class Propose extends AbstractController
 				),
 				' vous propose une route commerciale liant ',
 				NotificationBuilder::link(
-					$this->generateUrl('map', ['place' => $currentBase->place->id]),
+					$this->generateUrl('map', ['place' => $currentBase->id]),
 					$currentBase->name,
 				),
 				' et ',
 				NotificationBuilder::link(
-					$this->generateUrl('map', ['place' => $otherBase->place->id]),
+					$this->generateUrl('map', ['place' => $otherBase->id]),
 					$otherBase->name,
 				),
 				'.',
@@ -137,7 +135,7 @@ class Propose extends AbstractController
 				' crédits par relève.',
 				NotificationBuilder::divider(),
 				NotificationBuilder::link(
-					$this->generateUrl('switchbase', ['baseId' => $otherBase->id, 'page' => 'spatioport']),
+					$this->generateUrl('switchplanet', ['planetId' => $otherBase->id, 'page' => 'spatioport']),
 					'En savoir plus ?',
 				),
 			))

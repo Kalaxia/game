@@ -16,8 +16,8 @@
 		<twig:PlaceName :place="place" />
 	</div>
 
-	{% if place.typeOfPlace == 1 %}
-		{% if place.base is not null %}
+	{% if place.type == enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Planet %}
+		{% if place.player is not null %}
 			<div class="flex items-center justify-between px-2">
 				<span class="font-medium text-sm">Propriété du</span>
 				<span>
@@ -30,7 +30,7 @@
 							</a>
 						</span>
 					{% else %}
-						rebelle <span class="player-name">{{ place.player.name }}</span>
+						rebelle {# <span class="player-name">{{ place.player.name }}</span> #}
 					{% endif %}
 				</span>
 			</div>
@@ -39,10 +39,10 @@
 				<twig:CoeffIndicator label="Défense"
 					:values="[
 						0,
-						constant('App\\Modules\\Gaia\\Model\\Place::DNG_CASUAL'),
-						constant('App\\Modules\\Gaia\\Model\\Place::DNG_EASY'),
-						constant('App\\Modules\\Gaia\\Model\\Place::DNG_MEDIUM'),
-						constant('App\\Modules\\Gaia\\Model\\Place::DNG_HARD'),
+						constant('App\\Modules\\Galaxy\\Domain\\Entity\\Place::DNG_CASUAL'),
+						constant('App\\Modules\\Galaxy\\Domain\\Entity\\Place::DNG_EASY'),
+						constant('App\\Modules\\Galaxy\\Domain\\Entity\\Place::DNG_MEDIUM'),
+						constant('App\\Modules\\Galaxy\\Domain\\Entity\\Place::DNG_HARD'),
 					]"
 					:coeff="place.maxDanger"
 					mediaPath="build/media/resources/defense.png" />
@@ -70,19 +70,19 @@
 			<p class="flex items-center justify-between py-1">
 				<span class="text-sm font-medium">Ressources</span>
 				<span class="value">
-					{{ ((place.resources * place.coefResources)/100)|number }}
+					{{ ((place.resources * place.resources)/100)|number }}
 				</span>
 			</p>
 			<p class="flex items-center justify-between py-1">
 				<span class="text-sm font-medium">Débris</span>
 				<span class="value">
-					{{ ((place.resources * place.coefHistory)/100)|number }}
+					{{ ((place.resources * place.history)/100)|number }}
 				</span>
 			</p>
 			<p class="flex items-center justify-between py-1">
 				<span class="text-sm font-medium">Gaz noble</span>
 				<span class="value">
-					{{ ((place.resources * place.population)/100)|number }}
+					{{ ((place.resources * place.credits)/100)|number }}
 				</span>
 			</p>
 		</div>
@@ -91,11 +91,11 @@
 	<div class="flex items-center justify-between px-2">
 		<span class="font-medium text-sm">Distance</span>
 		<span class="value">
-			{{ get_place_distance(current_base, place)|number }} Al.
+			{{ get_place_distance(current_planet, place)|number }} Al.
 		</span>
 	</div>
 
-	{% if place.typeOfPlace == 1 %}
+	{% if place.type == enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Planet %}
 		{% set reports = combatReports|filter(r => r.place.id.equals(place.id)) %}
 		{% if reports|length > 0 %}
 			{% set report = reports|first %}

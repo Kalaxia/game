@@ -8,7 +8,7 @@ use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Domain\Repository\SquadronRepositoryInterface;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Ares\Manager\CommanderManager;
-use App\Modules\Athena\Domain\Repository\OrbitalBaseRepositoryInterface;
+use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -22,18 +22,18 @@ use Symfony\Component\Uid\Uuid;
 class UpdateSquadron extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		Player $currentPlayer,
-		GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
-		OrbitalBaseRepositoryInterface $orbitalBaseRepository,
-		CommanderManager $commanderManager,
-		CommanderArmyHandler $commanderArmyHandler,
-		CommanderRepositoryInterface $commanderRepository,
-		SquadronRepositoryInterface $squadronRepository,
-		EventDispatcherInterface $eventDispatcher,
-		EntityManagerInterface $entityManager,
-		Uuid $id,
-		int $squadronId,
+        Request                        $request,
+        Player                         $currentPlayer,
+        GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
+        PlanetRepositoryInterface      $planetRepository,
+        CommanderManager               $commanderManager,
+        CommanderArmyHandler           $commanderArmyHandler,
+        CommanderRepositoryInterface   $commanderRepository,
+        SquadronRepositoryInterface    $squadronRepository,
+        EventDispatcherInterface       $eventDispatcher,
+        EntityManagerInterface         $entityManager,
+        Uuid                           $id,
+        int                            $squadronId,
 	): Response {
 		$payload = $request->toArray();
 
@@ -52,7 +52,7 @@ class UpdateSquadron extends AbstractController
 			throw new BadRequestHttpException('Invalid UUID given for base ID');
 		}
 
-		$base = $orbitalBaseRepository->get(Uuid::fromString($payload['base_id'])) ?? throw $this->createNotFoundException('Base not found');
+		$base = $planetRepository->get(Uuid::fromString($payload['base_id'])) ?? throw $this->createNotFoundException('Base not found');
 
 		// TODO add check on belonging player for multifleet
 		if (!$commander->base->id->equals($base->id)) {
@@ -102,7 +102,7 @@ class UpdateSquadron extends AbstractController
 		$base->shipStorage = $baseSHIP;
 		$squadron->setShips($squadronSHIP);
 
-		$orbitalBaseRepository->save($base);
+		$planetRepository->save($base);
 		$squadronRepository->save($squadron);
 
 		$eventDispatcher->dispatch(new SquadronUpdateEvent($commander, $squadron, $currentPlayer));

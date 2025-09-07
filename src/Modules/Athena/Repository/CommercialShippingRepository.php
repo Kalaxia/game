@@ -6,8 +6,8 @@ namespace App\Modules\Athena\Repository;
 
 use App\Modules\Athena\Domain\Repository\CommercialShippingRepositoryInterface;
 use App\Modules\Athena\Model\CommercialShipping;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Types\UuidType;
@@ -44,7 +44,7 @@ class CommercialShippingRepository extends DoctrineRepository implements Commerc
 		]);
 	}
 
-	public function getByBase(OrbitalBase $orbitalBase): array
+	public function getByPlanet(Planet $planet): array
 	{
 		$qb = $this->createQueryBuilder('cs');
 
@@ -57,7 +57,7 @@ class CommercialShippingRepository extends DoctrineRepository implements Commerc
 				),
 			)
 			->addOrderBy('t.publishedAt', 'DESC')
-			->setParameter('base', $orbitalBase->id, UuidType::NAME)
+			->setParameter('base', $planet->id, UuidType::NAME)
 			->getQuery()
 			->getResult();
 	}

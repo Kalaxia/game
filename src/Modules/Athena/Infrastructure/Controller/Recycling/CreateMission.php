@@ -4,12 +4,13 @@ namespace App\Modules\Athena\Infrastructure\Controller\Recycling;
 
 use App\Modules\Athena\Domain\Repository\RecyclingMissionRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Recycling\GetMissionTime;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
 use App\Modules\Athena\Manager\RecyclingMissionManager;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\RecyclingMission;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
-use App\Modules\Gaia\Domain\Repository\PlaceRepositoryInterface;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Enum\PlaceType;
+use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
+use App\Modules\Galaxy\Helper\PlanetHelper;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,26 +22,26 @@ use Symfony\Component\Uid\Uuid;
 class CreateMission extends AbstractController
 {
 	public function __invoke(
-		Request                             $request,
-		Player                              $currentPlayer,
-		CurrentPlayerBonusRegistry          $currentPlayerBonusRegistry,
-		GetMissionTime                      $getMissionTime,
-		OrbitalBase                         $currentBase,
-		OrbitalBaseHelper                   $orbitalBaseHelper,
-		PlaceRepositoryInterface            $placeRepository,
-		RecyclingMissionRepositoryInterface $recyclingMissionRepository,
-		RecyclingMissionManager $recyclingMissionManager,
-		Uuid                                $targetId,
+        Request                             $request,
+        Player                              $currentPlayer,
+        CurrentPlayerBonusRegistry          $currentPlayerBonusRegistry,
+        GetMissionTime                      $getMissionTime,
+        Planet                              $currentPlanet,
+        PlanetHelper                        $planetHelper,
+        PlaceRepositoryInterface            $placeRepository,
+        RecyclingMissionRepositoryInterface $recyclingMissionRepository,
+        RecyclingMissionManager             $recyclingMissionManager,
+        Uuid                                $targetId,
 	): Response {
 		$quantity = $request->request->getInt('quantity', 0);
 
 		if ($quantity < 1) {
 			throw new BadRequestHttpException('Ca va être dur de recycler avec autant peu de recycleurs. Entrez un nombre plus grand que zéro.');
 		}
-		$maxRecyclers = $orbitalBaseHelper->getInfo(OrbitalBaseResource::RECYCLING, 'level', $currentBase->levelRecycling, 'nbRecyclers');
+		$maxRecyclers = $planetHelper->getInfo(PlanetResource::RECYCLING, 'level', $currentPlanet->levelRecycling, 'nbRecyclers');
 		$usedRecyclers = 0;
 
-		$baseMissions = $recyclingMissionRepository->getBaseActiveMissions($currentBase);
+		$baseMissions = $recyclingMissionRepository->getPlanetActiveMissions($currentPlanet);
 
 		foreach ($baseMissions as $mission) {
 			$usedRecyclers += $mission->recyclerQuantity;
@@ -53,9 +54,8 @@ class CreateMission extends AbstractController
 		$destinationPlace = $placeRepository->get($targetId)
 			?? throw $this->createNotFoundException('Il y a un problème avec le lieu de départ ou d\'arrivée. Veuillez contacter un administrateur.');
 
-		$startPlace = $currentBase->place;
-		// TODO Make constants or enum
-		if (null !== $destinationPlace->player || !in_array($destinationPlace->typeOfPlace, [2, 3, 4, 5])) {
+		$startPlace = $currentPlanet;
+		if (!in_array($destinationPlace->getType(), [PlaceType::GasPlanet, PlaceType::Ruin, PlaceType::GasPocket, PlaceType::Asteroid])) {
 			throw new BadRequestHttpException('On ne peut pas recycler ce lieu, petit hacker.');
 		}
 
@@ -67,7 +67,7 @@ class CreateMission extends AbstractController
 
 		$rm = new RecyclingMission(
 			id: Uuid::v4(),
-			base: $currentBase,
+			base: $currentPlanet,
 			target: $destinationPlace,
 			cycleTime: $missionTime,
 			recyclerQuantity: $quantity,

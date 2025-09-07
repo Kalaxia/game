@@ -3,7 +3,7 @@
 namespace App\Modules\Ares\Infrastructure\Controller;
 
 use App\Modules\Artemis\Domain\Repository\SpyReportRepositoryInterface;
-use App\Modules\Gaia\Manager\PlaceManager;
+use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

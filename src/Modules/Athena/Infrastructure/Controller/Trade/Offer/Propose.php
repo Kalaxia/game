@@ -12,12 +12,12 @@ use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Base\Trade\GetBaseCommercialShippingData;
 use App\Modules\Athena\Domain\Service\CountAvailableCommercialShips;
 use App\Modules\Athena\Domain\Service\CountNeededCommercialShips;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
 use App\Modules\Athena\Model\CommercialShipping;
-use App\Modules\Athena\Model\OrbitalBase;
 use App\Modules\Athena\Model\Transaction;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Helper\PlanetHelper;
+use App\Modules\Galaxy\Manager\PlanetManager;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,21 +34,21 @@ use Symfony\UX\Turbo\TurboBundle;
 class Propose extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		Player $currentPlayer,
-		OrbitalBase $currentBase,
-		OrbitalBaseManager $orbitalBaseManager,
-		OrbitalBaseHelper $orbitalBaseHelper,
-		GetBaseCommercialShippingData $getBaseCommercialShippingData,
-		CommanderManager $commanderManager,
-		CommanderRepositoryInterface $commanderRepository,
-		TransactionRepositoryInterface $transactionRepository,
-		CountNeededCommercialShips $countNeededCommercialShips,
-		CountAvailableCommercialShips $countAvailableCommercialShips,
-		CommercialShippingRepositoryInterface $commercialShippingRepository,
-		HubInterface $mercureHub,
-		SerializerInterface $serializer,
-		ValidatorInterface $validator,
+        Request                               $request,
+        Player                                $currentPlayer,
+        Planet                                $currentPlanet,
+        PlanetManager                         $planetManager,
+        PlanetHelper                          $planetHelper,
+        GetBaseCommercialShippingData         $getBaseCommercialShippingData,
+        CommanderManager                      $commanderManager,
+        CommanderRepositoryInterface          $commanderRepository,
+        TransactionRepositoryInterface        $transactionRepository,
+        CountNeededCommercialShips            $countNeededCommercialShips,
+        CountAvailableCommercialShips         $countAvailableCommercialShips,
+        CommercialShippingRepositoryInterface $commercialShippingRepository,
+        HubInterface                          $mercureHub,
+        SerializerInterface                   $serializer,
+        ValidatorInterface                    $validator,
 	): Response {
 		$type = $request->query->get('type') ?? throw new BadRequestHttpException('Missing type');
 		$quantity = $request->request->getInt('quantity');
@@ -62,7 +62,7 @@ class Propose extends AbstractController
 				if ($quantity === 0) {
 					throw new BadRequestHttpException('Invalid quantity');
 				}
-				if ($currentBase->resourcesStorage < $quantity) {
+				if ($currentPlanet->resourcesStorage < $quantity) {
 					throw new ConflictHttpException('The current base has not enough resources to make that sale');
 				}
 				$identifier = 0;
@@ -76,7 +76,7 @@ class Propose extends AbstractController
 					throw new BadRequestHttpException('Invalid quantity');
 				}
 
-				if ($currentBase->getShipStorage()[$shipCategory->value] < $quantity) {
+				if ($currentPlanet->getShipStorage()[$shipCategory->value] < $quantity) {
 					throw new ConflictHttpException('The current base has not enough ships to make that sale');
 				}
 
@@ -100,7 +100,7 @@ class Propose extends AbstractController
 			throw new BadRequestHttpException('Le prix que vous avez fixé est trop haut. Une limite supérieure est fixée selon la catégorie de la vente.');
 		}
 
-		$remainingShips = $countAvailableCommercialShips($currentBase);
+		$remainingShips = $countAvailableCommercialShips($currentPlanet);
 		// determine commercialShipQuantity needed
 		$commercialShipQuantity = $countNeededCommercialShips($type, $quantity, $identifier);
 
@@ -109,10 +109,10 @@ class Propose extends AbstractController
 		}
 		switch ($type) {
 			case Transaction::TYP_RESOURCE:
-				$orbitalBaseManager->decreaseResources($currentBase, $quantity);
+				$planetManager->decreaseResources($currentPlanet, $quantity);
 				break;
 			case Transaction::TYP_SHIP:
-				$currentBase->removeShips($identifier, $quantity);
+				$currentPlanet->removeShips($identifier, $quantity);
 				break;
 			case Transaction::TYP_COMMANDER:
 				$commander = $commanderRepository->get(Uuid::fromString($identifier))
@@ -135,7 +135,7 @@ class Propose extends AbstractController
 		$tr = new Transaction(
 			id: Uuid::v4(),
 			player: $currentPlayer,
-			base: $currentBase,
+			base: $currentPlanet,
 			type: $type,
 			quantity: $quantity,
 			identifier: $identifier,
@@ -155,7 +155,7 @@ class Propose extends AbstractController
 		$cs = new CommercialShipping(
 			id: Uuid::v4(),
 			player: $currentPlayer,
-			originBase: $currentBase,
+			originBase: $currentPlanet,
 			transaction: $tr,
 			shipQuantity: $commercialShipQuantity,
 			statement: CommercialShipping::ST_WAITING,
@@ -178,11 +178,11 @@ class Propose extends AbstractController
 
 			return $this->render('components/base/trade/turbo/new_transaction.stream.html.twig', [
 				'commercial_shipping' => $cs,
-				'used_ships' => $getBaseCommercialShippingData($currentBase)['used_ships'],
-				'max_ships' => $orbitalBaseHelper->getInfo(
-					OrbitalBaseResource::COMMERCIAL_PLATEFORME,
+				'used_ships' => $getBaseCommercialShippingData($currentPlanet)['used_ships'],
+				'max_ships' => $planetHelper->getInfo(
+					PlanetResource::COMMERCIAL_PLATEFORME,
 					'level',
-					$currentBase->levelCommercialPlateforme,
+					$currentPlanet->levelCommercialPlateforme,
 					'nbCommercialShip',
 				),
 			]);

@@ -1,17 +1,17 @@
 <twig:LayoutBox class="w-64">
 	<header>
-		<twig:H2>Liste des bases</twig:H2>
+		<twig:H2>Liste des planètes</twig:H2>
 	</header>
 	<section class="mt-2">
-		{% for base in player_bases %}
+		{% for planet in player_planets %}
 			<div class="flex items-center bg-gray-700 py-1 px-2">
 				<div class="grow">
-					<span class="value" style="font-variant: all-small-caps">{{ base.name }}</span><br>
-					<span class="text-xs">secteur {{ base.place.system.sector.identifier }}</span>
+					<span class="value" style="font-variant: all-small-caps">{{ planet.name }}</span><br>
+					<span class="text-xs">secteur {{ planet.system.sector.identifier }}</span>
 				</div>
 
 				<span class="group-link">
-					<a href="{{ path('map', {'place': base.place.id }) }}" class="hb lt" title="voir sur la carte">
+					<a href="{{ path('map', {'place': planet.id }) }}" class="hb lt" title="voir sur la carte">
 						<img src="{{ asset('images/legacy/picto/arrow_right.svg') }}" class="w-4" alt="→" />
 					</a>
 				</span>

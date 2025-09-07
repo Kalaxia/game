@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Zeus\Infrastructure\Controller\Registration;
 
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
-use App\Modules\Gaia\Domain\Repository\SectorRepositoryInterface;
-use App\Modules\Gaia\Galaxy\GalaxyConfiguration;
+use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
+use App\Modules\Galaxy\Galaxy\GalaxyConfiguration;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Domain\Service\GetAvailableAvatars;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

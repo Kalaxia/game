@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Modules\Athena\Infrastructure\Validator;
 
-use App\Modules\Athena\Infrastructure\DataFixtures\Factory\OrbitalBaseFactory;
 use App\Modules\Athena\Infrastructure\Validator\CanMakeBuilding;
 use App\Modules\Athena\Infrastructure\Validator\DTO\BuildingConstructionOrder;
 use App\Modules\Athena\Infrastructure\Validator\HasUnlockedBuilding;
-use App\Modules\Athena\Resource\OrbitalBaseResource;
+use App\Modules\Galaxy\Infrastructure\DataFixtures\Factory\PlanetFactory;
+use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Promethee\Infrastructure\DataFixtures\Factory\TechnologyFactory;
 use App\Shared\Infrastructure\DataFixtures\Story\SmallMapStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -32,18 +32,18 @@ class CanMakeBuildingValidatorTest extends KernelTestCase
 		$validator = static::getContainer()->get(ValidatorInterface::class);
 		SmallMapStory::load();
 
-		$base = OrbitalBaseFactory::createOne([
+		$base = PlanetFactory::createOne([
 			'levelGenerator' => 9,
 			'levelSpatioport' => 0,
 		])->object();
 		$targetLevel = 1;
 		$technology = TechnologyFactory::createOne()->object();
-		$buildingIdentifier = OrbitalBaseResource::SPATIOPORT;
+		$buildingIdentifier = PlanetResource::SPATIOPORT;
 		$buildingQueuesCount = 0;
 		$violationList = [];
 
 		$buildingConstructionOrder = new BuildingConstructionOrder(
-			orbitalBase: $base,
+			planet: $base,
 			technology: $technology,
 			buildingIdentifier: $buildingIdentifier,
 			targetLevel: $targetLevel,
@@ -68,19 +68,19 @@ class CanMakeBuildingValidatorTest extends KernelTestCase
 
 		SmallMapStory::load();
 
-		$base = OrbitalBaseFactory::createOne([
+		$base = PlanetFactory::createOne([
 			'levelGenerator' => 9,
 			'levelSpatioport' => 0,
 		])->object();
 		$technology = TechnologyFactory::createOne()->object();
-		$buildingIdentifier = OrbitalBaseResource::SPATIOPORT;
+		$buildingIdentifier = PlanetResource::SPATIOPORT;
 		$targetLevel = 1;
 		$violationList = [
 
 		];
 
 		$buildingConstructionOrder = new BuildingConstructionOrder(
-			orbitalBase: $base,
+			planet: $base,
 			technology: $technology,
 			buildingIdentifier: $buildingIdentifier,
 			targetLevel: $targetLevel,
@@ -98,12 +98,12 @@ class CanMakeBuildingValidatorTest extends KernelTestCase
 	private function provideData(): \Generator
 	{
 		yield [
-			OrbitalBaseFactory::new()->withoutPersisting()->create([
+			PlanetFactory::new()->withoutPersisting()->create([
 				'levelGenerator' => 9,
 				'levelSpatioport' => 0,
 			]),
 			TechnologyFactory::new()->withoutPersisting()->create(),
-			OrbitalBaseResource::SPATIOPORT,
+			PlanetResource::SPATIOPORT,
 			1,
 			[
 

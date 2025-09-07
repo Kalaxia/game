@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\Athena\Infrastructure\Controller\Base\Building;
 
 use App\Modules\Athena\Domain\Repository\BuildingQueueRepositoryInterface;
-use App\Modules\Athena\Helper\OrbitalBaseHelper;
 use App\Modules\Athena\Manager\BuildingQueueManager;
-use App\Modules\Athena\Manager\OrbitalBaseManager;
-use App\Modules\Athena\Model\BuildingQueue;
-use App\Modules\Athena\Model\OrbitalBase;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Helper\PlanetHelper;
+use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,21 +23,21 @@ class Cancel extends AbstractController
 	public const ROUTE_NAME = 'cancel_building_queue';
 
 	public function __invoke(
-		Request $request,
-		Player $currentPlayer,
-		OrbitalBase $currentBase,
-		OrbitalBaseHelper $orbitalBaseHelper,
-		OrbitalBaseManager $orbitalBaseManager,
-		BuildingQueueManager $buildingQueueManager,
-		BuildingQueueRepositoryInterface $buildingQueueRepository,
-		DurationHandler $durationHandler,
-		EntityManagerInterface $entityManager,
-		int $identifier,
+        Request                          $request,
+        Player                           $currentPlayer,
+        Planet                           $currentPlanet,
+        PlanetHelper                     $planetHelper,
+        PlanetManager                    $planetManager,
+        BuildingQueueManager             $buildingQueueManager,
+        BuildingQueueRepositoryInterface $buildingQueueRepository,
+        DurationHandler                  $durationHandler,
+        EntityManagerInterface           $entityManager,
+        int                              $identifier,
 	): Response {
-		if (!$orbitalBaseHelper->isABuilding($identifier)) {
+		if (!$planetHelper->isABuilding($identifier)) {
 			throw new BadRequestHttpException('le bâtiment indiqué n\'est pas valide');
 		}
-		$buildingQueues = $buildingQueueRepository->getBaseQueues($currentBase);
+		$buildingQueues = $buildingQueueRepository->getPlanetQueues($currentPlanet);
 
 		$index = null;
 		$dStart = null;
@@ -82,9 +81,9 @@ class Cancel extends AbstractController
 
 		$buildingResourceRefund = $this->getParameter('athena.building.building_queue_resource_refund');
 		// give the resources back
-		$resourcePrice = $orbitalBaseHelper->getBuildingInfo($identifier, 'level', $targetLevel, 'resourcePrice');
+		$resourcePrice = $planetHelper->getBuildingInfo($identifier, 'level', $targetLevel, 'resourcePrice');
 		$resourcePrice = intval(round($resourcePrice * $buildingResourceRefund));
-		$orbitalBaseManager->increaseResources($currentBase, $resourcePrice);
+		$planetManager->increaseResources($currentPlanet, $resourcePrice);
 		$this->addFlash('success', 'Construction annulée, vous récupérez le '.$buildingResourceRefund * 100 .'% du montant investi pour la construction');
 
 		return $this->redirect($request->headers->get('referer'));
