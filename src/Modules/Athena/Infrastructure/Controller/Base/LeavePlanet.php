@@ -10,7 +10,7 @@ use App\Modules\Athena\Domain\Service\Base\GetCoolDownBeforeLeavingPlanet;
 use App\Modules\Athena\Domain\Specification\CanLeavePlanet;
 use App\Modules\Galaxy\Application\Registry\CurrentPlayerPlanetsRegistry;
 use App\Modules\Galaxy\Domain\Entity\Planet;
-use App\Modules\Galaxy\Event\PlaceOwnerChangeEvent;
+use App\Modules\Galaxy\Domain\Event\PlanetOwnerChangeEvent;
 use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Galaxy\Manager\PlanetManager;
@@ -82,7 +82,7 @@ class LeavePlanet extends AbstractController
 		$planetManager->changeOwner($currentPlanet, null);
 		$entityManager->flush();
 
-		$eventDispatcher->dispatch(new PlaceOwnerChangeEvent($currentPlanet));
+		$eventDispatcher->dispatch(new PlanetOwnerChangeEvent($currentPlanet));
 
 		$this->addFlash('success', 'Base abandonnée');
 

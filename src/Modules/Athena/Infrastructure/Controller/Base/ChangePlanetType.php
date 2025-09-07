@@ -8,8 +8,8 @@ use App\Modules\Ares\Model\Commander;
 use App\Modules\Athena\Domain\Repository\BuildingQueueRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\RecyclingMissionRepositoryInterface;
 use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Event\PlanetOwnerChangeEvent;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
-use App\Modules\Galaxy\Event\PlaceOwnerChangeEvent;
 use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Galaxy\Manager\PlanetManager;
@@ -163,7 +163,7 @@ class ChangePlanetType extends AbstractController
 		}
 		$planetRepository->save($currentPlanet);
 
-		$eventDispatcher->dispatch(new PlaceOwnerChangeEvent($currentPlanet));
+		$eventDispatcher->dispatch(new PlanetOwnerChangeEvent($currentPlanet));
 
 		return $this->redirectToRoute('base_overview');
 	}

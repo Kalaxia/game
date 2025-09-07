@@ -3,9 +3,11 @@
 namespace App\Modules\Galaxy\EventListener;
 
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
+use App\Modules\Galaxy\Domain\Event\PlanetOwnerChangeEvent;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Galaxy\Domain\Repository\SystemRepositoryInterface;
-use App\Modules\Galaxy\Event\PlaceOwnerChangeEvent;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 readonly class SystemListener
 {
@@ -13,11 +15,13 @@ readonly class SystemListener
 		private ColorRepositoryInterface  $colorRepository,
 		private PlanetRepositoryInterface $planetRepository,
 		private SystemRepositoryInterface $systemRepository,
+		#[Autowire('%galaxy.scores%')]
 		private array                     $scores,
 	) {
 	}
 
-	public function onPlaceOwnerChange(PlaceOwnerChangeEvent $event): void
+	#[AsEventListener]
+	public function onPlanetOwnerChange(PlanetOwnerChangeEvent $event): void
 	{
 		$scores = [];
 		$system = $event->planet->system;

@@ -21,9 +21,3 @@ services:
     App\Modules\Galaxy\Galaxy\GalaxyConfiguration:
         public: true
         class: "%galaxy.galaxy_configuration.class%"
-
-    App\Modules\Galaxy\EventListener\SystemListener:
-        arguments:
-            $scores: "%galaxy.scores%"
-        tags:
-            - {name: "kernel.event_listener", event: "galaxy.place_owner_change", method: "onPlaceOwnerChange", priority: 2}

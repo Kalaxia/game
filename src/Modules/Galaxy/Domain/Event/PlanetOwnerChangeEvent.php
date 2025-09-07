@@ -8,19 +8,9 @@ use App\Modules\Zeus\Model\Player;
 readonly class PlanetOwnerChangeEvent
 {
 	public function __construct(
-		private Planet $planet,
-		private Player $previousOwner,
+		public Planet $planet,
+		public Player|null $previousOwner = null,
 	) {
 
-	}
-
-	public function getPlanet(): Planet
-	{
-		return $this->planet;
-	}
-
-	public function getPreviousOwner(): Player
-	{
-		return $this->previousOwner;
 	}
 }

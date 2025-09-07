@@ -14,16 +14,15 @@ use App\Modules\Ares\Model\Report;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Event\PlanetOwnerChangeEvent;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Galaxy\Domain\Service\UpdatePlanetPoints;
-use App\Modules\Galaxy\Event\PlaceOwnerChangeEvent;
 use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Hermes\Manager\NotificationManager;
 use App\Modules\Zeus\Manager\PlayerBonusManager;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 readonly class ConquestManager
@@ -135,7 +134,7 @@ readonly class ConquestManager
 					$this->commanderManager->endTravel($commander, Commander::AFFECTED);
 					$commander->line = 2;
 
-					$this->eventDispatcher->dispatch(new PlaceOwnerChangeEvent($place));
+					$this->eventDispatcher->dispatch(new PlanetOwnerChangeEvent($place, $placePlayer));
 
 					// PATCH DEGUEU POUR LES MUTLIS-COMBATS
 					$this->notificationManager->patchForMultiCombats($commander->player, $place->player, $commander->getArrivalDate());
@@ -205,7 +204,7 @@ readonly class ConquestManager
 
 				$this->placeManager->sendNotif($place, Planet::CONQUEREMPTYSSUCCESS, $commander, $report);
 
-				$this->eventDispatcher->dispatch(new PlaceOwnerChangeEvent($place));
+				$this->eventDispatcher->dispatch(new PlanetOwnerChangeEvent($place));
 
 				// défaite
 			} else {

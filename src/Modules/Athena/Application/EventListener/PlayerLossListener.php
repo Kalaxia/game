@@ -7,21 +7,26 @@ use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Zeus\Manager\PlayerManager;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
+/**
+ * vérifie si le joueur n'a plus de planète, si c'est le cas, il est mort, on lui redonne une planète.
+ */
 #[AsEventListener]
-class PlayerLossListener
+readonly class PlayerLossListener
 {
 	public function __construct(
-		private readonly PlanetRepositoryInterface $planetRepository,
-		private readonly PlayerManager             $playerManager,
+		private PlanetRepositoryInterface $planetRepository,
+		private PlayerManager $playerManager,
 	) {
-
 	}
 
 	public function __invoke(PlanetOwnerChangeEvent $event): void
 	{
-		// vérifie si le joueur n'a plus de planète, si c'est le cas, il est mort, on lui redonne une planète
-		$previousOwner = $event->getPreviousOwner();
-		$planet = $event->getPlanet();
+		$previousOwner = $event->previousOwner;
+		$planet = $event->planet;
+
+		if (null === $previousOwner) {
+			return;
+		}
 
 		$oldPlayerPlanets = $this->planetRepository->getPlayerPlanets($previousOwner);
 		$oldPlayerPlanetsCount = count($oldPlayerPlanets);

@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Galaxy\EventListener;
 
-use App\Modules\Galaxy\Event\PlaceOwnerChangeEvent;
+use App\Modules\Galaxy\Domain\Event\PlanetOwnerChangeEvent;
 use App\Modules\Galaxy\Manager\SectorManager;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
-#[AsEventListener(event: PlaceOwnerChangeEvent::class, method: 'onPlaceOwnerChange')]
 readonly class SectorListener
 {
 	public function __construct(
@@ -16,7 +15,8 @@ readonly class SectorListener
 	) {
 	}
 
-	public function onPlaceOwnerChange(PlaceOwnerChangeEvent $event): void
+	#[AsEventListener]
+	public function onPlanetOwnerChange(PlanetOwnerChangeEvent $event): void
 	{
 		$system = $event->planet->system;
 

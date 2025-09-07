@@ -4,11 +4,10 @@ namespace App\Modules\Zeus\Application\Factory;
 
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Entity\Sector;
+use App\Modules\Galaxy\Domain\Event\PlanetOwnerChangeEvent;
 use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Galaxy\Domain\Service\UpdatePlanetPoints;
-use App\Modules\Galaxy\Event\PlaceOwnerChangeEvent;
 use App\Modules\Galaxy\Infrastructure\Repository\Doctrine\PlanetRepository;
 use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
@@ -236,7 +235,7 @@ readonly class PlayerFactory
 
 		$this->entityManager->commit();
 
-		$this->eventDispatcher->dispatch(new PlaceOwnerChangeEvent($planet));
+		$this->eventDispatcher->dispatch(new PlanetOwnerChangeEvent($planet));
 
 		// modification de la place
 
