@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Modules\Galaxy\Application\Handler;
 
 use App\Classes\Library\Utils;
+use App\Modules\Economy\Domain\Entity\PlanetActivity;
+use App\Modules\Economy\Domain\Enum\Activity;
+use App\Modules\Economy\Domain\Enum\ActivityCategory;
 use App\Modules\Economy\Domain\Enum\ResourceType;
+use App\Modules\Economy\Domain\Repository\PlanetActivityRepositoryInterface;
 use App\Modules\Galaxy\Application\Message\PlaceGenerationMessage;
 use App\Modules\Galaxy\Domain\Entity\EmptyPlace;
 use App\Modules\Galaxy\Domain\Entity\Place;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Entity\System;
-use App\Modules\Galaxy\Domain\Entity\UninhabitedPlace;
 use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use App\Modules\Galaxy\Domain\Enum\PlanetType;
 use App\Modules\Galaxy\Domain\Enum\SystemType;
@@ -29,6 +32,7 @@ final readonly class PlaceGenerationHandler
 	public function __construct(
 		private GetProportion $getProportion,
 		private PlaceRepositoryInterface $placeRepository,
+		private PlanetActivityRepositoryInterface $planetActivityRepository,
 		private SystemRepositoryInterface $systemRepository,
 		private LoggerInterface $galaxyGenerationLogger,
 	) {
@@ -54,6 +58,7 @@ final readonly class PlaceGenerationHandler
 		$this->galaxyGenerationLogger->debug('Place generated successfully', [
 			'type' => $type->name,
 			'planet_type' => $place instanceof Planet ? $place->planetType->name : 'none',
+			'population' => $place instanceof Planet ? $place->population : 'none',
 			'position' => $message->position,
 			'natural_resources' => $place instanceof Planet ? $place->naturalResources : 'none',
 			'system_id' => $system->id->toRfc4122(),
@@ -71,48 +76,50 @@ final readonly class PlaceGenerationHandler
 
 	private function generatePlanet(System $system, int $position, int $sectorDanger): Planet
 	{
-		$pointsRep = random_int(1, 10);
-		$abilities = [
-			'population' => 0,
-			'history' => 0,
-			'resources' => 0,
-		];
 
-		// nombre de point a distribuer
-		if ($pointsRep < 2) {
-			$pointsTot = random_int(90, 100);
-		} elseif ($pointsRep < 10) {
-			$pointsTot = 100;
-		} else {
-			$pointsTot = random_int(100, 120);
+
+		$planetType = $this->determinePlanetType($system);
+		$danger = $this->determineDanger($sectorDanger);
+
+		$planet = new Planet(
+			id: Uuid::v4(),
+			system: $system,
+			position: $position,
+			planetType: $planetType,
+			player: null,
+			name: null,
+			population: $this->determinePopulation($system, $planetType),
+			danger: $danger,
+			maxDanger: $danger,
+			typeOfBase: Planet::BASE_TYPE_COLONY,
+			naturalResources: $this->determineNaturalResourcesCoefficients($planetType),
+			updatedAt: new \DateTimeImmutable('-259200 seconds'),
+		);
+
+		$this->determinePlanetActivities($planet);
+
+		return $planet;
+	}
+
+	private function determinePopulation(System $system, PlanetType $planetType): int
+	{
+		if ($system->sector->faction === null) {
+			return 0;
 		}
 
-		// brassage du tableau
-		Utils::shuffle($abilities);
-
-		// répartition
-		$z = 1;
-		foreach ($abilities as $l => $v) {
-			if ($z < 3) {
-				$max = $pointsTot - ($z * 10);
-				$max = $max < 10 ? 10 : $max;
-
-				$points = random_int(10, $max);
-				$abilities[$l] = $points;
-				$pointsTot -= $points;
-			} else {
-				$abilities[$l] = $pointsTot < 5 ? 5 : $pointsTot;
-			}
-
-			++$z;
+		if (random_int(0, 100) < 50) {
+			return 0;
 		}
 
-		$population = $abilities['population'] * 250 / 100;
-		$history = $abilities['history'];
-		$resources = $abilities['resources'];
+		[$min, $max] = $planetType->getPopulationBaseRange();
 
+		return random_int($min, $max);
+	}
+
+	private function determineDanger(int $sectorDanger): int
+	{
 		// TODO DANGER
-		$danger = match ($sectorDanger) {
+		return match ($sectorDanger) {
 			GalaxyConfiguration::DNG_CASUAL => random_int(0, Planet::DNG_CASUAL),
 			GalaxyConfiguration::DNG_EASY => random_int(3, Planet::DNG_EASY),
 			GalaxyConfiguration::DNG_MEDIUM => random_int(6, Planet::DNG_MEDIUM),
@@ -120,25 +127,6 @@ final readonly class PlaceGenerationHandler
 			GalaxyConfiguration::DNG_VERY_HARD => random_int(12, Planet::DNG_VERY_HARD),
 			default => 0,
 		};
-
-		$planetType = $this->determinePlanetType($system);
-
-		return new Planet(
-			id: Uuid::v4(),
-			system: $system,
-			position: $position,
-			planetType: $planetType,
-			player: null,
-			name: null,
-			population: $population,
-			coefResources: $resources,
-			coefHistory: $history,
-			danger: $danger,
-			maxDanger: $danger,
-			typeOfBase: Planet::BASE_TYPE_COLONY,
-			naturalResources: $this->determineNaturalResourcesCoefficients($planetType),
-			updatedAt: new \DateTimeImmutable('-259200 seconds'),
-		);
 	}
 
 	private function determinePlanetType(System $system): PlanetType
@@ -169,6 +157,68 @@ final readonly class PlaceGenerationHandler
 			// If the obtained coefficient equals 0, we remove it from the planet's natural resources
 			fn (int $coefficient) => $coefficient > 0,
 		);
+	}
+
+
+
+	/**
+	 * @return list<PlanetActivity>
+	 */
+	private function determinePlanetActivities(Planet $planet): void
+	{
+		if (0 === $planet->population) {
+			return;
+		}
+
+		$scores = [];
+		$calculateScore = function (string $dependencyLevel, array $scores, array $dependencies, Activity $activity, int $categoryModifier) use ($planet): array {
+			if (!isset($dependencies[$dependencyLevel])) {
+				return $scores;
+			}
+
+			foreach ($dependencies[$dependencyLevel] as $dependency) {
+				$scores[$activity->value] = ($scores[$activity->value] ?? 0)
+					+ ($planet->naturalResources[$dependency->value] ?? 0)
+					+ $categoryModifier;
+			}
+
+			return $scores;
+		};
+
+		foreach (Activity::cases() as $activity) {
+			$dependencies = $activity->getDependencies();
+			$categoryModifier = match ($activity->getCategory()) {
+				ActivityCategory::PrimaryProduction => random_int(0, 20),
+				ActivityCategory::Refinement => random_int(-10, 10),
+				ActivityCategory::FinalProduction => random_int(-20, 5),
+				default => 0,
+			};
+
+			$scores = $calculateScore('local', $scores, $dependencies, $activity, $categoryModifier);
+			$scores = $calculateScore('any', $scores, $dependencies, $activity, $categoryModifier);
+		}
+
+		arsort($scores);
+
+		$this->galaxyGenerationLogger->debug('Planet activities', [
+			'planet_type' => $planet->planetType->name,
+			'population' => $planet->population,
+			'natural_resources' => $planet->naturalResources,
+			'sector_identifier' => $planet->system->sector->identifier,
+			'activities' => array_slice($scores, 0, 3),
+		]);
+
+		foreach (array_slice($scores, 0, 3) as $activity => $score) {
+			$planetActivity = new PlanetActivity(
+				id: Uuid::v4(),
+				planet: $planet,
+				activity: Activity::from($activity),
+				createdAt: $planet->createdAt,
+				updatedAt: $planet->createdAt,
+			);
+
+			$this->planetActivityRepository->save($planetActivity, doFlush: false);
+		}
 	}
 
 	private function generateEmptyPlace(System $system, int $position): EmptyPlace

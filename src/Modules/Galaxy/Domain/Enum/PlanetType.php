@@ -16,6 +16,19 @@ enum PlanetType: string
 	case Tropical = 'tropical';
 	case Volcanic = 'volcanic';
 
+	public function getPopulationBaseRange(): array
+	{
+		return match ($this) {
+			self::Desert => [1, 400],
+			self::Gas => [5, 300],
+			self::Ice => [10, 200],
+			self::Ocean => [10, 200],
+			self::Tempered => [100, 2000],
+			self::Tropical => [50, 1500],
+			self::Volcanic => [1, 200],
+		};
+	}
+
 	public function getNaturalResourcesBaseCoefficients(): array
 	{
 		return match ($this) {

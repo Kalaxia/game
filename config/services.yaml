@@ -99,19 +99,16 @@ services:
         exclude:
             - '../src/Kernel.php'
             - '../src/action/'
-            - '../src/api/'
-            - '../src/buffer/'
-            - '../src/connection/'
-            - '../src/event/'
-            - '../src/inscription/'
             - '../src/script/'
-            - '../src/views/'
             - '../src/Modules/'
 
     App\Modules\Portal\:
         resource: '../src/Modules/Portal/'
         exclude:
             - '../src/Modules/Shared/Domain/{!Service}'
+
+    App\Modules\Economy\:
+        resource: '../src/Modules/Economy/'
 
     App\Modules\Shared\:
         resource: '../src/Modules/Shared/'

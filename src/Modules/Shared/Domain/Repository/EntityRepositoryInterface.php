@@ -10,12 +10,12 @@ interface EntityRepositoryInterface
 	/**
 	 * @param T $entity
 	 */
-	public function save(object $entity): void;
+	public function save(object $entity, bool $doFlush = true): void;
 
 	/**
 	 * @param T $entity
 	 */
-	public function remove(object $entity): void;
+	public function remove(object $entity, bool $doFlush = true): void;
 
 	/**
 	 * @param T $entity

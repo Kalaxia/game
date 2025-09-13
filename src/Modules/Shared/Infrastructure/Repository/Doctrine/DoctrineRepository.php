@@ -7,7 +7,9 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @template T of object
+ *
  * @extends ServiceEntityRepository<T>
+ *
  * @implements EntityRepositoryInterface<T>
  */
 abstract class DoctrineRepository extends ServiceEntityRepository implements EntityRepositoryInterface
@@ -15,19 +17,25 @@ abstract class DoctrineRepository extends ServiceEntityRepository implements Ent
 	/**
 	 * @param T $entity
 	 */
-	public function save(object $entity): void
+	public function save(object $entity, bool $doFlush = true): void
 	{
 		$this->getEntityManager()->persist($entity);
-		$this->getEntityManager()->flush();
+
+		if (true === $doFlush) {
+			$this->getEntityManager()->flush();
+		}
 	}
 
 	/**
 	 * @param T $entity
 	 */
-	public function remove(object $entity): void
+	public function remove(object $entity, bool $doFlush = true): void
 	{
 		$this->getEntityManager()->remove($entity);
-		$this->getEntityManager()->flush();
+
+		if (true === $doFlush) {
+			$this->getEntityManager()->flush();
+		}
 	}
 
 	/**
