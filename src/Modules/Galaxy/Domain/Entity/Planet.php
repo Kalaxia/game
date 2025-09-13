@@ -3,6 +3,7 @@
 namespace App\Modules\Galaxy\Domain\Entity;
 
 use App\Modules\Ares\Domain\Model\ShipCategory;
+use App\Modules\Economy\Domain\Enum\ResourceType;
 use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use App\Modules\Galaxy\Domain\Enum\PlanetType;
 use App\Modules\Galaxy\Resource\PlanetResource;
@@ -89,6 +90,11 @@ class Planet extends Place implements SystemUpdatable, \JsonSerializable
 		public array $shipStorage = [],
 		#[ORM\Column(type: 'integer', options: ['unsigned' => true, 'default' => 0])]
 		public int $resourcesStorage = 5000,
+		/**
+		 * @var array<value-of<ResourceType>, int>
+		 */
+		#[ORM\Column(type: 'json')]
+		public array $naturalResources = [],
 		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $createdAt = new \DateTimeImmutable(),
 		#[ORM\Column(type: 'datetime_immutable')]
