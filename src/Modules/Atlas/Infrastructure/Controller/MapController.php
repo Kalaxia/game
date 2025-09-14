@@ -9,7 +9,6 @@ use App\Modules\Ares\Manager\CommanderManager;
 use App\Modules\Ares\Manager\ConquestManager;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Artemis\Domain\Repository\SpyReportRepositoryInterface;
-use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\RecyclingMissionRepositoryInterface;
 use App\Modules\Galaxy\Domain\Entity\Place;
 use App\Modules\Galaxy\Domain\Entity\Planet;
@@ -42,7 +41,6 @@ class MapController extends AbstractController
 		ConquestManager                     $conquestManager,
 		CommanderManager                    $commanderManager,
 		CommanderRepositoryInterface        $commanderRepository,
-		CommercialRouteRepositoryInterface  $commercialRouteRepository,
 		SectorRepositoryInterface           $sectorRepository,
 		PlanetRepositoryInterface           $planetRepository,
 		PlanetManager                       $planetManager,
@@ -82,7 +80,6 @@ class MapController extends AbstractController
 			'default_position' => $defaultPosition,
 			'default_map_parameters' => Params::$params,
 			'galaxy_configuration' => $galaxyConfiguration,
-			'commercial_routes' => $commercialRouteRepository->getAllPlayerRoutes($currentPlayer),
 			'local_commanders' => $commanderRepository->getPlanetCommanders(
 				$currentBase,
 				[Commander::AFFECTED, Commander::MOVING],

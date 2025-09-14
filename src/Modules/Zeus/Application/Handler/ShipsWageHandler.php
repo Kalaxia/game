@@ -8,14 +8,11 @@ use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Domain\Service\CalculateFleetCost;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
-use App\Modules\Athena\Model\Transaction;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Model\PlayerFinancialReport;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 readonly class ShipsWageHandler
@@ -25,11 +22,8 @@ readonly class ShipsWageHandler
 		private CommanderArmyHandler $commanderArmyHandler,
 		private CommanderRepositoryInterface $commanderRepository,
 		private NotificationRepositoryInterface $notificationRepository,
-		private TransactionRepositoryInterface  $transactionRepository,
 		private TranslatorInterface $translator,
 		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
-		#[Autowire('%game.ship_cost_reduction%')]
-		private float $shipCostReduction,
 	) {
 	}
 
@@ -44,21 +38,6 @@ readonly class ShipsWageHandler
 		Player $rebelPlayer,
 	): void {
 		$player = $playerFinancialReport->player;
-		$transactions = $this->transactionRepository->getPlayerPropositions($player, Transaction::TYP_SHIP);
-		// payer l'entretien des vaisseaux
-		// vaisseaux en vente
-		$transactionTotalCost = 0;
-		$nbTransactions = count($transactions);
-		for ($i = ($nbTransactions - 1); $i >= 0; --$i) {
-			$transaction = $transactions[$i];
-			$transactionTotalCost += ($this->getShipCategoriesConfiguration)($transaction->identifier, 'cost') * $this->shipCostReduction * $transaction->quantity;
-		}
-		if ($playerFinancialReport->canAfford($transactionTotalCost)) {
-			$playerFinancialReport->shipsCost += $transactionTotalCost;
-			// } else {
-			// TODO decide what to do when ships in transaction cannot be paid
-			// $newCredit = 0;
-		}
 		// vaisseaux affectés
 		foreach ($commanders as $commander) {
 			$this->commanderArmyHandler->setArmy($commander);

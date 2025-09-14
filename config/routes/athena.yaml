@@ -17,34 +17,6 @@ base_overview:
     path: /overview
     controller: App\Modules\Athena\Infrastructure\Controller\Base\ViewOverview
 
-generator:
-    path: /generator
-    controller: App\Modules\Athena\Infrastructure\Controller\Base\Building\ViewGenerator
-
-build:
-    path: /buildings/{identifier}/build
-    controller: App\Modules\Athena\Infrastructure\Controller\Base\Building\Build
-
-cancel_building_queue:
-    path: /building-queues/{identifier}/cancel
-    controller: App\Modules\Athena\Infrastructure\Controller\Base\Building\Cancel
-
-refinery:
-    path: /refinery
-    controller: App\Modules\Athena\Infrastructure\Controller\Base\Building\RefineryController
-
-recycling:
-    path: /recycling
-    controller: App\Modules\Athena\Infrastructure\Controller\Base\Building\ViewRecycling
-
-storage:
-    path: /storage
-    controller: App\Modules\Athena\Infrastructure\Controller\Base\Building\StorageController
-
-docks:
-    path: /docks/{dockType}
-    controller: App\Modules\Athena\Infrastructure\Controller\Base\Building\ViewDocks
-
 change_base_type:
     path: /change-planet-type
     controller: App\Modules\Athena\Infrastructure\Controller\Base\ChangePlanetType
@@ -57,28 +29,6 @@ rename_planet:
     path: /rename-base
     controller: App\Modules\Athena\Infrastructure\Controller\Base\RenameBase
     methods: 'POST'
-
-technosphere:
-    path: /technosphere
-    controller: App\Modules\Athena\Infrastructure\Controller\Base\Building\ViewTechnosphere
-
-trade_market:
-    path: /trade-market/{mode<market|sell|resource>}
-    controller: App\Modules\Athena\Infrastructure\Controller\Base\Building\TradeMarketController
-    defaults:
-        mode: market
-
-spatioport:
-    path: /spatioport
-    controller: App\Modules\Athena\Infrastructure\Controller\Base\Building\ViewSpatioport
-
-school:
-    path: /school
-    controller: App\Modules\Athena\Infrastructure\Controller\Base\Building\ViewSchool
-
-view_building_panel:
-    path: /buildings/{identifier}/panel
-    controller: App\Modules\Athena\Infrastructure\Controller\Base\Building\ViewBuildingPanel
 
 create_recycling_mission:
     path: /recycling-missions/create/{targetId}

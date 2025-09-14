@@ -2,7 +2,6 @@
 
 namespace App\Modules\Demeter\Handler\Law;
 
-use App\Modules\Athena\Manager\CommercialRouteManager;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Law\LawRepositoryInterface;
 use App\Modules\Demeter\Message\Law\WarDeclarationResultMessage;
@@ -15,7 +14,6 @@ readonly class WarDeclarationResultHandler
 {
 	public function __construct(
 		private ColorRepositoryInterface $colorRepository,
-		private CommercialRouteManager   $commercialRouteManager,
 		private LawRepositoryInterface   $lawRepository,
 	) {
 	}
@@ -30,7 +28,6 @@ readonly class WarDeclarationResultHandler
 		$enemyColor->relations[$color->identifier] = Color::ENEMY;
 		$color->relations[$law->options['rColor']] = Color::ENEMY;
 		$law->statement = Law::OBSOLETE;
-		$this->commercialRouteManager->toggleRoutesFreeze($color, $enemyColor);
 		$this->colorRepository->save($color);
 		$this->lawRepository->save($law);
 	}

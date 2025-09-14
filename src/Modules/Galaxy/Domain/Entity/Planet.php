@@ -61,26 +61,6 @@ class Planet extends Place implements SystemUpdatable, \JsonSerializable
 		public int $maxDanger = 0,						// danger max de la place (force des flottes rebelles)
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
 		public int $typeOfBase = 0,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelGenerator = 1,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelRefinery = 1,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelDock1 = 1,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelDock2 = 0,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelDock3 = 0,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelTechnosphere = 1,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelCommercialPlateforme = 0,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelStorage = 1,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelRecycling = 0,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelSpatioport = 0,
 		#[ORM\Column(type: 'integer', options: ['unsigned' => true, 'default' => 0])]
 		public int $points = 0,
 		#[ORM\Column(type: 'integer', options: ['unsigned' => true, 'default' => 0])]

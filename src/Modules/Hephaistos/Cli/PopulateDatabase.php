@@ -4,9 +4,7 @@ namespace App\Modules\Hephaistos\Cli;
 
 use App\Classes\Library\Utils;
 use App\Modules\Athena\Domain\Repository\CommercialTaxRepositoryInterface;
-use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
 use App\Modules\Athena\Model\CommercialTax;
-use App\Modules\Athena\Model\Transaction;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
@@ -39,7 +37,6 @@ class PopulateDatabase extends Command
 		private readonly ConversationUserRepositoryInterface $conversationUserRepository,
 		private readonly GetFactionsConfiguration $getFactionsConfiguration,
 		private readonly PlayerRepositoryInterface $playerRepository,
-		private readonly TransactionRepositoryInterface $transactionRepository,
 		#[Autowire('%game.available_factions%')]
 		private readonly array $availableFactions,
 	) {
@@ -135,33 +132,6 @@ class PopulateDatabase extends Command
 			$p->faction = $this->colorRepository->getOneByIdentifier($factionId);
 			$p->status = 6;
 			$this->playerRepository->save($p);
-		}
-
-		$output->writeln('Remplissage de la table transaction');
-
-		$transactionData = [
-			[Transaction::TYP_RESOURCE, 8, 10, 1.26],
-			[Transaction::TYP_COMMANDER, 1, 12, 12],
-			[Transaction::TYP_SHIP, 8, 15, 1.875],
-		];
-
-		foreach ($transactionData as [$type, $quantity, $price, $currentRate]) {
-			// @TODO forbid nullable bases for transactions when these are no longer required to make the transaction system work.
-			$transaction = new Transaction(
-				id: Uuid::v4(),
-				player: $rebelPlayer,
-				base: null,
-				type: $type,
-				quantity: $quantity,
-				identifier: 0,
-				publishedAt: new \DateTimeImmutable(),
-				currentRate: $currentRate,
-				price: $price,
-				statement: Transaction::ST_COMPLETED,
-				validatedAt: new \DateTimeImmutable(),
-			);
-
-			$this->transactionRepository->save($transaction);
 		}
 
 		$output->writeln('Remplissage de la table commercialTax');

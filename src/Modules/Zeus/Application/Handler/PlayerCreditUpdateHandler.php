@@ -4,7 +4,6 @@ namespace App\Modules\Zeus\Application\Handler;
 
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Athena\Application\Handler\Income\CommercialRouteIncomeHandler;
 use App\Modules\Athena\Application\Handler\Tax\PopulationTaxHandler;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
@@ -33,15 +32,12 @@ readonly class PlayerCreditUpdateHandler
 
 	public function __construct(
 		private EntityManagerInterface                   $entityManager,
-		private CommercialRouteIncomeHandler             $commercialRouteIncomeHandler,
-		private CommercialRouteConstructionReportHandler $commercialRouteConstructionReportHandler,
 		private CommanderRepositoryInterface             $commanderRepository,
 		private CreditTransactionReportHandler           $creditTransactionReportHandler,
 		private GameTimeConverter                        $gameTimeConverter,
 		private PlanetRepositoryInterface                $planetRepository,
 		private PlayerRepositoryInterface                $playerRepository,
 		private PlayerFinancialReportRepositoryInterface $playerFinancialReportRepository,
-		private PlayerTransactionReportHandler           $playerTransactionReportHandler,
 		private PlayerBonusManager                       $playerBonusManager,
 		private PopulationTaxHandler                     $populationTaxHandler,
 		private CommanderWageHandler                     $commanderWageHandler,
@@ -198,12 +194,9 @@ readonly class PlayerCreditUpdateHandler
 		foreach ($bases as $base) {
 			$populationTax = $this->populationTaxHandler->getPopulationTax($base)->getTotal();
 
-			$routesIncome = $this->commercialRouteIncomeHandler->getCommercialRouteIncome($base)->total;
-
 			$factionTax = $this->payFactionTax($base, $populationTax, $playerFinancialReport);
 
 			$playerFinancialReport->populationTaxes += $populationTax;
-			$playerFinancialReport->commercialRoutesIncome += $routesIncome;
 			// TODO Handler anti spy and school investment recomputing in case of bankrupt
 			$playerFinancialReport->antiSpyInvestments += $base->iAntiSpy;
 			$playerFinancialReport->schoolInvestments += $base->iSchool;
@@ -213,14 +206,11 @@ readonly class PlayerCreditUpdateHandler
 				'playerName' => $player->name,
 				'baseName' => $base->name,
 				'populationTaxes' => $populationTax,
-				'commercialRoutesIncome' => $routesIncome,
 				'antiSpyInvestments' => $base->iAntiSpy,
 				'schoolInvestments' => $base->iSchool,
 				'factionTax' => $factionTax,
 			]);
 		}
-
-		($this->playerTransactionReportHandler)($playerFinancialReport, $lastFinancialReport);
 
 		$this->logger->debug('Processed transactions report for player {playerName}', [
 			'playerId' => $player->id,
@@ -232,8 +222,6 @@ readonly class PlayerCreditUpdateHandler
 			'shipsPurchases' => $playerFinancialReport->shipsPurchases,
 			'commandersPurchases' => $playerFinancialReport->commandersPurchases,
 		]);
-
-		($this->commercialRouteConstructionReportHandler)($playerFinancialReport, $lastFinancialReport);
 
 		$this->logger->debug('Processed commercial routes constructions for player {playerName}', [
 			'playerId' => $player->id,

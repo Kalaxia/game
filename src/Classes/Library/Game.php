@@ -35,61 +35,9 @@ class Game
 		}
 	}
 
-	public static function resourceProduction(float $coeffRefinery, int $coeffPlanet): float
-	{
-		return $coeffRefinery * $coeffPlanet;
-	}
-
 	public static function getMaxTravelDistance($bonus): int
 	{
 		return Commander::DISTANCEMAX;
-	}
-
-	public static function getMinPriceRelativeToRate($transactionType, $quantity, $identifier = null)
-	{
-		switch ($transactionType) {
-			case Transaction::TYP_RESOURCE:
-				$minRate = Transaction::MIN_RATE_RESOURCE;
-				break;
-			case Transaction::TYP_SHIP:
-				$minRate = Transaction::MIN_RATE_SHIP;
-				$quantity = ($this->getShipCategoriesConfiguration)($identifier, 'resourcePrice') * $quantity;
-				break;
-			case Transaction::TYP_COMMANDER:
-				$minRate = Transaction::MIN_RATE_COMMANDER;
-				break;
-			default:
-				return false;
-		}
-
-		$price = round($quantity * $minRate);
-		if ($price < 1) {
-			$price = 1;
-		}
-
-		return $price;
-	}
-
-	public static function getMaxPriceRelativeToRate($transactionType, $quantity, $identifier = false)
-	{
-		switch ($transactionType) {
-			case Transaction::TYP_RESOURCE:
-				$minRate = Transaction::MAX_RATE_RESOURCE;
-				break;
-			case Transaction::TYP_SHIP:
-				$minRate = Transaction::MAX_RATE_SHIP;
-				$quantity = ($this->getShipCategoriesConfiguration)($identifier, 'resourcePrice') * $quantity;
-				break;
-			case Transaction::TYP_COMMANDER:
-				$minRate = Transaction::MAX_RATE_COMMANDER;
-				break;
-			default:
-				return false;
-		}
-
-		$price = $quantity * $minRate;
-
-		return round($price);
 	}
 
 	public static function getImprovementFromScientificCoef(int $coef): int

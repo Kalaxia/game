@@ -4,7 +4,6 @@ namespace App\Modules\Athena\Infrastructure\Controller\Recycling;
 
 use App\Modules\Athena\Domain\Repository\RecyclingMissionRepositoryInterface;
 use App\Modules\Galaxy\Domain\Entity\Planet;
-use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Galaxy\Resource\PlanetResource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +17,6 @@ class AddToMission extends AbstractController
 	public function __invoke(
         Request                             $request,
         Planet                              $currentPlanet,
-        PlanetHelper                        $planetHelper,
         RecyclingMissionRepositoryInterface $recyclingMissionRepository,
         Uuid                                $id,
 	): Response {
@@ -27,7 +25,6 @@ class AddToMission extends AbstractController
 		if (0 === $quantity) {
 			throw new BadRequestHttpException('Ca va être dur de recycler avec aussi peu de recycleurs. Entrez un nombre plus grand que zéro.');
 		}
-		$maxRecyclers = $planetHelper->getInfo(PlanetResource::RECYCLING, 'level', $currentPlanet->levelRecycling, 'nbRecyclers');
 		$usedRecyclers = 0;
 
 		$planetMissions = $recyclingMissionRepository->getPlanetActiveMissions($currentPlanet);
@@ -42,10 +39,6 @@ class AddToMission extends AbstractController
 
 		if (null === $mission) {
 			throw $this->createNotFoundException('Il y a un problème, la mission est introuvable. Veuillez contacter un administrateur.');
-		}
-
-		if ($maxRecyclers - $usedRecyclers < $quantity) {
-			throw new ConflictHttpException('Vous n\'avez pas assez de recycleurs libres pour lancer cette mission.');
 		}
 
 		$mission->addToNextMission += $quantity;

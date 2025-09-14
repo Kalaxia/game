@@ -5,7 +5,6 @@ namespace App\Modules\Athena\Infrastructure\Controller\Base;
 use App\Classes\Library\Game;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Athena\Manager\CommercialRouteManager;
 use App\Modules\Galaxy\Application\Registry\CurrentPlayerPlanetsRegistry;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Resource\PlaceResource;
@@ -19,11 +18,9 @@ class ViewOverview extends AbstractController
         Request                      $request,
         Planet                       $currentPlanet,
         CurrentPlayerPlanetsRegistry $currentPlayerPlanetsRegistry,
-        CommercialRouteManager       $commercialRouteManager,
         CommanderRepositoryInterface $commanderRepository,
 	): Response {
 		return $this->render('pages/athena/overview.html.twig', [
-			'commercial_routes_data' => $commercialRouteManager->getBaseCommercialData($currentPlanet),
 			'commanders' => $commanderRepository->getPlanetCommanders($currentPlanet, [Commander::AFFECTED, Commander::MOVING]),
 			'vanguard_positions' => PlaceResource::get($currentPlanet->typeOfBase, 'l-line-position'),
 			'vanguard_positions_count' => PlaceResource::get($currentPlanet->typeOfBase, 'l-line'),

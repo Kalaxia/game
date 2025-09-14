@@ -8,10 +8,8 @@ use App\Modules\Ares\Domain\Specification\Player\CanPlayerMoveToPlace;
 use App\Modules\Ares\Domain\Specification\Player\CanRecycle;
 use App\Modules\Ares\Domain\Specification\Player\CanSpyPlace;
 use App\Modules\Artemis\Application\Handler\AntiSpyHandler;
-use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Recycling\GetMissionTime;
 use App\Modules\Athena\Domain\Specification\CanPlanetTradeWithPlace;
-use App\Modules\Athena\Model\CommercialRoute;
 use App\Modules\Galaxy\Application\Handler\GetDistanceBetweenPlaces;
 use App\Modules\Galaxy\Domain\Entity\Place;
 use App\Modules\Galaxy\Domain\Entity\Planet;
@@ -35,7 +33,6 @@ class MapExtension extends AbstractExtension
 		private readonly GetMissionTime $getMissionTime,
 		private readonly CurrentPlayerRegistry $currentPlayerRegistry,
 		private readonly CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
-		private readonly CommercialRouteRepositoryInterface $commercialRouteRepository,
 	) {
 	}
 
@@ -70,7 +67,6 @@ class MapExtension extends AbstractExtension
 			new TwigFunction('get_max_travel_distance', fn () => Game::getMaxTravelDistance($this->currentPlayerBonusRegistry->getPlayerBonus())),
 			new TwigFunction('get_place_demography', fn (Planet $place) => Game::getSizeOfPlanet($place->population)),
 			new TwigFunction('get_place_technosphere_improvement_coeff', fn (Planet $place) => Game::getImprovementFromScientificCoef($place->coefHistory)),
-			new TwigFunction('get_commercial_route_data', fn (Planet $defaultBase, Planet $place) => $this->getCommercialRouteData($defaultBase, $place)),
 
 			new TwigFunction('can_player_attack_place', function (Player $player, Planet $place) {
 				$specification = new CanPlayerAttackPlace($player);
@@ -99,36 +95,5 @@ class MapExtension extends AbstractExtension
 			}),
 			new TwigFunction('get_recycling_mission_time', fn (Planet $planet, Place $place) => ($this->getMissionTime)($planet, $place, $this->currentPlayerRegistry->get())),
 		];
-	}
-
-	private function getCommercialRouteData(Planet $defaultBase, Planet $place): array
-	{
-		$routes = $this->commercialRouteRepository->getPlanetRoutes($defaultBase);
-
-		$data = [
-			'proposed' => false,
-			'not_accepted' => false,
-			'stand_by' => false,
-			'send_resources' => false,
-			'slots' => \count($routes),
-		];
-
-		foreach ($routes as $route) {
-			if ($route->destinationBase->id->equals($defaultBase->id) && CommercialRoute::PROPOSED == $route->statement) {
-				--$data['slots'];
-			}
-			if (!$place->id->equals($route->originBase->id) && !$place->id->equals($route->destinationBase->id)) {
-				continue;
-			}
-			$data = array_merge($data, match ($route->statement) {
-				CommercialRoute::PROPOSED => ($defaultBase->id->equals($route->originBase->id))
-						? ['proposed' => true]
-						: ['not_accepted' => true],
-				CommercialRoute::ACTIVE => ['send_resources' => true],
-				CommercialRoute::STANDBY => ['stand_by' => true],
-			});
-		}
-
-		return $data;
 	}
 }

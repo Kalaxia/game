@@ -4,12 +4,10 @@ namespace App\Modules\Athena\Infrastructure\Controller\Ship;
 
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Athena\Application\Factory\ShipQueueFactory;
-use App\Modules\Athena\Domain\Enum\DockType;
 use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Base\Ship\CountShipResourceCost;
 use App\Modules\Athena\Helper\ShipHelper;
 use App\Modules\Galaxy\Domain\Entity\Planet;
-use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
@@ -27,7 +25,6 @@ class BuildShips extends AbstractController
         Player                        $currentPlayer,
         Planet                        $currentPlanet,
         PlanetManager                 $planetManager,
-        PlanetHelper                  $planetHelper,
         CountShipResourceCost         $countShipResourceCost,
         ShipHelper                    $shipHelper,
         ShipQueueRepositoryInterface  $shipQueueRepository,
@@ -44,10 +41,6 @@ class BuildShips extends AbstractController
 		}
 		if (null === ($shipCategory = ShipCategory::tryFrom($shipIdentifier))) {
 			throw new BadRequestHttpException('Invalid ship identifier');
-		}
-		$dockType = DockType::fromShipCategory($shipCategory);
-		if (DockType::Shipyard === $dockType) {
-			$quantity = 1;
 		}
 		$shipQueues = $shipQueueRepository->getByBaseAndDockType($currentPlanet, $dockType->getIdentifier());
 		$shipQueuesCount = count($shipQueues);
@@ -76,7 +69,6 @@ class BuildShips extends AbstractController
 		);
 
 		$resourcePrice = ($countShipResourceCost)($shipIdentifier, $quantity, $currentPlayer);
-		$planetManager->decreaseResources($currentPlanet, $resourcePrice);
 
 		$session = $request->getSession();
 		$session->get('playerEvent')->add($shipQueue->getEndDate(), $this->getParameter('event_base'), $currentPlanet->id);

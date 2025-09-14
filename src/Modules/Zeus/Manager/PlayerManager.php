@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Zeus\Manager;
 
-use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
-use App\Modules\Galaxy\Domain\Service\UpdatePlanetPoints;
 use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
@@ -31,10 +29,7 @@ readonly class PlayerManager
 		private PlayerRepositoryInterface       $playerRepository,
 		private EventDispatcherInterface        $eventDispatcher,
 		private EntityManagerInterface          $entityManager,
-		private UpdatePlanetPoints              $updatePlanetPoints,
 		private PlanetRepositoryInterface       $planetRepository,
-		private PlaceManager                    $placeManager,
-		private PlaceRepositoryInterface        $placeRepository,
 		private NotificationRepositoryInterface $notificationRepository,
 		private SectorRepositoryInterface       $sectorRepository,
 		private TechnologyRepositoryInterface   $technologyRepository,
@@ -110,13 +105,8 @@ readonly class PlayerManager
 			$planet->name = 'Colonie';
 			$planet->iSchool = 500;
 			$planet->iAntiSpy = 500;
-			$planet->resourcesStorage = 1000;
-
-			$this->updatePlanetPoints->updatePoints($planet);
 
 			$this->planetRepository->save($planet);
-
-			$this->placeManager->turnAsSpawnPlace($planet);
 
 			// envoi d'une notif
 			$notif = NotificationBuilder::new()

@@ -79,7 +79,6 @@ class CancelTechnologyQueue extends AbstractController
 		// rends les ressources et les crédits au joueur
 		$resourcePrice = $technologyHelper->getInfo($identifier, 'resource', $targetLevel);
 		$resourcePrice = intval(round($resourcePrice * $technologyResourceRefund));
-		$planetManager->increaseResources($currentBase, $resourcePrice);
 		$creditPrice = $technologyHelper->getInfo($identifier, 'credit', $targetLevel);
 		$creditPrice = intval(round($creditPrice * $technologyCreditRefund));
 		$playerManager->increaseCredit($currentPlayer, $creditPrice);

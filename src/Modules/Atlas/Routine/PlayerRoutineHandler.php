@@ -2,13 +2,10 @@
 
 namespace App\Modules\Atlas\Routine;
 
-use App\Classes\Library\Game;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Atlas\Domain\Repository\PlayerRankingRepositoryInterface;
 use App\Modules\Atlas\Model\PlayerRanking;
 use App\Modules\Atlas\Model\Ranking;
-use App\Modules\Galaxy\Helper\PlanetHelper;
-use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\DBAL\Result;
@@ -23,7 +20,6 @@ class PlayerRoutineHandler
 	public function __construct(
 		private readonly PlayerRepositoryInterface        $playerRepository,
 		private readonly PlayerRankingRepositoryInterface $playerRankingRepository,
-		private readonly PlanetHelper                     $planetHelper,
 		private readonly GetShipCategoriesConfiguration   $getShipCategoriesConfiguration,
 	) {
 	}
@@ -83,7 +79,6 @@ class PlayerRoutineHandler
 				'DA_PlanetNumber' => 0,
 			];
 		}
-		$this->calculateResources($resourcesStatement);
 		$this->calculateDataResources($resourcesDataStatement);
 		$this->calculatePlanetRanking($planetStatement);
 		$this->calculateGeneralRanking($generalStatement);
@@ -205,16 +200,6 @@ class PlayerRoutineHandler
 			);
 
 			$this->playerRankingRepository->save($pr);
-		}
-	}
-
-	protected function calculateResources(Result $statement): void
-	{
-		while ($row = $statement->fetchAssociative()) {
-			if (isset($this->results[$row['player']])) {
-				$resourcesProd = Game::resourceProduction($this->planetHelper->getBuildingInfo(PlanetResource::REFINERY, 'level', $row['levelRefinery'], 'refiningCoefficient'), $row['coefResources']);
-				$this->results[$row['player']]['resources'] += $resourcesProd;
-			}
 		}
 	}
 

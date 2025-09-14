@@ -28,7 +28,6 @@ class Recycle extends AbstractController
 			if ($quantity > 0 && $quantity <= $currentBase->getShipStorage()[$typeOfShip]) {
 				$resources = ($quantity * $getShipCategoriesConfiguration($typeOfShip, 'resourcePrice')) / 2;
 				$currentBase->removeShips($typeOfShip, $quantity);
-				$planetManager->increaseResources($currentBase, $resources);
 
 				return $this->redirect($request->headers->get('referer'));
 			} else {

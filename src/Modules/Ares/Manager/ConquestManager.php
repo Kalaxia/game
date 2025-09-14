@@ -16,7 +16,6 @@ use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Event\PlanetOwnerChangeEvent;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
-use App\Modules\Galaxy\Domain\Service\UpdatePlanetPoints;
 use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Hermes\Manager\NotificationManager;
@@ -32,7 +31,6 @@ readonly class ConquestManager
 		private CommanderRepositoryInterface $commanderRepository,
 		private MoveFleet                    $moveFleet,
 		private PlaceManager                 $placeManager,
-		private UpdatePlanetPoints           $updatePlanetPoints,
 		private PlanetManager                $planetManager,
 		private PlanetRepositoryInterface    $planetRepository,
 		private PlayerBonusManager           $playerBonusManager,
@@ -186,9 +184,6 @@ readonly class ConquestManager
 				$place->name = 'colonie';
 				$place->iSchool = 500;
 				$place->iAntiSpy = 500;
-				$place->resourcesStorage = 2000;
-
-				$this->updatePlanetPoints->updatePoints($place);
 
 				$this->planetRepository->save($place);
 

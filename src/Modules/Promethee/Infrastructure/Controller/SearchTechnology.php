@@ -74,8 +74,6 @@ class SearchTechnology extends AbstractController
 			createdAt: $createdAt,
 		);
 
-		$planetManager->decreaseResources($currentPlanet, $this->technologyHelper->getInfo($identifier, 'resource', $targetLevel));
-
 		$playerManager->decreaseCredit($currentPlayer, $this->technologyHelper->getInfo($identifier, 'credit', $targetLevel));
 
 		// alerte

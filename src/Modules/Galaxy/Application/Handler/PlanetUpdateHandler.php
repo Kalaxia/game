@@ -4,19 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Galaxy\Application\Handler;
 
-use App\Classes\Library\Game;
 use App\Modules\Galaxy\Application\Message\PlanetUpdateMessage;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
-use App\Modules\Galaxy\Helper\PlanetHelper;
-use App\Modules\Galaxy\Manager\PlanetManager;
-use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Shared\Application\Service\CountMissingSystemUpdates;
 use App\Modules\Shared\Domain\Service\GameTimeConverter;
-use App\Modules\Zeus\Application\Handler\Bonus\BonusApplierInterface;
 use App\Modules\Zeus\Manager\PlayerBonusManager;
-use App\Modules\Zeus\Model\PlayerBonus;
-use App\Modules\Zeus\Model\PlayerBonusId;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
@@ -31,13 +24,10 @@ readonly class PlanetUpdateHandler
 	public function __construct(
 		private ClockInterface            $clock,
 		private GameTimeConverter         $gameTimeConverter,
-		private BonusApplierInterface     $bonusApplier,
 		private EntityManagerInterface    $entityManager,
 		private PlayerBonusManager        $playerBonusManager,
 		private CountMissingSystemUpdates $countMissingSystemUpdates,
-		private PlanetManager             $planetManager,
 		private PlanetRepositoryInterface $planetRepository,
-		private PlanetHelper              $planetHelper,
 		private MessageBusInterface       $messageBus,
 		private LoggerInterface           $logger,
 	) {
@@ -93,7 +83,6 @@ readonly class PlanetUpdateHandler
 
 					break;
 				}
-				$this->updateResources($planet, $playerBonus);
 				$this->updateAntiSpy($planet);
 
 				$planet->updatedAt = $planet->updatedAt->modify(sprintf('+%d seconds', $secondsPerGameCycle));
@@ -118,22 +107,6 @@ readonly class PlanetUpdateHandler
 			
 			throw $e;
 		}
-	}
-
-	protected function updateResources(Planet $planet, PlayerBonus $playerBonus): void
-	{
-		$addResources = Game::resourceProduction(
-			$this->planetHelper->getBuildingInfo(
-				PlanetResource::REFINERY,
-				'level',
-				$planet->levelRefinery,
-				'refiningCoefficient'
-			),
-			$planet->coefResources,
-		);
-		$addResources += $this->bonusApplier->apply($addResources, PlayerBonusId::REFINERY_REFINING, $playerBonus);
-
-		$this->planetManager->increaseResources($planet, intval(round($addResources)), false);
 	}
 
 	protected function updateAntiSpy(Planet $planet): void

@@ -194,7 +194,6 @@ readonly class RecyclingMissionHandler
 		$this->recyclingLogRepository->save($rl);
 
 		// give to the planet ($planet) and player what was recycled
-		$this->planetManager->increaseResources($planet, $resourceRecycled);
 		foreach (ShipCategory::cases() as $shipCategory) {
 			$planet->addShips($shipCategory, $buyShip[$shipCategory->value]);
 		}
