@@ -100,6 +100,7 @@ class PlanetRepository extends DoctrineRepository implements PlanetRepositoryInt
 			->join('p.system', 'sys')
 			->where('IDENTITY(sys.sector) = :sector_id')
 			->andWhere('p.player IS NULL')
+			->andWhere('p.population = 0')
 			->setParameter('sector_id', $sector->id->toBinary())
 			->orderBy('p.population', 'ASC')
 			->setMaxResults(30);

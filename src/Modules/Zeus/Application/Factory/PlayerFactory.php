@@ -181,7 +181,8 @@ readonly class PlayerFactory
 			$planet->addShips(ShipCategory::Cruiser, 0);
 			$planet->addShips(ShipCategory::HeavyCruiser, 0);
 		}
-
+		$populationBaseRange = $planet->planetType->getPopulationBaseRange();
+		$planet->population = random_int($populationBaseRange[0], $populationBaseRange[1]);
 		// initialisation des investissement
 		$planet->iSchool = 500;
 		$planet->iAntiSpy = 500;
