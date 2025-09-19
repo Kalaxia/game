@@ -5,15 +5,22 @@ declare(strict_types=1);
 namespace App\Modules\Galaxy\Application\Handler;
 
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
+use App\Modules\Economy\Application\Message\CompanyProductsGenerationMessage;
+use App\Modules\Economy\Domain\Entity\Company;
+use App\Modules\Economy\Domain\Enum\Activity;
+use App\Modules\Economy\Domain\Enum\ActivityCategory;
+use App\Modules\Economy\Domain\Repository\CompanyRepositoryInterface;
 use App\Modules\Galaxy\Application\Message\SectorGenerationMessage;
 use App\Modules\Galaxy\Application\Message\SystemGenerationMessage;
 use App\Modules\Galaxy\Domain\Entity\Sector;
 use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Galaxy\Galaxy\GalaxyConfiguration;
 use App\Modules\Shared\Application\Service\GetProportion;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Uid\Uuid;
 
 #[AsMessageHandler]
@@ -21,11 +28,14 @@ final readonly class SectorGenerationHandler
 {
 	public function __construct(
 		private ColorRepositoryInterface $colorRepository,
+		private CompanyRepositoryInterface $companyRepository,
+		private EntityManagerInterface $entityManager,
 		private GetProportion $getProportion,
 		private SectorRepositoryInterface $sectorRepository,
 		private MessageBusInterface $messageBus,
 		private GalaxyConfiguration $galaxyConfiguration,
 		private LoggerInterface $galaxyGenerationLogger,
+		private SluggerInterface $slugger,
 	) {
 	}
 
@@ -57,7 +67,69 @@ final readonly class SectorGenerationHandler
 			'identifier' => $sector->identifier,
 		]);
 
+		if ($sector->faction !== null) {
+			$this->generateSectorCompanies($sector);
+		}
+
 		$this->generateSystems($sector, $message->danger);
+	}
+
+	private function generateSectorCompanies(Sector $sector): void
+	{
+		foreach ($this->getSectorCompaniesProportions() as $activityName => $companiesCount) {
+			$activity = Activity::from($activityName);
+
+			for ($j = 0; $j < $companiesCount; $j++) {
+				$name = sprintf(
+					'Company %s %s-%s',
+					$activityName,
+					str_pad(strval($sector->identifier), 2, '0'),
+					str_pad(strval($j + 1), 2, '0'),
+				);
+
+				$company = new Company(
+					id: Uuid::v4(),
+					name: $name,
+					slug: $this->slugger->slug($name)->toString(),
+					faction: $sector->faction,
+					activity: $activity,
+					credits: random_int(1, 3) * 1000000,
+					createdAt: new \DateTimeImmutable(),
+					updatedAt: new \DateTimeImmutable(),
+				);
+
+				$this->companyRepository->save($company, doFlush: false);
+
+				$this->messageBus->dispatch(new CompanyProductsGenerationMessage($company->id));
+			}
+		}
+
+		$this->entityManager->flush();
+	}
+
+	/**
+	 * @return array<string, int>
+	 */
+	private function getSectorCompaniesProportions(): array
+	{
+		return array_column(array_map(
+			function (Activity $activity): array {
+				if ($activity->getCategory() === ActivityCategory::PrimaryProduction) {
+					$companiesCount = 5;
+				}
+
+				if ($activity->getCategory() === ActivityCategory::Refinement) {
+					$companiesCount = 3;
+				}
+
+				if ($activity->getCategory() === ActivityCategory::FinalProduction) {
+					$companiesCount = 2;
+				}
+
+				return [$activity->value,  $companiesCount ?? 1];
+			},
+			Activity::cases(),
+		), 1, 0);
 	}
 
 	/**

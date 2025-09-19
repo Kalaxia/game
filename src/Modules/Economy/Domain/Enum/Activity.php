@@ -52,6 +52,11 @@ enum Activity: string
 		};
 	}
 
+	public function getCost(): int
+	{
+		return 1000000;
+	}
+
 	/**
 	 * @return array{
 	 *     local?: list<ResourceType>,

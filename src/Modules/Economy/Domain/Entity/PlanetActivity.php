@@ -22,6 +22,8 @@ class PlanetActivity
 		public Planet $planet,
 		#[ORM\Column(type: 'string', enumType: Activity::class, length: 32)]
 		public Activity $activity,
+		#[ORM\ManyToOne(targetEntity: Company::class)]
+		public Company $company,
 		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $createdAt,
 		#[ORM\Column(type: 'datetime_immutable')]

@@ -1,0 +1,124 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Economy\Application\Handler;
+
+use App\Modules\Ares\Domain\Model\ShipCategory;
+use App\Modules\Economy\Application\Message\CompanyProductsGenerationMessage;
+use App\Modules\Economy\Domain\Entity\Company;
+use App\Modules\Economy\Domain\Entity\ComponentProduct;
+use App\Modules\Economy\Domain\Entity\ResourceProduct;
+use App\Modules\Economy\Domain\Entity\ShipProduct;
+use App\Modules\Economy\Domain\Enum\Activity;
+use App\Modules\Economy\Domain\Enum\ComponentType;
+use App\Modules\Economy\Domain\Enum\ResourceType;
+use App\Modules\Economy\Domain\Repository\CompanyRepositoryInterface;
+use App\Modules\Economy\Domain\Repository\ProductRepositoryInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Symfony\Component\Uid\Uuid;
+
+#[AsMessageHandler]
+readonly class CompanyProductsGenerationHandler
+{
+	public function __construct(
+		private CompanyRepositoryInterface $companyRepository,
+		private EntityManagerInterface     $entityManager,
+		private ProductRepositoryInterface $productRepository,
+	) {
+	}
+
+	public function __invoke(CompanyProductsGenerationMessage $message): void
+	{
+		$company = $this->companyRepository->get($message->companyId)
+			?? throw new \LogicException(sprintf('Company %s not found', $message->companyId->toRfc4122()));
+
+		$generateProducts = match ($company->activity) {
+			Activity::Breeding => $this->getResourceProductGenerator([ResourceType::Meat]),
+			Activity::Brewery => $this->getResourceProductGenerator([ResourceType::Beer, ResourceType::Digestive]),
+			Activity::CarbonExtractor => $this->getResourceProductGenerator([ResourceType::Carbon]),
+			Activity::CobaltMine => $this->getResourceProductGenerator([ResourceType::Cobalt]),
+			Activity::CoffeeFarm => $this->getResourceProductGenerator([ResourceType::Coffee]),
+			Activity::DeuteriumExtractor => $this->getResourceProductGenerator([ResourceType::Deuterium]),
+			Activity::Farm => $this->getResourceProductGenerator([ResourceType::Cereals]),
+			Activity::FishingPort => $this->getResourceProductGenerator([ResourceType::Fish]),
+			Activity::HydrogenExtractor => $this->getResourceProductGenerator([ResourceType::Hydrogen]),
+			Activity::HeliumExtractor => $this->getResourceProductGenerator([ResourceType::Helium]),
+			Activity::NitrogenExtractor => $this->getResourceProductGenerator([ResourceType::Nitrogen]),
+			Activity::Orchard => $this->getResourceProductGenerator([ResourceType::Fruits]),
+			Activity::PlatinumMine => $this->getResourceProductGenerator([ResourceType::Platinum]),
+			Activity::TeaFarm => $this->getResourceProductGenerator([ResourceType::Tea]),
+			Activity::SaltFarm => $this->getResourceProductGenerator([ResourceType::Salt]),
+			Activity::SugarFarm => $this->getResourceProductGenerator([ResourceType::Sugar]),
+			Activity::Vineyard => $this->getResourceProductGenerator([ResourceType::Wine]),
+			Activity::TitaniumMine => $this->getResourceProductGenerator([ResourceType::Titanium]),
+			Activity::CrystalMine => $this->getResourceProductGenerator([ResourceType::Crystal]),
+			Activity::UraniumMine => $this->getResourceProductGenerator([ResourceType::Uranium]),
+			Activity::TritiumExtractor => $this->getResourceProductGenerator([ResourceType::Tritium]),
+			Activity::WeaponFactory => $this->getComponentProductGenerator(ComponentType::Weapon),
+			Activity::PropulsorFactory => $this->getComponentProductGenerator(ComponentType::Propulsor),
+			Activity::ShieldFactory => $this->getComponentProductGenerator(ComponentType::ShieldGenerator),
+			Activity::Shipyard => $this->getShipProductGenerator(),
+			Activity::RheniumExtractor => $this->getResourceProductGenerator([ResourceType::Rhenium]),
+			default => throw new \LogicException(sprintf('Activity %s is not linked to a product generator', $company->activity->value)),
+		};
+
+		foreach ($generateProducts($company) as $product) {
+			$this->productRepository->save($product, doFlush: false);
+		}
+		$this->entityManager->flush();
+	}
+
+	private function getResourceProductGenerator(array $resourceTypes): callable
+	{
+		return static function (Company $company) use ($resourceTypes): \Generator {
+			foreach ($resourceTypes as $resourceType) {
+				yield new ResourceProduct(
+					id: Uuid::v4(),
+					company: $company,
+					resourceType: $resourceType,
+					createdAt: new \DateTimeImmutable(),
+				);
+			}
+		};
+	}
+
+	private function getComponentProductGenerator(ComponentType $componentType): callable
+	{
+		return static function (Company $company) use ($componentType): \Generator {
+			yield new ComponentProduct(
+				id: Uuid::v4(),
+				company: $company,
+				type: $componentType,
+				createdAt: new \DateTimeImmutable(),
+			);
+		};
+	}
+
+	private function getShipProductGenerator(): callable
+	{
+		return static function (Company $company): \Generator {
+			$createdAt = new \DateTimeImmutable();
+
+			$generateShipProduct = static fn (ShipCategory $shipCategory) => new ShipProduct(
+				id: Uuid::v4(),
+				company: $company,
+				shipCategory: $shipCategory,
+				createdAt: $createdAt,
+			);
+
+			yield $generateShipProduct(ShipCategory::Fighter);
+			yield $generateShipProduct(ShipCategory::HeavyFighter);
+			yield $generateShipProduct(ShipCategory::LightCorvette);
+			yield $generateShipProduct(ShipCategory::Corvette);
+			yield $generateShipProduct(ShipCategory::HeavyCorvette);
+			yield $generateShipProduct(ShipCategory::LightFrigate);
+			yield $generateShipProduct(ShipCategory::Frigate);
+			yield $generateShipProduct(ShipCategory::Destroyer);
+			yield $generateShipProduct(ShipCategory::HeavyDestroyer);
+			yield $generateShipProduct(ShipCategory::Cruiser);
+			yield $generateShipProduct(ShipCategory::HeavyCruiser);
+		};
+	}
+}

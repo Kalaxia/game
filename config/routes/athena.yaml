@@ -26,8 +26,8 @@ leave_planet:
     controller: App\Modules\Athena\Infrastructure\Controller\Base\LeavePlanet
 
 rename_planet:
-    path: /rename-base
-    controller: App\Modules\Athena\Infrastructure\Controller\Base\RenameBase
+    path: /rename-planet
+    controller: App\Modules\Athena\Infrastructure\Controller\Base\RenamePlanet
     methods: 'POST'
 
 create_recycling_mission:
