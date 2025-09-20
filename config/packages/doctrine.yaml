@@ -5,12 +5,17 @@ doctrine:
         # IMPORTANT: You MUST configure your server version,
         # either here or in the DATABASE_URL env var (see .env file)
         #server_version: '13'
+
     orm:
         auto_generate_proxy_classes: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         auto_mapping: true
         validate_xml_mapping: false # Will have to be true for Doctrine 4.0 but actually bugged
         enable_lazy_ghost_objects: true
+        dql:
+            numeric_functions:
+                ST_Distance: LongitudeOne\Spatial\ORM\Query\AST\Functions\MariaDB\SpDistance
+                ST_GeomFromText: LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StGeomFromText
         mappings:
             Ares:
                 is_bundle: false

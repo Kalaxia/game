@@ -11,6 +11,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.16",
         "dragonmantank/cron-expression": "^3.3",
+        "longitude-one/doctrine-spatial": "^5.0",
         "mixpanel/mixpanel-php": "^2.11",
         "psr/log": "^3.0",
         "sentry/sdk": "^4.0",
