@@ -214,6 +214,9 @@ final readonly class PlaceGenerationHandler
 			'activities' => array_slice($scores, 0, 3),
 		]);
 
+		$limit = 3;
+		$activitiesCount = 0;
+
 		foreach ($scores as $activityValue => $score) {
 			$activity = Activity::from($activityValue);
 			if (null === ($company = $this->findCompany($activity, $place->system->sector->faction))) {
@@ -221,6 +224,8 @@ final readonly class PlaceGenerationHandler
 					continue;
 				}
 			}
+
+			$activitiesCount++;
 
 			$planetActivity = new PlanetActivity(
 				id: Uuid::v4(),
@@ -238,6 +243,10 @@ final readonly class PlaceGenerationHandler
 			]);
 
 			$this->planetActivityRepository->save($planetActivity, doFlush: false);
+
+			if ($activitiesCount >= $limit) {
+				break;
+			}
 		}
 	}
 

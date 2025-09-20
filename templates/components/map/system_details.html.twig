@@ -51,13 +51,6 @@
 						{% if place.type == enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Planet %}
 							<twig:PlanetThumbnail :planet="place" />
 						{% else %}
-							{% if place.resources > 10000000 %}
-								{% set size = 3 %}
-							{% elseif place.resources > 5000000 %}
-								{% set size = 2 %}
-							{% else %}
-								{% set size = 1 %}
-							{% endif %}
 							<img class="w-16 h-16" src="{{ asset('images/legacy/planet/asteroid.png') }}" alt="recycling site" />
 						{% endif %}
 					</div>

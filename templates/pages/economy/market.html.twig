@@ -1,0 +1,41 @@
+{% extends 'layouts/game.html.twig' %}
+
+{% block body %}
+	<twig:H1>
+		Marché
+	</twig:H1>
+
+	<div class="mx-8 grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-2 lg:grid-cols-8 xl:gap-x-4">
+		{% for offer in offers %}
+			<div>
+				<div class="relative">
+					<div class="relative h-56 w-full overflow-hidden rounded-lg flex align-middle justify-center">
+						<twig:ShipPicto :shipCategory="offer.shipCategory" class="min-w-20" />
+					</div>
+					<div class="relative mt-4">
+						<h3 class="text-gray-200 font-bold">
+							{{ ('ship_categories.' ~ offer.shipCategory.value ~ '.name')|trans }}
+						</h3>
+						<p class="mt-1 text-sm text-gray-500">
+							{{ offer.companyName }}
+							{{ offer.factionIdentifier }}
+							{{ offer.sectorIdentifier }}
+						</p>
+					</div>
+					<div class="absolute inset-x-0 top-0 flex h-56 items-end justify-end overflow-hidden rounded-lg p-4">
+						<div aria-hidden="true" class="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black opacity-50"></div>
+						<p class="relative text-sm font-semibold text-white text-right">
+							{{ offer.price }} credits<br>
+							{{ offer.travelTime }} secondes
+						</p>
+					</div>
+				</div>
+				<div class="mt-6">
+					<twig:Button :faction="current_player.faction" class="w-full">
+						Commander
+					</twig:Button>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+{% endblock body %}

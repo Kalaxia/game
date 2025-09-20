@@ -65,26 +65,6 @@
 				picto="images/legacy/picto/ships/Fleet.svg" />
 
 
-			{% if place.player is null %}
-				{% set tooltip = 'Vous ne pouvez proposer une route commerciale qu\'à des joueurs.' %}
-			{% elseif place.id == current_planet.id %}
-				{% set tooltip = 'Vous ne pouvez pas proposer une route commerciale sur votre propre base.' %}
-			{% elseif current_planet.levelSpatioport == 0 %}
-				{% set tooltip = 'Il vous faut un spatioport pour proposer une route commerciale.' %}
-			{% elseif place.levelSpatioport == 0 %}
-				{% set tooltip = 'Le joueur ne dispose pas d\'un spatioport.' %}
-			{% else %}
-				{% set tooltip = '' %}
-			{% endif %}
-
-			<twig:PlaceAction
-				data-action="click->map--action-box#chooseAction"
-				data-action-id="4"
-				name="Proposer une route commerciale"
-				:disabled="can_planet_trade_with_place(current_planet, place) == false"
-				:tooltip="tooltip"
-				picto="images/legacy/picto/B_Merc_64px.png" />
-
 			{% if place.player is not null and place.player.faction.id == current_player.faction.id %}
 				{% set tooltip = 'Vous ne pouvez pas espionner un joueur de votre faction' %}
 			{% elseif place.player is null and place.type != enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Planet %}
@@ -99,24 +79,6 @@
 				:disabled="can_spy(current_player, place) == false"
 				:tooltip="tooltip"
 				picto="images/map/spy.svg" />
-		{% else %}
-			{% if place.system.sector.faction is not null and place.system.sector.faction.id != current_player.faction.id %}
-				{% set tooltip = 'Vous ne pouvez envoyer des recycleurs que dans des secteurs non-revendiqués ou contrôlés par votre faction.' %}
-			{% elseif place.type == enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Empty %}
-				{% set tooltip = 'Cet endroit regorgait autrefois de ressources ou de gaz mais de nombreux recycleurs sont déjà passés par là et n\'ont laissé que le vide de l\'espace.' %}
-			{% elseif current_planet.levelRecycling == 0 %}
-				{% set tooltip = 'Vous devez disposer d\'un centre de recyclage.' %}
-			{% else %}
-				{% set tooltip = '' %}
-			{% endif %}
-
-			<twig:PlaceAction
-				data-action="click->map--action-box#chooseAction"
-				data-action-id="6"
-				name="Envoyer des recycleurs"
-				:tooltip="tooltip"
-				:disabled="can_recycle(current_player, place) == false"
-				picto="images/map/recycling.svg" />
 		{% endif %}
 	</div>
 
@@ -169,68 +131,6 @@
 				</twig:CommanderTile>
 			</twig:PlaceActionPanel>
 
-			{% if place.player is not null %}
-				<twig:PlaceActionPanel title="Proposer une route commerciale" id="4">
-					<div class="box-content">
-						{% set commercial_route_data = get_commercial_route_data(current_planet, place) %}
-						{% set distance = get_place_distance(current_planet, place) %}
-
-						{% set price = get_route_price(distance) %}
-						{% set income = get_route_income(current_planet, place) %}
-
-						<div class="rc">
-							{#<img src="{{ asset('build/media/map/place/place' ~ place.type ~ '-' ~ get_place_demography(place) ~ '.png') }}" alt="" class="planet" />#}
-
-							<div class="flex justify-between mb-2">
-								<twig:NumberBox label="Revenu par relève">
-									{{ income|number }}
-									<img src="{{ asset('images/legacy/picto/G_P_Mon_64px.png') }}" alt="" class="inline w-4 h-4" />
-								</twig:NumberBox>
-
-								<twig:NumberBox label="Coût de construction">
-									{{ price|number }}
-									<img src="{{ asset('images/legacy/picto/G_P_Mon_64px.png') }}" alt="" class="inline w-4 h-4" />
-								</twig:NumberBox>
-							</div>
-
-							{% if commercial_route_data.proposed == true %}
-								<a href="{{ path('spatioport') }}" class="button">
-									<twig:Button :faction="current_player.faction">
-										Annuler la proposition
-									</twig:Button>
-								</a>
-							{% elseif commercial_route_data.not_accepted == true %}
-								<a href="{{ path('spatioport') }}" class="button">
-									<twig:Button :faction="current_player.faction">
-										Accepter la proposition
-									</twig:Button>
-								</a>
-							{% elseif commercial_route_data.stand_by == true %}
-								<twig:Button :faction="current_player.faction" disabled>
-									C'est la guerre.
-								</twig:Button>
-							{% else %}
-								{% if price > current_player.credit %}
-									<twig:Button :faction="current_player.faction" disabled>
-										Vous n'avez pas assez de crédits.
-									</twig:Button>
-								{% elseif commercial_route_data.slots < get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::SPATIOPORT'), 'level', current_planet.levelSpatioport, 'nbRoutesMax') %}
-									<a href="{{ path('propose_route', {'sourceBase': current_planet.id, 'destinationBase': place.id }) }}" class="button">
-										<twig:Button :faction="current_player.faction">
-											Proposer une route commerciale
-										</twig:Button>
-									</a>
-								{% else %}
-									<twig:Button :faction="current_player.faction" disabled>
-										Pas assez de slots.
-									</twig:Button>
-								{% endif %}
-							{% endif %}
-						</div>
-					</div>
-				</twig:PlaceActionPanel>
-			{% endif %}
-
 			<twig:PlaceActionPanel title="Lancer un espionnage" id="5">
 				<div class="box-content">
 					{% set prices = {
@@ -254,35 +154,6 @@
 						<twig:Input type="text" value="10000" name="price" min="1" max="1000000" />
 						<twig:Button type="submit" :faction="current_player.faction">
 							Espionner
-						</twig:Button>
-					</form>
-				</div>
-			</twig:PlaceActionPanel>
-		{% else %}
-			<twig:PlaceActionPanel title="Envoyer des recycleurs" id="6">
-				<div class="box-content">
-					{% set total_ships = get_building_info(
-						constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::RECYCLING'),
-						'level',
-						current_planet.levelRecycling,
-						'nbRecyclers',
-					) %}
-					{# @TODO move this logic to a dedicated service #}
-					{% set active_ships = recycling_missions|reduce((carry, rm) => carry + rm.recyclerQuantity + rm.addToNextMission) %}
-					{% set available_recyclers = total_ships - active_ships %}
-
-					<twig:NumberBox label="Recycleurs libres">
-						{{ available_recyclers|number }}
-					</twig:NumberBox>
-
-					<twig:NumberBox label="Temps de cycle">
-						{{ get_recycling_mission_time(current_planet, place)|lite_seconds }}
-					</twig:NumberBox>
-
-					<form class="spy-form" method="post" action="{{ path('create_recycling_mission', {'targetId': place.id}) }}">
-						<twig:Input type="number" name="quantity" value="{{ available_recyclers }}" min="1" max="{{ available_recyclers }}" class="w-full" />
-						<twig:Button type="submit" :faction="current_player.faction" class="mt-2 mx-auto">
-							Envoyer
 						</twig:Button>
 					</form>
 				</div>

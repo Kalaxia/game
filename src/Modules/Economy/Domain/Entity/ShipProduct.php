@@ -16,7 +16,7 @@ class ShipProduct extends Product
 	public function __construct(
 		Uuid $id,
 		Company $company,
-		#[ORM\Column(type: 'string', enumType: ShipCategory::class, length: 32)]
+		#[ORM\Column(type: 'smallint', enumType: ShipCategory::class, length: 32)]
 		public ShipCategory $shipCategory,
 		\DateTimeImmutable $createdAt,
 		int $stockpile = 0,

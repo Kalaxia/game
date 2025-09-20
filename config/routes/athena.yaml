@@ -2,10 +2,6 @@ financial:
     resource: './athena/financial.yaml'
     prefix: /financial
 
-trade:
-    resource: './athena/trade.yaml'
-    prefix: /trade
-
 switchplanet:
     path: /switchplanet/{planetId}/{page}
     controller: App\Modules\Athena\Infrastructure\Controller\Base\SwitchPlanet

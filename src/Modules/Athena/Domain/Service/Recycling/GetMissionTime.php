@@ -24,7 +24,7 @@ readonly class GetMissionTime
 
 	public function __invoke(Place $startPlace, Place $destinationPlace, Player $player)
 	{
-		$travelTime = ($this->calculateTravelTime)($startPlace, $destinationPlace, TravelType::RecyclingShips, $player);
+		$travelTime = $this->calculateTravelTime->betweenPlaces($startPlace, $destinationPlace, TravelType::RecyclingShips, $player);
 
 		return (2 * $travelTime) + match ($this->timeMode) {
 			TimeMode::Fast => 3600,

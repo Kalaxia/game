@@ -43,6 +43,7 @@ enum PlanetType: string
 			self::Gas => [
 				ResourceType::Hydrogen->value => 70,
 				ResourceType::Helium->value => 60,
+				// TODO Nitrogen is not present in gas planet environments
 				ResourceType::Nitrogen->value => 40,
 				ResourceType::Deuterium->value => 40,
 				ResourceType::Tritium->value => 35,
