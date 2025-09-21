@@ -5,6 +5,7 @@ namespace App;
 use App\Modules\Ares\Infrastructure\DependencyInjection\ShipCategoryExtension;
 use App\Modules\Demeter\Infrastructure\DependencyInjection\FactionBonusExtension;
 use App\Modules\Demeter\Infrastructure\DependencyInjection\FactionExtension;
+use App\Modules\Economy\Infrastructure\DependencyInjection\IndustrySchemasExtension;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
@@ -28,5 +29,9 @@ class Kernel extends BaseKernel
 		$shipCategoriesExtension = new ShipCategoryExtension();
 		$container->registerExtension($shipCategoriesExtension);
 		$container->loadFromExtension($shipCategoriesExtension->getAlias());
+
+		$industrySchemasExtension = new IndustrySchemasExtension();
+		$container->registerExtension($industrySchemasExtension);
+		$container->loadFromExtension($industrySchemasExtension->getAlias());
 	}
 }

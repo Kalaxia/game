@@ -1,6 +1,7 @@
 imports:
     - { resource: ./game/faction_bonuses.yaml }
     - { resource: ./game/factions.yaml }
+    - { resource: ./game/industry_schemas.php }
     - { resource: ./game/ship_categories.yaml }
 
     - { resource: ../src/Modules/Ares/Resource/config/config.yml }
