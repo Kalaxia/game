@@ -11,8 +11,10 @@ use App\Modules\Economy\Domain\Entity\ComponentProduct;
 use App\Modules\Economy\Domain\Entity\ResourceProduct;
 use App\Modules\Economy\Domain\Entity\ShipProduct;
 use App\Modules\Economy\Domain\Enum\Activity;
+use App\Modules\Economy\Domain\Enum\ComponentProductSlug;
 use App\Modules\Economy\Domain\Enum\ComponentType;
 use App\Modules\Economy\Domain\Enum\ResourceType;
+use App\Modules\Economy\Domain\Enum\ShipProductSlug;
 use App\Modules\Economy\Domain\Repository\CompanyRepositoryInterface;
 use App\Modules\Economy\Domain\Repository\ProductRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -77,7 +79,7 @@ readonly class CompanyProductsGenerationHandler
 				yield new ResourceProduct(
 					id: Uuid::v4(),
 					company: $company,
-					resourceType: $resourceType,
+					slug: $resourceType,
 					createdAt: new \DateTimeImmutable(),
 				);
 			}
@@ -87,12 +89,36 @@ readonly class CompanyProductsGenerationHandler
 	private function getComponentProductGenerator(ComponentType $componentType): callable
 	{
 		return static function (Company $company) use ($componentType): \Generator {
-			yield new ComponentProduct(
+			$generateComponentProduct = static fn (ComponentProductSlug $componentProductSlug) => new ComponentProduct(
 				id: Uuid::v4(),
 				company: $company,
 				type: $componentType,
+				slug: $componentProductSlug,
 				createdAt: new \DateTimeImmutable(),
 			);
+
+			if (ComponentType::Weapon === $componentType) {
+				yield $generateComponentProduct(ComponentProductSlug::SmallLaserCannon);
+				yield $generateComponentProduct(ComponentProductSlug::LaserCannon);
+				yield $generateComponentProduct(ComponentProductSlug::HeavyLaserCannon);
+				yield $generateComponentProduct(ComponentProductSlug::LaserTurret);
+				yield $generateComponentProduct(ComponentProductSlug::LaserBattery);
+				yield $generateComponentProduct(ComponentProductSlug::MissileLauncher);
+				yield $generateComponentProduct(ComponentProductSlug::TorpedoLauncher);
+			}
+
+			if (ComponentType::Propulsor === $componentType) {
+				yield $generateComponentProduct(ComponentProductSlug::LightHydrogenPropulsor);
+				yield $generateComponentProduct(ComponentProductSlug::TritiumPropulsor);
+				yield $generateComponentProduct(ComponentProductSlug::UraniumPropulsor);
+				yield $generateComponentProduct(ComponentProductSlug::HeavyUraniumPropulsor);
+			}
+
+			if (ComponentType::ShieldGenerator === $componentType) {
+				yield $generateComponentProduct(ComponentProductSlug::NeutronShieldGenerator);
+				yield $generateComponentProduct(ComponentProductSlug::PlasmaShieldGenerator);
+				yield $generateComponentProduct(ComponentProductSlug::HeavyPlasmaShieldGenerator);
+			}
 		};
 	}
 
@@ -101,24 +127,25 @@ readonly class CompanyProductsGenerationHandler
 		return static function (Company $company): \Generator {
 			$createdAt = new \DateTimeImmutable();
 
-			$generateShipProduct = static fn (ShipCategory $shipCategory) => new ShipProduct(
+			$generateShipProduct = static fn (ShipCategory $shipCategory, ShipProductSlug $shipProductSlug) => new ShipProduct(
 				id: Uuid::v4(),
 				company: $company,
 				shipCategory: $shipCategory,
+				slug: $shipProductSlug,
 				createdAt: $createdAt,
 			);
 
-			yield $generateShipProduct(ShipCategory::Fighter);
-			yield $generateShipProduct(ShipCategory::HeavyFighter);
-			yield $generateShipProduct(ShipCategory::LightCorvette);
-			yield $generateShipProduct(ShipCategory::Corvette);
-			yield $generateShipProduct(ShipCategory::HeavyCorvette);
-			yield $generateShipProduct(ShipCategory::LightFrigate);
-			yield $generateShipProduct(ShipCategory::Frigate);
-			yield $generateShipProduct(ShipCategory::Destroyer);
-			yield $generateShipProduct(ShipCategory::HeavyDestroyer);
-			yield $generateShipProduct(ShipCategory::Cruiser);
-			yield $generateShipProduct(ShipCategory::HeavyCruiser);
+			yield $generateShipProduct(ShipCategory::Fighter, ShipProductSlug::Fighter);
+			yield $generateShipProduct(ShipCategory::HeavyFighter, ShipProductSlug::HeavyFighter);
+			yield $generateShipProduct(ShipCategory::LightCorvette, ShipProductSlug::LightCorvette);
+			yield $generateShipProduct(ShipCategory::Corvette, ShipProductSlug::Corvette);
+			yield $generateShipProduct(ShipCategory::HeavyCorvette, ShipProductSlug::HeavyCorvette);
+			yield $generateShipProduct(ShipCategory::LightFrigate, ShipProductSlug::LightFrigate);
+			yield $generateShipProduct(ShipCategory::Frigate, ShipProductSlug::Frigate);
+			yield $generateShipProduct(ShipCategory::Destroyer, ShipProductSlug::Destroyer);
+			yield $generateShipProduct(ShipCategory::HeavyDestroyer, ShipProductSlug::HeavyDestroyer);
+			yield $generateShipProduct(ShipCategory::Cruiser, ShipProductSlug::Cruiser);
+			yield $generateShipProduct(ShipCategory::HeavyCruiser, ShipProductSlug::HeavyCruiser);
 		};
 	}
 }

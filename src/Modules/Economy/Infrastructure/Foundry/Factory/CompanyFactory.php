@@ -1,0 +1,42 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Economy\Infrastructure\Foundry\Factory;
+
+use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\FactionFactory;
+use App\Modules\Economy\Domain\Entity\Company;
+use App\Modules\Economy\Domain\Enum\Activity;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Uid\Uuid;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+
+class CompanyFactory extends PersistentProxyObjectFactory
+{
+	public function __construct(
+		private readonly SluggerInterface $slugger,
+	) {
+		parent::__construct();
+	}
+
+	protected function defaults(): array|callable
+	{
+		$companyName = self::faker()->company();
+
+		return [
+			'id' => Uuid::v4(),
+			'name' => $companyName,
+			'slug' => $this->slugger->slug($companyName),
+			'activity' => self::faker()->randomElement(Activity::cases()),
+			'faction' => FactionFactory::random(),
+			'credits' => self::faker()->randomNumber(1) * 1000000,
+			'createdAt' => new \DateTimeImmutable(),
+			'updatedAt' => new \DateTimeImmutable(),
+		];
+	}
+
+	public static function class(): string
+	{
+		return Company::class;
+	}
+}

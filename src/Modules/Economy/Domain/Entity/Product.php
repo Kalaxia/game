@@ -27,7 +27,6 @@ abstract class Product
 		public Company $company,
 		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $createdAt,
-		public int $stockpile = 0,
 	) {
 
 	}

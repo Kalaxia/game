@@ -166,7 +166,7 @@ final readonly class PlaceGenerationHandler
 	/**
 	 * @return list<PlanetActivity>
 	 */
-	private function determinePlanetActivities(Planet $place): void
+	private function determinePlanetActivities(Place $place): void
 	{
 		if (!$place instanceof Planet) {
 			return;

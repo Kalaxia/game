@@ -21,7 +21,12 @@ class FactionFactory extends PersistentProxyObjectFactory
 
 	protected function defaults(): array
 	{
-		$identifier = self::faker()->unique()->numberBetween(1, 11);
+		$factionsConfiguration = $this->getFactionsConfiguration->getAllFactions();
+
+		$identifier = self::faker()->unique()->randomElement(array_filter(
+			array_keys($factionsConfiguration),
+			fn (int $factionIdentifier) => $factionIdentifier > 0,
+		));
 
 		return [
 			'id' => Uuid::v4(),

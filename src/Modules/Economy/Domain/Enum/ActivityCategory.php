@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Economy\Domain\Enum;
 
-enum ActivityCategory: string {
+enum ActivityCategory: string
+{
 	case PrimaryProduction = 'primary_production';
 	case Refinement = 'refinement';
 	case FinalProduction = 'final_production';

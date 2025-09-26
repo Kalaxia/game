@@ -23,7 +23,11 @@ class ViewMarket extends AbstractController
 		Planet             $currentPlanet,
 		SearchMarketOffers $searchMarketProducts,
 	): Response {
-		$offers = $searchMarketProducts(Activity::Shipyard, $currentPlanet->system);
+		$offers = $searchMarketProducts(
+			$currentPlanet->system->xPosition,
+			$currentPlanet->system->yPosition,
+			Activity::Shipyard,
+		);
 
 		return $this->render('pages/economy/market.html.twig', [
 			'offers' => $offers,

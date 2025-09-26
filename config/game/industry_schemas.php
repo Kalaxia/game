@@ -5,547 +5,553 @@ declare(strict_types=1);
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use App\Modules\Ares\Domain\Model\ShipCategory;
+use App\Modules\Economy\Domain\Enum\ComponentProductSlug;
 use App\Modules\Economy\Domain\Enum\ComponentType;
 use App\Modules\Economy\Domain\Enum\ResourceType;
+use App\Modules\Economy\Domain\Enum\ShipProductSlug;
 
 return static function (ContainerConfigurator $container): void {
 	$container->extension('industry_schemas', [
 		'ships' => [
 			[
-				'slug' => 'light_fighter',
+				'slug' => ShipProductSlug::LightFighter,
 				'ship_category' => ShipCategory::LightFighter,
 				'requirements' => [
 					[
-						'slug' => 'light_hydrogen_propulsor',
+						'slug' => ComponentProductSlug::LightHydrogenPropulsor,
 						'quantity' => 1,
 					],
 					[
-						'slug' => 'small_laser_cannon',
+						'slug' => ComponentProductSlug::SmallLaserCannon,
 						'quantity' => 2,
 					],
 				],
 			],
 			[
-				'slug' => 'fighter',
+				'slug' => ShipProductSlug::Fighter,
 				'ship_category' => ShipCategory::Fighter,
 				'requirements' => [
 					[
-						'slug' => 'light_hydrogen_propulsor',
+						'slug' => ComponentProductSlug::LightHydrogenPropulsor,
 						'quantity' => 2,
 					],
 					[
-						'slug' => 'neutron_shield_generator',
+						'slug' => ComponentProductSlug::NeutronShieldGenerator,
 						'quantity' => 1,
 					],
 					[
-						'slug' => 'laser_cannon',
+						'slug' => ComponentProductSlug::LaserCannon,
 						'quantity' => 1,
 					]
 				],
 			],
 			[
-				'slug' => 'heavy_fighter',
+				'slug' => ShipProductSlug::HeavyFighter,
 				'ship_category' => ShipCategory::HeavyFighter,
 				'requirements' => [
 					[
-						'slug' => 'missile_launcher',
+						'slug' => ComponentProductSlug::MissileLauncher,
 						'quantity' => 1,
 					],
 					[
-						'slug' => 'laser_cannon',
+						'slug' => ComponentProductSlug::LaserCannon,
 						'quantity' => 2,
 					],
 					[
-						'slug' => 'neutron_shield_generator',
+						'slug' => ComponentProductSlug::NeutronShieldGenerator,
 						'quantity' => 1,
 					],
 					[
-						'slug' => 'tritium_propulsor',
+						'slug' => ComponentProductSlug::TritiumPropulsor,
 						'quantity' => 1,
 					],
 				],
 			],
 			[
-				'slug' => 'light_corvette',
+				'slug' => ShipProductSlug::LightCorvette,
 				'ship_category' => ShipCategory::LightCorvette,
 				'requirements' => [
 					[
-						'slug' => 'missile_launcher',
+						'slug' => ComponentProductSlug::MissileLauncher,
 						'quantity' => 2,
 					],
 					[
-						'slug' => 'laser_cannon',
+						'slug' => ComponentProductSlug::LaserCannon,
 						'quantity' => 2,
 					],
 					[
-						'slug' => 'neutron_shield_generator',
+						'slug' => ComponentProductSlug::NeutronShieldGenerator,
 						'quantity' => 2,
 					],
 					[
-						'slug' => 'tritium_propulsor',
+						'slug' => ComponentProductSlug::TritiumPropulsor,
 						'quantity' => 2,
 					],
 				],
 			],
 			[
-				'slug' => 'corvette',
+				'slug' => ShipProductSlug::Corvette,
 				'ship_category' => ShipCategory::Corvette,
 				'requirements' => [
 					[
-						'slug' => 'missile_launcher',
+						'slug' => ComponentProductSlug::MissileLauncher,
 						'quantity' => 2,
 					],
 					[
-						'slug' => 'laser_turret',
+						'slug' => ComponentProductSlug::LaserTurret,
 						'quantity' => 1,
 					],
 					[
-						'slug' => 'plasma_shield_generator',
+						'slug' => ComponentProductSlug::PlasmaShieldGenerator,
 						'quantity' => 1,
 					],
 					[
-						'slug' => 'tritium_propulsor',
+						'slug' => ComponentProductSlug::TritiumPropulsor,
 						'quantity' => 2,
 					],
 				],
 			],
 			[
-				'slug' => 'heavy_corvette',
+				'slug' => ShipProductSlug::HeavyCorvette,
 				'ship_category' => ShipCategory::HeavyCorvette,
 				'requirements' => [
 					[
-						[
-							'slug' => 'missile_launcher',
-							'quantity' => 4,
-						],
-						[
-							'slug' => 'laser_turret',
-							'quantity' => 2,
-						],
-						[
-							'slug' => 'plasma_shield_generator',
-							'quantity' => 1,
-						],
-						[
-							'slug' => 'tritium_propulsor',
-							'quantity' => 2,
-						],
+						'slug' => ComponentProductSlug::MissileLauncher,
+						'quantity' => 4,
+					],
+					[
+						'slug' => ComponentProductSlug::LaserTurret,
+						'quantity' => 2,
+					],
+					[
+						'slug' => ComponentProductSlug::PlasmaShieldGenerator,
+						'quantity' => 1,
+					],
+					[
+						'slug' => ComponentProductSlug::TritiumPropulsor,
+						'quantity' => 2,
 					],
 				],
 			],
 			[
-				'slug' => 'light_frigate',
+				'slug' => ShipProductSlug::LightFrigate,
 				'ship_category' => ShipCategory::LightFrigate,
 				'requirements' => [
 					[
-						[
-							'slug' => 'laser_turret',
-							'quantity' => 4,
-						],
-						[
-							'slug' => 'laser_battery',
-							'quantity' => 2,
-						],
-						[
-							'slug' => 'tritium_propulsor',
-							'quantity' => 3,
-						],
-						[
-							'slug' => 'plasma_shield_generator',
-							'quantity' => 2,
-						],
+						'slug' => ComponentProductSlug::LaserTurret,
+						'quantity' => 4,
+					],
+					[
+						'slug' => ComponentProductSlug::LaserBattery,
+						'quantity' => 2,
+					],
+					[
+						'slug' => ComponentProductSlug::TritiumPropulsor,
+						'quantity' => 3,
+					],
+					[
+						'slug' => ComponentProductSlug::PlasmaShieldGenerator,
+						'quantity' => 2,
 					],
 				],
 			],
 			[
-				'slug' => 'frigate',
+				'slug' => ShipProductSlug::Frigate,
 				'ship_category' => ShipCategory::Frigate,
 				'requirements' => [
 					[
-						[
-							'slug' => 'laser_turret',
-							'quantity' => 6,
-						],
-						[
-							'slug' => 'laser_battery',
-							'quantity' => 4,
-						],
-						[
-							'slug' => 'tritium_propulsor',
-							'quantity' => 3,
-						],
-						[
-							'slug' => 'plasma_shield_generator',
-							'quantity' => 2,
-						],
+						'slug' => ComponentProductSlug::LaserTurret,
+						'quantity' => 6,
+					],
+					[
+						'slug' => ComponentProductSlug::LaserBattery,
+						'quantity' => 4,
+					],
+					[
+						'slug' => ComponentProductSlug::TritiumPropulsor,
+						'quantity' => 3,
+					],
+					[
+						'slug' => ComponentProductSlug::PlasmaShieldGenerator,
+						'quantity' => 2,
 					],
 				],
 			],
 			[
-				'slug' => 'destroyer',
+				'slug' => ShipProductSlug::Destroyer,
 				'ship_category' => ShipCategory::Destroyer,
 				'requirements' => [
 					[
-						[
-							'slug' => 'missile_launcher',
-							'quantity' => 6,
-						],
-						[
-							'slug' => 'laser_turret',
-							'quantity' => 4,
-						],
-						[
-							'slug' => 'laser_battery',
-							'quantity' => 4,
-						],
-						[
-							'slug' => 'uranium_propulsor',
-							'quantity' => 3,
-						],
-						[
-							'slug' => 'heavy_plasma_shield_generator',
-							'quantity' => 2,
-						],
+						'slug' => ComponentProductSlug::MissileLauncher,
+						'quantity' => 6,
+					],
+					[
+						'slug' => ComponentProductSlug::LaserTurret,
+						'quantity' => 4,
+					],
+					[
+						'slug' => ComponentProductSlug::LaserBattery,
+						'quantity' => 4,
+					],
+					[
+						'slug' => ComponentProductSlug::UraniumPropulsor,
+						'quantity' => 3,
+					],
+					[
+						'slug' => ComponentProductSlug::HeavyPlasmaShieldGenerator,
+						'quantity' => 2,
 					],
 				],
 			],
 			[
-				'slug' => 'heavy_destroyer',
+				'slug' => ShipProductSlug::HeavyDestroyer,
 				'ship_category' => ShipCategory::HeavyDestroyer,
 				'requirements' => [
 					[
-						[
-							'slug' => 'torpedo_launcher',
-							'quantity' => 2,
-						],
-						[
-							'slug' => 'missile_launcher',
-							'quantity' => 4,
-						],
-						[
-							'slug' => 'laser_turret',
-							'quantity' => 6,
-						],
-						[
-							'slug' => 'heavy_laser_cannon',
-							'quantity' => 1,
-						],
-						[
-							'slug' => 'laser_battery',
-							'quantity' => 6,
-						],
-						[
-							'slug' => 'uranium_propulsor',
-							'quantity' => 4,
-						],
-						[
-							'slug' => 'heavy_plasma_shield_generator',
-							'quantity' => 4,
-						],
+						'slug' => ComponentProductSlug::TorpedoLauncher,
+						'quantity' => 2,
+					],
+					[
+						'slug' => ComponentProductSlug::MissileLauncher,
+						'quantity' => 4,
+					],
+					[
+						'slug' => ComponentProductSlug::LaserTurret,
+						'quantity' => 6,
+					],
+					[
+						'slug' => ComponentProductSlug::HeavyLaserCannon,
+						'quantity' => 1,
+					],
+					[
+						'slug' => ComponentProductSlug::LaserBattery,
+						'quantity' => 6,
+					],
+					[
+						'slug' => ComponentProductSlug::UraniumPropulsor,
+						'quantity' => 4,
+					],
+					[
+						'slug' => ComponentProductSlug::HeavyPlasmaShieldGenerator,
+						'quantity' => 4,
 					],
 				],
 			],
 			[
-				'slug' => 'cruiser',
+				'slug' => ShipProductSlug::Cruiser,
 				'ship_category' => ShipCategory::Cruiser,
 				'requirements' => [
 					[
-						[
-							'slug' => 'torpedo_launcher',
-							'quantity' => 4,
-						],
-						[
-							'slug' => 'laser_turret',
-							'quantity' => 6,
-						],
-						[
-							'slug' => 'heavy_laser_cannon',
-							'quantity' => 2,
-						],
-						[
-							'slug' => 'laser_battery',
-							'quantity' => 8,
-						],
-						[
-							'slug' => 'uranium_propulsor',
-							'quantity' => 4,
-						],
-						[
-							'slug' => 'heavy_plasma_shield_generator',
-							'quantity' => 4,
-						],
+						'slug' => ComponentProductSlug::TorpedoLauncher,
+						'quantity' => 4,
+					],
+					[
+						'slug' => ComponentProductSlug::LaserTurret,
+						'quantity' => 6,
+					],
+					[
+						'slug' => ComponentProductSlug::HeavyLaserCannon,
+						'quantity' => 2,
+					],
+					[
+						'slug' => ComponentProductSlug::LaserBattery,
+						'quantity' => 8,
+					],
+					[
+						'slug' => ComponentProductSlug::UraniumPropulsor,
+						'quantity' => 4,
+					],
+					[
+						'slug' => ComponentProductSlug::HeavyPlasmaShieldGenerator,
+						'quantity' => 4,
 					],
 				],
 			],
 			[
-				'slug' => 'heavy_cruiser',
+				'slug' => ShipProductSlug::HeavyCruiser,
 				'ship_category' => ShipCategory::HeavyCruiser,
 				'requirements' => [
 					[
-						[
-							'slug' => 'torpedo_launcher',
-							'quantity' => 6,
-						],
-						[
-							'slug' => 'laser_turret',
-							'quantity' => 6,
-						],
-						[
-							'slug' => 'heavy_laser_cannon',
-							'quantity' => 4,
-						],
-						[
-							'slug' => 'laser_battery',
-							'quantity' => 10,
-						],
-						[
-							'slug' => 'uranium_propulsor',
-							'quantity' => 4,
-						],
-						[
-							'slug' => 'heavy_uranium_propulsor',
-							'quantity' => 1,
-						],
-						[
-							'slug' => 'heavy_plasma_shield_generator',
-							'quantity' => 6,
-						],
+						'slug' => ComponentProductSlug::TorpedoLauncher,
+						'quantity' => 6,
+					],
+					[
+						'slug' => ComponentProductSlug::LaserTurret,
+						'quantity' => 6,
+					],
+					[
+						'slug' => ComponentProductSlug::HeavyLaserCannon,
+						'quantity' => 4,
+					],
+					[
+						'slug' => ComponentProductSlug::LaserBattery,
+						'quantity' => 10,
+					],
+					[
+						'slug' => ComponentProductSlug::UraniumPropulsor,
+						'quantity' => 4,
+					],
+					[
+						'slug' => ComponentProductSlug::HeavyUraniumPropulsor,
+						'quantity' => 1,
+					],
+					[
+						'slug' => ComponentProductSlug::HeavyPlasmaShieldGenerator,
+						'quantity' => 6,
 					],
 				],
 			],
 		],
 		'components' => [
 			[
-				'slug' => 'light_hydrogen_propulsor',
+				'slug' => ComponentProductSlug::LightHydrogenPropulsor,
 				'type' => ComponentType::Propulsor,
 				'requirements' => [
 					[
 						'type' => ResourceType::Hydrogen,
-						'quantity' => 1000,
+						'quantity' => 10,
 					],
 					[
 						'type' => ResourceType::Titanium,
-						'quantity' => 200,
+						'quantity' => 2,
 					],
 				],
 			],
 			[
-				'slug' => 'tritium_propulsor',
+				'slug' => ComponentProductSlug::TritiumPropulsor,
 				'type' => ComponentType::Propulsor,
 				'requirements' => [
 					[
 						'type' => ResourceType::Tritium,
-						'quantity' => 800,
+						'quantity' => 8,
 					],
 					[
 						'type' => ResourceType::Titanium,
-						'quantity' => 250,
+						'quantity' => 2,
 					],
 				],
 			],
 			[
-				'slug' => 'uranium_propulsor',
+				'slug' => ComponentProductSlug::UraniumPropulsor,
 				'type' => ComponentType::Propulsor,
 				'requirements' => [
 					[
 						'type' => ResourceType::Uranium,
-						'quantity' => 500,
+						'quantity' => 5,
 					],
 					[
 						'type' => ResourceType::Nitrogen,
-						'quantity' => 300,
+						'quantity' => 3,
 					],
 					[
 						'type' => ResourceType::Hydrogen,
-						'quantity' => 250,
+						'quantity' => 2,
 					],
 					[
 						'type' => ResourceType::Titanium,
-						'quantity' => 500,
+						'quantity' => 5,
 					],
 				],
 			],
 			[
-				'slug' => 'heavy_uranium_propulsor',
+				'slug' => ComponentProductSlug::HeavyUraniumPropulsor,
 				'type' => ComponentType::Propulsor,
 				'requirements' => [
 					[
 						'type' => ResourceType::Uranium,
-						'quantity' => 800,
+						'quantity' => 8,
 					],
 					[
 						'type' => ResourceType::Nitrogen,
-						'quantity' => 500,
+						'quantity' => 5,
 					],
 					[
 						'type' => ResourceType::Hydrogen,
-						'quantity' => 400,
+						'quantity' => 4,
 					],
 					[
 						'type' => ResourceType::Titanium,
-						'quantity' => 800,
+						'quantity' => 8,
 					],
 				],
 			],
 			[
-				'slug' => 'small_laser_cannon',
+				'slug' => ComponentProductSlug::SmallLaserCannon,
 				'type' => ComponentType::Weapon,
 				'requirements' => [
 					[
 						'type' => ResourceType::Crystal,
-						'quantity' => 250,
+						'quantity' => 2,
 					],
 					[
 						'type' => ResourceType::Platinum,
-						'quantity' => 100,
+						'quantity' => 1,
 					],
 				],
 			],
 			[
-				'slug' => 'laser_cannon',
+				'slug' => ComponentProductSlug::LaserCannon,
 				'type' => ComponentType::Weapon,
 				'requirements' => [
 					[
 						'type' => ResourceType::Crystal,
-						'quantity' => 350,
+						'quantity' => 3,
 					],
 					[
 						'type' => ResourceType::Platinum,
-						'quantity' => 150,
+						'quantity' => 1,
 					],
 				],
 			],
 			[
-				'slug' => 'laser_turret',
+				'slug' => ComponentProductSlug::LaserTurret,
 				'type' => ComponentType::Weapon,
 				'requirements' => [
 					[
 						'type' => ResourceType::Crystal,
-						'quantity' => 400,
+						'quantity' => 4,
 					],
 					[
 						'type' => ResourceType::Platinum,
-						'quantity' => 100,
+						'quantity' => 1,
 					],
 					[
 						'type' => ResourceType::Carbon,
-						'quantity' => 150,
+						'quantity' => 1,
 					],
 				],
 			],
 			[
-				'slug' => 'heavy_laser_cannon',
+				'slug' => ComponentProductSlug::LaserBattery,
 				'type' => ComponentType::Weapon,
 				'requirements' => [
 					[
 						'type' => ResourceType::Crystal,
-						'quantity' => 750,
+						'quantity' => 5,
 					],
 					[
 						'type' => ResourceType::Platinum,
-						'quantity' => 300,
+						'quantity' => 2,
 					],
 					[
 						'type' => ResourceType::Carbon,
-						'quantity' => 400,
+						'quantity' => 2,
 					],
 				],
 			],
 			[
-				'slug' => 'missile_launcher',
+				'slug' => ComponentProductSlug::HeavyLaserCannon,
+				'type' => ComponentType::Weapon,
+				'requirements' => [
+					[
+						'type' => ResourceType::Crystal,
+						'quantity' => 7,
+					],
+					[
+						'type' => ResourceType::Platinum,
+						'quantity' => 3,
+					],
+					[
+						'type' => ResourceType::Carbon,
+						'quantity' => 4,
+					],
+				],
+			],
+			[
+				'slug' => ComponentProductSlug::MissileLauncher,
 				'type' => ComponentType::Weapon,
 				'requirements' => [
 					[
 						'type' => ResourceType::Rhenium,
-						'quantity' => 250,
+						'quantity' => 2,
 					],
 					[
 						'type' => ResourceType::Cobalt,
-						'quantity' => 100,
+						'quantity' => 1,
 					],
 					[
 						'type' => ResourceType::Deuterium,
-						'quantity' => 100,
+						'quantity' => 1,
 					],
 				],
 			],
 			[
-				'slug' => 'torpedo_launcher',
+				'slug' => ComponentProductSlug::TorpedoLauncher,
 				'type' => ComponentType::Weapon,
 				'requirements' => [
 					[
 						'type' => ResourceType::Rhenium,
-						'quantity' => 400,
+						'quantity' => 4,
 					],
 					[
 						'type' => ResourceType::Cobalt,
-						'quantity' => 200,
+						'quantity' => 2,
 					],
 					[
 						'type' => ResourceType::Deuterium,
-						'quantity' => 200,
+						'quantity' => 2,
 					],
 					[
 						'type' => ResourceType::Uranium,
-						'quantity' => 200,
+						'quantity' => 2,
 					],
 				],
 			],
 			[
-				'slug' => 'neutron_shield_generator',
+				'slug' => ComponentProductSlug::NeutronShieldGenerator,
 				'type' => ComponentType::ShieldGenerator,
 				'requirements' => [
 					[
 						'type' => ResourceType::Crystal,
-						'quantity' => 350,
+						'quantity' => 3,
 					],
 					[
 						'type' => ResourceType::Cobalt,
-						'quantity' => 150,
+						'quantity' => 1,
 					],
 				],
 			],
 			[
-				'slug' => 'plasma_shield_generator',
+				'slug' => ComponentProductSlug::PlasmaShieldGenerator,
 				'type' => ComponentType::ShieldGenerator,
 				'requirements' => [
 					[
 						'type' => ResourceType::Crystal,
-						'quantity' => 450,
+						'quantity' => 4,
 					],
 					[
 						'type' => ResourceType::Cobalt,
-						'quantity' => 150,
+						'quantity' => 1,
 					],
 					[
 						'type' => ResourceType::Deuterium,
-						'quantity' => 100,
+						'quantity' => 1,
 					],
 					[
 						'type' => ResourceType::Nitrogen,
-						'quantity' => 100,
+						'quantity' => 1,
 					],
 				],
 			],
 			[
-				'slug' => 'heavy_plasma_shield_generator',
+				'slug' => ComponentProductSlug::HeavyPlasmaShieldGenerator,
 				'type' => ComponentType::ShieldGenerator,
 				'requirements' => [
 					[
 						'type' => ResourceType::Crystal,
-						'quantity' => 650,
+						'quantity' => 6,
 					],
 					[
 						'type' => ResourceType::Cobalt,
-						'quantity' => 250,
+						'quantity' => 2,
 					],
 					[
 						'type' => ResourceType::Deuterium,
-						'quantity' => 300,
+						'quantity' => 3,
 					],
 					[
 						'type' => ResourceType::Nitrogen,
-						'quantity' => 350,
+						'quantity' => 3,
 					],
 				],
 			],

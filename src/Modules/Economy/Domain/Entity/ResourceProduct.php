@@ -15,12 +15,11 @@ class ResourceProduct extends Product
 	public function __construct(
 		Uuid $id,
 		Company $company,
-		#[ORM\Column(name: 'resource_type', type: 'string', enumType: ResourceType::class, length: 32)]
-		public ResourceType $resourceType,
+		#[ORM\Column(length: 128, enumType: ResourceType::class)]
+		public ResourceType $slug,
 		\DateTimeImmutable $createdAt,
-		int $stockpile = 0,
 	) {
-		parent::__construct($id, $company, $createdAt, $stockpile);
+		parent::__construct($id, $company, $createdAt);
 	}
 
 	public function getType(): ProductType

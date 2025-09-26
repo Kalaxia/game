@@ -66,7 +66,7 @@
         "symfony/phpunit-bridge": "^7.3",
         "symfony/stopwatch": "^7.3",
         "symfony/web-profiler-bundle": "^7.3",
-        "zenstruck/foundry": "^1.35"
+        "zenstruck/foundry": "^2.3"
     },
     "scripts": {
         "auto-scripts": {
