@@ -23,6 +23,8 @@ use App\Modules\Galaxy\Domain\Enum\PlanetType;
 use App\Modules\Galaxy\Domain\Enum\SystemType;
 use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Galaxy\Domain\Repository\SystemRepositoryInterface;
+use App\Modules\Galaxy\Domain\Service\Planet\DeterminePlanetResourceCoefficients;
+use App\Modules\Galaxy\Domain\Service\Planet\DeterminePopulation;
 use App\Modules\Galaxy\Galaxy\GalaxyConfiguration;
 use App\Modules\Shared\Application\Service\GetProportion;
 use Psr\Log\LoggerInterface;
@@ -34,13 +36,15 @@ use Symfony\Component\Uid\Uuid;
 final readonly class PlaceGenerationHandler
 {
 	public function __construct(
-		private CompanyRepositoryInterface $companyRepository,
-		private GetProportion $getProportion,
-		private PlaceRepositoryInterface $placeRepository,
-		private PlanetActivityRepositoryInterface $planetActivityRepository,
-		private SystemRepositoryInterface $systemRepository,
-		private LoggerInterface $galaxyGenerationLogger,
-		private LockFactory $lockFactory,
+		private CompanyRepositoryInterface          $companyRepository,
+		private DeterminePopulation                 $determinePopulation,
+		private DeterminePlanetResourceCoefficients $determinePlanetResourceCoefficients,
+		private GetProportion                       $getProportion,
+		private PlaceRepositoryInterface            $placeRepository,
+		private PlanetActivityRepositoryInterface   $planetActivityRepository,
+		private SystemRepositoryInterface           $systemRepository,
+		private LoggerInterface                     $galaxyGenerationLogger,
+		private LockFactory                         $lockFactory,
 	) {
 	}
 
@@ -94,28 +98,13 @@ final readonly class PlaceGenerationHandler
 			planetType: $planetType,
 			player: null,
 			name: null,
-			population: $this->determinePopulation($system, $planetType),
+			population: ($this->determinePopulation)($system, $planetType),
 			danger: $danger,
 			maxDanger: $danger,
 			typeOfBase: Planet::BASE_TYPE_COLONY,
-			naturalResources: $this->determineNaturalResourcesCoefficients($planetType),
+			naturalResources: ($this->determinePlanetResourceCoefficients)($planetType),
 			updatedAt: new \DateTimeImmutable('-259200 seconds'),
 		);
-	}
-
-	private function determinePopulation(System $system, PlanetType $planetType): int
-	{
-		if ($system->sector->faction === null) {
-			return 0;
-		}
-
-		if (random_int(0, 100) < 50) {
-			return 0;
-		}
-
-		[$min, $max] = $planetType->getPopulationBaseRange();
-
-		return random_int($min, $max);
 	}
 
 	private function determineDanger(int $sectorDanger): int
@@ -140,28 +129,6 @@ final readonly class PlaceGenerationHandler
 			random_int(1, 100),
 		) - 1]};
 	}
-
-	/**
-	 * Get the basic natural resources coefficients for the given PlanetType and randomize the numbers.
-	 *
-	 * Removes the coefficients that result in a 0.
-	 *
-	 * @return array<value-of<ResourceType>, int>
-	 */
-	private function determineNaturalResourcesCoefficients(PlanetType $planetType): array
-	{
-		return array_filter(
-			array_map(
-				// We apply a random modifier to the natural resources coefficients but keep numbers between 0 and 100
-				fn (int $coefficient) => max(0, min($coefficient + random_int(-20, 20), 100)),
-				$planetType->getNaturalResourcesBaseCoefficients(),
-			),
-			// If the obtained coefficient equals 0, we remove it from the planet's natural resources
-			fn (int $coefficient) => $coefficient > 0,
-		);
-	}
-
-
 
 	/**
 	 * @return list<PlanetActivity>

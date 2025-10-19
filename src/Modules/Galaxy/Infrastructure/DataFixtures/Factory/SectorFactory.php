@@ -17,12 +17,8 @@ class SectorFactory extends PersistentProxyObjectFactory
 	{
 		return [
 			'id' => Uuid::v4(),
-			'identifier' => self::faker()->randomNumber(2),
+			'identifier' => self::faker()->unique()->randomNumber(2),
 			'faction' => null,
-			'xPosition' => self::faker()->numberBetween(0, 100),
-			'yPosition' => self::faker()->numberBetween(0, 100),
-			'xBarycentric' => self::faker()->numberBetween(0, 100),
-			'yBarycentric' => self::faker()->numberBetween(0, 100),
 			'tax' => 5,
 			'name' => null,
 			'points' => self::faker()->numberBetween(1, 5),

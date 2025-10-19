@@ -17,13 +17,12 @@ class PlayerFactory extends PersistentProxyObjectFactory
 	{
 		return [
 			'id' => 0,
-			'bind' => self::faker()->md5(),
 			'faction' => FactionFactory::randomOrCreate(),
 			'godFather' => null,
 			'name' => self::faker()->userName(),
 			'sex' => 0,
 			'description' => '',
-			'avatar' => 't3-c4',
+			'avatar' => 'Noble.png',
 			'status' => Player::STANDARD,
 			'credit' => 0,
 			'experience' => 0,

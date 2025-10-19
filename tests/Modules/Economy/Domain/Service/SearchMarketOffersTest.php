@@ -21,6 +21,6 @@ class SearchMarketOffersTest extends KernelTestCase
 		/** @var ProductRepositoryInterface $productRepository */
 		$productRepository = static::getContainer()->get(ProductRepositoryInterface::class);
 
-		dd($searchMarketOffers->);
+		dd($searchMarketOffers);
     }
 }
