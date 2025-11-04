@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Galaxy\Infrastructure\Foundry\Story;
 
 use App\Modules\Demeter\Infrastructure\DataFixtures\Story\TestEnvironmentFactionsStory;
+use App\Modules\Economy\Infrastructure\Foundry\Story\TestEnvironmentCompaniesStory;
 use App\Modules\Galaxy\Domain\Service\CreateMultipleSystemCoordinates;
 use App\Modules\Galaxy\Galaxy\GalaxyConfiguration;
 use App\Modules\Galaxy\Infrastructure\DataFixtures\Factory\PlaceFactory;
@@ -27,6 +28,7 @@ class TestEnvironmentMapStory extends Story
 	public function build(): void
 	{
 		TestEnvironmentFactionsStory::load();
+		TestEnvironmentCompaniesStory::load();
 
 		foreach ($this->configuration->sectors as $sector) {
 			$faction = null !== $sector['beginColor']

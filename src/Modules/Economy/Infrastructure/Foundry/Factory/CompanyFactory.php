@@ -7,6 +7,7 @@ namespace App\Modules\Economy\Infrastructure\Foundry\Factory;
 use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\FactionFactory;
 use App\Modules\Economy\Domain\Entity\Company;
 use App\Modules\Economy\Domain\Enum\Activity;
+use App\Modules\Economy\Domain\Service\GenerateCompanyProducts;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
@@ -14,14 +15,22 @@ use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 class CompanyFactory extends PersistentProxyObjectFactory
 {
 	public function __construct(
+		private readonly GenerateCompanyProducts $generateCompanyProducts,
 		private readonly SluggerInterface $slugger,
 	) {
 		parent::__construct();
 	}
 
+	protected function initialize(): static
+	{
+		return $this->afterPersist(function (Company $company) {
+			($this->generateCompanyProducts)($company);
+		});
+	}
+
 	protected function defaults(): array|callable
 	{
-		$companyName = self::faker()->company();
+		$companyName = self::faker()->unique()->company();
 
 		return [
 			'id' => Uuid::v4(),

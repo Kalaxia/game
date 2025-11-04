@@ -22,11 +22,11 @@ class TestEnvironmentFactionsStory extends Story
 	public function build(): void
 	{
 		foreach ($this->availableFactionIdentifiers as $factionIdentifier) {
-			$this->addState(sprintf('faction_%s', $factionIdentifier), FactionFactory::createOne(
-				[
-					'identifier' => $factionIdentifier,
-				],
-			));
+			$faction = FactionFactory::createOne([
+				'identifier' => $factionIdentifier,
+			]);
+			$this->addState(sprintf('faction_%s', $factionIdentifier), $faction);
+			$this->addToPool('factions', $faction);
 		}
 	}
 }

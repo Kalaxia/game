@@ -9,11 +9,9 @@ use App\Modules\Galaxy\Domain\Entity\Place;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Entity\Ruin;
 use App\Modules\Galaxy\Domain\Enum\PlanetType;
+use App\Modules\Galaxy\Domain\Service\Planet\DeterminePlanetActivities;
 use App\Modules\Galaxy\Domain\Service\Planet\DeterminePlanetResourceCoefficients;
-use App\Modules\Zeus\Infrastructure\DataFixtures\Factory\PlayerFactory;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Uid\Uuid;
-use Zenstruck\Foundry\Object\Instantiator;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -22,7 +20,7 @@ use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 class PlaceFactory extends PersistentProxyObjectFactory
 {
 	public function __construct(
-		private readonly PropertyAccessorInterface $propertyAccessor,
+		private readonly DeterminePlanetActivities $determinePlanetActivities,
 		private readonly DeterminePlanetResourceCoefficients $determinePlanetResourceCoefficients,
 	) {
 		parent::__construct();
@@ -73,6 +71,10 @@ class PlaceFactory extends PersistentProxyObjectFactory
 		})->afterInstantiate(function (Place $place): void {
 			if ($place instanceof Planet) {
 				$place->naturalResources = ($this->determinePlanetResourceCoefficients)($place->planetType);
+			}
+		})->afterPersist(function (Place $place): void {
+			if ($place instanceof Planet && $place->population > 0) {
+				($this->determinePlanetActivities)($place);
 			}
 		});
 	}

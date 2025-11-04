@@ -36,12 +36,16 @@ class TestEnvironmentPlayerStory extends Story
 			'player' => $player,
 		]);
 
+		$sector = SectorFactory::find([
+			'identifier' => 1,
+		]);
+
+		$system = SystemFactory::random([
+			'sector' => $sector,
+		]);
+
 		$planet = PlanetFactory::random([
-			'system' => SystemFactory::random([
-				'sector' => SectorFactory::find([
-					'identifier' => 1,
-				]),
-			]),
+			'system' => $system,
 		])->_real();
 
 		$planet->player = $player;

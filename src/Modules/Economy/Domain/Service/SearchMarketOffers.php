@@ -65,7 +65,7 @@ readonly class SearchMarketOffers
 			offset: $offset,
 		);
 
-		foreach ($offers as $offer) {
+		foreach ($offers as $offerIndex => $offer) {
 			$productConfiguration = match ($offer->productType) {
 				ProductType::Ship => ($this->getIndustrySchemasConfiguration)(
 					'ships',
@@ -81,7 +81,7 @@ readonly class SearchMarketOffers
 			$requirementsTravelTimes = [];
 
 			foreach ($productConfiguration['requirements'] ?? [] as $requirement) {
-				if ($productConfiguration['product_type'] === ProductType::Component) {
+				if ($requirement['product_type'] === ProductType::Component) {
 					$componentConfiguration = ($this->getIndustrySchemasConfiguration)(
 						'components',
 						$requirement['slug']->value,
@@ -91,21 +91,35 @@ readonly class SearchMarketOffers
 						$offer->systemYPosition,
 						componentProductSlug: $componentConfiguration['slug'],
 						limit: 1,
-					)[0];
+					)[0] ?? null;
+
+					if (null === $requirementOffer) {
+						unset($offers[$offerIndex]);
+
+						continue 2;
+					}
+
 					$offer->craftTime = 6000;
-				} elseif ($productConfiguration['product_type'] === ProductType::Resource) {
+				} elseif ($requirement['product_type'] === ProductType::Resource) {
 					$requirementOffer = $this->__invoke(
 						$offer->systemXPosition,
 						$offer->systemYPosition,
 						resourceType: $requirement['type'],
 						limit: 1,
-					)[0];
+					)[0] ?? null;
+
+					if (null === $requirementOffer) {
+						unset($offers[$offerIndex]);
+
+						continue 2;
+					}
+
 					$offer->requirementsPrice = 10;
 					$offer->craftTime = 300;
 				} else {
 					throw new \InvalidArgumentException(sprintf(
 						'Requirement has wrong schema type: %s.',
-						$productConfiguration['product_type'],
+						$requirement['product_type'],
 					));
 				}
 				$offer->requirementsPrice += $requirementOffer->getTotalPrice() * $requirement['quantity'];
