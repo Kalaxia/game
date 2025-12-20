@@ -30,7 +30,7 @@ class TestEnvironmentPlayerStory extends Story
 		$player = PlayerFactory::createOne([
 			'user' => $user,
 			'faction' => $faction,
-		])->_real();
+		]);
 
 		TechnologyFactory::createOne([
 			'player' => $player,
@@ -46,7 +46,7 @@ class TestEnvironmentPlayerStory extends Story
 
 		$planet = PlanetFactory::random([
 			'system' => $system,
-		])->_real();
+		]);
 
 		$planet->player = $player;
 

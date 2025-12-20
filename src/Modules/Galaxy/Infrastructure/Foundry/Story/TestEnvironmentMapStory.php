@@ -8,7 +8,7 @@ use App\Modules\Demeter\Infrastructure\DataFixtures\Story\TestEnvironmentFaction
 use App\Modules\Economy\Infrastructure\Foundry\Story\TestEnvironmentCompaniesStory;
 use App\Modules\Galaxy\Domain\Service\CreateMultipleSystemCoordinates;
 use App\Modules\Galaxy\Galaxy\GalaxyConfiguration;
-use App\Modules\Galaxy\Infrastructure\DataFixtures\Factory\PlaceFactory;
+use App\Modules\Galaxy\Infrastructure\DataFixtures\Factory\PlanetFactory;
 use App\Modules\Galaxy\Infrastructure\DataFixtures\Factory\SectorFactory;
 use App\Modules\Galaxy\Infrastructure\DataFixtures\Factory\SystemFactory;
 use Zenstruck\Foundry\Attribute\AsFixture;
@@ -65,7 +65,7 @@ class TestEnvironmentMapStory extends Story
 				]);
 
 				foreach (range(1, random_int(2, 6)) as $position) {
-					PlaceFactory::createOne([
+					$planet = PlanetFactory::createOne([
 						'position' => $position,
 						'system' => $system,
 					]);

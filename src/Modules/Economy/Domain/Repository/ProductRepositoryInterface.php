@@ -20,21 +20,4 @@ use Symfony\Component\Uid\Uuid;
 interface ProductRepositoryInterface extends EntityRepositoryInterface
 {
 	public function get(Uuid $id): Product|null;
-
-	/**
-	 * @return list<Offer>
-	 */
-	public function searchOffers(
-		int                       $systemXPosition,
-		int                       $systemYPosition,
-		int                       $requestedQuantity,
-		Activity|null             $activity = null,
-		ProductType|null          $productType = null,
-		ShipProductSlug|null      $shipProductSlug = null,
-		ComponentProductSlug|null $componentProductSlug = null,
-		ResourceType|null         $resourceType = null,
-		int                       $maxDistance = 30,
-		int                       $limit = 20,
-		int                       $offset = 0,
-	): array;
 }

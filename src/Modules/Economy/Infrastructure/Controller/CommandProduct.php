@@ -26,7 +26,7 @@ class CommandProduct extends AbstractController
 	): Response {
 		$productId = $request->request->getString('product-id')
 			?? throw new BadRequestHttpException('Product id is required');
-		$price = $request->request->getInt('quantity')
+		$quantity = $request->request->getInt('quantity')
 			?? throw new BadRequestHttpException('Quantity is required');
 
 		$product = $productRepository->get(Uuid::fromString($productId))

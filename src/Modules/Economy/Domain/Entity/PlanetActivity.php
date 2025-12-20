@@ -9,6 +9,11 @@ use App\Modules\Galaxy\Domain\Entity\Planet;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * This entity represents the performing of a certain activity for the given company on the given planet.
+ *
+ * The company needs this to produce the products related to the activity.
+ */
 #[ORM\Entity]
 #[ORM\Table(name: 'economy__planet_activities')]
 #[ORM\UniqueConstraint(columns: ['planet_id', 'activity'])]

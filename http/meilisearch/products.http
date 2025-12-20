@@ -1,0 +1,15 @@
+### Get offers
+GET {{ meilisearch_url }}/indexes/trade_offers/documents
+Authorization: Bearer {{ meilisearch_master_key }}
+
+### Search offers
+POST {{ meilisearch_url }}/indexes/trade_offers/search
+Authorization: Bearer {{ meilisearch_master_key }}
+Content-Type: application/json
+
+{
+  "q": "nitrogen",
+  "filter": "_geoRadius(30,15,333000000)",
+  "limit": 10,
+  "offset": 0
+}

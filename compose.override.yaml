@@ -11,3 +11,9 @@ services:
                 cors_origins https://kalaxia.local
         # command: /usr/bin/caddy run --config /etc/caddy/dev.Caddyfile
     ###< symfony/mercure-bundle ###
+
+###> meilisearch/search-bundle ###
+    meilisearch:
+        ports:
+            - "7700:7700"
+###< meilisearch/search-bundle ###

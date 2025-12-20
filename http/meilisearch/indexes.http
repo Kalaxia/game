@@ -1,0 +1,8 @@
+### Get indexes
+GET {{ meilisearch_url }}/indexes
+Authorization: Bearer {{ meilisearch_master_key}}
+
+
+### Get index settings
+GET {{ meilisearch_url }}/indexes/trade_offers/settings
+Authorization: Bearer {{ meilisearch_master_key }}

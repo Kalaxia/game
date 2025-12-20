@@ -10,9 +10,9 @@ use App\Modules\Economy\Domain\Enum\Activity;
 use App\Modules\Economy\Domain\Service\GenerateCompanyProducts;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Uid\Uuid;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
-class CompanyFactory extends PersistentProxyObjectFactory
+class CompanyFactory extends PersistentObjectFactory
 {
 	public function __construct(
 		private readonly GenerateCompanyProducts $generateCompanyProducts,

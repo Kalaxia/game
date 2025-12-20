@@ -5,20 +5,13 @@ declare(strict_types=1);
 namespace App\Modules\Economy\Domain\Service;
 
 use App\Modules\Economy\Domain\DTO\Offer;
-use App\Modules\Economy\Domain\Entity\ComponentProduct;
-use App\Modules\Economy\Domain\Entity\PlanetActivity;
-use App\Modules\Economy\Domain\Entity\Product;
-use App\Modules\Economy\Domain\Entity\ResourceProduct;
-use App\Modules\Economy\Domain\Entity\ShipProduct;
 use App\Modules\Economy\Domain\Enum\Activity;
 use App\Modules\Economy\Domain\Enum\ComponentProductSlug;
 use App\Modules\Economy\Domain\Enum\ProductType;
 use App\Modules\Economy\Domain\Enum\ResourceType;
 use App\Modules\Economy\Domain\Enum\ShipProductSlug;
 use App\Modules\Economy\Domain\Repository\ProductRepositoryInterface;
-use App\Modules\Economy\Domain\Service\Configuration\GetIndustrySchemasConfiguration;
-use App\Modules\Travel\Domain\Model\TravelType;
-use App\Modules\Travel\Domain\Service\CalculateTravelTime;
+use App\Modules\Shared\Infrastructure\Meilisearch\SearchService;
 
 /**
  * TODO Implement caching for each offers level
@@ -30,9 +23,9 @@ use App\Modules\Travel\Domain\Service\CalculateTravelTime;
 readonly class SearchMarketOffers
 {
 	public function __construct(
+		private HydrateOffer $hydrateOffer,
 		private ProductRepositoryInterface $productRepository,
-		private CalculateTravelTime $calculateTravelTime,
-		private GetIndustrySchemasConfiguration $getIndustrySchemasConfiguration,
+		private SearchService $searchService,
 	) {
 	}
 
@@ -51,6 +44,14 @@ readonly class SearchMarketOffers
 		int 					  $offset = 0,
 		int                       $maxDistance = 300,
 	): array {
+		$offers = $this->searchService->search(
+			index: Offer::getIndex(),
+			params: [
+
+			],
+		);
+
+
 		$offers = $this->productRepository->searchOffers(
 			systemXPosition: $systemXPosition,
 			systemYPosition: $systemYPosition,
@@ -66,107 +67,15 @@ readonly class SearchMarketOffers
 		);
 
 		foreach ($offers as $offerIndex => $offer) {
-			$productConfiguration = match ($offer->productType) {
-				ProductType::Ship => ($this->getIndustrySchemasConfiguration)(
-					'ships',
-					$offer->shipProductSlug->value,
-				),
-				ProductType::Component => ($this->getIndustrySchemasConfiguration)(
-					'components',
-					$offer->componentProductSlug->value,
-				),
-				ProductType::Resource => null,
-			};
-
-			$requirementsTravelTimes = [];
-
-			foreach ($productConfiguration['requirements'] ?? [] as $requirement) {
-				if ($requirement['product_type'] === ProductType::Component) {
-					$componentConfiguration = ($this->getIndustrySchemasConfiguration)(
-						'components',
-						$requirement['slug']->value,
-					);
-					$requirementOffer = $this->__invoke(
-						$offer->systemXPosition,
-						$offer->systemYPosition,
-						componentProductSlug: $componentConfiguration['slug'],
-						limit: 1,
-					)[0] ?? null;
-
-					if (null === $requirementOffer) {
-						unset($offers[$offerIndex]);
-
-						continue 2;
-					}
-
-					$offer->craftTime = 6000;
-				} elseif ($requirement['product_type'] === ProductType::Resource) {
-					$requirementOffer = $this->__invoke(
-						$offer->systemXPosition,
-						$offer->systemYPosition,
-						resourceType: $requirement['type'],
-						limit: 1,
-					)[0] ?? null;
-
-					if (null === $requirementOffer) {
-						unset($offers[$offerIndex]);
-
-						continue 2;
-					}
-
-					$offer->requirementsPrice = 10;
-					$offer->craftTime = 300;
-				} else {
-					throw new \InvalidArgumentException(sprintf(
-						'Requirement has wrong schema type: %s.',
-						$requirement['product_type'],
-					));
-				}
-				$offer->requirementsPrice += $requirementOffer->getTotalPrice() * $requirement['quantity'];
-				$requirementsTravelTimes[] = $requirementOffer->getDeliveryTime();
-				$offer->requirementOffers[] = $requirementOffer;
+			try {
+				$offers[$offerIndex] = ($this->hydrateOffer)($offer, $this);
+			} catch (\Throwable $exception) {
+				unset($offers[$offerIndex]);
 			}
-			$offer->travelTime = $this->calculateTravelTime->fromDistance(
-				distance: $offer->distance,
-				travelType: TravelType::CommercialShipping,
-			);
-			$offer->requirementsDeliveryTime = count($requirementsTravelTimes) > 0 ? max($requirementsTravelTimes) : 0;
 		}
 
 		usort($offers, fn (Offer $a, Offer $b): int => $a->getTotalPrice() <=> $b->getTotalPrice());
 
 		return $offers;
-	}
-
-	public function getProductOffer(PlanetActivity $planetActivity, Product $product, int $requestedQuantity = 1): Offer
-	{
-		if ($product instanceof ShipProduct) {
-			$shipCategory = $product->shipCategory;
-			$shipProductSlug = $product->slug;
-		}
-
-		if ($product instanceof ComponentProduct) {
-			$componentProductSlug = $product->slug;
-			$componentType = $product->type;
-		}
-
-		if ($product instanceof ResourceProduct) {
-			$resourceType = $product->slug;
-		}
-
-		$offer = new Offer(
-			productId: $product->id,
-			productType: $product->getType(),
-			companyName: $product->company->name,
-			resourceType: $resourceType ?? null,
-			componentProductSlug: $componentProductSlug ?? null,
-			componentType: $componentType ?? null,
-			shipCategory: $shipCategory ?? null,
-			shipProductSlug: $shipProductSlug ?? null,
-			requestedQuantity: $requestedQuantity,
-			factionIdentifier: $product->company->faction->identifier,
-		);
-
-		return $offer;
 	}
 }

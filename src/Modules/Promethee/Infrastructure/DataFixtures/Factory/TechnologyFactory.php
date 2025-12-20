@@ -7,12 +7,12 @@ namespace App\Modules\Promethee\Infrastructure\DataFixtures\Factory;
 use App\Modules\Promethee\Model\Technology;
 use App\Modules\Zeus\Infrastructure\DataFixtures\Factory\PlayerFactory;
 use Symfony\Component\Uid\Uuid;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Technology>
+ * @extends PersistentObjectFactory<Technology>
  */
-class TechnologyFactory extends PersistentProxyObjectFactory
+class TechnologyFactory extends PersistentObjectFactory
 {
 	protected function defaults(): array
 	{

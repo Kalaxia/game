@@ -1,0 +1,17 @@
+<html>
+	<head>
+		<title>Kalaxia</title>
+
+		<meta charset="utf-8" />
+		<meta name="turbo-prefetch" content="false">
+		<meta name="description" content="Kalaxia, jeu de stratégie multijoueurs" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		{% block javascripts %}
+			{% block importmap %}{{ importmap('app') }}{% endblock %}
+		{% endblock %}
+	</head>
+	<body>
+		{% block body %}{% endblock body %}
+	</body>
+</html>

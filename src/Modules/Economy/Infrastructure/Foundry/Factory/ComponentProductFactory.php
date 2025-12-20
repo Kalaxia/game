@@ -9,9 +9,9 @@ use App\Modules\Economy\Domain\Enum\Activity;
 use App\Modules\Economy\Domain\Enum\ComponentProductSlug;
 use App\Modules\Economy\Domain\Enum\ComponentType;
 use Symfony\Component\Uid\Uuid;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
-class ComponentProductFactory extends PersistentProxyObjectFactory
+class ComponentProductFactory extends PersistentObjectFactory
 {
 	protected function defaults(): array|callable
 	{

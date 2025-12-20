@@ -17,6 +17,11 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * This service is called only when generating a new game
+ *
+ * It looks for the best company for each activity and assigns it to the given planet
+ */
 readonly class DeterminePlanetActivities
 {
 	public function __construct(
@@ -67,11 +72,12 @@ readonly class DeterminePlanetActivities
 
 		arsort($scores);
 
-		$this->galaxyGenerationLogger->debug('Planet activities', [
-			'planet_type' => $place->planetType->name,
+		$this->galaxyGenerationLogger->debug('Determining planet {planetId} activities', [
+			'planetId' => $place->id->toRFC4122(),
+			'planetType' => $place->planetType->name,
 			'population' => $place->population,
-			'natural_resources' => $place->naturalResources,
-			'sector_identifier' => $place->system->sector->identifier,
+			'naturalResources' => $place->naturalResources,
+			'sectorIdentifier' => $place->system->sector->identifier,
 			'activities' => array_slice($scores, 0, 3),
 		]);
 
@@ -97,9 +103,10 @@ readonly class DeterminePlanetActivities
 				updatedAt: $place->createdAt,
 			);
 
-			$this->galaxyGenerationLogger->debug('Company {companyName} is assigned to activity {activityName}', [
+			$this->galaxyGenerationLogger->debug('Company {companyName} is assigned to activity {activityName} on planet {planetId}', [
 				'companyName' => $company->name,
 				'activityName' => $activity->name,
+				'planetId' => $place->id->toRFC4122(),
 				'sector_identifier' => $place->system->sector->identifier,
 			]);
 
@@ -126,7 +133,7 @@ readonly class DeterminePlanetActivities
 
 			$candidate->credits -= $activity->getCost();
 
-			$this->companyRepository->save($candidate);
+			$this->companyRepository->save($candidate, false);
 
 			$lock->release();
 
