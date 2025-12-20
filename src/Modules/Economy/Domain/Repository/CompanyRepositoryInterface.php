@@ -17,6 +17,9 @@ interface CompanyRepositoryInterface extends EntityRepositoryInterface
 {
 	public function get(Uuid $id): Company|null;
 
+	/**
+	 * @return list<Company>
+	 */
 	public function searchCandidateCompaniesForNewActivity(
 		Activity    $activity,
 		Color|null  $faction = null,

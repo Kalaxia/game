@@ -8,9 +8,9 @@ use App\Modules\Economy\Domain\Entity\ResourceProduct;
 use App\Modules\Economy\Domain\Enum\Activity;
 use App\Modules\Economy\Domain\Enum\ResourceType;
 use Symfony\Component\Uid\Uuid;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
-class ResourceProductFactory extends PersistentProxyObjectFactory
+class ResourceProductFactory extends PersistentObjectFactory
 {
 	protected function defaults(): array|callable
 	{

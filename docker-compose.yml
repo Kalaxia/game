@@ -12,6 +12,9 @@ volumes:
     caddy_config:
     mercure_data:
     mercure_config:
+###> meilisearch/search-bundle ###
+    meilisearch_data:
+###< meilisearch/search-bundle ###
 
 services:
     phpfpm:
@@ -123,3 +126,16 @@ services:
           - mercure_config:/config
         ports:
             - '80'
+
+###> meilisearch/search-bundle ###
+    meilisearch:
+        container_name: kalaxia_meilisearch
+        image: getmeili/meilisearch:${MEILISEARCH_VERSION:-v1.0}
+        environment:
+            # You should definitely change the master key in production
+            MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-!ChangeMe!}
+        networks:
+            - asylamba
+        volumes:
+            - meilisearch_data:/meili_data
+###< meilisearch/search-bundle ###

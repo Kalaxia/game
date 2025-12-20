@@ -21,7 +21,7 @@ class CreateMultipleSystemCoordinates
 	}
 
 	/**
-	 * @return list<array{0: float, 1: float}>
+	 * @return list<array{0: int, 1: int}>
 	 */
 	public function __invoke(
 		Sector $sector,
@@ -54,7 +54,10 @@ class CreateMultipleSystemCoordinates
 			}
 
 			if ($ok) {
-				$points[] = [$x, $y];
+				$points[] = [
+					intval(round($x)),
+					intval(round($y)),
+				];
 			}
 		}
 

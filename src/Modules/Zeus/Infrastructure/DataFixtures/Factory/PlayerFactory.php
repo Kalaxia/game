@@ -6,12 +6,12 @@ namespace App\Modules\Zeus\Infrastructure\DataFixtures\Factory;
 
 use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\FactionFactory;
 use App\Modules\Zeus\Model\Player;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Player>
+ * @extends PersistentObjectFactory<Player>
  */
-class PlayerFactory extends PersistentProxyObjectFactory
+class PlayerFactory extends PersistentObjectFactory
 {
 	protected function defaults(): array
 	{
@@ -24,7 +24,7 @@ class PlayerFactory extends PersistentProxyObjectFactory
 			'description' => '',
 			'avatar' => 'Noble.png',
 			'status' => Player::STANDARD,
-			'credit' => 0,
+			'credit' => 2500,
 			'experience' => 0,
 			'factionPoint' => 0,
 			'level' => 1,

@@ -7,12 +7,12 @@ namespace App\Modules\Demeter\Infrastructure\DataFixtures\Factory\Election;
 use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\FactionFactory;
 use App\Modules\Demeter\Model\Election\Election;
 use Symfony\Component\Uid\Uuid;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Election>
+ * @extends PersistentObjectFactory<Election>
  */
-class ElectionFactory extends PersistentProxyObjectFactory
+class ElectionFactory extends PersistentObjectFactory
 {
 	protected function defaults(): array
 	{

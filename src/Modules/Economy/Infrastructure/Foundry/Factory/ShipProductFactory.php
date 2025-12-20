@@ -9,9 +9,9 @@ use App\Modules\Economy\Domain\Entity\ShipProduct;
 use App\Modules\Economy\Domain\Enum\Activity;
 use App\Modules\Economy\Domain\Enum\ShipProductSlug;
 use Symfony\Component\Uid\Uuid;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
-class ShipProductFactory extends PersistentProxyObjectFactory
+class ShipProductFactory extends PersistentObjectFactory
 {
 	protected function defaults(): array|callable
 	{

@@ -27,12 +27,12 @@ class Company implements CreditHolderInterface
 		public Color $faction,
 		#[ORM\Column(type: 'string', enumType: Activity::class, length: 32)]
 		public Activity $activity,
-		#[ORM\Column(type: 'integer')]
-		public int $credits = 0,
 		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $createdAt,
 		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $updatedAt,
+		#[ORM\Column(type: 'integer')]
+		public int $credits = 0,
 	) {
 
 	}

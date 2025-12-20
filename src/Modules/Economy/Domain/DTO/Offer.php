@@ -11,14 +11,13 @@ use App\Modules\Economy\Domain\Enum\ProductType;
 use App\Modules\Economy\Domain\Enum\ResourceType;
 use App\Modules\Economy\Domain\Enum\ShipProductSlug;
 use App\Modules\Shared\Application\PercentageApplier;
+use App\Modules\Shared\Domain\Model\Searchable;
 use Symfony\Component\Uid\Uuid;
 
-class Offer
+class Offer implements Searchable
 {
 	public int $requirementsPrice = 0;
-	public int $travelTime = 0;
 	public int $craftTime = 0;
-	public int $requirementsDeliveryTime = 0;
 	public array $requirementOffers = [];
 
 	public function __construct(
@@ -32,12 +31,16 @@ class Offer
 		public string                    $companyName,
 		public int                       $requestedQuantity,
 		public ?int                      $factionIdentifier,
-		public int                       $distance,
 		public int                       $systemXPosition,
 		public int                       $systemYPosition,
 		public int                       $sectorIdentifier,
 		public int 						 $margin = 20,
 	) {
+	}
+
+	public static function getIndex(): string
+	{
+		return 'trade_offers';
 	}
 
 	public function getCraftPrice(): int

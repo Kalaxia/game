@@ -17,6 +17,11 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * This service is called only when generating a new game
+ *
+ * It looks for the best company for each activity and assigns it to the given planet
+ */
 readonly class DeterminePlanetActivities
 {
 	public function __construct(
@@ -126,7 +131,7 @@ readonly class DeterminePlanetActivities
 
 			$candidate->credits -= $activity->getCost();
 
-			$this->companyRepository->save($candidate);
+			$this->companyRepository->save($candidate, false);
 
 			$lock->release();
 

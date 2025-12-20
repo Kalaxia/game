@@ -12,12 +12,12 @@ use App\Modules\Galaxy\Domain\Enum\PlanetType;
 use App\Modules\Galaxy\Domain\Service\Planet\DeterminePlanetActivities;
 use App\Modules\Galaxy\Domain\Service\Planet\DeterminePlanetResourceCoefficients;
 use Symfony\Component\Uid\Uuid;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Planet>
+ * @extends PersistentObjectFactory<Planet>
  */
-class PlaceFactory extends PersistentProxyObjectFactory
+class PlaceFactory extends PersistentObjectFactory
 {
 	public function __construct(
 		private readonly DeterminePlanetActivities $determinePlanetActivities,
