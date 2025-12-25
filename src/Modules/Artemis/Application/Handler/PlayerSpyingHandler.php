@@ -6,14 +6,12 @@ use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Artemis\Model\SpyReport;
-use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 
 readonly class PlayerSpyingHandler extends SpyingHandler
 {
 	public function __construct(
 		private CommanderRepositoryInterface $commanderRepository,
-		private CommercialRouteRepositoryInterface $commercialRouteRepository,
 		private CommanderArmyHandler $commanderArmyHandler,
 	) {
 	}
@@ -23,8 +21,6 @@ readonly class PlayerSpyingHandler extends SpyingHandler
 		$planet = $spyReport->place;
 
 		$spyReport->resources = $planet->resourcesStorage;
-
-		$spyReport->commercialRouteIncome = $this->commercialRouteRepository->getPlanetIncome($planet);
 
 		$commandersArray = [];
 		$commanders = $this->commanderRepository->getPlanetCommanders(

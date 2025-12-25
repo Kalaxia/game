@@ -5,16 +5,13 @@ namespace App\Modules\Athena\Infrastructure\Controller\Base;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Manager\CommanderManager;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Athena\Domain\Repository\BuildingQueueRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\RecyclingMissionRepositoryInterface;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Event\PlanetOwnerChangeEvent;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
-use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Galaxy\Resource\PlaceResource;
-use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Zeus\Manager\PlayerManager;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
@@ -39,9 +36,7 @@ class ChangePlanetType extends AbstractController
         Request                          $request,
         Planet                           $currentPlanet,
         Player                           $currentPlayer,
-        BuildingQueueRepositoryInterface $buildingQueueRepository,
         PlanetManager                    $planetManager,
-        PlanetHelper                     $planetHelper,
         PlanetRepositoryInterface        $planetRepository,
         PlaceManager                     $placeManager,
         PlayerManager                    $playerManager,
@@ -115,20 +110,6 @@ class ChangePlanetType extends AbstractController
 				}
 				$playerManager->decreaseCredit($currentPlayer, $totalPrice);
 				$currentPlanet->typeOfBase = $type;
-				// delete commercial buildings
-				for ($i = 0; $i < PlanetResource::BUILDING_QUANTITY; ++$i) {
-					$maxLevel = $planetHelper->getBuildingInfo($i, 'maxLevel', $type);
-					if ($currentPlanet->getBuildingLevel($i) > $maxLevel) {
-						$currentPlanet->setBuildingLevel($i, $maxLevel);
-					}
-				}
-				// delete buildings in queue
-				// TODO warn player of that behavior if not already done
-				// TODO Refund ?
-				$buildingQueues = $buildingQueueRepository->getPlanetQueues($currentPlanet);
-				foreach ($buildingQueues as $buildingQueue) {
-					$buildingQueueRepository->remove($buildingQueue);
-				}
 				$entityManager->flush();
 				// send the right alert
 				if (Planet::BASE_TYPE_COMMERCIAL == $type) {

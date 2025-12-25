@@ -3,8 +3,8 @@
 {% endif %}
 
 <button {{ attributes.defaults({
-	type: 'button',
-	class: 'block py-1 px-2 md:py-2 md:px-4 rounded-md shadow-xs hover:shadow-md border text-white text-left text-sm md:text-base %s disabled:bg-gray-800 disabled:border-gray-700'|format(extra_classes|default('')),
+	type:  type ?? 'button',
+	class: 'block py-1 px-2 md:py-2 md:px-4 rounded-md shadow-xs hover:shadow-md border text-white text-left text-sm md:text-base %s disabled:bg-gray-800 disabled:border-gray-700 text-center'|format(extra_classes|default('')),
 	disabled: false,
 }) }}>
 	{% block content %}{% endblock content %}

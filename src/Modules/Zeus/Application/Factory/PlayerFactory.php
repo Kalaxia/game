@@ -6,10 +6,7 @@ use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Galaxy\Domain\Entity\Sector;
 use App\Modules\Galaxy\Domain\Event\PlanetOwnerChangeEvent;
-use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
-use App\Modules\Galaxy\Domain\Service\UpdatePlanetPoints;
 use App\Modules\Galaxy\Infrastructure\Repository\Doctrine\PlanetRepository;
-use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Hermes\Domain\Repository\ConversationUserRepositoryInterface;
@@ -41,11 +38,8 @@ readonly class PlayerFactory
 		private PlayerRepositoryInterface           $playerRepository,
 		private NotificationRepositoryInterface     $notificationRepository,
 		private PlanetRepository                    $planetRepository,
-		private UpdatePlanetPoints                  $updatePlanetPoints,
 		private ResearchHelper                      $researchHelper,
 		private ResearchRepositoryInterface         $researchRepository,
-		private PlaceRepositoryInterface            $placeRepository,
-		private PlaceManager                        $placeManager,
 		private TechnologyRepositoryInterface       $technologyRepository,
 		private UrlGeneratorInterface               $urlGenerator,
 		#[Autowire('%id_jeanmi%')]
@@ -65,10 +59,8 @@ readonly class PlayerFactory
 	): Player {
 		$this->entityManager->beginTransaction();
 
-		// AJOUT DU JOUEUR EN BASE DE DONNEE
 		$player = new Player();
 
-		// ajout des variables inchangées
 		$player->user = $user;
 		$player->faction = $faction;
 		$player->name = $name;
@@ -175,22 +167,7 @@ readonly class PlayerFactory
 		$planet->player = $player;
 		$planet->name = $baseName;
 
-		// création des premiers bâtiments
 		if ($highMode) {
-			// batiments haut-level
-			$planet->levelGenerator = 35;
-			$planet->levelRefinery = 35;
-			$planet->levelDock1 = 35;
-			$planet->levelDock2 = 10;
-			$planet->levelDock3 = 0;
-			$planet->levelTechnosphere = 35;
-			$planet->levelCommercialPlateforme = 10;
-			$planet->levelStorage = 35;
-			$planet->levelRecycling = 15;
-			$planet->levelSpatioport = 10;
-			$planet->resourcesStorage = 3000000;
-
-			// remplir le dock
 			$planet->addShips(ShipCategory::LightFighter, 50);
 			$planet->addShips(ShipCategory::Fighter, 50);
 			$planet->addShips(ShipCategory::HeavyFighter, 10);
@@ -203,22 +180,9 @@ readonly class PlayerFactory
 			$planet->addShips(ShipCategory::HeavyDestroyer, 1);
 			$planet->addShips(ShipCategory::Cruiser, 0);
 			$planet->addShips(ShipCategory::HeavyCruiser, 0);
-		} else {
-			$planet->levelGenerator = 1;
-			$planet->levelRefinery = 1;
-			$planet->levelDock1 = 0;
-			$planet->levelDock2 = 0;
-			$planet->levelDock3 = 0;
-			$planet->levelTechnosphere = 0;
-			$planet->levelCommercialPlateforme = 0;
-			$planet->levelStorage = 1;
-			$planet->levelRecycling = 0;
-			$planet->levelSpatioport = 0;
-			$planet->resourcesStorage = 1000;
 		}
-
-		$this->updatePlanetPoints->updatePoints($planet);
-
+		$populationBaseRange = $planet->planetType->getPopulationBaseRange();
+		$planet->population = random_int($populationBaseRange[0], $populationBaseRange[1]);
 		// initialisation des investissement
 		$planet->iSchool = 500;
 		$planet->iAntiSpy = 500;
@@ -230,8 +194,6 @@ readonly class PlayerFactory
 		$this->createPlayerTechnology($player, $highMode);
 
 		$this->planetRepository->save($planet);
-
-		$this->placeManager->turnAsSpawnPlace($planet);
 
 		$this->entityManager->commit();
 

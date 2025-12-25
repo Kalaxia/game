@@ -36,7 +36,7 @@ class AppliedBonusDataCollector extends AbstractDataCollector
 
 	public function getAppliedBonuses(): array
 	{
-		return $this->data['applied_modifiers'];
+		return $this->data['applied_modifiers'] ?? [];
 	}
 
 	public function getPlayerBonuses(): array

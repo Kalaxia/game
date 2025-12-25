@@ -91,8 +91,6 @@ class CancelQueue extends AbstractController
 		$shipResourceRefund = $this->getParameter('athena.building.ship_queue_resource_refund');
 		$resourcePrice *= $shipResourceRefund;
 
-		$planetManager->increaseResources($currentBase, $resourcePrice, true);
-
 		$this->addFlash('success', 'Commande annulée, vous récupérez le '.$shipResourceRefund * 100 .'% du montant investi pour la construction');
 
 		return $this->redirect($request->headers->get('referer'));

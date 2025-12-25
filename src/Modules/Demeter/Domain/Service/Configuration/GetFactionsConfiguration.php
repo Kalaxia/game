@@ -30,6 +30,11 @@ final readonly class GetFactionsConfiguration
 			));
 	}
 
+	public function getAllFactions(): array
+	{
+		return $this->factionsConfiguration;
+	}
+
 	#[\Deprecated(message: 'Use the translator directly instead of this method')]
 	private function tryToTranslate(int $identifier, string $info): array|string|null
 	{

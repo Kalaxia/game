@@ -13,7 +13,6 @@
 			{{ include('components/Faction/data/financial/sector_taxes.html.twig') }}
 			{{ include('components/Faction/data/financial/donations.html.twig') }}
 		{% elseif 'trade' == mode %}
-			{{ include('components/Faction/data/trade/rc_stats.html.twig') }}
 			{{ include('components/Faction/data/trade/taxes.html.twig', {'label': "Taxes à l'achat", 'taxes': import_taxes}) }}
 			{{ include('components/Faction/data/trade/taxes.html.twig', {'label': 'Taxes à la vente', 'taxes': export_taxes}) }}
 		{% elseif 'war' == mode %}

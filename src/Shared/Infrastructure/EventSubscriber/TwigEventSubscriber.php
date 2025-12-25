@@ -3,12 +3,9 @@
 namespace App\Shared\Infrastructure\EventSubscriber;
 
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
-use App\Modules\Athena\Domain\Repository\BuildingQueueRepositoryInterface;
-use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
 use App\Modules\Galaxy\Application\Registry\CurrentPlayerPlanetsRegistry;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
-use App\Modules\Promethee\Domain\Repository\TechnologyQueueRepositoryInterface;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerRegistry;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -26,9 +23,6 @@ class TwigEventSubscriber implements EventSubscriberInterface
 		private readonly NotificationRepositoryInterface    $notificationRepository,
 		private readonly CurrentPlayerRegistry              $currentPlayerRegistry,
 		private readonly CurrentPlayerPlanetsRegistry       $currentPlayerPlanetsRegistry,
-		private readonly ShipQueueRepositoryInterface       $shipQueueRepository,
-		private readonly BuildingQueueRepositoryInterface   $buildingQueueRepository,
-		private readonly TechnologyQueueRepositoryInterface $technologyQueueRepository,
 	) {
 	}
 
@@ -57,10 +51,6 @@ class TwigEventSubscriber implements EventSubscriberInterface
 		$this->twig->addGlobal('next_planet', $this->currentPlayerPlanetsRegistry->next());
 		$this->twig->addGlobal('incoming_commanders', $this->commanderRepository->getIncomingAttacks($player));
 		$this->twig->addGlobal('outgoing_commanders', $this->commanderRepository->getOutcomingAttacks($player));
-		$this->twig->addGlobal('current_building_queues', $this->buildingQueueRepository->getPlanetQueues($currentPlanet));
-		$this->twig->addGlobal('current_technology_queues', $this->technologyQueueRepository->getPlanetQueues($currentPlanet));
-		$this->twig->addGlobal('current_dock1_ship_queues', $this->shipQueueRepository->getByBaseAndDockType($currentPlanet, 1));
-		$this->twig->addGlobal('current_dock2_ship_queues', $this->shipQueueRepository->getByBaseAndDockType($currentPlanet, 2));
 	}
 
 	public function setCurrentPlayer(): void

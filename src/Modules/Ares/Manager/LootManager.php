@@ -178,7 +178,6 @@ readonly class LootManager
 		$resourcesLooted = ($storage > $resourcesToLoot) ? $resourcesToLoot : $storage;
 
 		if ($resourcesLooted > 0) {
-			$this->planetManager->decreaseResources($placeBase, $resourcesLooted);
 			$commander->resources = $resourcesLooted;
 
 			LiveReport::$resources = $resourcesLooted;

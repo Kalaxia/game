@@ -2,11 +2,7 @@
 
 {% block content %}
 	<div class="grid grid-cols-4 gap-x-4">
-		<twig:FastView :planet="current_planet" index="0" :isProfileView="false" />
-
 		{{ include('components/base/situation.html.twig') }}
-
-		{{ include('components/base/type.html.twig') }}
 
 		{% if current_player_planets|length > 1 %}
 			{{ include('components/base/leave_planet.html.twig') }}

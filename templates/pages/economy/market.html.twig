@@ -1,0 +1,58 @@
+{% extends 'layouts/game.html.twig' %}
+
+{% block body %}
+	<twig:H1>
+		Marché
+	</twig:H1>
+
+	<div class="mx-8 grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-2 lg:grid-cols-8 xl:gap-x-4">
+		{% for offer in offers %}
+			<form method="post" action="{{ path('command_product') }}">
+				<div class="relative">
+					<div class="relative h-56 w-full overflow-hidden rounded-lg flex align-middle justify-center">
+						<twig:ShipPicto :shipCategory="offer.shipCategory" class="min-w-20" />
+					</div>
+					<div class="relative mt-4 flex">
+						<div>
+							<h3 class="text-gray-200 font-bold">
+								{{ ('ship_categories.' ~ offer.shipCategory.value ~ '.name')|trans }}
+							</h3>
+							<p class="mt-1 text-sm text-gray-500">
+								{{ offer.companyName }}
+								{{ offer.factionIdentifier }}
+								{{ offer.sectorIdentifier }}
+							</p>
+						</div>
+						<div>
+							<div class="rounded-md bg-white px-3 pb-1.5 pt-2.5 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600 dark:bg-white/5 dark:outline-white/10 dark:focus-within:outline-indigo-500">
+								<label for="quantity" class="block text-xs font-medium text-gray-900 dark:text-gray-200">
+									Quantité
+								</label>
+								<input id="quantity"
+									   inputmode="numeric"
+									   name="quantity"
+									   value="1"
+									   min="1"
+									   max="100"
+									   class="block w-full text-gray-900 placeholder:text-gray-400 focus:outline focus:outline-0 sm:text-sm/6 dark:bg-transparent dark:text-white dark:placeholder:text-gray-500" />
+							</div>
+						</div>
+					</div>
+					<div class="absolute inset-x-0 top-0 flex h-56 items-end justify-end overflow-hidden rounded-lg p-4">
+						<div aria-hidden="true" class="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black opacity-50"></div>
+						<p class="relative text-sm font-semibold text-white text-right">
+							{{ offer.totalPrice }} credits<br>
+							{{ offer.deliveryTime }} secondes
+						</p>
+					</div>
+				</div>
+				<div class="mt-6">
+					<twig:Button type="submit" :faction="current_player.faction" class="w-full">
+						Commander
+					</twig:Button>
+				</div>
+				<input type="hidden" name="product-id" value="{{ offer.productId }}"/>
+			</form>
+		{% endfor %}
+	</div>
+{% endblock body %}

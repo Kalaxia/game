@@ -1,96 +1,95 @@
-<div class="col-span-2">
-	<div class="fix-body">
-		<div class="body">
-			<div class="situation-content place1">
-				<div class="flex items-center float-right">
+<div class="col-span-4">
+	<div class="situation-content place1">
+		<div class="flex items-center">
+			<form action="{{ path('rename_planet') }}" method="POST" class="flex items-center">
+				<twig:Input type="text" name="name" value="{{ current_planet.name }}" />
+				<twig:Button :faction="current_player.faction" type="submit">
+					Ok
+				</twig:Button>
+			</form>
+		</div>
+
+		<div class="stellar">
+			<div class="flex items-center gap-x-4">
+				<div>
+					<twig:PlanetThumbnail :planet="current_planet" />
+				</div>
+				<div>
+					{{ current_planet|base_type }}
+					<strong>{{ current_planet.name }}</strong><br>
+					<small><strong>{{ (current_planet.population)|number }} millions</strong> d'habitants</small>
+					<div>
+						coordonnées :
+						<strong>{{ current_planet|base_coords }}</strong>
+					</div>
+				</div>
+				<div class="self-end">
 					<a href="{{ path('map', { 'placeId': current_planet.id }) }}">
 						<twig:Button :faction="current_player.faction">
 							Centrer sur la carte
 						</twig:Button>
 					</a>
-					<form action="{{ path('rename_planet') }}" method="POST" class="flex items-center">
-						<twig:Input type="text" name="name" value="{{ current_planet.name }}" />
-						<twig:Button :faction="current_player.faction" type="submit">
-							Ok
-						</twig:Button>
-					</form>
 				</div>
+			</div>
 
-				<div class="stellar">
-					<div class="info top">
-						{{ current_planet|base_type }}<br />
-						<strong>{{ current_planet.name }}</strong><br />
-						{{ current_planet.points|number}} points
-					</div>
-					<div class="info middle">
-						coordonnées<br />
-						<strong>{{ current_planet|base_coords }}</strong>
-					</div>
-					<img src="{{ asset('build/media/orbitalbase/place1-' ~ current_planet|base_demography ~ '.png') }}" alt="planète" />
-
-					<div class="info bottom">
-						<strong>{{ (current_planet.population * 1000000)|number }}</strong> habitants<br />
-						<strong>{{ current_planet.coefResources }}</strong> % coeff. ressource<br />
-						<strong>{{ science_coeff }}</strong> % de bonus scientifique
-					</div>
-				</div>
-
-				<span class="hb line-help line-1" title="La première ligne de défense est là pour défendre votre planète en cas d\'attaque. Dès qu\'un ennemi vous attaque, il va engager le combat avec une flotte de cette ligne.">
-					I
-				</span>
-				<span class="hb line-help line-2" title="La deuxième ligne de défense est la ligne de réserve, elle ne défendra en aucun cas contre une attaque dont le but est le pillage. Par contre, elle prendra le relais en ce qui concerne la défense face à des envahisseurs si la première ligne est tombée.">
-					II
-				</span>
-
-				{% set current_vanguard_position = 0 %}
-				{% set current_rear_position = 0 %}
-
-				{% for commander in commanders %}
-					<div class="commander">
-						<a href="{{ path('fleet_headquarters', {'commander': commander.id}) }}" class="commander full">
-							{#<img src="{{ asset('build/media/map/fleet/' ~ (commander.isAffected ? 'army' : 'army-away') ~ '.png') }}" alt="plein" />#}
-							<span class="info">
-								{{ commander|commander_rank }} <strong>{{ commander.name }}</strong><br />
-								{{ commander|pev  }} Pev
-								{% if commander.isMoving() %}
-									<br />&#8594;
-									{# @TODO implement a shorter version #}
-									{{ commander|mission_label }}
-								{% endif %}
-							</span>
-						</a>
-						<a class="link hb {{ commander.line == 1 ? 'to-right' : 'to-left' }}" title="changer de ligne" href="{{ path('change_commander_line', {'id': commander.id}) }}"></a>
-					</div>
-
-					{% if commander.line == 1 %}
-						{% set current_vanguard_position = current_vanguard_position + 1 %}
-					{% else %}
-						{% set current_rear_position = current_rear_position + 1 %}
-					{% endif %}
-				{% endfor %}
-
-				{% if current_vanguard_position < vanguard_positions_count %}
-					{% for position in range(current_vanguard_position, vanguard_positions_count - 1) %}
-						<a href="{{ path('school') }}" class="commander empty position-1-{{ vanguard_positions[position] }}">
-							{#<img src="{{ asset('build/media/map/fleet/army-empty.png') }}" alt="vide" />#}
-							<twig:Button :faction="current_player.faction">
-								Affecter un officier
-							</twig:Button>
-						</a>
-					{% endfor %}
-				{% endif %}
-
-				{% if current_rear_position < rear_positions_count %}
-					{% for position in range(current_rear_position, rear_positions_count - 1) %}
-						<a href="{{ path('school') }}" class="commander empty position-2-{{ rear_positions[position] }}">
-							{#<img src="{{ asset('build/media/map/fleet/army-empty.png') }}" alt="vide" />#}
-							<twig:Button :faction="current_player.faction">
-								Affecter un officier
-							</twig:Button>
-						</a>
-					{% endfor %}
-				{% endif %}
+			<div class="info bottom">
 			</div>
 		</div>
+
+		<span class="hb line-help line-1" title="La première ligne de défense est là pour défendre votre planète en cas d\'attaque. Dès qu\'un ennemi vous attaque, il va engager le combat avec une flotte de cette ligne.">
+			I
+		</span>
+		<span class="hb line-help line-2" title="La deuxième ligne de défense est la ligne de réserve, elle ne défendra en aucun cas contre une attaque dont le but est le pillage. Par contre, elle prendra le relais en ce qui concerne la défense face à des envahisseurs si la première ligne est tombée.">
+			II
+		</span>
+
+		{% set current_vanguard_position = 0 %}
+		{% set current_rear_position = 0 %}
+
+		{% for commander in commanders %}
+			<div class="commander">
+				<a href="{{ path('fleet_headquarters', {'commander': commander.id}) }}" class="commander full">
+					{#<img src="{{ asset('build/media/map/fleet/' ~ (commander.isAffected ? 'army' : 'army-away') ~ '.png') }}" alt="plein" />#}
+					<span class="info">
+						{{ commander|commander_rank }} <strong>{{ commander.name }}</strong><br />
+						{{ commander|pev  }} Pev
+						{% if commander.isMoving() %}
+							<br />&#8594;
+							{# @TODO implement a shorter version #}
+							{{ commander|mission_label }}
+						{% endif %}
+					</span>
+				</a>
+				<a class="link hb {{ commander.line == 1 ? 'to-right' : 'to-left' }}" title="changer de ligne" href="{{ path('change_commander_line', {'id': commander.id}) }}"></a>
+			</div>
+
+			{% if commander.line == 1 %}
+				{% set current_vanguard_position = current_vanguard_position + 1 %}
+			{% else %}
+				{% set current_rear_position = current_rear_position + 1 %}
+			{% endif %}
+		{% endfor %}
+
+		{% if current_vanguard_position < vanguard_positions_count %}
+			{% for position in range(current_vanguard_position, vanguard_positions_count - 1) %}
+				<a href="{{ path('school') }}" class="commander empty position-1-{{ vanguard_positions[position] }}">
+					{#<img src="{{ asset('build/media/map/fleet/army-empty.png') }}" alt="vide" />#}
+					<twig:Button :faction="current_player.faction">
+						Affecter un officier
+					</twig:Button>
+				</a>
+			{% endfor %}
+		{% endif %}
+
+		{% if current_rear_position < rear_positions_count %}
+			{% for position in range(current_rear_position, rear_positions_count - 1) %}
+				<a href="{{ path('school') }}" class="commander empty position-2-{{ rear_positions[position] }}">
+					{#<img src="{{ asset('build/media/map/fleet/army-empty.png') }}" alt="vide" />#}
+					<twig:Button :faction="current_player.faction">
+						Affecter un officier
+					</twig:Button>
+				</a>
+			{% endfor %}
+		{% endif %}
 	</div>
 </div>

@@ -3,6 +3,7 @@
 namespace App\Modules\Galaxy\Domain\Entity;
 
 use App\Modules\Ares\Domain\Model\ShipCategory;
+use App\Modules\Economy\Domain\Enum\ResourceType;
 use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use App\Modules\Galaxy\Domain\Enum\PlanetType;
 use App\Modules\Galaxy\Resource\PlanetResource;
@@ -45,10 +46,13 @@ class Planet extends Place implements SystemUpdatable, \JsonSerializable
 		public Player|null $player = null,
 		#[ORM\Column(type: 'string', length: 45, nullable: true)]
 		public string|null $name = null,
-		#[ORM\Column(type: 'float', options: ['unsigned' => true])]
-		public float       $population = 0.0,
+		/**
+		 * Population unit is million of people
+		 */
+		#[ORM\Column(type: 'integer', options: ['unsigned' => true])]
+		public int $population = 0,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
-		public int         $coefResources = 0,
+		public int $coefResources = 0,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int $coefHistory = 0,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
@@ -57,26 +61,6 @@ class Planet extends Place implements SystemUpdatable, \JsonSerializable
 		public int $maxDanger = 0,						// danger max de la place (force des flottes rebelles)
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
 		public int $typeOfBase = 0,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelGenerator = 1,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelRefinery = 1,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelDock1 = 1,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelDock2 = 0,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelDock3 = 0,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelTechnosphere = 1,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelCommercialPlateforme = 0,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelStorage = 1,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelRecycling = 0,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-		public int $levelSpatioport = 0,
 		#[ORM\Column(type: 'integer', options: ['unsigned' => true, 'default' => 0])]
 		public int $points = 0,
 		#[ORM\Column(type: 'integer', options: ['unsigned' => true, 'default' => 0])]
@@ -89,6 +73,11 @@ class Planet extends Place implements SystemUpdatable, \JsonSerializable
 		public array $shipStorage = [],
 		#[ORM\Column(type: 'integer', options: ['unsigned' => true, 'default' => 0])]
 		public int $resourcesStorage = 5000,
+		/**
+		 * @var array<value-of<ResourceType>, int>
+		 */
+		#[ORM\Column(type: 'json')]
+		public array $naturalResources = [],
 		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $createdAt = new \DateTimeImmutable(),
 		#[ORM\Column(type: 'datetime_immutable')]

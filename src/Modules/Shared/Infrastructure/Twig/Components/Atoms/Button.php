@@ -13,5 +13,6 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 )]
 class Button
 {
+	public string $type = 'button';
 	public Color|null $faction = null;
 }

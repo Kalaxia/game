@@ -1,5 +1,3 @@
-{% set building_queues_count = current_building_queues|length %}
-{% set technology_queues_count = current_technology_queues|length %}
 {% set tutorial_step = current_player.stepTutorial %}
 
 <header class="fixed z-[1100] top-0 left-0 w-full flex text-gray-200 flex-col md:flex-row font-semibold bg-gray-700/80">
@@ -13,6 +11,11 @@
                 <li>
                     <a href="{{ path('fleet_headquarters') }}">
                         Quartier Général
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ path('view_market') }}">
+                        Marché
                     </a>
                 </li>
                 <li>
@@ -73,7 +76,7 @@
     </div>
 </header>
 
-<!--
+{#
 <header class="">
     <div class="">
         <div id="base-selector">
@@ -501,8 +504,6 @@
                 </div>
             </nav>
         </div>
-
-    {# overboxes #}
     <div class="" id="tools-calendar">
         <h2>
             SEG{{ get_game_date('seg')}} REL{{ get_game_date('rel')}},
@@ -510,24 +511,6 @@
         </h2>
     </div>
 </header>
-
-{#
-    $S_RMM_1 = $roadmapManager->getCurrentSession();
-    $roadmapManager->newSession();
-    $roadmapManager->load(array('statement' => RoadMap::DISPLAYED), array('dCreation', 'DESC'), array(0, 10));
-
-    <div class="hidden" id="roadmap">
-        <h2>Dernières mises à jour effectuées</h2>
-        <div class="overflow">
-            for ($i = 0; $i < $roadmapManager->size(); $i++) {
-            echo ($i > 0) ? '<hr />' : NULL;
-            <p>
-                <em>' . $roadmapManager->get($i)->dCreation. '</em>
-                echo $roadmapManager->get($i)->pContent;
-            </p>
-            }
-        </div>
-    </div>
 #}
--->
+
 

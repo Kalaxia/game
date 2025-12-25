@@ -8,7 +8,6 @@
 		<field name="initialWallet" column="initial_wallet" type="bigint" />
 
 		<field name="populationTaxes" column="population_taxes" type="integer" />
-		<field name="commercialRoutesIncome" column="commercial_routes_income" type="integer" />
 		<field name="resourcesSales" type="integer" />
 		<field name="shipsSales" type="integer" />
 		<field name="commandersSales" type="integer" />

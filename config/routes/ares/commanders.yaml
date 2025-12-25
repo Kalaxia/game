@@ -3,6 +3,10 @@ create_commander:
     controller: App\Modules\Ares\Infrastructure\Controller\CreateCommander
     methods: 'POST'
 
+school:
+    path: /school
+    controller: App\Modules\Ares\Infrastructure\Controller\Commander\ViewSchool
+
 put_commander_in_school:
     path: /{id}/put-in-school
     controller: App\Modules\Ares\Infrastructure\Controller\PutCommanderInSchool

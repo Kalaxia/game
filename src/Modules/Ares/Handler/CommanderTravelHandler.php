@@ -13,7 +13,6 @@ use App\Modules\Ares\Message\CommanderTravelMessage;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Manager\PlaceManager;
-use App\Modules\Galaxy\Manager\PlanetManager;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -25,7 +24,6 @@ readonly class CommanderTravelHandler
 		private ConquestManager              $conquestManager,
 		private LootManager                  $lootManager,
 		private PlaceManager                 $placeManager,
-		private PlanetManager                $planetManager,
 	) {
 	}
 
@@ -54,7 +52,6 @@ readonly class CommanderTravelHandler
 		$this->commanderManager->endTravel($commander, Commander::AFFECTED);
 
 		if ($commander->resources > 0) {
-			$this->planetManager->increaseResources($commander->base, $commander->resources);
 			$commander->resources = 0;
 		}
 		$this->commanderRepository->save($commander);

@@ -2,8 +2,6 @@
 
 namespace App\Modules\Zeus\Helper;
 
-use App\Modules\Athena\Application\Handler\Building\BuildingLevelHandler;
-use App\Modules\Athena\Domain\Repository\BuildingQueueRepositoryInterface;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\TechnologyQueueRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
@@ -15,10 +13,8 @@ readonly class TutorialHelper
 	public function __construct(
 		private PlayerRepositoryInterface          $playerRepository,
 		private PlanetRepositoryInterface          $planetRepository,
-		private BuildingQueueRepositoryInterface   $buildingQueueRepository,
 		private TechnologyRepositoryInterface      $technologyRepository,
 		private TechnologyQueueRepositoryInterface $technologyQueueRepository,
-		private BuildingLevelHandler               $buildingLevelHandler,
 	) {
 	}
 

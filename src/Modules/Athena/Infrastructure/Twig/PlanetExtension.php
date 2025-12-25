@@ -8,16 +8,10 @@ use App\Modules\Ares\Domain\Service\CalculateFleetCost;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Artemis\Model\SpyReport;
 use App\Modules\Athena\Application\Handler\Tax\PopulationTaxHandler;
-use App\Modules\Athena\Domain\Service\Base\Building\BuildingDataHandler;
-use App\Modules\Athena\Domain\Service\Base\Building\GetTimeCost;
 use App\Modules\Athena\Domain\Service\Base\GetCoolDownBeforeLeavingPlanet;
-use App\Modules\Athena\Domain\Service\Base\GetMaxResourceStorage;
 use App\Modules\Athena\Domain\Specification\CanLeavePlanet;
-use App\Modules\Athena\Model\Transaction;
 use App\Modules\Galaxy\Domain\Entity\Planet;
-use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Galaxy\Resource\PlaceResource;
-use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Shared\Application\Handler\DurationHandler;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Twig\Extension\AbstractExtension;
@@ -27,14 +21,10 @@ use Twig\TwigFunction;
 class PlanetExtension extends AbstractExtension
 {
 	public function __construct(
-		private readonly BuildingDataHandler            $buildingDataHandler,
 		private readonly CalculateFleetCost             $calculateFleetCost,
-		private readonly GetTimeCost                    $getTimeCost,
 		private readonly GetCoolDownBeforeLeavingPlanet $getCoolDownBeforeLeavingPlanet,
 		private readonly DurationHandler                $durationHandler,
-		private readonly PlanetHelper                   $planetHelper,
 		private readonly PopulationTaxHandler           $populationTaxHandler,
-		private readonly GetMaxResourceStorage          $getMaxStorage,
 		private readonly GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 		#[Autowire('%game.ship_cost_reduction%')]
 		private readonly float                          $shipCostReduction,
@@ -70,15 +60,6 @@ class PlanetExtension extends AbstractExtension
 			new TwigFunction('can_leave_planet', fn (Planet $planet) => $this->durationHandler->getHoursDiff(new \DateTimeImmutable(), $planet->createdAt) < ($this->getCoolDownBeforeLeavingPlanet)()),
 			new TwigFunction('get_time_until_cooldown_end', fn (Planet $planet) => ($this->getCoolDownBeforeLeavingPlanet)() - $this->durationHandler->getHoursDiff(new \DateTimeImmutable(), $planet->createdAt)),
 			new TwigFunction('get_cooldown_before_leaving_base', fn () => ($this->getCoolDownBeforeLeavingPlanet)()),
-			new TwigFunction('get_planet_production', fn (Planet $planet, ?int $level = null) => Game::resourceProduction(
-				$this->planetHelper->getBuildingInfo(
-					PlanetResource::REFINERY,
-					'level',
-					$level ?? $planet->levelRefinery,
-					'refiningCoefficient'
-				),
-				$planet->coefResources,
-			)),
 			new TwigFunction('get_building_info', fn (int $buildingNumber, string $info, int $level = 0, string $sub = 'default') => $this->planetHelper->getInfo($buildingNumber, $info, $level, $sub)),
 			new TwigFunction('get_building_resource_cost', fn (int $buildingNumber, int $level) => $this->buildingDataHandler->getBuildingResourceCost($buildingNumber, $level)),
 			new TwigFunction('get_building_time_cost', fn (int $buildingNumber, int $level) => ($this->getTimeCost)($buildingNumber, $level)),

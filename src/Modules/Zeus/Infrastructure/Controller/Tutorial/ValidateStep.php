@@ -78,7 +78,6 @@ class ValidateStep extends AbstractController
 						$alert .= ' et '.$resource.' ressources';
 					}
 					$alert .= ' sur votre base orbitale '.$ob->name.'. ';
-					$planetManager->increaseResources($ob, $resource, true);
 				}
 
 				if ($ship != [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]) {
@@ -136,17 +135,6 @@ class ValidateStep extends AbstractController
 					$redirectWithoutJeanMi = true;
 					$nextStepAlreadyDone = true;
 					break;
-				case TutorialResource::GENERATOR_LEVEL_2:
-					$nextStepAlreadyDone = $tutorialHelper->isNextBuildingStepAlreadyDone($currentPlayer, PlanetResource::GENERATOR, 2);
-					break;
-				case TutorialResource::REFINERY_LEVEL_3:
-					$nextStepAlreadyDone = $tutorialHelper->isNextBuildingStepAlreadyDone($currentPlayer, PlanetResource::REFINERY, 3);
-					break;
-				case TutorialResource::STORAGE_LEVEL_3:
-					$nextStepAlreadyDone = $tutorialHelper->isNextBuildingStepAlreadyDone($currentPlayer, PlanetResource::STORAGE, 3);
-					break;
-				case TutorialResource::TECHNOSPHERE_LEVEL_1:
-					$nextStepAlreadyDone = $tutorialHelper->isNextBuildingStepAlreadyDone($currentPlayer, PlanetResource::TECHNOSPHERE, 1);
 					break;
 				case TutorialResource::MODIFY_UNI_INVEST:
 					// asdf
@@ -154,8 +142,6 @@ class ValidateStep extends AbstractController
 				case TutorialResource::CREATE_COMMANDER:
 					// asdf
 					break;
-				case TutorialResource::DOCK1_LEVEL_1:
-					$nextStepAlreadyDone = $tutorialHelper->isNextBuildingStepAlreadyDone($currentPlayer, PlanetResource::DOCK1, 1);
 					break;
 				case TutorialResource::SHIP0_UNBLOCK:
 					$nextStepAlreadyDone = $tutorialHelper->isNextTechnoStepAlreadyDone($currentPlayer, TechnologyId::SHIP0_UNBLOCK);
@@ -194,35 +180,8 @@ class ValidateStep extends AbstractController
 				case TutorialResource::SHARE_ASYLAMBA:
 					$nextStepAlreadyDone = true;
 					break;
-				case TutorialResource::REFINERY_LEVEL_10:
-					$nextStepAlreadyDone = $tutorialHelper->isNextBuildingStepAlreadyDone($currentPlayer, PlanetResource::REFINERY, 10);
-					break;
-				case TutorialResource::STORAGE_LEVEL_8:
-					$nextStepAlreadyDone = $tutorialHelper->isNextBuildingStepAlreadyDone($currentPlayer, PlanetResource::STORAGE, 8);
-					break;
-				case TutorialResource::DOCK1_LEVEL_6:
-					$nextStepAlreadyDone = $tutorialHelper->isNextBuildingStepAlreadyDone($currentPlayer, PlanetResource::DOCK1, 6);
-					break;
-				case TutorialResource::REFINERY_LEVEL_16:
-					$nextStepAlreadyDone = $tutorialHelper->isNextBuildingStepAlreadyDone($currentPlayer, PlanetResource::REFINERY, 16);
-					break;
-				case TutorialResource::STORAGE_LEVEL_12:
-					$nextStepAlreadyDone = $tutorialHelper->isNextBuildingStepAlreadyDone($currentPlayer, PlanetResource::STORAGE, 12);
-					break;
-				case TutorialResource::TECHNOSPHERE_LEVEL_6:
-					$nextStepAlreadyDone = $tutorialHelper->isNextBuildingStepAlreadyDone($currentPlayer, PlanetResource::TECHNOSPHERE, 6);
-					break;
-				case TutorialResource::SHIP1_UNBLOCK:
-					$nextStepAlreadyDone = $tutorialHelper->isNextTechnoStepAlreadyDone($currentPlayer, TechnologyId::SHIP1_UNBLOCK);
-					break;
-				case TutorialResource::DOCK1_LEVEL_15:
-					$nextStepAlreadyDone = $tutorialHelper->isNextBuildingStepAlreadyDone($currentPlayer, PlanetResource::DOCK1, 15);
-					break;
 				case TutorialResource::BUILD_SHIP1:
 					// asdf
-					break;
-				case TutorialResource::REFINERY_LEVEL_20:
-					$nextStepAlreadyDone = $tutorialHelper->isNextBuildingStepAlreadyDone($currentPlayer, PlanetResource::REFINERY, 20);
 					break;
 				case TutorialResource::SPONSORSHIP:
 					$nextStepAlreadyDone = true;

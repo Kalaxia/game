@@ -5,15 +5,23 @@ declare(strict_types=1);
 namespace App\Modules\Galaxy\Application\Handler;
 
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
+use App\Modules\Economy\Application\Message\CompanyProductsGenerationMessage;
+use App\Modules\Economy\Domain\Entity\Company;
+use App\Modules\Economy\Domain\Enum\Activity;
+use App\Modules\Economy\Domain\Enum\ActivityCategory;
+use App\Modules\Economy\Domain\Repository\CompanyRepositoryInterface;
 use App\Modules\Galaxy\Application\Message\SectorGenerationMessage;
 use App\Modules\Galaxy\Application\Message\SystemGenerationMessage;
 use App\Modules\Galaxy\Domain\Entity\Sector;
 use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
+use App\Modules\Galaxy\Domain\Service\CreateMultipleSystemCoordinates;
 use App\Modules\Galaxy\Galaxy\GalaxyConfiguration;
 use App\Modules\Shared\Application\Service\GetProportion;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Uid\Uuid;
 
 #[AsMessageHandler]
@@ -21,11 +29,15 @@ final readonly class SectorGenerationHandler
 {
 	public function __construct(
 		private ColorRepositoryInterface $colorRepository,
+		private CompanyRepositoryInterface $companyRepository,
+		private CreateMultipleSystemCoordinates $createMultipleSystemCoordinates,
+		private EntityManagerInterface $entityManager,
 		private GetProportion $getProportion,
 		private SectorRepositoryInterface $sectorRepository,
 		private MessageBusInterface $messageBus,
 		private GalaxyConfiguration $galaxyConfiguration,
 		private LoggerInterface $galaxyGenerationLogger,
+		private SluggerInterface $slugger,
 	) {
 	}
 
@@ -57,7 +69,69 @@ final readonly class SectorGenerationHandler
 			'identifier' => $sector->identifier,
 		]);
 
+		if ($sector->faction !== null) {
+			$this->generateSectorCompanies($sector);
+		}
+
 		$this->generateSystems($sector, $message->danger);
+	}
+
+	private function generateSectorCompanies(Sector $sector): void
+	{
+		foreach ($this->getSectorCompaniesProportions() as $activityName => $companiesCount) {
+			$activity = Activity::from($activityName);
+
+			for ($j = 0; $j < $companiesCount; $j++) {
+				$name = sprintf(
+					'Company %s %s-%s',
+					$activityName,
+					str_pad(strval($sector->identifier), 2, '0'),
+					str_pad(strval($j + 1), 2, '0'),
+				);
+
+				$company = new Company(
+					id: Uuid::v4(),
+					name: $name,
+					slug: $this->slugger->slug($name)->toString(),
+					faction: $sector->faction,
+					activity: $activity,
+					credits: random_int(1, 3) * 1000000,
+					createdAt: new \DateTimeImmutable(),
+					updatedAt: new \DateTimeImmutable(),
+				);
+
+				$this->companyRepository->save($company, doFlush: false);
+
+				$this->messageBus->dispatch(new CompanyProductsGenerationMessage($company->id));
+			}
+		}
+
+		$this->entityManager->flush();
+	}
+
+	/**
+	 * @return array<string, int>
+	 */
+	private function getSectorCompaniesProportions(): array
+	{
+		return array_column(array_map(
+			function (Activity $activity): array {
+				if ($activity->getCategory() === ActivityCategory::PrimaryProduction) {
+					$companiesCount = 5;
+				}
+
+				if ($activity->getCategory() === ActivityCategory::Refinement) {
+					$companiesCount = 3;
+				}
+
+				if ($activity->getCategory() === ActivityCategory::FinalProduction) {
+					$companiesCount = 2;
+				}
+
+				return [$activity->value,  $companiesCount ?? 1];
+			},
+			Activity::cases(),
+		), 1, 0);
 	}
 
 	/**
@@ -80,68 +154,15 @@ final readonly class SectorGenerationHandler
 	 */
 	private function generateSystems(Sector $sector, int $sectorDanger): void
 	{
-		$vertices = $this->normalizeVertices($this->galaxyConfiguration->getSectorVertices($sector->identifier));
-
-		if (count($vertices) < 3) {
-			$this->galaxyGenerationLogger->error('Not enough sector vertices to generate systems', [
-				'identifier' => $sector->identifier,
-				'vertices' => $vertices,
-			]);
-
-			return;
-		}
-
-		[$minX, $minY, $maxX, $maxY] = $this->polygonBounds($vertices);
-
-
 		// Paramètres simples: ajuster le nombre de points avec le "danger"
 		$baseCount = 25; // valeur de base
-		$targetCount = max(1, (int)round($baseCount * (1.0 + ($sectorDanger / 10.0))));
-		$minSpacing = $this->suggestSpacing($vertices); // espacement minimal en fonction de l'échelle
-		$minSpacing2 = $minSpacing * $minSpacing;
+		$targetCount = max(1, intval(round($baseCount * (1.0 + ($sectorDanger / 10.0)))));
 
-		$maxAttempts = $targetCount * 40;
-		$points = [];
-
-		$this->galaxyGenerationLogger->debug('Looking for points vertices', [
-			'minX' => $minX,
-			'minY' => $minY,
-			'maxX' => $maxX,
-			'maxY' => $maxY,
-			'minSpacing' => $minSpacing,
-			'targetCount' => $targetCount,
-			'maxAttempts' => $maxAttempts,
-		]);
-
-		$attempts = 0;
-		while (count($points) < $targetCount && $attempts < $maxAttempts) {
-			++$attempts;
-
-			$x = $this->randFloat($minX, $maxX);
-			$y = $this->randFloat($minY, $maxY);
-
-			if (!$this->isPointInPolygon($x, $y, $vertices)) {
-				continue;
-			}
-
-			// Test d'espacement minimal
-			$ok = true;
-			foreach ($points as [$px, $py]) {
-				if ($this->dist2($x, $y, $px, $py) < $minSpacing2) {
-					$ok = false;
-					break;
-				}
-			}
-
-			if ($ok) {
-				$this->galaxyGenerationLogger->debug('System point generated', [
-					'x' => $x,
-					'y' => $y,
-				]);
-
-				$points[] = [$x, $y];
-			}
-		}
+		$points = ($this->createMultipleSystemCoordinates)(
+			sector: $sector,
+			targetCount: $targetCount,
+			maxAttempts: $targetCount * 40,
+		);
 
 		foreach ($points as [$sx, $sy]) {
 			$this->messageBus->dispatch(new SystemGenerationMessage(
@@ -155,96 +176,5 @@ final readonly class SectorGenerationHandler
 				),
 			));
 		}
-	}
-
-	/**
-	 * Normalise les vertices en une liste de [float x, float y].
-	 * Accepte divers formats: ['x'=>..,'y'=>..], [x, y], "x,y".
-	 *
-	 * @return list<array{0: float, 1: float}>
-	 */
-	private function normalizeVertices(array $raw): array
-	{
-		return array_chunk($raw, 2);
-	}
-
-	/**
-	 * Calcule la bbox [minX, minY, maxX, maxY].
-	 *
-	 * @param list<array{0: float, 1: float, 2: float, 3: float} $vertices
-	 * @return array{0: float, 1: float, 2: float, 3: float}
-	 */
-	private function polygonBounds(array $vertices): array
-	{
-		$minX = $maxX = $vertices[0][0];
-		$minY = $maxY = $vertices[0][1];
-
-		foreach ($vertices as [$x, $y]) {
-			if ($x < $minX) {
-				$minX = $x;
-			}
-			if ($x > $maxX) {
-				$maxX = $x;
-			}
-			if ($y < $minY) {
-				$minY = $y;
-			}
-			if ($y > $maxY) {
-				$maxY = $y;
-			}
-		}
-		return [$minX, $minY, $maxX, $maxY];
-	}
-
-	/**
-	 * Test point-dans-polygone (ray casting).
-	 *
-	 * @param list<array{0: float, 1: float}> $vertices
-	 */
-	private function isPointInPolygon(float $x, float $y, array $vertices): bool
-	{
-		$inside = false;
-		$n = count($vertices);
-
-		for ($i = 0, $j = $n - 1; $i < $n; $j = $i++) {
-			[$xi, $yi] = $vertices[$i];
-			[$xj, $yj] = $vertices[$j];
-
-			$intersect = (($yi > $y) !== ($yj > $y))
-				&& ($x < ($xj - $xi) * ($y - $yi) / (($yj - $yi) ?: 1e-12) + $xi);
-
-			if ($intersect) {
-				$inside = !$inside;
-			}
-		}
-		return $inside;
-	}
-
-	private function randFloat(float $min, float $max): float
-	{
-		return $min + (mt_rand() / mt_getrandmax()) * ($max - $min);
-	}
-
-	private function dist2(float $x1, float $y1, float $x2, float $y2): float
-	{
-		$dx = $x1 - $x2;
-		$dy = $y1 - $y2;
-		return $dx * $dx + $dy * $dy;
-	}
-
-	/**
-	 * Propose un espacement minimal en fonction de l'échelle du polygone.
-	 * Ici: ~2% de la plus grande dimension de la bbox, borné.
-	 *
-	 * @param list<array{0: float, 1: float}> $vertices
-	 */
-	private function suggestSpacing(array $vertices): float
-	{
-		[$minX, $minY, $maxX, $maxY] = $this->polygonBounds($vertices);
-
-		$size = max($maxX - $minX, $maxY - $minY);
-		$spacing = max(2.0, 0.02 * $size);
-
-		return $spacing;
 	}
 }

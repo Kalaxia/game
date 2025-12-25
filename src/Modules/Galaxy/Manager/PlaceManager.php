@@ -9,12 +9,9 @@ use App\Modules\Ares\Model\Report;
 use App\Modules\Galaxy\Domain\Entity\EmptyPlace;
 use App\Modules\Galaxy\Domain\Entity\Place;
 use App\Modules\Galaxy\Domain\Entity\Planet;
-use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
-use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
-use App\Modules\Zeus\Model\Player;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -22,7 +19,6 @@ readonly class PlaceManager
 {
 	public function __construct(
 		private NotificationRepositoryInterface $notificationRepository,
-		private PlanetRepositoryInterface        $planetRepository,
 		private PlaceRepositoryInterface        $placeRepository,
 		private UrlGeneratorInterface           $urlGenerator,
 	) {
@@ -39,15 +35,6 @@ readonly class PlaceManager
 
 		$this->placeRepository->remove($place);
 		$this->placeRepository->save($emptyPlace);
-	}
-
-	public function turnAsSpawnPlace(Planet $planet): void
-	{
-		$planet->coefResources = 60;
-		$planet->coefHistory = 20;
-		$planet->population = 50;
-
-		$this->planetRepository->save($planet);
 	}
 
 	public function sendNotif(Planet $place, int $case, Commander $commander, Report|null $report = null): void

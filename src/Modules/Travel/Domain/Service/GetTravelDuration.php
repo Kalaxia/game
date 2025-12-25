@@ -25,11 +25,7 @@ readonly class GetTravelDuration
 		TravelType         $travelType = TravelType::Fleet,
 		Player|null        $player = null,
 	): \DateTimeImmutable {
-		$time = ($this->calculateTravelTime)($origin, $destination, $travelType, $player);
-
-		if ($travelType === TravelType::CommercialShipping) {
-			$time = intval(round($time * Game::COMMERCIAL_TIME_TRAVEL));
-		}
+		$time = $this->calculateTravelTime->betweenPlaces($origin, $destination, $travelType, $player);
 
 		return $this->durationHandler->getDurationEnd($departureDate, $time);
 	}

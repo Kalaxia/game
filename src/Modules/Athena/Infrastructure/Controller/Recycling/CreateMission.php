@@ -9,7 +9,7 @@ use App\Modules\Athena\Model\RecyclingMission;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
-use App\Modules\Galaxy\Helper\PlanetHelper;
+use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
 use App\Modules\Zeus\Model\Player;
@@ -27,8 +27,7 @@ class CreateMission extends AbstractController
         CurrentPlayerBonusRegistry          $currentPlayerBonusRegistry,
         GetMissionTime                      $getMissionTime,
         Planet                              $currentPlanet,
-        PlanetHelper                        $planetHelper,
-        PlaceRepositoryInterface            $placeRepository,
+		PlanetRepositoryInterface $planetRepository,
         RecyclingMissionRepositoryInterface $recyclingMissionRepository,
         RecyclingMissionManager             $recyclingMissionManager,
         Uuid                                $targetId,
@@ -38,7 +37,6 @@ class CreateMission extends AbstractController
 		if ($quantity < 1) {
 			throw new BadRequestHttpException('Ca va être dur de recycler avec autant peu de recycleurs. Entrez un nombre plus grand que zéro.');
 		}
-		$maxRecyclers = $planetHelper->getInfo(PlanetResource::RECYCLING, 'level', $currentPlanet->levelRecycling, 'nbRecyclers');
 		$usedRecyclers = 0;
 
 		$baseMissions = $recyclingMissionRepository->getPlanetActiveMissions($currentPlanet);
@@ -48,10 +46,7 @@ class CreateMission extends AbstractController
 			$usedRecyclers += $mission->addToNextMission;
 		}
 
-		if ($maxRecyclers - $usedRecyclers < $quantity) {
-			throw new BadRequestHttpException('Vous n\'avez pas assez de recycleurs libres pour lancer cette mission.');
-		}
-		$destinationPlace = $placeRepository->get($targetId)
+		$destinationPlace = $planetRepository->get($targetId)
 			?? throw $this->createNotFoundException('Il y a un problème avec le lieu de départ ou d\'arrivée. Veuillez contacter un administrateur.');
 
 		$startPlace = $currentPlanet;

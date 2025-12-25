@@ -2,7 +2,6 @@
 
 namespace App\Modules\Zeus\Infrastructure\Controller;
 
-use App\Modules\Athena\Manager\CommercialRouteManager;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,8 +15,6 @@ class ProfileController extends AbstractController
         Request                   $request,
         Player                    $currentPlayer,
         PlanetRepositoryInterface $planetRepository,
-        CommercialRouteManager    $commercialRouteManager,
-        EntityManagerInterface    $entityManager,
 	): Response {
 		return $this->render('pages/zeus/profile.html.twig', [
 			'player_planets' => $planetRepository->getPlayerPlanets($currentPlayer),

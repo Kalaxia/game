@@ -13,7 +13,6 @@ class PlayerFinancialReport
 		public readonly int $initialWallet,
 		// INCOME
 		public int $populationTaxes = 0,
-		public int $commercialRoutesIncome = 0,
 		public int $resourcesSales = 0,
 		public int $shipsSales = 0,
 		public int $commandersSales = 0,
@@ -41,7 +40,6 @@ class PlayerFinancialReport
 	public function getTotalIncome(): int
 	{
 		return $this->populationTaxes
-			+ $this->commercialRoutesIncome
 			+ $this->resourcesSales
 			+ $this->shipsSales
 			+ $this->commandersSales

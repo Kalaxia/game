@@ -10,7 +10,6 @@ use App\Modules\Ares\Domain\Repository\SquadronRepositoryInterface;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Resource\CommanderResources;
-use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\CommercialTaxRepositoryInterface;
 use App\Modules\Atlas\Domain\Repository\FactionRankingRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
@@ -29,7 +28,6 @@ use Symfony\Component\HttpFoundation\Response;
 class ViewData extends AbstractController
 {
 	public function __construct(
-		private readonly CommercialRouteRepositoryInterface $commercialRouteRepository,
 		private readonly ColorRepositoryInterface $colorRepository,
 		private readonly RedisManager $redisManager,
 	) {
@@ -92,9 +90,6 @@ class ViewData extends AbstractController
 			'members_donations' => $membersDonations,
 			'faction_donations' => $factionDonations,
 			'faction_sectors' => $sectorRepository->getFactionSectors($faction),
-			'rc_data' => $this->commercialRouteRepository->getCommercialRouteFactionData($faction),
-			'faction_internal_commercial_routes_data' => $this->commercialRouteRepository->getInternalCommercialRouteFactionData($faction),
-			'rc_diplomatic_data' => $this->getCommercialRoutesDiplomaticData($faction),
 			'import_taxes' => $importaxes,
 			'export_taxes' => $exportTaxes,
 			'commanders_ranks_count' => CommanderResources::size(),
@@ -184,24 +179,5 @@ class ViewData extends AbstractController
 			'scores' => $scores,
 			'percents' => $percents,
 		];
-	}
-
-	/**
-	 * @return array<int, int>
-	 */
-	private function getCommercialRoutesDiplomaticData(Color $faction): array
-	{
-		return array_reduce(
-			array_filter(array_keys($faction->relations), fn (int $factionId) => !in_array($factionId, [0, $faction->identifier])),
-			function ($acc, $factionId) use ($faction) {
-				$acc[$factionId] = $this->commercialRouteRepository->countCommercialRoutesBetweenFactions(
-					$faction,
-					$this->colorRepository->getOneByIdentifier($factionId),
-				);
-
-				return $acc;
-			},
-			[],
-		);
 	}
 }

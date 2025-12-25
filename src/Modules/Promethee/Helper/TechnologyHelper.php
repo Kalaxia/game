@@ -5,26 +5,16 @@ namespace App\Modules\Promethee\Helper;
 use App\Classes\Container\ArrayList;
 use App\Classes\Container\StackList;
 use App\Modules\Galaxy\Domain\Entity\Planet;
-use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Promethee\Model\Technology;
 use App\Modules\Promethee\Resource\TechnologyResource;
-use Symfony\Contracts\Service\Attribute\Required;
 
 class TechnologyHelper
 {
-	protected PlanetHelper $planetHelper;
-
 	public function __construct(
 		protected ResearchHelper $researchHelper,
 		protected int $researchQuantity,
 	) {
-	}
-
-	#[Required]
-	public function setPlanetHelper(PlanetHelper $planetHelper): void
-	{
-		$this->planetHelper = $planetHelper;
 	}
 
 	public function isATechnology(int $techno): bool

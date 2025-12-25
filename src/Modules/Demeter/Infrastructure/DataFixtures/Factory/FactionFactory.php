@@ -7,12 +7,12 @@ namespace App\Modules\Demeter\Infrastructure\DataFixtures\Factory;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
 use Symfony\Component\Uid\Uuid;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Color>
+ * @extends PersistentObjectFactory<Color>
  */
-class FactionFactory extends PersistentProxyObjectFactory
+class FactionFactory extends PersistentObjectFactory
 {
 	public function __construct(private readonly GetFactionsConfiguration $getFactionsConfiguration)
 	{
@@ -21,7 +21,12 @@ class FactionFactory extends PersistentProxyObjectFactory
 
 	protected function defaults(): array
 	{
-		$identifier = self::faker()->unique()->numberBetween(1, 11);
+		$factionsConfiguration = $this->getFactionsConfiguration->getAllFactions();
+
+		$identifier = self::faker()->unique()->randomElement(array_filter(
+			array_keys($factionsConfiguration),
+			fn (int $factionIdentifier) => $factionIdentifier > 0,
+		));
 
 		return [
 			'id' => Uuid::v4(),

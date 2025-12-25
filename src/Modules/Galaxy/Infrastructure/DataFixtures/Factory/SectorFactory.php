@@ -6,23 +6,19 @@ namespace App\Modules\Galaxy\Infrastructure\DataFixtures\Factory;
 
 use App\Modules\Galaxy\Domain\Entity\Sector;
 use Symfony\Component\Uid\Uuid;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Sector>
+ * @extends PersistentObjectFactory<Sector>
  */
-class SectorFactory extends PersistentProxyObjectFactory
+class SectorFactory extends PersistentObjectFactory
 {
 	protected function defaults(): array
 	{
 		return [
 			'id' => Uuid::v4(),
-			'identifier' => self::faker()->randomNumber(2),
+			'identifier' => self::faker()->unique()->randomNumber(2),
 			'faction' => null,
-			'xPosition' => self::faker()->numberBetween(0, 100),
-			'yPosition' => self::faker()->numberBetween(0, 100),
-			'xBarycentric' => self::faker()->numberBetween(0, 100),
-			'yBarycentric' => self::faker()->numberBetween(0, 100),
 			'tax' => 5,
 			'name' => null,
 			'points' => self::faker()->numberBetween(1, 5),

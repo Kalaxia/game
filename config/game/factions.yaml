@@ -25,7 +25,6 @@ factions:
         - !php/const App\Modules\Demeter\Resource\ColorResource::COMMERCIALROUTEPRICEBONUS
       mandateDuration: 604800
 
-
     - id: !php/const App\Modules\Demeter\Resource\ColorResource::ADRANITE
       regime: !php/const App\Modules\Demeter\Model\Color::REGIME_ROYALISTIC
       bonus:

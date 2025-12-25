@@ -65,7 +65,7 @@
 								 :values="[0, 8, 16, 24, 32]"
 								 mediaPath="build/media/resources/science.png" />
 		</div>
-	{% else %}
+	{% elseif place.type != enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Empty %}
 		<div class="px-2">
 			<p class="flex items-center justify-between py-1">
 				<span class="text-sm font-medium">Ressources</span>
