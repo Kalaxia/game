@@ -319,9 +319,7 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 		$qb
 			->select()
 			->leftJoin('cr.originBase', 'ob')
-			->join('ob.place', 'obp')
 			->leftJoin('cr.destinationBase', 'db')
-			->join('db.place', 'dbp')
 			->where($qb->expr()->orX(
 				$qb->expr()->andX(
 					'db.player = :player',
