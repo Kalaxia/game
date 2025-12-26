@@ -11,3 +11,14 @@ services:
                 cors_origins https://kalaxia.local
         # command: /usr/bin/caddy run --config /etc/caddy/dev.Caddyfile
     ###< symfony/mercure-bundle ###
+
+    rabbitmq:
+        environment:
+            RABBITMQ_DEFAULT_USER: kalaxia
+            RABBITMQ_DEFAULT_PASSWORD: kalaxia
+
+    mariadb:
+        environment:
+            MARIADB_ROOT_PASSWORD: kalaxia
+            MARIADB_USER: kalaxia
+            MARIADB_PASSWORD: kalaxia
