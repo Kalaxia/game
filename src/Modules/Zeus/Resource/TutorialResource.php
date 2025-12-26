@@ -193,7 +193,7 @@ class TutorialResource
 		[
 			'id' => 10,
 			'title' => 'Développer la technologie "Châssis simple léger"',
-			'description' => 'Nous voulons construire un Pégase, malheureusement il nous manque un prérequis : la technologie "Châssis simple léger". 
+			'description' => 'Nous voulons construire un chasseur léger, malheureusement il nous manque un prérequis : la technologie "Châssis simple léger". 
 				Rends-toi donc dans la Technosphère pour développer cette technologie.
 				<br /><br />
 				Dans la Technosphère, plusieurs types de technologie sont disponibles. 
@@ -214,7 +214,7 @@ class TutorialResource
 		[
 			'id' => 11,
 			'title' => 'Construire un Chasseur Léger',
-			'description' => 'Tu peux maintenant aller dans le Chantier Alpha et construire un Pégase. Il s\'agit du plus petit vaisseau disponible.
+			'description' => 'Tu peux maintenant aller dans le Chantier Alpha et construire un chasseur léger. Il s\'agit du plus petit vaisseau disponible.
 				<br /><br />
 				En cliquant sur le "+", tu verras toutes les informations sur ce vaisseau, 
 				les caractéristiques du vaisseau durant un combat, mais également le temps de construction unitaire, le coût, le nombre de PEV et la soute.
@@ -385,7 +385,7 @@ class TutorialResource
 			'shipReward' => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], ],
 		[
 			'id' => 27,
-			'title' => 'Construire un Satyre',
+			'title' => 'Construire un chasseur',
 			'description' => '',
 			'experienceReward' => 10,
 			'creditReward' => 0,

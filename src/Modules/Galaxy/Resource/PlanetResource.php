@@ -35,24 +35,6 @@ class PlanetResource
 	];
 
 	/**
-	 * pegase = 0, satyre = 1, chimere = 2, sirene = 3, dryade = 4 and meduse = 5.
-	 * @var list<int> $dock1Ships
-	 **/
-	public static array $dock1Ships = [0, 1, 2, 3, 4, 5];
-
-	/**
-	 * griffon = 6, cyclope = 7, minotaure = 8, hydre = 9, cerbere = 10, phenix = 11.
-	 * @var list<int> $dock2Ships
-	 **/
-	public static array $dock2Ships = [6, 7, 8, 9, 10, 11];
-
-	/**
-	 * motherShip1 = 12, motherShip2 = 13, motherShip3 = 14.
-	 * @var list<int> $dock3Ships
-	 **/
-	public static array $dock3Ships = [12, 13, 14];
-
-	/**
 	 * @var list<array<string, mixed>> $building
 	 */
 	public static array $building = [
