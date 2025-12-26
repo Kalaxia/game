@@ -20,7 +20,7 @@ readonly class NpcSpyingHandler extends SpyingHandler
 	{
 		$place = $spyReport->place;
 
-		$spyReport->resources = $place->resources;
+		$spyReport->resources = $place->resourcesStorage;
 
 		// generate a commander for the place
 		$commander = $this->virtualCommanderHandler->createVirtualCommander($place);

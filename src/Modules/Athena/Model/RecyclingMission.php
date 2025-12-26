@@ -11,7 +11,9 @@
 
 namespace App\Modules\Athena\Model;
 
+use App\Modules\Galaxy\Domain\Entity\Place;
 use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Entity\UninhabitedPlace;
 use Symfony\Component\Uid\Uuid;
 
 class RecyclingMission
@@ -28,7 +30,7 @@ class RecyclingMission
 	public function __construct(
 		public Uuid                    $id,
 		public Planet                  $base,
-		public Planet                  $target,
+		public UninhabitedPlace        $target,
 		public int                     $cycleTime = 0,
 		public int                     $recyclerQuantity = 0,
 		public int                     $addToNextMission = 0,

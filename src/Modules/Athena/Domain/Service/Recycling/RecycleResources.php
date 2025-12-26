@@ -11,7 +11,7 @@ class RecycleResources
 {
 	public function __invoke(RecyclingMission $recyclingMission, int $extractionPoints, int $balancingPercent): int
 	{
-		$resourceRecycled = PercentageApplier::toInt($extractionPoints, $recyclingMission->target->coefResources);
+		$resourceRecycled = PercentageApplier::toInt($extractionPoints, $recyclingMission->target->resources);
 		// Random variation between credit and resources extraction
 		$resourceRecycled -= PercentageApplier::toInt($resourceRecycled, $balancingPercent);
 

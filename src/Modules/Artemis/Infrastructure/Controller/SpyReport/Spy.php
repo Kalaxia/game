@@ -56,7 +56,7 @@ class Spy extends AbstractController
 		$place = $placeRepository->get(Uuid::fromString($placeId)) ?? throw $this->createNotFoundException('Place not found');
 
 		// TODO convert into specification/Voter
-		if (PlaceType::Planet !== $place->getType() || $place->player->faction->id->equals($currentPlayer->faction->id)) {
+		if (PlaceType::Planet !== $place->getType() || $place->player?->faction->id->equals($currentPlayer->faction->id)) {
 			throw new ConflictHttpException('You cannot spy this place');
 		}
 		$spyReport = $this->getSpyingHandler($place)->spy($place, $currentPlayer, $price);

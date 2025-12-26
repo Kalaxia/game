@@ -9,24 +9,29 @@ use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Athena\Model\RecyclingMission;
 use App\Modules\Shared\Application\PercentageApplier;
 
-class RecycleShips
+readonly class RecycleShips
 {
+	public function __construct(
+		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
+	) {
+	}
+
 	public function __invoke(
-		GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 		RecyclingMission $recyclingMission,
 		int $extractionPoints,
 	): array {
-		$shipRecycled = PercentageApplier::toInt($extractionPoints, $recyclingMission->target->coefHistory);
+		$shipRecycled = PercentageApplier::toInt($extractionPoints, $recyclingMission->target->history);
 
 		// convert shipRecycled to real ships
 		$pointsToRecycle = round($shipRecycled * RecyclingMission::COEF_SHIP);
 		$shipsArray1 = [];
 		$buyShip = [];
 		foreach (ShipCategory::cases() as $shipCategory) {
-			if (floor($pointsToRecycle / $getShipCategoriesConfiguration($shipCategory, 'resourcePrice')) > 0) {
+			$shipConfiguration = ($this->getShipCategoriesConfiguration)($shipCategory, 'resourcePrice');
+			if (floor($pointsToRecycle / $shipConfiguration) > 0) {
 				$shipsArray1[] = [
 					'ship' => $shipCategory->value,
-					'price' => $getShipCategoriesConfiguration($shipCategory, 'resourcePrice'),
+					'price' => $shipConfiguration,
 					'canBuild' => true,
 				];
 			}
