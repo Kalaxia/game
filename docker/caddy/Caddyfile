@@ -23,7 +23,7 @@ kalaxia.local {
 kalaxia.com, api.kalaxia.com {
 	import game
 
-	basicauth /* {
+	basic_auth /* {
 		kalaxia JDJhJDE0JDlWOXN6OEF1Q1NIbmdVU29ySEJTL3V1U2suY1JSb2xLL3lCRnlaVkNZOU9uanlKMTVmZnNt
 	}
 }
