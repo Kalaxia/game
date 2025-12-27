@@ -12,7 +12,6 @@ use App\Modules\Zeus\Model\CreditTransaction;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Persistence\ManagerRegistry;
 
 class CreditTransactionRepository extends DoctrineRepository implements CreditTransactionRepositoryInterface
@@ -25,7 +24,7 @@ class CreditTransactionRepository extends DoctrineRepository implements CreditTr
 	public function getAllBySender(CreditHolderInterface $sender): array
 	{
 		return $this->findBy(
-			match (ClassUtils::getClass($sender)) {
+			match (get_class($sender)) {
 				Color::class => ['factionSender' => $sender],
 				Player::class => ['playerSender' => $sender],
 				default => throw new \RuntimeException('Match case not implemented'),

@@ -8,7 +8,6 @@ use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Zeus\Model\CreditTransaction;
 use App\Modules\Zeus\Model\Player;
-use Doctrine\Common\Util\ClassUtils;
 
 readonly class GetCreditHolderStatus
 {
@@ -24,7 +23,7 @@ readonly class GetCreditHolderStatus
 			default => throw new \InvalidArgumentException('Match case not implemented for this part of transaction'),
 		};
 
-		return match (ClassUtils::getClass($creditHolder)) {
+		return match (get_class($creditHolder)) {
 			Color::class => ($this->getFactionsConfiguration)($creditHolder, 'government'),
 			// TODO make a method to get a player status
 			Player::class => ($this->getFactionsConfiguration)($creditHolder->faction, 'status')[$creditHolder->status - 1],

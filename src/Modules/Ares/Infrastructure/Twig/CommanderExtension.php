@@ -14,7 +14,6 @@ use App\Modules\Ares\Manager\CommanderManager;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\Squadron;
 use App\Modules\Ares\Resource\CommanderResources;
-use Doctrine\Common\Util\ClassUtils;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -42,10 +41,10 @@ class CommanderExtension extends AbstractExtension
 				default => 'autre'
 			}),
 			new TwigFilter('commander_rank', fn (Commander $commander) => $this->getCommanderLevel($commander->level)),
-			new TwigFilter('pev', fn (Commander|Squadron $item) => match (ClassUtils::getClass($item)) {
+			new TwigFilter('pev', fn (Commander|Squadron $item) => match (get_class($item)) {
 				Commander::class => $this->commanderArmyHandler->getPev($item),
 				Squadron::class => ($this->getSquadronPev)($item),
-				default => throw new \LogicException(sprintf('Unknown item type %s', ClassUtils::getClass($item))),
+				default => throw new \LogicException(sprintf('Unknown item type %s', get_class($item))),
 			}),
 		];
 	}

@@ -6,7 +6,6 @@ namespace App\Modules\Zeus\Model;
 
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\ColorResource;
-use Doctrine\Common\Util\ClassUtils;
 use Symfony\Component\Uid\Uuid;
 
 class CreditTransaction

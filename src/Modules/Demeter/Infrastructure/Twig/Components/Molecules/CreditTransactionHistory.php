@@ -10,7 +10,6 @@ use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Zeus\Model\CreditHolderInterface;
 use App\Modules\Zeus\Model\CreditTransaction;
 use App\Modules\Zeus\Model\Player;
-use Doctrine\Common\Util\ClassUtils;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent(
@@ -47,7 +46,7 @@ class CreditTransactionHistory
 	 */
 	private function getLink(CreditHolderInterface $part): string
 	{
-		return match (ClassUtils::getClass($part)) {
+		return match (get_class($part)) {
 			Color::class => '/embassy/faction-' . $part->id,
 			Player::class => '/embassy/player-' . $part->id,
 			default => throw new \RuntimeException('Match case not implemented'),
@@ -71,7 +70,7 @@ class CreditTransactionHistory
 
 	private function getName(CreditHolderInterface $part): string
 	{
-		return match (ClassUtils::getClass($part)) {
+		return match (get_class($part)) {
 			Color::class => ($this->getFactionsConfiguration)($part, 'popularName'),
 			Player::class => $part->name,
 			default => throw new \RuntimeException('Match case not implemented'),
@@ -95,7 +94,7 @@ class CreditTransactionHistory
 
 	private function getAvatar(CreditHolderInterface $part): string
 	{
-		return match (ClassUtils::getClass($part)) {
+		return match (get_class($part)) {
 			Color::class => 'color-' . $part->identifier,
 			Player::class => $part->avatar,
 			default => throw new \RuntimeException('Match case not implemented'),
@@ -119,7 +118,7 @@ class CreditTransactionHistory
 
 	private function getStatus(CreditHolderInterface $part): string
 	{
-		return match (ClassUtils::getClass($part)) {
+		return match (get_class($part)) {
 			Color::class => ($this->getFactionsConfiguration)($part, 'government'),
 			// TODO make a method to get a player status
 			Player::class => ($this->getFactionsConfiguration)($part->faction, 'status')[$part->status - 1],
@@ -144,7 +143,7 @@ class CreditTransactionHistory
 
 	private function getFaction(CreditHolderInterface $part): int
 	{
-		return match (ClassUtils::getClass($part)) {
+		return match (get_class($part)) {
 			Color::class => $part->identifier,
 			Player::class => $part->faction->identifier,
 			default => throw new \RuntimeException('Match case not implemented'),
