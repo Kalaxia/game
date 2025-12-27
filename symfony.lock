@@ -17,14 +17,8 @@
             "ref": "64d8583af5ea57b7afa4aba4b159907f3a148b05"
         }
     },
-    "doctrine/cache": {
-        "version": "2.1.1"
-    },
     "doctrine/collections": {
         "version": "1.6.8"
-    },
-    "doctrine/common": {
-        "version": "3.2.2"
     },
     "doctrine/dbal": {
         "version": "3.3.4"
@@ -739,9 +733,6 @@
     },
     "twig/twig": {
         "version": "v3.3.10"
-    },
-    "webmozart/assert": {
-        "version": "1.10.0"
     },
     "zenstruck/foundry": {
         "version": "1.33",

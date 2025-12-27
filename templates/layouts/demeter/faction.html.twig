@@ -2,24 +2,24 @@
 
 {% block left_sidebar %}
 	<twig:Sidebar>
-		<twig:SidebarItem route="faction_overview" :isActive="app.request.get('_route') == 'faction_overview'" label="Vue générale" />
+		<twig:SidebarItem route="faction_overview" :isActive="app.request.attributes.get('_route') == 'faction_overview'" label="Vue générale" />
 
 		{% if faction.hasOngoingElectionCampaign %}
-			<twig:SidebarItem route="view_faction_election" :isActive="app.request.get('_route') == 'faction_election'" label="Election" />
+			<twig:SidebarItem route="view_faction_election" :isActive="app.request.attributes.get('_route') == 'faction_election'" label="Election" />
 		{% endif %}
 
-		<twig:SidebarItem route="faction_forum" :isActive="app.request.get('_route') == 'faction_forum'" label="Forum" />
+		<twig:SidebarItem route="faction_forum" :isActive="app.request.attributes.get('_route') == 'faction_forum'" label="Forum" />
 
 		{% if current_player.isGovernmentMember %}
-			<twig:SidebarItem route="faction_government" :isActive="app.request.get('_route') == 'faction_government'" label="Gouvernement" />
+			<twig:SidebarItem route="faction_government" :isActive="app.request.attributes.get('_route') == 'faction_government'" label="Gouvernement" />
 		{% endif %}
 
 		{% if current_player.isParliamentMember %}
-			<twig:SidebarItem route="faction_senate" :isActive="app.request.get('_route') == 'faction_senate'" label="Sénat" />
+			<twig:SidebarItem route="faction_senate" :isActive="app.request.attributes.get('_route') == 'faction_senate'" label="Sénat" />
 		{% endif %}
 
-		<twig:SidebarItem route="faction_data" :isActive="app.request.get('_route') == 'faction_data'" label="Registres" />
-		<twig:SidebarItem route="faction_members" :isActive="app.request.get('_route') == 'faction_members'" label="Membres" />
+		<twig:SidebarItem route="faction_data" :isActive="app.request.attributes.get('_route') == 'faction_data'" label="Registres" />
+		<twig:SidebarItem route="faction_members" :isActive="app.request.attributes.get('_route') == 'faction_members'" label="Membres" />
 	</twig:Sidebar>
 {% endblock left_sidebar %}
 

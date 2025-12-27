@@ -14,7 +14,7 @@ use App\Modules\Zeus\Manager\PlayerManager;
 use App\Modules\Zeus\Model\Player;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\TaggedLocator;
+use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +25,7 @@ use Symfony\Component\Uid\Uuid;
 class Spy extends AbstractController
 {
 	public function __construct(
-		#[TaggedLocator('app.spying.handler')]
+		#[AutowireLocator('app.spying.handler')]
 		private readonly ServiceLocator $spyingHandlers,
 	) {
 	}

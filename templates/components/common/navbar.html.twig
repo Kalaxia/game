@@ -77,7 +77,7 @@
 <header class="">
     <div class="">
         <div id="base-selector">
-            <a href="{{ path('base_overview') }}" class="{% if app.request.get('_route') == 'bases' %}active{% endif %}">
+            <a href="{{ path('base_overview') }}" class="{% if app.request.attributes.get('_route') == 'bases' %}active{% endif %}">
                 {{ current_planet.name }}
             </a>
             <div class="">

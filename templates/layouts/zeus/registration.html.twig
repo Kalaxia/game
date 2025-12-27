@@ -3,15 +3,15 @@
 {% block body %}
 	<nav aria-label="Progress" class="bg-stone-800">
 		<ol role="list" class="divide-y divide-gray-300 border-b border-gray-300 md:flex md:divide-y-0">
-			{% if app.request.get('_route') == 'registration_choose_faction' %}
+			{% if app.request.attributes.get('_route') == 'registration_choose_faction' %}
 				{% set factionChoiceStatus = 'current' %}
 				{% set profileStatus = 'next' %}
 				{% set placeChoiceStatus = 'next' %}
-			{% elseif app.request.get('_route') == 'registration_create_character' %}
+			{% elseif app.request.attributes.get('_route') == 'registration_create_character' %}
 				{% set factionChoiceStatus = 'done' %}
 				{% set profileStatus = 'current' %}
 				{% set placeChoiceStatus = 'next' %}
-			{% elseif app.request.get('_route') == 'registration_choose_place' %}
+			{% elseif app.request.attributes.get('_route') == 'registration_choose_place' %}
 				{% set factionChoiceStatus = 'done' %}
 				{% set profileStatus = 'done' %}
 				{% set placeChoiceStatus = 'current' %}

@@ -6,12 +6,12 @@ namespace App\Modules\Galaxy\Infrastructure\DataFixtures\Factory;
 
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use Symfony\Component\Uid\Uuid;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Planet>
+ * @extends PersistentObjectFactory<Planet>
  */
-class PlaceFactory extends PersistentProxyObjectFactory
+class PlaceFactory extends PersistentObjectFactory
 {
 	protected function defaults(): array
 	{

@@ -2,11 +2,11 @@
 
 {% block left_sidebar %}
 	<twig:Sidebar>
-		<twig:SidebarItem route="base_overview" :isActive="app.request.get('_route') == 'base_overview'" picto="build/media/orbitalbase/situation.png" label="Vue de situation" />
+		<twig:SidebarItem route="base_overview" :isActive="app.request.attributes.get('_route') == 'base_overview'" picto="build/media/orbitalbase/situation.png" label="Vue de situation" />
 		{% if current_planet.levelGenerator > 0 %}
 			<twig:SidebarItem
 				route="generator"
-				:isActive="app.request.get('_route') == 'generator'"
+				:isActive="app.request.attributes.get('_route') == 'generator'"
 				picto="build/media/orbitalbase/generator.png"
 				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::GENERATOR'), 'frenchName')"
 				:badgeNumber="current_planet.levelGenerator"/>
@@ -15,7 +15,7 @@
 			<twig:SidebarItem
 				route="docks"
 				:params="{ dockType: constant('App\\Modules\\Galaxy\\Domain\\Entity\\Planet::DOCK_TYPE_MANUFACTURE')}"
-				:isActive="app.request.get('_route') == 'dock1'"
+				:isActive="app.request.attributes.get('_route') == 'dock1'"
 				picto="build/media/orbitalbase/dock1.png"
 				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::DOCK1'), 'frenchName') "
 				:badgeNumber="current_planet.levelDock1" />
@@ -25,7 +25,7 @@
 			<twig:SidebarItem
 				route="docks"
 				:params="{dockType: constant('App\\Modules\\Galaxy\\Domain\\Entity\\Planet::DOCK_TYPE_SHIPYARD')}"
-				:isActive="app.request.get('_route') == 'dock2'"
+				:isActive="app.request.attributes.get('_route') == 'dock2'"
 				picto="build/media/orbitalbase/dock2.png"
 				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::DOCK2'), 'frenchName')"
 				:badgeNumber="current_planet.levelDock2" />
@@ -34,7 +34,7 @@
 		{% if current_planet.levelTechnosphere > 0 %}
 			<twig:SidebarItem
 				route="technosphere"
-				:isActive="app.request.get('_route') == 'technosphere'"
+				:isActive="app.request.attributes.get('_route') == 'technosphere'"
 				picto="build/media/orbitalbase/technosphere.png"
 				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::TECHNOSPHERE'), 'frenchName')"
 				:badgeNumber="current_planet.levelTechnosphere" />
@@ -43,7 +43,7 @@
 		{% if current_planet.levelCommercialPlateforme > 0 %}
 			<twig:SidebarItem
 				route="trade_market"
-				:isActive="app.request.get('_route') == 'trade_market'"
+				:isActive="app.request.attributes.get('_route') == 'trade_market'"
 				picto="build/media/orbitalbase/commercialplateforme.png"
 				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::COMMERCIAL_PLATEFORME'), 'frenchName')"
 				:badgeNumber="current_planet.levelCommercialPlateforme" />
@@ -52,7 +52,7 @@
 		{% if current_planet.levelSpatioport > 0 %}
 			<twig:SidebarItem
 				route="spatioport"
-				:isActive="app.request.get('_route') == 'spatioport'"
+				:isActive="app.request.attributes.get('_route') == 'spatioport'"
 				picto="build/media/orbitalbase/spatioport.png"
 				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::SPATIOPORT'), 'frenchName')"
 				:badgeNumber="current_planet.levelSpatioport" />
@@ -61,7 +61,7 @@
 		{% if current_planet.levelRecycling > 0 %}
 			<twig:SidebarItem
 				route="recycling"
-				:isActive="app.request.get('_route') == 'recycling'"
+				:isActive="app.request.attributes.get('_route') == 'recycling'"
 				picto="build/media/orbitalbase/recycling.png"
 				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::RECYCLING'), 'frenchName')"
 				:badgeNumber="current_planet.levelRecycling" />
@@ -70,7 +70,7 @@
 		{% if current_planet.levelRefinery > 0 %}
 			<twig:SidebarItem
 				route="refinery"
-				:isActive="app.request.get('_route') == 'refinery'"
+				:isActive="app.request.attributes.get('_route') == 'refinery'"
 				picto="build/media/orbitalbase/refinery.png"
 				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::REFINERY'), 'frenchName')"
 				:badgeNumber="current_planet.levelRefinery" />
@@ -79,7 +79,7 @@
 		{% if current_planet.levelStorage > 0 %}
 			<twig:SidebarItem
 				route="storage"
-				:isActive="app.request.get('_route') == 'storage'"
+				:isActive="app.request.attributes.get('_route') == 'storage'"
 				picto="build/media/orbitalbase/storage.png"
 				:label="get_building_info(constant('App\\Modules\\Galaxy\\Resource\\PlanetResource::STORAGE'), 'frenchName')"
 				:badgeNumber="current_planet.levelStorage" />
@@ -87,7 +87,7 @@
 
 		<twig:SidebarItem
 			route="school"
-			:isActive="app.request.get('_route') == 'school'"
+			:isActive="app.request.attributes.get('_route') == 'school'"
 			picto="build/media/orbitalbase/school.png"
 			label="Ecole de Commandement" />
 	</twig:Sidebar>

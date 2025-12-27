@@ -2,8 +2,8 @@
 
 {% block left_sidebar %}
 	<twig:Sidebar>
-		<twig:SidebarItem route="player_rankings" picto="build/media/rank/player.png" :isActive="app.request.get('_route') == 'player_rankings'" label="Classement des joueurs" />
-		<twig:SidebarItem route="faction_rankings" picto="build/media/rank/faction.png" :isActive="app.request.get('_route') == 'faction_rankings'" label="Classement des factions" />
+		<twig:SidebarItem route="player_rankings" picto="build/media/rank/player.png" :isActive="app.request.attributes.get('_route') == 'player_rankings'" label="Classement des joueurs" />
+		<twig:SidebarItem route="faction_rankings" picto="build/media/rank/faction.png" :isActive="app.request.attributes.get('_route') == 'faction_rankings'" label="Classement des factions" />
 	</twig:Sidebar>
 {% endblock left_sidebar %}
 

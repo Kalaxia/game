@@ -31,12 +31,8 @@ class Planet extends Place implements SystemUpdatable, \JsonSerializable
 	public const DOCK_TYPE_SHIPYARD = 'shipyard';
 
 	public function __construct(
-		#[ORM\Id]
-		#[ORM\Column(type: 'uuid')]
 		public Uuid $id,
-		#[ORM\ManyToOne(targetEntity: System::class)]
 		public System      $system,
-		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int         $position,
 		#[ORM\Column(type: 'string', enumType: PlanetType::class, length: 32)]
 		public PlanetType $planetType,
@@ -91,7 +87,6 @@ class Planet extends Place implements SystemUpdatable, \JsonSerializable
 		public int $resourcesStorage = 5000,
 		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $createdAt = new \DateTimeImmutable(),
-		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $updatedAt = new \DateTimeImmutable(),
 	) {
 		parent::__construct($id, $system, $position, $updatedAt);

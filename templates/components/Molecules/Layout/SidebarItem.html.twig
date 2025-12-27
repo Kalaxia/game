@@ -1,4 +1,4 @@
-<a href="{{ path(route, params) }}" class="block my-4 {% if app.request.get('_route') == route %}active{% endif %}">
+<a href="{{ path(route, params) }}" class="block my-4 {% if app.request.attributes.get('_route') == route %}active{% endif %}">
 	<span class="picto">
 		{% if picto is not null %}
 <!--				<img src="{{ asset(picto) }}" alt="" />-->
