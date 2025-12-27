@@ -10,23 +10,58 @@ use App\Modules\Galaxy\Domain\Entity\Sector;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Galaxy\Domain\Repository\SystemRepositoryInterface;
+use Psr\Cache\CacheItemInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-readonly class SectorManager
+readonly class SectorOwnershipCalculator
 {
 	private const int CONTROLLED_SYSTEM_POINTS = 2;
 
 	public function __construct(
 		private ColorRepositoryInterface  $colorRepository,
-		private RedisManager              $redisManager,
+		private TagAwareCacheInterface $cache,
 		private SystemRepositoryInterface $systemRepository,
 		private SectorRepositoryInterface $sectorRepository,
 		private PlanetRepositoryInterface $planetRepository,
+		private LoggerInterface $logger,
 		#[Autowire('%galaxy.sector_minimal_score%')]
 		private int                       $sectorMinimalScore,
 		#[Autowire('%galaxy.scores%')]
 		private array                     $scores = [],
 	) {
+	}
+
+	public function getSectorOwnership(Sector $sector): array
+	{
+		return $this->cache->get(
+			sprintf('sector-%d-ownership', $sector->identifier),
+			function (ItemInterface $item) use ($sector) {
+				$item->tag('sectors_ownership');
+
+				return $this->calculateOwnership($sector);
+			},
+		);
+	}
+
+	public function clearSectorOwnership(): void
+	{
+		$this->cache->invalidateTags(['sectors_ownership']);
+
+		$this->logger->info('Sectors ownership cache cleared');
+	}
+
+	/**
+	 * @return array<int, int>
+	 */
+	public function refreshSectorOwnership(Sector $sector): array
+	{
+		$this->cache->delete(sprintf('sector-%d-ownership', $sector->identifier));
+
+		return $this->getSectorOwnership($sector);
 	}
 
 	/**
@@ -81,8 +116,6 @@ readonly class SectorManager
 		}
 
 		$this->sectorRepository->save($sector);
-
-		$this->redisManager->getConnection()->set('sector:' . $sector->id, serialize($scores));
 
 		return $scores;
 	}

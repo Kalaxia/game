@@ -31,8 +31,6 @@ parameters:
 
     security_api_key: '%env(SECURITY_API_KEY)%'
 
-    redis_timeout: '%env(REDIS_TIMEOUT)%'
-
     facebook_link: 'https://www.facebook.com/asylamba'
     google_plus_link: 'https://plus.google.com/+Asylamba-game'
     twitter_link: 'https://twitter.com/asylamba'
@@ -129,13 +127,6 @@ services:
     App\Classes\Library\Parser:
         arguments:
             $mediaPath: '%media%'
-
-    App\Classes\Redis\RedisManager:
-        arguments:
-            $host: '%env(REDIS_HOST)%'
-            $port: '%env(int:REDIS_PORT)%'
-            $password: '%env(default::REDIS_PASSWORD)%'
-            $timeout: "%redis_timeout%"
 
     App\Shared\Infrastructure\EventListener\MixpanelListener:
         arguments:

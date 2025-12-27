@@ -6,7 +6,7 @@ namespace App\Modules\Galaxy\Infrastructure\Command;
 
 use App\Modules\Galaxy\Domain\Entity\Sector;
 use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
-use App\Modules\Galaxy\Manager\SectorManager;
+use App\Modules\Galaxy\Manager\SectorOwnershipCalculator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,7 +23,7 @@ class CalculateSectorOwnershipCommand extends Command
 {
 	public function __construct(
 		private readonly SectorRepositoryInterface $sectorRepository,
-		private readonly SectorManager $sectorManager,
+		private readonly SectorOwnershipCalculator $sectorOwnershipCalculator,
 	) {
 		parent::__construct();
 	}
@@ -59,6 +59,6 @@ class CalculateSectorOwnershipCommand extends Command
 	{
 		$style->info(sprintf('Processing sector %d', $sector->identifier));
 
-		$this->sectorManager->calculateOwnership($sector);
+		$this->sectorOwnershipCalculator->refreshSectorOwnership($sector);
 	}
 }

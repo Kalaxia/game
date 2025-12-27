@@ -8,7 +8,7 @@
 				{% for sector in sectors %}
 					<polygon data-id="{{ sector.identifier }}"
 					class="{% if sector.faction %}fill-medium{{ sector.faction.identifier }}{% else %}fill-gray-800 stroke-gray-900 {% endif %} {{ (sector.faction.identifier ?? 0) != 0 ? 'enabled' : 'disabled' }}"
-					points="{{ galaxy_configuration.sectorCoord(sector.identifier, map_scale, 0) }}"
+					points="{{ galaxy_configuration.sectorVertices(sector.identifier, map_scale, 0)|join(',') }}"
 					/>
 				{% endfor %}
 			</svg>

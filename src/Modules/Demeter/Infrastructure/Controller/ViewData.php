@@ -3,7 +3,6 @@
 namespace App\Modules\Demeter\Infrastructure\Controller;
 
 use App\Classes\Library\Format;
-use App\Classes\Redis\RedisManager;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Domain\Repository\LiveReportRepositoryInterface;
 use App\Modules\Ares\Domain\Repository\SquadronRepositoryInterface;
@@ -19,6 +18,7 @@ use App\Modules\Demeter\Resource\LawResources;
 use App\Modules\Galaxy\Domain\Entity\Sector;
 use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Galaxy\Galaxy\GalaxyConfiguration;
+use App\Modules\Galaxy\Manager\SectorOwnershipCalculator;
 use App\Modules\Zeus\Domain\Repository\CreditTransactionRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,7 +31,7 @@ class ViewData extends AbstractController
 	public function __construct(
 		private readonly CommercialRouteRepositoryInterface $commercialRouteRepository,
 		private readonly ColorRepositoryInterface $colorRepository,
-		private readonly RedisManager $redisManager,
+		private readonly SectorOwnershipCalculator $sectorOwnershipCalculator,
 	) {
 
 	}
@@ -144,13 +144,7 @@ class ViewData extends AbstractController
 		foreach (array_keys($types) as $type) {
 			foreach ($sectors as $key => $sector) {
 				$percents = ['color'.$faction->identifier => 0];
-				$sectorOwnershipScores = $this->redisManager->getConnection()->get('sector:' . $sector->id);
-				if (!is_string($sectorOwnershipScores)) {
-					throw new \LogicException(sprintf('Missing ownership data for sector %s', $sector->id));
-				}
-
-				/** @var array<int, int> $scores */
-				$scores = unserialize($sectorOwnershipScores);
+				$scores = $this->sectorOwnershipCalculator->getSectorOwnership($sector);
 
 				if (!isset($scores[$faction->identifier]) && !$sector->faction?->id->equals($faction->id)) {
 					unset($sectors[$key]);

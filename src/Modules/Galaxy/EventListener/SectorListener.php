@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Modules\Galaxy\EventListener;
 
 use App\Modules\Galaxy\Domain\Event\PlanetOwnerChangeEvent;
-use App\Modules\Galaxy\Manager\SectorManager;
+use App\Modules\Galaxy\Manager\SectorOwnershipCalculator;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 readonly class SectorListener
 {
 	public function __construct(
-		private SectorManager $sectorManager,
+		private SectorOwnershipCalculator $sectorOwnershipCalculator,
 	) {
 	}
 
@@ -20,6 +20,6 @@ readonly class SectorListener
 	{
 		$system = $event->planet->system;
 
-		$this->sectorManager->calculateOwnership($system->sector);
+		$this->sectorOwnershipCalculator->refreshSectorOwnership($system->sector);
 	}
 }
