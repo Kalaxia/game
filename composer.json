@@ -14,7 +14,7 @@
         "mixpanel/mixpanel-php": "^2.11",
         "psr/log": "^3.0",
         "sentry/sdk": "^4.0",
-        "sentry/sentry-symfony": "^5.2",
+        "sentry/sentry-symfony": "^5.8",
         "symfony/amqp-messenger": "^8.0",
         "symfony/asset": "^8.0",
         "symfony/asset-mapper": "^8.0",
