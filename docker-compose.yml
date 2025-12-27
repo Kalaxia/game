@@ -1,7 +1,5 @@
 networks:
-    asylamba:
-        driver: bridge
-    mongo:
+    kalaxia:
         driver: bridge
 
 volumes:
@@ -24,34 +22,30 @@ services:
         volumes:
             - "./:/srv/app"
         networks:
-            - asylamba
+            - kalaxia
 
     mariadb:
-        container_name: asylamba_mariadb
+        container_name: kalaxia_mariadb
         image: mariadb:10
         environment:
-            MARIADB_DATABASE: ${MARIADB_DATABASE:-asylamba_game}
-            MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-asylamba}
-            MARIADB_USER: ${MARIADB_USER:-asylamba}
-            MARIADB_PASSWORD: ${MARIADB_PASSWORD:-asylamba}
+            MARIADB_DATABASE: ${MARIADB_DATABASE:-kalaxia_game}
+            MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-kalaxia}
+            MARIADB_USER: ${MARIADB_USER:-kalaxia}
+            MARIADB_PASSWORD: ${MARIADB_PASSWORD:-kalaxia}
         networks:
-            - asylamba
-        ports:
-            - "3306:3306"
+            - kalaxia
         volumes:
             # mysql
             - db-data:/var/lib/mysql
 
     redis:
-        container_name: asylamba_redis
+        container_name: kalaxia_redis
         image: redis
         networks:
-            - asylamba
-        ports:
-            - "6379:6379"
+            - kalaxia
 
     rabbitmq:
-        container_name: asylamba_rabbitmq
+        container_name: kalaxia_rabbitmq
         image: rabbitmq:3.9-management-alpine
         healthcheck:
             test: rabbitmq-diagnostics -q ping
@@ -64,7 +58,7 @@ services:
         volumes:
             - rabbitmq-data:/var/lib/rabbitmq
         networks:
-            - asylamba
+            - kalaxia
 
     caddy:
         container_name: kalaxia_caddy_webserver
@@ -82,7 +76,7 @@ services:
             - caddy_data:/data
             - caddy_config:/config
         networks:
-            - asylamba
+            - kalaxia
 
     supervisord:
         container_name: kalaxia_worker
@@ -99,7 +93,7 @@ services:
             - "./var/logs/supervisord/:/var/log/supervisord/"
             - "./supervisord.conf:/etc/supervisor/supervisord.conf"
         networks:
-            - asylamba
+            - kalaxia
 
     mercure:
         container_name: kalaxia_mercure
@@ -117,7 +111,7 @@ services:
           retries: 5
           start_period: 60s
         networks:
-            - asylamba
+            - kalaxia
         volumes:
           - mercure_data:/data
           - mercure_config:/config
