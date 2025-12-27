@@ -147,10 +147,8 @@ class PlayerRepository extends DoctrineRepository implements PlayerRepositoryInt
 		return $this->createQueryBuilder('p')
 			->where('p.faction = :faction')
 			->andWhere('p.statement != :statement')
-			->setParameters([
-				'faction' => $faction,
-				'statement' => Player::DEAD,
-			])
+			->setParameter('faction', $faction)
+			->setParameter('statement', Player::DEAD)
 			->orderBy('p.dInscription', 'DESC')
 			->setMaxResults(25)
 			->getQuery()
@@ -163,11 +161,9 @@ class PlayerRepository extends DoctrineRepository implements PlayerRepositoryInt
 			->where('p.faction = :faction')
 			->andWhere('p.status = :status')
 			->andWhere('p.statement != :statement')
-			->setParameters([
-				'faction' => $faction,
-				'status' => $status,
-				'statement' => Player::DEAD,
-			])
+			->setParameter('faction', $faction)
+			->setParameter('status', $status)
+			->setParameter('statement', Player::DEAD)
 			->getQuery()
 			->getOneOrNullResult();
 	}
