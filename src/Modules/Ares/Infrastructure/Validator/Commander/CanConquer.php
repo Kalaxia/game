@@ -13,7 +13,7 @@ class CanConquer extends Compound
 {
 	public function __construct(private readonly int $price)
 	{
-		parent::__construct([]);
+		parent::__construct();
 	}
 
 	protected function getConstraints(array $options): array

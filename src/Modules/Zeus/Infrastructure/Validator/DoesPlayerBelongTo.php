@@ -13,7 +13,7 @@ class DoesPlayerBelongTo extends Constraint implements SelectorSpecification
 {
 	public function __construct(private readonly User $user)
 	{
-		parent::__construct([], []);
+		parent::__construct();
 	}
 
 	public function addMatchingCriteria(QueryBuilder $queryBuilder): void

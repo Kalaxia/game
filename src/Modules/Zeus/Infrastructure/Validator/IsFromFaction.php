@@ -17,7 +17,10 @@ class IsFromFaction extends Constraint implements SelectorSpecification
 		?array $groups = null,
 		mixed $payload = null
 	) {
-		parent::__construct([], $groups, $payload);
+		parent::__construct(
+			groups: $groups,
+			payload: $payload,
+		);
 	}
 
 	public function addMatchingCriteria(QueryBuilder $queryBuilder): void

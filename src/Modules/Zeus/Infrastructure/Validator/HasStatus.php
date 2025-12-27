@@ -12,7 +12,10 @@ class HasStatus extends Constraint implements SelectorSpecification
 {
 	public function __construct(private readonly array $statuses, ?array $groups = null, mixed $payload = null)
 	{
-		parent::__construct([], $groups, $payload);
+		parent::__construct(
+			groups: $groups,
+			payload: $payload,
+		);
 	}
 
 	public function addMatchingCriteria(QueryBuilder $queryBuilder): void

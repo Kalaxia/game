@@ -14,7 +14,7 @@ class IsGovernmentMember extends SelectorCompositeSpecification
 {
 	public function __construct(private readonly Color $faction)
 	{
-		parent::__construct([]);
+		parent::__construct();
 	}
 
 	/**

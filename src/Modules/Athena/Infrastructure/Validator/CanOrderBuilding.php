@@ -8,7 +8,7 @@ class CanOrderBuilding extends Compound
 {
 	public function __construct(private readonly int $buildingQueuesCount)
 	{
-		parent::__construct([]);
+		parent::__construct();
 	}
 
 	public function getConstraints(array $options): array
