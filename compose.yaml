@@ -15,6 +15,7 @@ services:
     phpfpm:
         container_name: kalaxia_app
         build: docker/fpm
+        user: www-data
         logging:
             driver: "json-file"
             options:
@@ -81,6 +82,7 @@ services:
     supervisord:
         container_name: kalaxia_worker
         build: docker/supervisord
+        user: www-data
         depends_on:
             rabbitmq:
                 condition: service_healthy

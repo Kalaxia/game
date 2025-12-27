@@ -1,4 +1,8 @@
 services:
+    phpfpm:
+        volumes:
+            - ./docker/fpm/config/php-dev.ini:/usr/local/etc/php/conf.d/php-dev.ini:ro
+
     ###> symfony/mercure-bundle ###
     mercure:
         environment:
