@@ -28,37 +28,6 @@ class EventList
 
 	/**
 	 * @param string $date
-	 *
-	 * @return \App\Classes\Container\StackList
-	 */
-	public function getPastEvents($date)
-	{
-		$past = new StackList();
-		foreach ($this->events as $e) {
-			if ($e->get('date') <= $date) {
-				$past->append($e);
-			}
-		}
-
-		return $past;
-	}
-
-	/**
-	 * @param string $date
-	 */
-	public function clearPastEvents($date)
-	{
-		$size = $this->size() - 1;
-		for ($i = $size; $i >= 0; --$i) {
-			if ($this->events[$i]->get('date') <= $date) {
-				$this->remove($i);
-				--$i;
-			}
-		}
-	}
-
-	/**
-	 * @param string $date
 	 * @param string $eventType
 	 * @param string $eventId
 	 * @param string $eventInfo
