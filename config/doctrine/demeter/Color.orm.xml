@@ -4,6 +4,11 @@
                           https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
 	<entity name="App\Modules\Demeter\Model\Color" table="color">
+		<unique-constraints>
+			<unique-constraint columns="identifier" name="faction_identifier" />
+		</unique-constraints>
+
+
 		<id name="id" type="uuid" />
 
 		<field name="identifier" type="smallint" />

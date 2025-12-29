@@ -19,6 +19,7 @@ use Symfony\Component\Uid\Uuid;
 	PlaceType::GasPlanet->value => GasPlanet::class,
 	PlaceType::Empty->value => EmptyPlace::class,
 ])]
+#[ORM\UniqueConstraint(name: 'place_position', columns: ['system_id', 'position'])]
 abstract class Place implements SystemUpdatable
 {
 	public const COEFFMAXRESOURCE = 600;

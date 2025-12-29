@@ -8,6 +8,7 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'galaxy__sectors')]
+#[ORM\UniqueConstraint(name: 'sector_identifier', columns: ['identifier'])]
 class Sector
 {
 	public function __construct(

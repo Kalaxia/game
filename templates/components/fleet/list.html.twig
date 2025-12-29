@@ -103,7 +103,7 @@
 									<img src="{{ asset('build/media/map/place/place1-' ~ get_planet_size(commander.isComingBack ? commander.startPlace.population : commander.destinationPlace.population) ~ '.png') }}" alt="" class="cover" />'
 									<span class="top">
 										<a href="{{ path('map', {'placeId': reversed ? commander.startPlace.id : commander.destinationPlace.id }) }}">
-											{{- (reversed ? commander.startPlace.id : commander.destinationPlace.id) -}}
+											{{- (reversed ? commander.startPlace : commander.destinationPlace).name ?? 'Planète rebelle' -}}
 										</a>
 
 										{% if commander.player.id != current_player.id %}

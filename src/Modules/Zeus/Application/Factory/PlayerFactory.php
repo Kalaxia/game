@@ -169,7 +169,15 @@ readonly class PlayerFactory
 		// choix de la place
 		$candidatePlaces = $this->planetRepository->getCandidatePlanetsForNewPlayers($sector);
 
-		$placeId = $candidatePlaces[random_int(0, count($candidatePlaces) - 1)];
+		$candidatePlaceCount = count($candidatePlaces);
+		if ($candidatePlaceCount === 0) {
+			throw new \RuntimeException(sprintf(
+				'No candidate planet found for new player %d in sector %d',
+				$player->id,
+				$sector->identifier,
+			));
+		}
+		$placeId = $candidatePlaces[random_int(0, $candidatePlaceCount - 1)];
 		$planet = $this->planetRepository->get($placeId);
 
 		$planet->player = $player;
