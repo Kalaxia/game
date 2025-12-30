@@ -48,10 +48,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 		minMessage: 'Le mot de passe doit faire au moins {{ limit }} caractères'
 	)]
 	private ?string $password = null;
-	#[ORM\Column(type: 'datetime_immutable', nullable: true)]
-	private ?\DateTimeImmutable $createdAt = null;
-	#[ORM\Column(type: 'datetime_immutable', nullable: true)]
-	private ?\DateTimeImmutable $updatedAt = null;
+	#[ORM\Column(type: 'datetime_immutable')]
+	private \DateTimeImmutable $createdAt;
+	#[ORM\Column(type: 'datetime_immutable')]
+	private \DateTimeImmutable $updatedAt;
 	#[ORM\Column(type: 'datetime_immutable', nullable: true)]
 	private ?\DateTimeImmutable $lastLoggedAt = null;
 
@@ -148,24 +148,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 		// Si vous stockez des données temporaires sensibles sur l'utilisateur, effacez-les ici
 	}
 
-	public function getCreatedAt(): ?\DateTimeImmutable
+	public function getCreatedAt(): \DateTimeImmutable
 	{
 		return $this->createdAt;
 	}
 
-	public function setCreatedAt(?\DateTimeImmutable $createdAt): static
+	public function setCreatedAt(\DateTimeImmutable $createdAt): static
 	{
 		$this->createdAt = $createdAt;
 
 		return $this;
 	}
 
-	public function getUpdatedAt(): ?\DateTimeImmutable
+	public function getUpdatedAt(): \DateTimeImmutable
 	{
 		return $this->updatedAt;
 	}
 
-	public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+	public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
 	{
 		$this->updatedAt = $updatedAt;
 
