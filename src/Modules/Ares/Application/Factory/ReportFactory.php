@@ -48,8 +48,8 @@ readonly class ReportFactory
 			foughtAt: LiveReport::$dFight,
 			squadrons: LiveReport::$squadrons,
 		);
-		$this->setArmies();
-		$this->setPev();
+		$this->setArmies($report);
+		$this->setPev($report);
 
 		return $report;
 	}

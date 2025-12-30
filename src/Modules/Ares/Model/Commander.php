@@ -23,16 +23,16 @@ class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatabl
 	public array $armyAtEnd = [];
 	public int $earnedExperience = 0;
 	public bool $winner = false;
-	public bool|null $isAttacker = null;
+	public ?bool $isAttacker = null;
 	public bool $hasArmySetted = false;
 
 	// variables de déplacement
-	public \DateTimeImmutable|null $departedAt = null;
-	public \DateTimeImmutable|null $arrivedAt = null;
+	public ?\DateTimeImmutable $departedAt = null;
+	public ?\DateTimeImmutable $arrivedAt = null;
 	public int $resources = 0;
-	public CommanderMission|null $travelType = null;
-	public Planet|null $startPlace = null;
-	public Planet|null $destinationPlace = null;
+	public ?CommanderMission $travelType = null;
+	public ?Planet $startPlace = null;
+	public ?Planet $destinationPlace = null;
 	// Tableau d'objets squadron
 	/**
 	 * @var list<Squadron>
@@ -40,29 +40,26 @@ class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatabl
 	public array $army = [];
 
 	public function __construct(
-		public Uuid               $id,
-		public string             $name,
-		public string             $avatar,
-		public Player|null        $player,
-		public Planet|null        $base,
+		public Uuid $id,
+		public string $name,
+		public string $avatar,
+		public ?Player $player,
+		public ?Planet $base,
 		public \DateTimeImmutable $enlistedAt,
-		public int                $experience = 0,
-		public int                $sexe = 0,
-		public int                $age = 0,
-		public int                $level = 0,
-		public int                $uExperience = 0,
-		public int                $palmares = 0,
-		public int                $statement = Commander::INSCHOOL,
-		public int                $line = 1,
-		public string|null        $comment = null,
+		public int $experience = 0,
+		public int $sexe = 0,
+		public int $age = 0,
+		public int $level = 0,
+		public int $uExperience = 0,
+		public int $palmares = 0,
+		public int $statement = Commander::INSCHOOL,
+		public int $line = 1,
+		public ?string $comment = null,
 		/** @var Collection<Squadron> */
 		public Collection $squadrons = new ArrayCollection(),
-		public \DateTimeImmutable|null $assignedAt = null,
-		public \DateTimeImmutable|null $diedAt = null,
-		public \DateTimeImmutable|null $updatedAt = null,
-		public bool $hasToU = true,
-		public bool $uMethodCtced = false,
-		public bool $isVirtual = false,
+		public ?\DateTimeImmutable $assignedAt = null,
+		public ?\DateTimeImmutable $diedAt = null,
+		public ?\DateTimeImmutable $updatedAt = null,
 	) {
 	}
 
@@ -163,7 +160,7 @@ class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatabl
 		return self::DEAD !== $this->statement;
 	}
 
-	public function findSquadron(int $position): Squadron|null
+	public function findSquadron(int $position): ?Squadron
 	{
 		foreach ($this->squadrons as $squadron) {
 			if ($squadron->position === $position) {
@@ -190,7 +187,7 @@ class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatabl
 		return count($this->squadronsIds);
 	}
 
-	public function getSquadron(int $i): Squadron|null
+	public function getSquadron(int $i): ?Squadron
 	{
 		if ($i > 16) {
 			throw new \LogicException(sprintf('Squadron ID cannot be greater than 16, %d given', $i));
@@ -215,12 +212,12 @@ class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatabl
 		return $array;
 	}
 
-	public function getDepartureDate(): \DateTimeImmutable|null
+	public function getDepartureDate(): ?\DateTimeImmutable
 	{
 		return $this->departedAt;
 	}
 
-	public function getArrivalDate(): \DateTimeImmutable|null
+	public function getArrivalDate(): ?\DateTimeImmutable
 	{
 		return $this->arrivedAt;
 	}
@@ -237,5 +234,10 @@ class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatabl
 	public function lastUpdatedBySystemAt(): \DateTimeImmutable
 	{
 		return $this->updatedAt;
+	}
+
+	public function isVirtual(): bool
+	{
+		return $this->player === null;
 	}
 }

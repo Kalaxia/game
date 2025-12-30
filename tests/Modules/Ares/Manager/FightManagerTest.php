@@ -59,7 +59,6 @@ class FightManagerTest extends KernelTestCase
 			enlistedAt: new \DateTimeImmutable(),
 			level: 1,
 			updatedAt: new \DateTimeImmutable(),
-			isVirtual: true,
 		);
 
 		for ($i = 0; $i < $squadronsCount; $i++) {

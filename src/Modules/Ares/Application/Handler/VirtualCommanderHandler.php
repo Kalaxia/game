@@ -29,7 +29,6 @@ readonly class VirtualCommanderHandler
 			age: 42,
 			level: $this->getVirtualCommanderLevel($place),
 			statement: Commander::AFFECTED,
-			isVirtual: true,
 		);
 
 		$squadronsCount = ceil($vCommander->level * (($place->danger + 1) / ($place->maxDanger + 1)));

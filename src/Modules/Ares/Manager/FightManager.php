@@ -216,7 +216,7 @@ class FightManager
 
 	private function resultOfFight(Commander $commander, bool $isWinner, Commander $enemyCommander): void
 	{
-		if ($commander->isVirtual) {
+		if ($commander->isVirtual()) {
 			return;
 		}
 
@@ -269,7 +269,7 @@ class FightManager
 
 	private function updateCommander(Commander $commander): void
 	{
-		if ($commander->isVirtual) {
+		if ($commander->isVirtual()) {
 			return;
 		}
 
