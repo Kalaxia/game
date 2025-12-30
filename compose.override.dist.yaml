@@ -26,3 +26,7 @@ services:
             MARIADB_ROOT_PASSWORD: kalaxia
             MARIADB_USER: kalaxia
             MARIADB_PASSWORD: kalaxia
+
+    supervisord:
+        volumes:
+            - ./docker/supervisord/config/php-prod.ini:/usr/local/etc/php/conf.d/php-prod.ini:ro
