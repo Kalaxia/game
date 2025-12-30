@@ -13,6 +13,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity]
 #[ORM\Table(name: 'portal__users')]
 #[UniqueEntity(fields: ['email'], message: 'Il existe déjà un compte avec cet email')]
+#[ORM\UniqueConstraint(name: 'user_username', columns: ['username'])]
+#[ORM\UniqueConstraint(name: 'user_email', columns: ['email'])]
+#[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
 	#[ORM\Id]
@@ -45,6 +48,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 		minMessage: 'Le mot de passe doit faire au moins {{ limit }} caractères'
 	)]
 	private ?string $password = null;
+	#[ORM\Column(type: 'datetime_immutable', nullable: true)]
+	private ?\DateTimeImmutable $createdAt = null;
+	#[ORM\Column(type: 'datetime_immutable', nullable: true)]
+	private ?\DateTimeImmutable $updatedAt = null;
+	#[ORM\Column(type: 'datetime_immutable', nullable: true)]
+	private ?\DateTimeImmutable $lastLoggedAt = null;
+
+	#[ORM\PrePersist]
+	public function prePersist(): void
+	{
+		$this->createdAt = $this->updatedAt = new \DateTimeImmutable();
+	}
+
+	#[ORM\PreUpdate]
+	public function preUpdate(): void
+	{
+		$this->updatedAt = new \DateTimeImmutable();
+	}
 
 	public function getId(): ?int
 	{
@@ -125,5 +146,41 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 	public function eraseCredentials(): void
 	{
 		// Si vous stockez des données temporaires sensibles sur l'utilisateur, effacez-les ici
+	}
+
+	public function getCreatedAt(): ?\DateTimeImmutable
+	{
+		return $this->createdAt;
+	}
+
+	public function setCreatedAt(?\DateTimeImmutable $createdAt): static
+	{
+		$this->createdAt = $createdAt;
+
+		return $this;
+	}
+
+	public function getUpdatedAt(): ?\DateTimeImmutable
+	{
+		return $this->updatedAt;
+	}
+
+	public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+	{
+		$this->updatedAt = $updatedAt;
+
+		return $this;
+	}
+
+	public function getLastLoggedAt(): ?\DateTimeImmutable
+	{
+		return $this->lastLoggedAt;
+	}
+
+	public function setLastLoggedAt(?\DateTimeImmutable $lastLoggedAt): static
+	{
+		$this->lastLoggedAt = $lastLoggedAt;
+
+		return $this;
 	}
 }

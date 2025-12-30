@@ -16,10 +16,6 @@ connect:
     path: /connect/{playerId}
     controller: App\Shared\Infrastructure\Controller\ConnectController
 
-logout:
-    path: /logout
-    controller: App\Shared\Infrastructure\Controller\LogoutController
-
 params:
     path: /params
     controller: App\Shared\Infrastructure\Controller\ParamsController
