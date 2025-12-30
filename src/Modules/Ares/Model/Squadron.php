@@ -114,17 +114,6 @@ class Squadron implements \JsonSerializable
 		return count($this->ships);
 	}
 
-	// Move this method in dedicated handler
-	public function getPev(): int
-	{
-		trigger_error('This method is deprecated and will be removed in the next major release. Use GetSquadronPev service instead.', E_USER_DEPRECATED);
-	}
-
-	public function isEmpty(): bool
-	{
-		return 0 === $this->getPev();
-	}
-
 	public function destructShip(int $key): void
 	{
 		$ship = $this->ships[$key];

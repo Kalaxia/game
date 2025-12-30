@@ -7,6 +7,7 @@ use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Application\Handler\CommanderExperienceHandler;
 use App\Modules\Ares\Application\Handler\FightImportanceHandler;
 use App\Modules\Ares\Domain\Repository\SquadronRepositoryInterface;
+use App\Modules\Ares\Domain\Service\GetSquadronPev;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\LiveReport;
 use App\Modules\Zeus\Manager\PlayerBonusManager;
@@ -20,6 +21,7 @@ class FightManager
 		private readonly FightImportanceHandler $fightImportanceHandler,
 		private readonly CommanderArmyHandler $commanderArmyHandler,
 		private readonly CommanderExperienceHandler $commanderExperienceHandler,
+		private readonly GetSquadronPev $getSquadronPev,
 		private readonly SquadronFightHandler $squadronFightHandler,
 		private readonly SquadronRepositoryInterface $squadronRepository,
 		private readonly PlayerBonusManager $playerBonusManager,
@@ -244,11 +246,12 @@ class FightManager
 			$squadron->targetId = null;
 		}
 		foreach ($commander->army as $squadron) {
+			$squadronPev = ($this->getSquadronPev)($squadron);
 			// TODO move to spec (same as SquadronManager::chooseEnemy)
 			// The current line is just the rule to ensure that all the lines don't fire at the starting round
-			if (0 < $squadron->getPev() && $squadron->lineCoord * 3 <= FightManager::getCurrentLine()) {
+			if (0 < $squadronPev && $squadron->lineCoord * 3 <= FightManager::getCurrentLine()) {
 				$this->squadronFightHandler->engage($squadron, $enemyCommander, $playerBonus, $enemyBonus);
-			} elseif (0 === $squadron->getPev()) {
+			} elseif (0 === $squadronPev) {
 				$this->logger->debug('Squadron {squadronPosition} of commander {commanderName} has no more ships to fight', [
 					'squadronPosition' => $squadron->position,
 					'commanderName' => $squadron->commander->name,
