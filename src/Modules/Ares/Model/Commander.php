@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Ares\Model;
 
 use App\Modules\Ares\Domain\Model\CommanderMission;
@@ -38,32 +40,31 @@ class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatabl
 	public array $army = [];
 
 	public function __construct(
-        public Uuid               $id,
-        public string             $name,
-        public string             $avatar,
-        public Player|null        $player,
-        public Planet|null        $base,
-        public \DateTimeImmutable $enlistedAt,
-        public int                $experience = 0,
-        public int                $sexe = 0,
-        public int                $age = 0,
-        public int                $level = 0,
-        public int                $uExperience = 0,
-        public int                $palmares = 0,
-        public int                $statement = Commander::INSCHOOL,
-        public int                $line = 1,
-        public string|null        $comment = null,
-        /** @var Collection<Squadron> */
-        public Collection $squadrons = new ArrayCollection(),
-        public \DateTimeImmutable|null $assignedAt = null,
-        public \DateTimeImmutable|null $diedAt = null,
-        public \DateTimeImmutable|null $updatedAt = null,
-        public bool $hasToU = true,
-        public bool $uMethodCtced = false,
-        public bool $isVirtual = false
-    )
-    {
-    }
+		public Uuid               $id,
+		public string             $name,
+		public string             $avatar,
+		public Player|null        $player,
+		public Planet|null        $base,
+		public \DateTimeImmutable $enlistedAt,
+		public int                $experience = 0,
+		public int                $sexe = 0,
+		public int                $age = 0,
+		public int                $level = 0,
+		public int                $uExperience = 0,
+		public int                $palmares = 0,
+		public int                $statement = Commander::INSCHOOL,
+		public int                $line = 1,
+		public string|null        $comment = null,
+		/** @var Collection<Squadron> */
+		public Collection $squadrons = new ArrayCollection(),
+		public \DateTimeImmutable|null $assignedAt = null,
+		public \DateTimeImmutable|null $diedAt = null,
+		public \DateTimeImmutable|null $updatedAt = null,
+		public bool $hasToU = true,
+		public bool $uMethodCtced = false,
+		public bool $isVirtual = false,
+	) {
+	}
 
 	public const COEFFSCHOOL = 100;
 	public const COEFFEARNEDEXP = 50;
