@@ -172,8 +172,8 @@ readonly class LootManager
 
 		$resourcesToLoot = $placeBase->resourcesStorage - Commander::LIMITTOLOOT;
 
-		$storage = $this->commanderArmyHandler->getPevToLoot($commander) * Commander::COEFFLOOT;
-		$storage += round($storage * ((2 * $bonus) / 100));
+		$storage = intval($this->commanderArmyHandler->getPevToLoot($commander) * Commander::COEFFLOOT);
+		$storage += intval(round($storage * ((2 * $bonus) / 100)));
 
 		$resourcesLooted = ($storage > $resourcesToLoot) ? $resourcesToLoot : $storage;
 
