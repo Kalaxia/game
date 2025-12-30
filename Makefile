@@ -10,5 +10,5 @@ consume_game_scheduler:
 consume_async:
 	php bin/console messenger:consume async -vv
 
-restart_worker:
-	docker compose restart supervisord
+restart_php:
+	docker compose restart phpfpm supervisord
