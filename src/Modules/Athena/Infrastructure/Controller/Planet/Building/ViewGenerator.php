@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Athena\Infrastructure\Controller\Base\Building;
+namespace App\Modules\Athena\Infrastructure\Controller\Planet\Building;
 
 use App\Modules\Athena\Domain\Repository\BuildingQueueRepositoryInterface;
 use App\Modules\Galaxy\Domain\Entity\Planet;
@@ -10,10 +10,17 @@ use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
 use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Model\PlayerBonusId;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 
 class ViewGenerator extends AbstractController
 {
+	#[Route(
+		name: 'generator',
+		path: '/generator',
+		methods: [Request::METHOD_GET],
+	)]
 	public function __invoke(
         BuildingQueueRepositoryInterface $buildingQueueRepository,
         CurrentPlayerBonusRegistry       $currentPlayerBonusRegistry,

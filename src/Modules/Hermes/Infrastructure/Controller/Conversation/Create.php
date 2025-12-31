@@ -35,7 +35,8 @@ class Create extends AbstractController
 		ConversationMessageRepositoryInterface $conversationMessageRepository,
 		EntityManagerInterface $entityManager,
 	): Response {
-		$recipients = $request->request->get('recipients');
+		// TODO Fix the old system with autocomplete and IDs
+		$recipients = $request->request->get('name');
 		$content = $request->request->get('content');
 
 		$content = $parser->parse($content);
@@ -56,7 +57,8 @@ class Create extends AbstractController
 			throw new BadRequestHttpException('Nombre maximum de joueur atteint.');
 		}
 		// chargement des utilisateurs
-		$players = $playerRepository->getByIdsAndStatements($recipients, [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY]);
+		//$players = $playerRepository->getByIdsAndStatements($recipients, [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY]);
+		$players = $playerRepository->getByNamesAndStatements($recipients, [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY]);
 
 		if (count($players) < 1) {
 			throw new ConflictHttpException('Le joueur n\'est pas joignable.');

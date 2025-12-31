@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Modules\Athena\Infrastructure\Controller\Base\Building;
+declare(strict_types=1);
+
+namespace App\Modules\Athena\Infrastructure\Controller\Planet\Building;
 
 use App\Classes\Library\Format;
 use App\Classes\Library\Game;
@@ -15,7 +17,9 @@ use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Travel\Domain\Model\TravelType;
 use App\Modules\Travel\Domain\Service\CalculateTravelTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 
 class ViewRecycling extends AbstractController
 {
@@ -25,6 +29,11 @@ class ViewRecycling extends AbstractController
 	) {
 	}
 
+	#[Route(
+		path: '/recycling',
+		name: 'recycling',
+		methods: [Request::METHOD_GET],
+	)]
 	public function __invoke(
         Planet                              $currentPlanet,
         PlanetHelper                        $planetHelper,

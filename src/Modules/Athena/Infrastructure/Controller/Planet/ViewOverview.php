@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Modules\Athena\Infrastructure\Controller\Base;
+declare(strict_types=1);
+
+namespace App\Modules\Athena\Infrastructure\Controller\Planet;
 
 use App\Classes\Library\Game;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
@@ -12,9 +14,15 @@ use App\Modules\Galaxy\Resource\PlaceResource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 
 class ViewOverview extends AbstractController
 {
+	#[Route(
+		name: 'base_overview',
+		path: '/overview',
+		methods: [Request::METHOD_GET],
+	)]
 	public function __invoke(
         Request                      $request,
         Planet                       $currentPlanet,

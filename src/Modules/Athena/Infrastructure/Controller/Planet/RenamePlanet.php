@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Modules\Athena\Infrastructure\Controller\Base;
+declare(strict_types=1);
 
-use App\Classes\Entity\EntityManager;
+namespace App\Modules\Athena\Infrastructure\Controller\Planet;
+
 use App\Classes\Library\Parser;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Manager\PlanetManager;
@@ -13,9 +14,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Attribute\Route;
 
 class RenamePlanet extends AbstractController
 {
+	#[Route(
+		path: '/rename-planet',
+		name: 'rename_planet',
+		methods: [Request::METHOD_POST],
+	)]
 	public function __invoke(
 		Request                $request,
 		Player                 $currentPlayer,

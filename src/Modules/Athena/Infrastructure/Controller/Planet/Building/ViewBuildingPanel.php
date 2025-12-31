@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Athena\Infrastructure\Controller\Base\Building;
+namespace App\Modules\Athena\Infrastructure\Controller\Planet\Building;
 
 use App\Classes\Library\Chronos;
 use App\Classes\Library\Format;
@@ -10,10 +10,17 @@ use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Galaxy\Resource\PlanetResource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 
 class ViewBuildingPanel extends AbstractController
 {
+	#[Route(
+		path: '/buildings/{identifier}/panel',
+		name: 'view_building_panel',
+		methods: [Request::METHOD_GET],
+	)]
 	public function __invoke(
         Planet               $currentPlanet,
         BuildingLevelHandler $buildingLevelHandler,

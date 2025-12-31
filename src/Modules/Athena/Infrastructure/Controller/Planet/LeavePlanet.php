@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Modules\Athena\Infrastructure\Controller\Base;
+declare(strict_types=1);
+
+namespace App\Modules\Athena\Infrastructure\Controller\Planet;
 
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Manager\CommanderManager;
@@ -20,10 +22,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class LeavePlanet extends AbstractController
 {
+	#[Route(
+		path: '/leave-planet',
+		name: 'leave_planet',
+		methods: [Request::METHOD_GET],
+	)]
 	public function __invoke(
 		Request                          $request,
 		Planet                           $currentPlanet,

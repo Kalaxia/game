@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Athena\Infrastructure\Controller\Ship;
 
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
@@ -11,9 +13,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\Routing\Attribute\Route;
 
 class Recycle extends AbstractController
 {
+	#[Route(
+		path: '/ships/recycle',
+		name: 'recycle_ships',
+		methods: [Request::METHOD_POST],
+	)]
 	public function __invoke(
 		Request                        $request,
 		Player                         $currentPlayer,

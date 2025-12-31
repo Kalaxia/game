@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Modules\Athena\Infrastructure\Controller\Base\Building;
+declare(strict_types=1);
+
+namespace App\Modules\Athena\Infrastructure\Controller\Planet\Building;
 
 use App\Modules\Athena\Application\Factory\BuildingQueueFactory;
 use App\Modules\Athena\Application\Handler\Building\BuildingLevelHandler;
@@ -18,12 +20,18 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class Build extends AbstractController
 {
+	#[Route(
+		name: 'build',
+		path: '/buildings/{identifier}/build',
+		methods: [Request::METHOD_GET],
+	)]
 	public function __invoke(
         Request                          $request,
         Player                           $currentPlayer,

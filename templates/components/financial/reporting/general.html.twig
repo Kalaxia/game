@@ -35,7 +35,8 @@
 				<twig:NumberBox label="investissements universitaires" size="small">
 					<details class="marker:content-['']">
 						<summary class="cursor-pointer">
-							↓ {{ investments_data.totalInvestUni|number }}
+							<span class="text-light{{ current_player.faction.identifier }}">↓</span>
+							{{ investments_data.totalInvestUni|number }}
 						</summary>
 
 						<form action="{{ path('update_university_investments') }}" method="POST" id="invest-uni" class="flex">

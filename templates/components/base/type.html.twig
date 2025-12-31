@@ -22,7 +22,7 @@
 			<twig:BaseTypeChoice :type="type_commercial">
 				{# @TODO move that logic to a Specification class #}
 				{% if current_planet.typeOfBase == type_neutral and current_player.credit >= get_planet_type_info(type_commercial, 'price') and current_planet.levelGenerator >= minimal_change_level %}
-					<a href="{{ path('change_base_type', { 'id': current_planet.id, 'type': type_commercial }) }}" class="button">
+					<a href="{{ path('change_planet_type', { 'id': current_planet.id, 'type': type_commercial }) }}" class="button">
 						<twig:Button :faction="current_player.faction">
 							Evoluer en {{ get_planet_type_info(type_commercial, 'name') }}<br />
 							<span class="text-xs">{{ get_planet_type_info(type_commercial, 'price')|number }}</span>
@@ -30,7 +30,7 @@
 						</twig:Button>
 					</a>
 				{% elseif current_planet.typeOfBase == type_military and current_player.credit >= get_planet_type_info(type_commercial, 'price') %}
-					<a href="{{ path('change_base_type', { 'id': current_planet.id, 'type': type_commercial }) }}" onclick="confirm('Transformer cette base supprimera toute la file de construction. Vos missions de recyclage seront également annulées.')">
+					<a href="{{ path('change_planet_type', { 'id': current_planet.id, 'type': type_commercial }) }}" onclick="confirm('Transformer cette base supprimera toute la file de construction. Vos missions de recyclage seront également annulées.')">
 						<twig:Button :faction="current_player.faction">
 							Transformer en {{ get_planet_type_info(type_commercial, 'name') }}<br />
 							<span class="text-xs">{{ get_planet_type_info(type_commercial, 'price')|number }}</span>
@@ -66,7 +66,7 @@
 
 			<twig:BaseTypeChoice :type="type_military">
 				{% if current_planet.typeOfBase == type_neutral and current_player.credit >= get_planet_type_info(type_military, 'price') and current_planet.levelGenerator >= minimal_change_level %}
-					<a href="{{ path('change_base_type', {'type': type_military}) }}" class="button">
+					<a href="{{ path('change_planet_type', {'type': type_military}) }}" class="button">
 							<twig:Button :faction="current_player.faction">
 								Evoluer en {{ get_planet_type_info(type_military, 'name') }}<br />
 								<span class="text-xs">{{- get_planet_type_info(type_military, 'price')|number -}}</span>
@@ -74,7 +74,7 @@
 							</twig:Button>
 					</a>
 				{% elseif current_planet.typeOfBase == type_commercial and current_player.credit >= get_planet_type_info(type_military, 'price') %}
-					<a href="{{ path('change_base_type', {'type': type_military}) }}" class="button confirm" onclick="confirm('Transformer cette base supprimera toute la file de construction.')">
+					<a href="{{ path('change_planet_type', {'type': type_military}) }}" class="button confirm" onclick="confirm('Transformer cette base supprimera toute la file de construction.')">
 						<twig:Button :faction="current_player.faction">
 							Evoluer en {{ get_planet_type_info(type_military, 'name') }}<br />
 							<span class="text-xs">{{- get_planet_type_info(type_military, 'price')|number -}}</span>
@@ -110,7 +110,7 @@
 				{% set total_price = get_planet_type_info(type_capital, 'price') %}
 				{% if current_planet.typeOfBase in [type_commercial, type_military] and current_player.credit >= total_price and current_planet.levelGenerator >= capital_change_level %}
 					{% if capitals_count == 0 %}
-						<a href="{{ path('change_base_type', {'planetId': current_planet.id, 'type': type_capital }) }}" class="button">
+						<a href="{{ path('change_planet_type', {'planetId': current_planet.id, 'type': type_capital }) }}" class="button">
 							<twig:Button :faction="current_player.faction">
 								Evoluer en {{ get_planet_type_info(type_capital, 'name') }}<br />
 								<span class="text-xs">{{- total_price|number -}}</span>

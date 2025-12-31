@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Modules\Athena\Infrastructure\Controller\Base\Building;
+declare(strict_types=1);
+
+namespace App\Modules\Athena\Infrastructure\Controller\Planet\Building;
 
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
@@ -13,9 +15,15 @@ use App\Modules\Zeus\Model\PlayerBonusId;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 
 class ViewSchool extends AbstractController
 {
+	#[Route(
+		path: '/school',
+		name: 'school',
+		methods: [Request::METHOD_GET],
+	)]
 	public function __invoke(
         Request                      $request,
         CurrentPlayerBonusRegistry   $currentPlayerBonusRegistry,

@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Modules\Athena\Infrastructure\Controller\Base\Building;
+declare(strict_types=1);
+
+namespace App\Modules\Athena\Infrastructure\Controller\Planet\Building;
 
 use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
 use App\Modules\Athena\Manager\CommercialRouteManager;
@@ -15,12 +17,18 @@ use App\Modules\Zeus\Model\PlayerBonusId;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 
 class ViewSpatioport extends AbstractController
 {
 	private const int MIN_DISTANCE = 75;
 	private const int MAX_DISTANCE = 125;
 
+	#[Route(
+		path: '/spatioport',
+		name: 'spatioport',
+		methods: [Request::METHOD_GET],
+	)]
 	public function __invoke(
         Request                            $request,
         Player                             $currentPlayer,

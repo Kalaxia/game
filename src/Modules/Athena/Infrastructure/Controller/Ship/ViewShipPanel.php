@@ -1,15 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Athena\Infrastructure\Controller\Ship;
 
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerBonusRegistry;
 use App\Modules\Zeus\Model\PlayerBonusId;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 
 class ViewShipPanel extends AbstractController
 {
+	#[Route(
+		path: '/ships/{shipNumber}/panel',
+		name: 'load_ship_panel',
+		methods: [Request::METHOD_POST],
+	)]
 	public function __invoke(
 		CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
 		GetShipCategoriesConfiguration $getShipCategoriesConfiguration,

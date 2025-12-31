@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Athena\Infrastructure\Twig\Components\Molecules;
 
-use App\Modules\Athena\Infrastructure\Controller\Base\Building\Cancel;
+use App\Modules\Athena\Infrastructure\Controller\Planet\Building\Cancel;
 use App\Modules\Athena\Model\BuildingQueue as BuildingQueueModel;
 use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Shared\Infrastructure\Twig\Components\Molecules\Queue;

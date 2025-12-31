@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Zeus\Helper;
 
 class CheckName
@@ -7,34 +9,34 @@ class CheckName
 	public int $minLength = 2;
 	public int $maxLength = 15;
 
-	public function getMinLength()
+	public function getMinLength(): int
 	{
 		return $this->minLength;
 	}
 
-	public function getMaxLength()
+	public function getMaxLength(): int
 	{
 		return $this->maxLength;
 	}
 
-	public function setMinLength(int $i)
+	public function setMinLength(int $i): void
 	{
 		$this->minLength = $i;
 	}
 
-	public function setMaxLength($i)
+	public function setMaxLength(int $i): void
 	{
 		$this->maxLength = $i;
 	}
 
-	public function checkLength($str)
+	public function checkLength(string $str): bool
 	{
-		$length = strlen((string) $str);
+		$length = strlen($str);
 
 		return $length >= $this->minLength && $length <= $this->maxLength;
 	}
 
-	public function checkChar($str)
+	public function checkChar($str): int|false
 	{
 		return preg_match('^[\p{L}\p{N}]*\p{L}[\p{L}\p{N}]*$^', (string) $str);
 	}
@@ -103,7 +105,7 @@ class CheckName
 	{
 	}
 
-	public static function randomize($color = false)
+	public static function randomize(): string
 	{
 		$name = ['Ametah', 'Anla', 'Aumshi', 'Bastier', 'Enigma', 'Eirukis', 'Erah', 'Ehdis', 'Fransa', 'Greider', 'Grerid', 'Haema', 'Hemhild', 'Renga', 'Hidar', 'Horski', 'Hreirek', 'Hroa', 'Hordis', 'Hydring', 'Imsin', 'Asmin', 'Ansami', 'Kar', 'Kili', 'Kolver', 'Kolfinna', 'Lisa', 'Marta', 'Meto', 'Leto', 'Ragni', 'Ranela', 'Runa', 'Siri', 'Mastro', 'Svenh', 'Thalestris', 'Thannd', 'Arsine', 'Val', 'Vori', 'Yi', 'Agata', 'Agneta', 'Nolgi', 'Edla', 'Else', 'Eyja', 'Jensine', 'Kirsten', 'Maeva', 'Malena', 'Magarte', 'Olava', 'Petrine', 'Rigmor', 'Signy', 'Sigrid', 'Skjorta'];
 

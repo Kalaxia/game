@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Athena\Infrastructure\Controller\Base\Building;
+namespace App\Modules\Athena\Infrastructure\Controller\Planet\Building;
 
 use App\Modules\Athena\Domain\Repository\BuildingQueueRepositoryInterface;
 use App\Modules\Athena\Manager\BuildingQueueManager;
@@ -17,11 +17,17 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\Routing\Attribute\Route;
 
 class Cancel extends AbstractController
 {
 	public const ROUTE_NAME = 'cancel_building_queue';
 
+	#[Route(
+		name: 'cancel_building_queue',
+		path: '/building-queues/{identifier}/cancel',
+		methods: [Request::METHOD_GET],
+	)]
 	public function __invoke(
         Request                          $request,
         Player                           $currentPlayer,

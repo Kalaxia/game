@@ -24,6 +24,12 @@ interface PlayerRepositoryInterface extends EntityRepositoryInterface
 	 * @return list<Player>
 	 */
 	public function getByIdsAndStatements(array $ids, array $statements): array;
+	/**
+	 * @param list<string> $names
+	 * @param list<int> $statements
+	 * @return list<Player>
+	 */
+	public function getByNamesAndStatements(array $names, array $statements): array;
 
 	/**
 	 * @param list<int> $statements

@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Modules\Athena\Infrastructure\Controller\Base;
+declare(strict_types=1);
+
+namespace App\Modules\Athena\Infrastructure\Controller\Planet;
 
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Manager\CommanderManager;
@@ -23,6 +25,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 // @TODO Simplify this hell
@@ -35,6 +38,11 @@ class ChangePlanetType extends AbstractController
 	) {
 	}
 
+	#[Route(
+		path: '/change-planet-type',
+		name: 'change_planet_type',
+		methods: [Request::METHOD_GET],
+	)]
 	public function __invoke(
         Request                          $request,
         Planet                           $currentPlanet,

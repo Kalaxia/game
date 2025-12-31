@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Athena\Infrastructure\Controller\Recycling;
 
 use App\Modules\Athena\Domain\Repository\RecyclingMissionRepositoryInterface;
@@ -11,10 +13,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
 
 class AddToMission extends AbstractController
 {
+	#[Route(
+		path: '/recycling-missions/{id}/add-recyclers',
+		name: 'add_recyclers_to_mission',
+		methods: [Request::METHOD_POST],
+	)]
 	public function __invoke(
         Request                             $request,
         Planet                              $currentPlanet,

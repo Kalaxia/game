@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Modules\Athena\Infrastructure\Controller\Base\Building;
+declare(strict_types=1);
 
-use App\Modules\Athena\Domain\Repository\CommercialShippingRepositoryInterface;
+namespace App\Modules\Athena\Infrastructure\Controller\Planet\Building;
+
 use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Base\Trade\GetBaseCommercialShippingData;
 use App\Modules\Athena\Model\Transaction;
@@ -10,22 +11,24 @@ use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Galaxy\Resource\PlanetResource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 
 class TradeMarketController extends AbstractController
 {
-	public function __construct(
-		private readonly CommercialShippingRepositoryInterface $commercialShippingRepository,
-	) {
-
-	}
-
+	#[Route(
+		path: '/trade-market/{mode<market|sell|resource>}',
+		name: 'trade_market',
+		defaults: ['mode' => 'market'],
+		methods: [Request::METHOD_GET],
+	)]
 	public function __invoke(
-        GetBaseCommercialShippingData  $getBaseCommercialShippingsData,
-        Planet                         $currentBase,
-        PlanetHelper                   $planetHelper,
-        TransactionRepositoryInterface $transactionRepository,
-        string                         $mode,
+		GetBaseCommercialShippingData  $getBaseCommercialShippingsData,
+		Planet                         $currentBase,
+		PlanetHelper                   $planetHelper,
+		TransactionRepositoryInterface $transactionRepository,
+		string                         $mode,
 	): Response {
 		if ($currentBase->levelCommercialPlateforme === 0) {
 			return $this->redirectToRoute('base_overview');

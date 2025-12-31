@@ -45,6 +45,17 @@ class PlayerRepository extends DoctrineRepository implements PlayerRepositoryInt
 			->getResult();
 	}
 
+	public function getByNamesAndStatements(array $names, array $statements): array
+	{
+		$qb = $this->createQueryBuilder('p');
+
+		return $qb
+			->andWhere($qb->expr()->in('p.name', $names))
+			->andWhere($qb->expr()->in('p.statement', $statements))
+			->getQuery()
+			->getResult();
+	}
+
 	public function getByStatements(array $statements): array
 	{
 		$qb = $this->createQueryBuilder('p');

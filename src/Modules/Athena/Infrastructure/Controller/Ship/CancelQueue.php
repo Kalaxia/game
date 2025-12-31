@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Athena\Infrastructure\Controller\Ship;
 
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
@@ -13,12 +15,18 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
 
 class CancelQueue extends AbstractController
 {
 	public const ROUTE_NAME = 'cancel_ship_queue';
 
+	#[Route(
+		path: '/ship-queues/{id}/cancel',
+		name: self::ROUTE_NAME,
+		methods: [Request::METHOD_GET],
+	)]
 	public function __invoke(
 		Request                        $request,
 		DurationHandler                $durationHandler,

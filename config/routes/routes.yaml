@@ -4,6 +4,10 @@ ares:
         namespace: App\Modules\Ares\Infrastructure\Controller
     type: attribute
 
+athena:
+    resource: '../../src/Modules/Athena/Infrastructure/Controller/'
+    type: attribute
+
 zeus:
     resource: '../../src/Modules/Zeus/Infrastructure/Controller/'
     type: attribute
