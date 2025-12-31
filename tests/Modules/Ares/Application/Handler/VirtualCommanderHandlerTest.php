@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Modules\Ares\Application\Handler;
 
 use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
@@ -8,6 +10,8 @@ use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Entity\Sector;
 use App\Modules\Galaxy\Domain\Entity\System;
 use App\Modules\Galaxy\Domain\Enum\PlaceType;
+use App\Modules\Galaxy\Domain\Enum\PlanetType;
+use App\Modules\Galaxy\Domain\Enum\SystemType;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Uid\Uuid;
 
@@ -95,8 +99,6 @@ class VirtualCommanderHandlerTest extends KernelTestCase
 	): Planet {
 		return new Planet(
 			id: Uuid::v4(),
-			player: null,
-			base: null,
 			system: new System(
 				id: Uuid::v4(),
 				sector: new Sector(
@@ -111,19 +113,19 @@ class VirtualCommanderHandlerTest extends KernelTestCase
 					name: null,
 					points: 5,
 					population: 0,
-					prime: 1,
+					prime: true,
 				),
 				faction: null,
 				xPosition: 10,
 				yPosition: 10,
-				typeOfSystem: 0,
+				typeOfSystem: SystemType::BlueGiant,
 			),
-			typeOfPlace: PlaceType::Planet,
 			position: $position,
+			planetType: PlanetType::Desert,
+			player: null,
 			population: $population,
 			coefResources: $resourcesCoeff,
 			coefHistory: $historyCoeff,
-			resources: 0,
 			danger: $danger,
 			maxDanger: $maxDanger,
 			updatedAt: new \DateTimeImmutable(),

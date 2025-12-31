@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Modules\Athena\Application\Handler\Building;
 
 use App\Modules\Athena\Application\Handler\Building\BuildingLevelHandler;
@@ -8,6 +10,8 @@ use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Entity\Sector;
 use App\Modules\Galaxy\Domain\Entity\System;
 use App\Modules\Galaxy\Domain\Enum\PlaceType;
+use App\Modules\Galaxy\Domain\Enum\PlanetType;
+use App\Modules\Galaxy\Domain\Enum\SystemType;
 use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Zeus\Model\Player;
 use PHPUnit\Framework\TestCase;
@@ -182,33 +186,41 @@ class BuildingLevelHandlerTest extends TestCase
 	{
 		return new Planet(
 			id: Uuid::v4(),
-			place: new Planet(
+			system: new System(
 				id: Uuid::v4(),
-				base: null,
-				system: new System(
+				sector: new Sector(
 					id: Uuid::v4(),
-					sector: new Sector(),
+					identifier: 1,
 					faction: null,
 					xPosition: 10,
-					yPosition: 20,
-					typeOfSystem: 0,
+					yPosition: 10,
+					xBarycentric: 0,
+					yBarycentric: 0,
+					tax: 5,
+					name: null,
+					points: 5,
+					population: 0,
+					prime: true,
 				),
-				typeOfPlace: PlaceType::Planet,
-				position: 1,
-				population: 100,
-				coefResources: 60,
-				coefHistory: 20,
-				resources: 20000,
-				danger: 40,
-				maxDanger: 60,
-				updatedAt: new \DateTimeImmutable(),
+				faction: null,
+				xPosition: 10,
+				yPosition: 20,
+				typeOfSystem: SystemType::Nebula,
 			),
+			position: 1,
+			planetType: PlanetType::Gas,
 			player: new Player(),
 			name: 'My wonderful base',
+			population: 100,
+			coefResources: 60,
+			coefHistory: 20,
+			danger: 40,
+			maxDanger: 60,
 			levelGenerator: 3,
 			levelRefinery: 2,
 			levelCommercialPlateforme: 0,
 			levelStorage: 5,
+			updatedAt: new \DateTimeImmutable(),
 		);
 	}
 
