@@ -4,6 +4,7 @@ namespace App\Modules\Athena\Infrastructure\Twig;
 
 use App\Classes\Library\Format;
 use App\Classes\Library\Game;
+use App\Modules\Athena\Domain\Service\Transaction\GetMinPriceRelativeToRate;
 use App\Modules\Athena\Manager\TransactionManager;
 use App\Modules\Athena\Model\CommercialShipping;
 use App\Modules\Athena\Model\Transaction;
@@ -14,8 +15,10 @@ use Twig\TwigFunction;
 
 class CommercialShippingExtension extends AbstractExtension
 {
-	public function __construct(protected TransactionManager $transactionManager)
-	{
+	public function __construct(
+		protected GetMinPriceRelativeToRate $getMinPriceRelativeToRate,
+		protected TransactionManager $transactionManager,
+	) {
 	}
 
 	#[\Override]
@@ -31,7 +34,7 @@ class CommercialShippingExtension extends AbstractExtension
     public function getFunctions(): array
 	{
 		return [
-			new TwigFunction('get_min_price', fn (string $transactionType, int $quantity, ?int $identifier = null) => Game::getMinPriceRelativeToRate($transactionType, 1, $identifier)),
+			new TwigFunction('get_min_price', fn (string $transactionType, int $quantity, ?int $identifier = null) => ($this->getMinPriceRelativeToRate)($transactionType, 1, $identifier)),
 			new TwigFunction('get_transaction_class', fn (CommercialShipping $commercialShipping) => match ($commercialShipping->transaction?->type) {
 				Transaction::TYP_RESOURCE => 'resources',
 				Transaction::TYP_COMMANDER => 'commander',

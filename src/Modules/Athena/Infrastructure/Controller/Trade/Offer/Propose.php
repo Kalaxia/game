@@ -12,6 +12,8 @@ use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
 use App\Modules\Athena\Domain\Service\Base\Trade\GetBaseCommercialShippingData;
 use App\Modules\Athena\Domain\Service\CountAvailableCommercialShips;
 use App\Modules\Athena\Domain\Service\CountNeededCommercialShips;
+use App\Modules\Athena\Domain\Service\Transaction\GetMaxPriceRelativeToRate;
+use App\Modules\Athena\Domain\Service\Transaction\GetMinPriceRelativeToRate;
 use App\Modules\Athena\Model\CommercialShipping;
 use App\Modules\Athena\Model\Transaction;
 use App\Modules\Galaxy\Domain\Entity\Planet;
@@ -39,6 +41,8 @@ class Propose extends AbstractController
         Planet                                $currentPlanet,
         PlanetManager                         $planetManager,
         PlanetHelper                          $planetHelper,
+		GetMinPriceRelativeToRate               $getMinPriceRelativeToRate,
+		GetMaxPriceRelativeToRate               $getMaxPriceRelativeToRate,
         GetBaseCommercialShippingData         $getBaseCommercialShippingData,
         CommanderManager                      $commanderManager,
         CommanderRepositoryInterface          $commanderRepository,
@@ -90,8 +94,8 @@ class Propose extends AbstractController
 				throw new \LogicException('Invalid transaction type');
 		}
 		// TODO transform into service
-		$minPrice = Game::getMinPriceRelativeToRate($type, $quantity, $identifier);
-		$maxPrice = Game::getMaxPriceRelativeToRate($type, $quantity, $identifier);
+		$minPrice = $getMinPriceRelativeToRate($type, $quantity, $identifier);
+		$maxPrice = $getMaxPriceRelativeToRate($type, $quantity, $identifier);
 
 		// TODO Move to a validator constraint (same as above ?)
 		if ($price < $minPrice) {
