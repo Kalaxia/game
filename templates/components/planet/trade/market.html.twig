@@ -35,7 +35,7 @@
 			<div id="resources-transactions" class="sort-content flex flex-col gap-y-2">
 				{% for transaction in resource_transactions %}
 					{% if current_player.id != transaction.player.id %}
-						{{ include('components/base/trade/transaction.html.twig', { transaction, 'current_rate': resources_current_rate }) }}
+						{{ include('components/planet/trade/transaction.html.twig', { transaction, 'current_rate': resources_current_rate }) }}
 					{% endif %}
 				{% endfor %}
 				</div>
@@ -62,7 +62,7 @@
 			<div id="commander-transactions" class="sort-content flex flex-col gap-y-2">
 				{% for transaction in commander_transactions %}
 					{% if current_player.id != transaction.player.id %}
-						{{ include('components/base/trade/transaction.html.twig', { transaction, 'current_rate': commander_current_rate }) }}
+						{{ include('components/planet/trade/transaction.html.twig', { transaction, 'current_rate': commander_current_rate }) }}
 					{% endif %}
 				{% endfor %}
 			</div>
@@ -90,7 +90,7 @@
 				<div id="ship-transactions" class="sort-content">
 					{% for transaction in ship_transactions %}
 						{% if current_player.id != transaction.player.id %}
-							{{ include('components/base/trade/transaction.html.twig', { transaction, 'current_rate': ship_current_rate }) }}
+							{{ include('components/planet/trade/transaction.html.twig', { transaction, 'current_rate': ship_current_rate }) }}
 						{% endif %}
 					{% endfor %}
 					</div>

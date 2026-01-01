@@ -1,5 +1,5 @@
 <turbo-stream action="prepend" targets="#{{ transaction.getTypeString() }}-transactions">
 	<template>
-		{{ include('components/base/trade/transaction.html.twig', { transaction, 'current_rate': transaction.currentRate }) }}
+		{{ include('components/planet/trade/transaction.html.twig', { transaction, 'current_rate': transaction.currentRate }) }}
 	</template>
 </turbo-stream>

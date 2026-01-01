@@ -170,7 +170,7 @@ class Propose extends AbstractController
 
 		$mercureHub->publish(new Update(
 			'/trade-offers',
-			$this->renderView('components/base/trade/turbo/broadcast/new_transaction.stream.html.twig', [
+			$this->renderView('components/planet/trade/turbo/broadcast/new_transaction.stream.html.twig', [
 				'transaction' => $tr,
 			]),
 		));
@@ -180,7 +180,7 @@ class Propose extends AbstractController
 		if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
 			$request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-			return $this->render('components/base/trade/turbo/new_transaction.stream.html.twig', [
+			return $this->render('components/planet/trade/turbo/new_transaction.stream.html.twig', [
 				'commercial_shipping' => $cs,
 				'used_ships' => $getBaseCommercialShippingData($currentPlanet)['used_ships'],
 				'max_ships' => $planetHelper->getInfo(

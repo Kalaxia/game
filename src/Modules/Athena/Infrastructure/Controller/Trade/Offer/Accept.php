@@ -151,7 +151,7 @@ class Accept extends AbstractController
 
 		$mercure->publish(new Update(
 			'/trade-offers',
-			$this->renderView('components/base/trade/turbo/broadcast/remove_transaction.stream.html.twig', [
+			$this->renderView('components/planet/trade/turbo/broadcast/remove_transaction.stream.html.twig', [
 				'transaction' => $transaction,
 			]),
 		));
