@@ -3,3 +3,5 @@ sentry:
     options:
         ignore_exceptions:
             - "Symfony\\Component\\HttpKernel\\Exception\\NotFoundHttpException"
+            - "Symfony\\Component\\HttpKernel\\Exception\\ConflictHttpException"
+            - "Symfony\\Component\\Validator\\Exception\\ValidationFailedException"
