@@ -30,7 +30,7 @@ class NotAllyTargetValidator extends ConstraintValidator
 		$place = $value->getPlace();
 		$faction = $commander->player->faction;
 
-		if (null === $place->base) {
+		if (null === $place->player) {
 			return;
 		}
 
