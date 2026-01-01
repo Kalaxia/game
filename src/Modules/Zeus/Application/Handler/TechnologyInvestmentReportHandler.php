@@ -16,15 +16,19 @@ readonly class TechnologyInvestmentReportHandler
 	) {
 	}
 
-	public function __invoke(PlayerFinancialReport $playerFinancialReport, PlayerFinancialReport|null $lastPlayerFinancialReport): void
-	{
+	public function __invoke(
+		PlayerFinancialReport $playerFinancialReport,
+		PlayerFinancialReport|null $lastPlayerFinancialReport,
+	): void {
 		$queues = $this->technologyQueueRepository->matchPlayerQueuesSince(
 			$playerFinancialReport->player,
 			$lastPlayerFinancialReport->createdAt ?? $playerFinancialReport->player->dInscription,
 		);
 
 		foreach ($queues as $queue) {
-			$playerFinancialReport->technologiesInvestments += $this->technologyHelper->getInfo($queue->technology, 'credit', $queue->targetLevel);
+			$playerFinancialReport->technologiesInvestments += intval(
+				$this->technologyHelper->getInfo($queue->technology, 'credit', $queue->targetLevel)
+			);
 		}
 	}
 }
