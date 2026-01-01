@@ -56,6 +56,6 @@ class ViewSchool extends AbstractController
 	// @TODO Move that logic elsewhere
 	private function calculateEarnedExperience(int $invest): int
 	{
-		return max(round($invest / Commander::COEFFSCHOOL), 0);
+		return max(intval(round($invest / Commander::COEFFSCHOOL)), 0);
 	}
 }
