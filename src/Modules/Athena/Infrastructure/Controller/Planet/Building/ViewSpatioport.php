@@ -27,7 +27,7 @@ class ViewSpatioport extends AbstractController
 	#[Route(
 		path: '/spatioport',
 		name: 'spatioport',
-		methods: [Request::METHOD_GET],
+		methods: [Request::METHOD_GET, Request::METHOD_POST],
 	)]
 	public function __invoke(
         Request                            $request,

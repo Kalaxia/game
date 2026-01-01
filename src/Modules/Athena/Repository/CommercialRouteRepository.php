@@ -43,19 +43,19 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 					faction.identifier AS factionIdentifier,
 					player.avatar AS playerAvatar,
 					player.name AS playerName,
-					ob.name AS baseName,
-					ob.place_id AS placeId,
-					(FLOOR(SQRT(POW(:system_x - s.xPosition, 2) + POW(:system_y - s.yPosition, 2)))) AS distance
-					FROM orbitalBase AS ob
-					INNER JOIN player ON ob.player_id = player.id
+					planet.name AS baseName,
+					planet.id AS placeId,
+					(FLOOR(SQRT(POW(:system_x - s.x_position, 2) + POW(:system_y - s.y_position, 2)))) AS distance
+					FROM galaxy__planets AS planet
+					INNER JOIN player ON planet.player_id = player.id
 					INNER JOIN color faction ON faction.id = player.faction_id
-					INNER JOIN place AS p ON ob.place_id = p.id
-					INNER JOIN system AS s ON p.system_id = s.id
-					INNER JOIN sector AS se ON s.sector_id = se.id
+					INNER JOIN galaxy__places AS p ON planet.id = p.id
+					INNER JOIN galaxy__systems AS s ON p.system_id = s.id
+					INNER JOIN galaxy__sectors AS se ON s.sector_id = se.id
 					WHERE player.id != :player_id
-					AND ob.levelSpatioport > 0
-					AND (FLOOR(SQRT(POW(:system_x - s.xPosition, 2) + POW(:system_y - s.yPosition, 2)))) >= :min_distance
-					AND (FLOOR(SQRT(POW(:system_x - s.xPosition, 2) + POW(:system_y - s.yPosition, 2)))) <= :max_distance
+					AND planet.level_spatioport > 0
+					AND (FLOOR(SQRT(POW(:system_x - s.x_position, 2) + POW(:system_y - s.y_position, 2)))) >= :min_distance
+					AND (FLOOR(SQRT(POW(:system_x - s.x_position, 2) + POW(:system_y - s.y_position, 2)))) <= :max_distance
 					AND faction.identifier IN $factionIdentifiers
 					ORDER BY distance DESC
 					LIMIT 40
@@ -258,13 +258,13 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 
 		$qb
 			->select('COUNT(cr.id) AS nb_routes')
-			->where(
-				$qb->expr()->andX(
-					$this->getBaseEndpointsExpr($qb),
-					([] !== $statements) ? $qb->expr()->in('cr.statement', $statements) : null,
-				),
-			)
-			->setParameter('base', $planet->id, UuidType::NAME);
+			->andWhere($this->getBaseEndpointsExpr($qb))
+			->setParameter('base', $planet->id, UuidType::NAME)
+		;
+
+		if ([] !== $statements) {
+			$qb->andWhere($qb->expr()->in('cr.statement', $statements));
+		}
 
 		return intval($qb->getQuery()->getSingleScalarResult() ?? 0);
 	}
