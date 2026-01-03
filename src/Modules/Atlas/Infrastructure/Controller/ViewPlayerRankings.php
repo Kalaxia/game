@@ -42,6 +42,8 @@ class ViewPlayerRankings extends AbstractController
 
 		$ranking = $rankingRepository->getLastRanking();
 
+
+
 		return $this->render(
 			'pages/atlas/player_rankings.html.twig',
 			null !== $ranking

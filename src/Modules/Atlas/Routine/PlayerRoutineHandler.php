@@ -95,7 +95,7 @@ class PlayerRoutineHandler
 	/**
 	 * @param list<Player> $players
 	 */
-	private function processResults(Ranking $ranking, $players): void
+	private function processResults(Ranking $ranking, array $players): void
 	{
 		foreach ($players as $player) {
 			if (isset($this->results[$player->id])) {
