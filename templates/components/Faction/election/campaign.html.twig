@@ -4,6 +4,6 @@
 	</twig:NumberBox>
 
 	<p class="mt-8 text-sm">
-		{{ get_faction_info(current_player.faction.identifier, 'campaignDesc')|raw }}
+		{{ ('factions.' ~ current_player.faction.identifier ~ '.descriptions.campaign')|trans }}
 	</p>
 </div>

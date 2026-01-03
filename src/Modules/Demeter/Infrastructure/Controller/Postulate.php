@@ -43,7 +43,7 @@ class Postulate extends AbstractController
 		$election = $electionRepository->get($id)
 			?? throw $this->createNotFoundException(sprintf('Election %s not found', $id->toBase32()));
 
-		if ($election->faction->id->equals($currentPlayer->faction->id)) {
+		if (!$election->faction->id->equals($currentPlayer->faction->id)) {
 			throw $this->createAccessDeniedException('You do not belong to this faction');
 		}
 

@@ -19,7 +19,9 @@
 
 			<hr style="margin-top: 25px;" />
 
-			<p class="info">{{ get_faction_info(current_player.faction.identifier, 'campaignDesc') }}</p>
+			<p class="info">
+				{{ ('factions.' ~ current_player.faction.identifier ~ '.descriptions.campaign')|trans }}
+			</p>
 		</div>
 	</div>
 </div>
