@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Demeter\Infrastructure\Twig\Components\Atoms;
 
-use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\ColorResource;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent(
@@ -17,8 +17,9 @@ class Banner
 {
 	public Color $faction;
 
-	public function __construct(private readonly GetFactionsConfiguration $getFactionsConfiguration)
-	{
+	public function __construct(
+		private readonly TranslatorInterface $translator,
+	) {
 	}
 
 	public function getBannerFile(): string
@@ -32,6 +33,6 @@ class Banner
 
 	public function getName(): string
 	{
-		return ($this->getFactionsConfiguration)($this->faction, 'officialName');
+		return $this->translator->trans('factions.' . $this->faction->identifier . '.name.official');
 	}
 }

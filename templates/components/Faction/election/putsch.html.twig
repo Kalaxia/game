@@ -24,7 +24,7 @@
 			<hr style="margin-top: 25px;"/>
 
 			<p class="info">
-				{{ ('factions.' ~ current_player.faction.identifier ~ '.descriptions.campaign')|trans }}
+				{{ ('factions.' ~ current_player.faction.identifier ~ '.descriptions.campaign')|trans|raw }}
 			</p>
 		</div>
 	</div>

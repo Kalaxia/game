@@ -65,15 +65,15 @@
 					<a class="centred-link" href="{{ path('view_faction_election') }}">Prendre position sur le coup d'état</a>
 				{% else %}
 					{% if current_player.isParliamentMember %}
-						<a class="centred-link sh" href="#" data-target="makeacoup">
-							<twig:Button :faction="faction">
-								Tenter un coup d'état
-							</twig:Button>
-						</a>
+						<twig:Button :faction="faction" onclick="document.getElementById('makeacoup').classList.toggle('hidden');">
+							Tenter un coup d'état
+						</twig:Button>
 
 						<form action="{{ path('initiate_faction_coup') }}" method="post" id="makeacoup" class="hidden">
 							<p><label for="program">Votre message politique</label></p>
-							<p class="input input-area"><textarea id="program" name="program" required style="height: 200px;"></textarea></p>
+							<p class="input input-area">
+								<twig:Textarea id="program" name="program" required style="height: 200px;" />
+							</p>
 
 							<p class="button">
 								<twig:Button type="submit">
