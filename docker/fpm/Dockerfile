@@ -1,7 +1,7 @@
 FROM php:8.4-fpm-alpine
 
 # Install SUPERVISOR and dependencies
-RUN apk add --update rabbitmq-c-dev icu-dev nodejs npm
+RUN apk add --update rabbitmq-c-dev icu-dev nodejs npm graphviz
 
 # Install PHP extensions
 RUN apk --no-cache add pcre-dev ${PHPIZE_DEPS} \
