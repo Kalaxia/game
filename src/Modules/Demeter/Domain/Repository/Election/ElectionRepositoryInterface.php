@@ -15,4 +15,9 @@ interface ElectionRepositoryInterface extends EntityRepositoryInterface
 	public function get(Uuid $id): ?Election;
 
 	public function getFactionLastElection(Color $faction): ?Election;
+
+	/**
+	 * @return list<Election>
+	 */
+	public function getFactionElections(Color $faction): array;
 }

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Demeter\Model;
 
+use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Zeus\Model\CreditHolderInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -78,12 +79,12 @@ class Color implements CreditHolderInterface
 		public int $credits = 0,
 		public int $rankingPoints = 0,
 		public int $points = 0,
-		public int $electionStatement = 0,
 		public int $regime = self::REGIME_DEMOCRATIC,
 		public bool $isClosed = false,
 		public ?string $description = null,
 		public bool $isInGame = false,
 		public array $relations = [],
+		public MandateState $mandateState = MandateState::Active,
 		// @TODO move that field to the future Server entity
 		public ?\DateTimeImmutable $victoryClaimedAt = null,
 		// @TODO get that field from the Election table
@@ -93,22 +94,29 @@ class Color implements CreditHolderInterface
 
 	public function hasOngoingElectionCampaign(): bool
 	{
-		return in_array($this->electionStatement, [self::CAMPAIGN, self::ELECTION]);
+		return in_array($this->mandateState, [
+			MandateState::TheocraticCampaign,
+			MandateState::DemocraticCampaign,
+			MandateState::DemocraticVote,
+		]);
 	}
 
 	public function isInCampaign(): bool
 	{
-		return self::CAMPAIGN === $this->electionStatement;
+		return in_array($this->mandateState, [
+			MandateState::DemocraticCampaign,
+			MandateState::TheocraticCampaign,
+		]);
 	}
 
 	public function isInElection(): bool
 	{
-		return self::ELECTION === $this->electionStatement;
+		return MandateState::DemocraticVote === $this->mandateState;
 	}
 
 	public function isInMandate(): bool
 	{
-		return self::MANDATE === $this->electionStatement;
+		return MandateState::Active === $this->mandateState;
 	}
 
 	public function hasElections(): bool

@@ -1,0 +1,49 @@
+<div class="faction-flow" style="margin: 10px 0 40px 0;">
+	<div class="mandate" style="padding: 50px 20px 10px 20px;">
+		<div class="relative w-full">
+			<twig:ProgressBar :current="this.getRemainingMandateTimeAlt()" :faction="faction" />
+			<span class="absolute" style="left: 0%;">
+				<span class="label">Début du mandat courant</span>
+			</span>
+			<span class="absolute" style="left: 100%;">
+				<span class="label right">Fin du mandat courant</span>
+			</span>
+		</div>
+	</div>
+
+	<div class="election" style="padding: 10px 20px;">
+		<span class="relative" style="width: {{ this.getRemainingMandateTime1() }}%; margin-left: auto;">
+			<twig:ProgressBar :current="this.getElectionProgress()" :faction="faction" />
+			<span class="absolute" style="left: 0%;">
+				<span class="label bottom right">Campagne</span>
+			</span>
+
+			{% if faction.isDemocratic %}
+				<span class="absolute" style="left: {{ this.getElectionProgress() }}%;">
+					<span class="label bottom right">Elections</span>
+				</span>
+				<span class="absolute" style="left: 100%;">
+					<span class="label bottom right">Résultats</span>
+				</span>
+			{% else %}
+				<span class="absolute" style="left: 100%;">
+					<span class="label bottom right">Décision divine</span>
+				</span>
+			{% endif %}
+		</span>
+	</div>
+</div>
+
+{% if faction.isInCampaign %}
+	<a class="centred-link" href="{{ path('view_faction_election') }}">
+		<twig:Button :faction="faction">
+			{{ faction.isDemocratic ? 'Présentez-vous aux élections' : 'Se proposer comme Guide' }}
+		</twig:Button>
+	</a>
+{% elseif faction.isInElection %}
+	<a class="centred-link" href="{{ path('view_faction_election') }}">
+		<twig:Button :faction="faction">
+			Votez dès maintenant pour votre candidat favori
+		</twig:Button>
+	</a>
+{% endif %}

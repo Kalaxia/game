@@ -40,11 +40,6 @@
 				<option name="default">0</option>
 			</options>
 		</field>
-		<field name="electionStatement" type="smallint">
-			<options>
-				<option name="default">0</option>
-			</options>
-		</field>
 		<field name="regime" type="smallint" />
 		<field name="isClosed" type="boolean">
 			<options>
@@ -56,6 +51,7 @@
 				<option name="default">0</option>
 			</options>
 		</field>
+		<field name="mandateState" enum-type="App\Modules\Demeter\Model\Color\MandateState" />
 		<field name="description" type="text" length="65535" nullable="true" />
 		<field name="victoryClaimedAt" type="datetime_immutable" nullable="true" />
 		<field name="lastElectionHeldAt" type="datetime_immutable" nullable="true" />

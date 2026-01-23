@@ -11,6 +11,7 @@ use App\Modules\Demeter\Message\CampaignMessage;
 use App\Modules\Demeter\Message\ElectionMessage;
 use App\Modules\Demeter\Message\SenateUpdateMessage;
 use App\Modules\Demeter\Model\Color;
+use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
@@ -45,7 +46,7 @@ readonly class ColorManager implements SchedulerInterface
 
 	public function scheduleSenateUpdate(): void
 	{
-		$factions = $this->colorRepository->getByRegimeAndElectionStatement([Color::REGIME_ROYALISTIC], [Color::MANDATE]);
+		$factions = $this->colorRepository->getByRegimesAndMandateStates([Color::REGIME_ROYALISTIC], [MandateState::Active]);
 
 		foreach ($factions as $faction) {
 			$this->messageBus->dispatch(
@@ -57,9 +58,9 @@ readonly class ColorManager implements SchedulerInterface
 
 	public function scheduleCampaigns(): void
 	{
-		$factions = $this->colorRepository->getByRegimeAndElectionStatement(
+		$factions = $this->colorRepository->getByRegimesAndMandateStates(
 			[Color::REGIME_DEMOCRATIC, Color::REGIME_THEOCRATIC],
-			[Color::MANDATE]
+			[MandateState::Active]
 		);
 
 		foreach ($factions as $faction) {
@@ -68,9 +69,9 @@ readonly class ColorManager implements SchedulerInterface
 				[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getCampaignStartDate($faction))],
 			);
 		}
-		$factions = $this->colorRepository->getByRegimeAndElectionStatement(
+		$factions = $this->colorRepository->getByRegimesAndMandateStates(
 			[Color::REGIME_ROYALISTIC],
-			[Color::ELECTION],
+			[MandateState::Putsch],
 		);
 		foreach ($factions as $faction) {
 			$this->messageBus->dispatch(
@@ -82,9 +83,9 @@ readonly class ColorManager implements SchedulerInterface
 
 	public function scheduleElections(): void
 	{
-		$factions = $this->colorRepository->getByRegimeAndElectionStatement(
+		$factions = $this->colorRepository->getByRegimesAndMandateStates(
 			[Color::REGIME_DEMOCRATIC],
-			[Color::CAMPAIGN],
+			[MandateState::DemocraticCampaign],
 		);
 		foreach ($factions as $faction) {
 			$this->messageBus->dispatch(
@@ -97,13 +98,13 @@ readonly class ColorManager implements SchedulerInterface
 	public function scheduleBallot(): void
 	{
 		$factions = array_merge(
-			$this->colorRepository->getByRegimeAndElectionStatement(
+			$this->colorRepository->getByRegimesAndMandateStates(
 				[Color::REGIME_DEMOCRATIC],
-				[Color::ELECTION],
+				[MandateState::DemocraticVote],
 			),
-			$this->colorRepository->getByRegimeAndElectionStatement(
+			$this->colorRepository->getByRegimesAndMandateStates(
 				[Color::REGIME_THEOCRATIC],
-				[Color::CAMPAIGN, Color::ELECTION],
+				[MandateState::TheocraticCampaign],
 			)
 		);
 		foreach ($factions as $faction) {
@@ -138,51 +139,5 @@ readonly class ColorManager implements SchedulerInterface
 		foreach ($parliamentMembers as $parliamentMember) {
 			$this->notificationRepository->save($notificationBuilder->for($parliamentMember));
 		}
-	}
-
-	public function updateSenate(Color $faction): void
-	{
-		$factionPlayers = $this->playerRepository->getFactionPlayersByRanking($faction);
-		$limit = round(count($factionPlayers) / 4);
-		// If there is less than 40 players in a faction, the limit is up to 10 senators
-		if ($limit < 10) {
-			$limit = 10;
-		}
-		// If there is more than 120 players in a faction, the limit is up to 40 senators
-		if ($limit > 40) {
-			$limit = 40;
-		}
-
-		$senatePromoteNotificationBuilder = NotificationBuilder::new()
-			// TODO genders
-			->setTitle('Vous êtes sénateur')
-			->setContent(NotificationBuilder::paragraph(
-				'Vos actions vous ont fait gagner assez de prestige pour faire partie du sénat.',
-			));
-
-		$senateDemoteNotificationBuilder = NotificationBuilder::new()
-			->setTitle('Vous n\'êtes plus sénateur')
-			->setContent(NotificationBuilder::paragraph(
-				'Vous n\'avez plus assez de prestige pour rester dans le sénat.'
-			));
-
-		foreach ($factionPlayers as $key => $factionPlayer) {
-			if ($factionPlayer->isGovernmentMember()) {
-				continue;
-			}
-			if ($key < $limit) {
-				if (!$factionPlayer->isParliamentMember()) {
-					$this->notificationRepository->save($senatePromoteNotificationBuilder->for($factionPlayer));
-				}
-				$factionPlayer->status = Player::PARLIAMENT;
-			} else {
-				if ($factionPlayer->isParliamentMember()) {
-					$this->notificationRepository->save($senateDemoteNotificationBuilder->for($factionPlayer));
-				}
-				// TODO handle ministers
-				$factionPlayer->status = Player::STANDARD;
-			}
-		}
-		$this->entityManager->flush();
 	}
 }

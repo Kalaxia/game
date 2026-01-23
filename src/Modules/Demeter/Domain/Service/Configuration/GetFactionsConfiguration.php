@@ -21,6 +21,10 @@ final readonly class GetFactionsConfiguration
 	{
 		$identifier = ($faction instanceof Color) ? $faction->identifier : $faction;
 
+		if (!array_key_exists($identifier, $this->factionsConfiguration)) {
+			throw new \InvalidArgumentException(sprintf('Faction %d not configured', $identifier));
+		}
+
 		return $this->factionsConfiguration[$identifier][$info]
 			?? $this->tryToTranslate($identifier, $info)
 			?? throw new \InvalidArgumentException(sprintf('Faction configuration %s not found for Faction %d', $info, $identifier));
@@ -50,12 +54,13 @@ final readonly class GetFactionsConfiguration
 			'demonym' => 'name.demonym',
 			'devise' => 'devise',
 			'factionPoints' => 'faction_points',
-			'desc1' => 'descriptions.general',
-			'desc2' => 'descriptions.morals',
-			'desc3' => 'descriptions.war',
-			'desc4' => 'descriptions.culture',
-			'senate' => 'descriptions.senate',
-			'campaign' => 'descriptions.campaign',
+            'desc1' => 'descriptions.general',
+            'desc2' => 'descriptions.morals',
+            'desc3' => 'descriptions.war',
+            'desc4' => 'descriptions.culture',
+            'senate' => 'descriptions.senate',
+            'campaign' => 'descriptions.campaign',
+			default => null,
 		};
 
 		if (null === $key) {
