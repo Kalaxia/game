@@ -8,6 +8,7 @@ use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
+use App\Modules\Demeter\Model\Election\Election;
 use App\Modules\Demeter\Resource\ColorResource;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -59,14 +60,26 @@ class DisplayElectionState extends Command
 			],
 			rows: [
 				[
-					$lastElection->dElection->format('Y-m-d H:i:s'),
-					$faction->electionStatement,
+					$faction->lastElectionHeldAt->format('Y-m-d H:i:s'),
+					$faction->mandateState,
 					$this->nextElectionDateCalculator->getCampaignStartDate($faction)->format('Y-m-d H:i:s'),
 					$this->nextElectionDateCalculator->getCampaignEndDate($faction)->format('Y-m-d H:i:s'),
 					$this->nextElectionDateCalculator->getNextElectionDate($faction)->format('Y-m-d H:i:s'),
 					$this->nextElectionDateCalculator->getBallotDate($faction)->format('Y-m-d H:i:s'),
 				],
 			],
+		);
+
+		$style->title('Last elections');
+
+		$style->table(
+			[
+				'Date',
+			],
+			array_map(
+				fn (Election $election) => [$election->dElection->format('Y-m-d H:i:s')],
+				$this->electionRepository->getFactionElections($faction),
+			),
 		);
 
 		return self::SUCCESS;

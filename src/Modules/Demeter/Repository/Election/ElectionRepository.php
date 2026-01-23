@@ -11,6 +11,9 @@ use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * @extends DoctrineRepository<Election>
+ */
 class ElectionRepository extends DoctrineRepository implements ElectionRepositoryInterface
 {
 	public function __construct(ManagerRegistry $registry)
@@ -30,5 +33,16 @@ class ElectionRepository extends DoctrineRepository implements ElectionRepositor
 		], [
 			'dElection' => 'DESC',
 		]);
+	}
+
+	public function getFactionElections(Color $faction, $limit = 30): array
+	{
+		return $this->findBy(
+			[
+				'faction' => $faction,
+			],
+			orderBy: ['dElection' => 'DESC'],
+			limit: $limit,
+		);
 	}
 }

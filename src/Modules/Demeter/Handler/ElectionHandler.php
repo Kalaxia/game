@@ -1,24 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Demeter\Handler;
 
-use App\Classes\Library\DateTimeConverter;
-use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\CandidateRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
-use App\Modules\Demeter\Message\BallotMessage;
 use App\Modules\Demeter\Message\ElectionMessage;
-use App\Modules\Demeter\Model\Color;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 #[AsMessageHandler]
 readonly class ElectionHandler
 {
 	public function __construct(
-		private ColorRepositoryInterface   $colorRepository,
-		private NextElectionDateCalculator $nextElectionDateCalculator,
-		private MessageBusInterface        $messageBus,
+		private ColorRepositoryInterface $colorRepository,
+		private CandidateRepositoryInterface $candidateRepository,
+		private ElectionRepositoryInterface $electionRepository,
+		private WorkflowInterface $factionMandateWorkflow,
 	) {
 	}
 
@@ -26,13 +26,14 @@ readonly class ElectionHandler
 	{
 		$faction = $this->colorRepository->get($message->getFactionId())
 			?? throw new \RuntimeException(sprintf('Faction %s not found', $message->getFactionId()));
-		$faction->electionStatement = Color::ELECTION;
 
-		$this->messageBus->dispatch(
-			new BallotMessage($faction->id),
-			[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getStartDate($faction))]
-		);
+		$election = $this->electionRepository->getFactionLastElection($faction);
+		$candidates = $this->candidateRepository->getByElection($election);
 
-		$this->colorRepository->save($faction);
+		$this->factionMandateWorkflow->apply($faction, match (count($candidates)) {
+			0 => 'missing_candidates',
+			1 => 'unique_candidate',
+			default => 'democratic_vote',
+		});
 	}
 }
