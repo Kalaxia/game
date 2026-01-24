@@ -1,11 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Demeter\Model;
 
 use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Zeus\Model\CreditHolderInterface;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
+#[ORM\Entity]
+#[ORM\Table(name: 'color')]
+#[ORM\UniqueConstraint(name: 'faction_identifier', columns: ['identifier'])]
 class Color implements CreditHolderInterface
 {
 	// Regime
@@ -72,23 +78,39 @@ class Color implements CreditHolderInterface
 	 * @param self::REGIME_* $regime
 	 */
 	public function __construct(
+		#[ORM\Id]
+		#[ORM\Column(type: 'uuid')]
 		public Uuid $id,
+		#[ORM\Column(type: 'smallint')]
 		public int $identifier,
+		#[ORM\Column(type: 'boolean')]
 		public bool $alive = false,
+		#[ORM\Column(type: 'boolean')]
 		public bool $isWinner = false,
+		#[ORM\Column(type: 'integer', options: ['default' => 0, 'unsigned' => true])]
 		public int $credits = 0,
+		#[ORM\Column(type: 'integer', options: ['default' => 0, 'unsigned' => true])]
 		public int $rankingPoints = 0,
+		#[ORM\Column(type: 'integer', options: ['default' => 0, 'unsigned' => true])]
 		public int $points = 0,
+		#[ORM\Column(type: 'smallint')]
 		public int $regime = self::REGIME_DEMOCRATIC,
+		#[ORM\Column(type: 'boolean')]
 		public bool $isClosed = false,
-		public ?string $description = null,
+		#[ORM\Column(type: 'string', length: 255, nullable: true)]
+		public string|null $description = null,
+		#[ORM\Column(type: 'boolean')]
 		public bool $isInGame = false,
+		#[ORM\Column(type: 'json')]
 		public array $relations = [],
+		#[ORM\Column(type: 'string', length: 36)]
 		public MandateState $mandateState = MandateState::Active,
+		#[ORM\Column(type: 'datetime_immutable', nullable: true)]
 		// @TODO move that field to the future Server entity
-		public ?\DateTimeImmutable $victoryClaimedAt = null,
+		public \DateTimeImmutable|null $victoryClaimedAt = null,
+		#[ORM\Column(type: 'datetime_immutable', nullable: true)]
 		// @TODO get that field from the Election table
-		public ?\DateTimeImmutable $lastElectionHeldAt = null,
+		public \DateTimeImmutable|null $lastElectionHeldAt = null,
 	) {
 	}
 

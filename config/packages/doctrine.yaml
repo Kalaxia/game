@@ -30,11 +30,6 @@ doctrine:
                 type: 'xml'
                 dir: '%kernel.project_dir%/config/doctrine/atlas'
                 prefix: 'App\Modules\Atlas\Model'
-            Demeter:
-                is_bundle: false
-                type: 'xml'
-                dir: '%kernel.project_dir%/config/doctrine/demeter'
-                prefix: 'App\Modules\Demeter\Model'
             Galaxy:
                 is_bundle: false
                 type: 'attribute'
@@ -50,6 +45,11 @@ doctrine:
                 type: 'xml'
                 dir: '%kernel.project_dir%/config/doctrine/hermes'
                 prefix: 'App\Modules\Hermes\Model'
+            Demeter:
+                is_bundle: false
+                type: 'attribute'
+                dir: '%kernel.project_dir%/src/Modules/Demeter/Model'
+                prefix: 'App\Modules\Demeter\Model'
             Portal:
                 is_bundle: false
                 type: 'attribute'
