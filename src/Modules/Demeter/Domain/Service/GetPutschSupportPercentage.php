@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Demeter\Domain\Service;
 
-use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\VoteRepositoryInterface;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\Vote;
@@ -15,17 +15,17 @@ use App\Modules\Zeus\Model\Player;
 readonly class GetPutschSupportPercentage
 {
 	public function __construct(
-		private ElectionRepositoryInterface $electionRepository,
-		private VoteRepositoryInterface $voteRepository,
-		private PlayerRepositoryInterface $playerRepository,
+		private PoliticalEventRepositoryInterface $electionRepository,
+		private VoteRepositoryInterface           $voteRepository,
+		private PlayerRepositoryInterface         $playerRepository,
 	) {
 	}
 
 	public function __invoke(Color $faction): float
 	{
 
-		$election = $this->electionRepository->getFactionLastElection($faction);
-		$votes = $this->voteRepository->getElectionVotes($election);
+		$election = $this->electionRepository->getFactionLastPoliticalEvent($faction);
+		$votes = $this->voteRepository->getPoliticalEventVotes($election);
 
 		$positiveVotesCount = array_reduce(
 			$votes,

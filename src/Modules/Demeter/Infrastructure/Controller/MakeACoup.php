@@ -5,14 +5,15 @@ namespace App\Modules\Demeter\Infrastructure\Controller;
 use App\Classes\Library\DateTimeConverter;
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Repository\Election\CandidateRepositoryInterface;
-use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\VoteRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Forum\ForumTopicRepositoryInterface;
 use App\Modules\Demeter\Message\BallotMessage;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\Candidate;
-use App\Modules\Demeter\Model\Election\Election;
+use App\Modules\Demeter\Model\Election\PoliticalEvent;
 use App\Modules\Demeter\Model\Election\MandateState;
+use App\Modules\Demeter\Model\Election\Putsch;
 use App\Modules\Demeter\Model\Election\Vote;
 use App\Modules\Demeter\Model\Forum\ForumTopic;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
@@ -21,6 +22,8 @@ use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Infrastructure\Validator\IsFromFaction;
 use App\Modules\Zeus\Manager\PlayerManager;
 use App\Modules\Zeus\Model\Player;
+use App\Shared\Application\Handler\DurationHandler;
+use Psr\Clock\ClockInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,18 +36,20 @@ use Symfony\Component\Workflow\WorkflowInterface;
 class MakeACoup extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		Player $currentPlayer,
-		NextElectionDateCalculator $nextElectionDateCalculator,
-		NotificationRepositoryInterface $notificationRepository,
-		PlayerManager $playerManager,
-		PlayerRepositoryInterface $playerRepository,
-		CandidateRepositoryInterface $candidateRepository,
-		VoteRepositoryInterface $voteRepository,
-		ElectionRepositoryInterface $electionRepository,
-		ForumTopicRepositoryInterface $forumTopicRepository,
-		MessageBusInterface $messageBus,
-		WorkflowInterface $factionMandateWorkflow,
+		Request                           $request,
+		ClockInterface                    $clock,
+		Player                            $currentPlayer,
+		DurationHandler                   $durationHandler,
+		NextElectionDateCalculator        $nextElectionDateCalculator,
+		NotificationRepositoryInterface   $notificationRepository,
+		PlayerManager                     $playerManager,
+		PlayerRepositoryInterface         $playerRepository,
+		CandidateRepositoryInterface      $candidateRepository,
+		VoteRepositoryInterface           $voteRepository,
+		PoliticalEventRepositoryInterface $politicalEventRepository,
+		ForumTopicRepositoryInterface     $forumTopicRepository,
+		MessageBusInterface               $messageBus,
+		WorkflowInterface                 $factionMandateWorkflow,
 	): Response {
 
 		// TODO Replace with voter
@@ -55,13 +60,16 @@ class MakeACoup extends AbstractController
 
 		$factionMandateWorkflow->apply($faction, 'royalistic_putsch');
 
-		$election = new Election(
+		$startedAt = $clock->now();
+
+		$putsch = new Putsch(
 			id: Uuid::v4(),
 			faction: $faction,
-			dElection: new \DateTimeImmutable(),
+			startedAt: $startedAt,
+			endedAt: $durationHandler->getDurationEnd($startedAt, $nextElectionDateCalculator->getPutschDuration()),
 		);
 
-		$electionRepository->save($election);
+		$politicalEventRepository->save($putsch);
 
 		$program = $request->request->get('program')
 			?? throw new BadRequestHttpException('Missing program');
@@ -72,7 +80,7 @@ class MakeACoup extends AbstractController
 
 		$candidate = new Candidate(
 			id: Uuid::v4(),
-			election: $election,
+			politicalEvent: $putsch,
 			player: $currentPlayer,
 			chiefChoice: $chiefChoice,
 			treasurerChoice: $treasurerChoice,

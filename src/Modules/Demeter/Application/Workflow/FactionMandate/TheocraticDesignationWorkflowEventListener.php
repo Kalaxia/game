@@ -8,7 +8,7 @@ use App\Classes\Library\DateTimeConverter;
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Event\NewTheocraticLeaderEvent;
 use App\Modules\Demeter\Domain\Repository\Election\CandidateRepositoryInterface;
-use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Message\CampaignMessage;
 use App\Modules\Demeter\Model\Color;
@@ -23,14 +23,14 @@ use Symfony\Component\Workflow\Event\EnterEvent;
 readonly class TheocraticDesignationWorkflowEventListener
 {
 	public function __construct(
-		private EventDispatcherInterface $eventDispatcher,
-		private ElectionRepositoryInterface $electionRepository,
-		private CandidateRepositoryInterface $candidateRepository,
-		private GetFactionsConfiguration $getFactionsConfiguration,
-		private ConversationRepositoryInterface $conversationRepository,
-		private PlayerRepositoryInterface $playerRepository,
-		private MessageBusInterface $messageBus,
-		private NextElectionDateCalculator $nextElectionDateCalculator,
+		private EventDispatcherInterface          $eventDispatcher,
+		private PoliticalEventRepositoryInterface $electionRepository,
+		private CandidateRepositoryInterface      $candidateRepository,
+		private GetFactionsConfiguration          $getFactionsConfiguration,
+		private ConversationRepositoryInterface   $conversationRepository,
+		private PlayerRepositoryInterface         $playerRepository,
+		private MessageBusInterface               $messageBus,
+		private NextElectionDateCalculator        $nextElectionDateCalculator,
 	) {
 	}
 
@@ -48,8 +48,8 @@ readonly class TheocraticDesignationWorkflowEventListener
 		);
 		$previousLeader = $this->playerRepository->getFactionLeader($faction);
 
-		$election = $this->electionRepository->getFactionLastElection($faction);
-		$candidates = $this->candidateRepository->getByElection($election);
+		$election = $this->electionRepository->getFactionLastPoliticalEvent($faction);
+		$candidates = $this->candidateRepository->getByPoliticalEvent($election);
 
 		$newLeader = $candidates[array_rand($candidates)]->player;
 
@@ -57,8 +57,8 @@ readonly class TheocraticDesignationWorkflowEventListener
 
 		$factionPlayer = $this->playerRepository->getFactionAccount($faction);
 
-		$election = $this->electionRepository->getFactionLastElection($faction);
-		$ballot = $this->candidateRepository->getByElection($election);
+		$election = $this->electionRepository->getFactionLastPoliticalEvent($faction);
+		$ballot = $this->candidateRepository->getByPoliticalEvent($election);
 
 		$this->eventDispatcher->dispatch(new NewTheocraticLeaderEvent(
 			faction: $faction,

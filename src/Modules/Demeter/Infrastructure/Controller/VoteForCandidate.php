@@ -3,7 +3,7 @@
 namespace App\Modules\Demeter\Infrastructure\Controller;
 
 use App\Modules\Demeter\Domain\Repository\Election\CandidateRepositoryInterface;
-use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\VoteRepositoryInterface;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\MandateState;
@@ -26,13 +26,13 @@ class VoteForCandidate extends AbstractController
 	}
 
 	public function __invoke(
-		Request $request,
-		Player $currentPlayer,
-		PlayerRepositoryInterface $playerRepository,
-		ElectionRepositoryInterface $electionRepository,
-		VoteRepositoryInterface $voteRepository,
-		Uuid $electionId,
-		Uuid $candidateId,
+        Request                           $request,
+        Player                            $currentPlayer,
+        PlayerRepositoryInterface         $playerRepository,
+        PoliticalEventRepositoryInterface $electionRepository,
+        VoteRepositoryInterface           $voteRepository,
+        Uuid                              $electionId,
+        Uuid                              $candidateId,
 	): Response {
 		$election = $electionRepository->get($electionId) ?? throw new NotFoundHttpException('Election not found');
 		$candidate = $this->candidateRepository->get($candidateId) ?? throw new NotFoundHttpException('Candidate not found');

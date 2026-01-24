@@ -4,7 +4,7 @@ namespace App\Modules\Demeter\Infrastructure\Controller;
 
 use App\Classes\Library\Utils;
 use App\Modules\Demeter\Domain\Repository\Election\CandidateRepositoryInterface;
-use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\VoteRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Forum\ForumTopicRepositoryInterface;
 use App\Modules\Demeter\Model\Color;
@@ -24,14 +24,14 @@ use Symfony\Component\Uid\Uuid;
 class Postulate extends AbstractController
 {
 	public function __invoke(
-		Request $request,
-		Player $currentPlayer,
-		PlayerManager $playerManager,
-		CandidateRepositoryInterface $candidateRepository,
-		ElectionRepositoryInterface $electionRepository,
-		ForumTopicRepositoryInterface $forumTopicRepository,
-		VoteRepositoryInterface $voteRepository,
-		Uuid $id,
+		Request                           $request,
+		Player                            $currentPlayer,
+		PlayerManager                     $playerManager,
+		CandidateRepositoryInterface      $candidateRepository,
+		PoliticalEventRepositoryInterface $electionRepository,
+		ForumTopicRepositoryInterface     $forumTopicRepository,
+		VoteRepositoryInterface           $voteRepository,
+		Uuid                              $id,
 	): Response {
 		$program = $request->request->get('program')
 			?? throw new BadRequestHttpException('Missing program');
@@ -56,7 +56,7 @@ class Postulate extends AbstractController
 			throw new ConflictHttpException('Vous ne pouvez présenter ou retirer votre candidature qu\'en période de campagne.');
 		}
 
-		if (($candidate = $candidateRepository->getByElectionAndPlayer($election, $currentPlayer)) !== null) {
+		if (($candidate = $candidateRepository->getByPoliticalEventAndPlayer($election, $currentPlayer)) !== null) {
 			$candidateRepository->remove($candidate);
 
 			$this->addFlash('success', 'Candidature retirée.');
@@ -65,7 +65,7 @@ class Postulate extends AbstractController
 		}
 		$candidate = new Candidate(
 			id: Uuid::v4(),
-			election: $election,
+            politicalEvent: $election,
 			player: $currentPlayer,
 			program: $program,
 		);

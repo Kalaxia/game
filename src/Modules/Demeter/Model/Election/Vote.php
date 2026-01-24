@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'vote')]
+#[ORM\Table(name: 'politics__votes')]
 #[ORM\UniqueConstraint(name: 'vote_unique_key', columns: ['candidate_id', 'player_id'])]
 class Vote
 {

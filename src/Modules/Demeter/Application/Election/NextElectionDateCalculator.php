@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Demeter\Application\Election;
 
-use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\ColorResource;
@@ -16,18 +16,18 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 readonly class NextElectionDateCalculator
 {
 	public function __construct(
-		private ElectionRepositoryInterface $electionRepository,
-		private DurationHandler $durationHandler,
-		private ClockInterface $clock,
-		private GetFactionsConfiguration $getFactionsConfiguration,
+		private PoliticalEventRepositoryInterface $electionRepository,
+		private DurationHandler                   $durationHandler,
+		private ClockInterface                    $clock,
+		private GetFactionsConfiguration          $getFactionsConfiguration,
 		#[Autowire('%politics_campaign_duration%')]
-		private int $campaignDuration,
+		private int                               $campaignDuration,
 		#[Autowire('%politics_election_duration%')]
-		private int $electionDuration,
+		private int                               $electionDuration,
 		#[Autowire('%politics_putsch_duration%')]
-		private int $putschDuration,
+		private int                               $putschDuration,
 		#[Autowire('%server_time_mode%')]
-		private TimeMode $timeMode,
+		private TimeMode                          $timeMode,
 		#[Autowire('%server_start_time%')]
 		private string $serverStartTime,
 	) {
@@ -82,7 +82,7 @@ readonly class NextElectionDateCalculator
 
 	private function calculate(Color $faction, int $duration = 0, bool $addMandateDuration = true): \DateTimeImmutable
 	{
-		$lastElection = $this->electionRepository->getFactionLastElection($faction);
+		$lastElection = $this->electionRepository->getFactionLastPoliticalEvent($faction);
 		$durationEnd = null;
 
 		if ($addMandateDuration) {
@@ -90,11 +90,11 @@ readonly class NextElectionDateCalculator
 		}
 
 		if (0 === $duration) {
-			return $lastElection->dElection ?? new \DateTimeImmutable($this->serverStartTime);
+			return $lastElection->startedAt ?? new \DateTimeImmutable($this->serverStartTime);
 		}
 
 		do {
-			$durationStart = $durationEnd ?? $lastElection->dElection ?? new \DateTimeImmutable($this->serverStartTime);
+			$durationStart = $durationEnd ?? $lastElection->startedAt ?? new \DateTimeImmutable($this->serverStartTime);
 
 			$durationEnd = $this->durationHandler->getDurationEnd($durationStart, $duration);
 		} while ($durationEnd < $this->clock->now());
@@ -112,7 +112,7 @@ readonly class NextElectionDateCalculator
 		return $this->timeMode->isStandard() ? $this->campaignDuration : 300;
 	}
 
-	private function getPutschDuration(): int
+	public function getPutschDuration(): int
 	{
 		return $this->timeMode->isStandard() ? $this->putschDuration : 1200;
 	}
