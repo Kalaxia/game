@@ -10,7 +10,7 @@ use App\Modules\Demeter\Domain\Event\NewDemocraticLeaderEvent;
 use App\Modules\Demeter\Domain\Event\NewRoyalisticLeaderEvent;
 use App\Modules\Demeter\Domain\Event\PutschFailedEvent;
 use App\Modules\Demeter\Domain\Repository\Election\CandidateRepositoryInterface;
-use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Domain\Service\GetPutschSupportPercentage;
 use App\Modules\Demeter\Message\SenateUpdateMessage;
@@ -32,17 +32,17 @@ use Symfony\Component\Workflow\Event\EnterEvent;
 readonly class RoyalisticCrowningWorkflowEventListener
 {
 	public function __construct(
-		private GetPutschSupportPercentage      $getPutschSupportPercentage,
-		private ElectionRepositoryInterface     $electionRepository,
-		private CandidateRepositoryInterface    $candidateRepository,
-		private PlayerRepositoryInterface       $playerRepository,
-		private EventDispatcherInterface        $eventDispatcher,
-		private ConversationRepositoryInterface $conversationRepository,
-		private GetFactionsConfiguration        $getFactionsConfiguration,
-		private MessageBusInterface             $messageBus,
-		private NotificationRepositoryInterface $notificationRepository,
-		private UrlGeneratorInterface           $urlGenerator,
-		private NextElectionDateCalculator      $nextElectionDateCalculator,
+		private GetPutschSupportPercentage        $getPutschSupportPercentage,
+		private PoliticalEventRepositoryInterface $electionRepository,
+		private CandidateRepositoryInterface      $candidateRepository,
+		private PlayerRepositoryInterface         $playerRepository,
+		private EventDispatcherInterface          $eventDispatcher,
+		private ConversationRepositoryInterface   $conversationRepository,
+		private GetFactionsConfiguration          $getFactionsConfiguration,
+		private MessageBusInterface               $messageBus,
+		private NotificationRepositoryInterface   $notificationRepository,
+		private UrlGeneratorInterface             $urlGenerator,
+		private NextElectionDateCalculator        $nextElectionDateCalculator,
 	) {
 
 	}
@@ -53,8 +53,8 @@ readonly class RoyalisticCrowningWorkflowEventListener
 		/** @var Color $faction */
 		$faction = $event->getSubject();
 
-		$putsch = $this->electionRepository->getFactionLastElection($faction);
-		$putschist = $this->candidateRepository->getByElection($putsch)[0]?->player
+		$putsch = $this->electionRepository->getFactionLastPoliticalEvent($faction);
+		$putschist = $this->candidateRepository->getByPoliticalEvent($putsch)[0]?->player
 			?? throw new \LogicException(sprintf('Could not find putschist of putsch %s', $putsch->id->toRfc4122()));
 
 		$currentLeader = $this->playerRepository->getFactionLeader($faction);

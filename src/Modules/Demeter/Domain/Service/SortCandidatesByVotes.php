@@ -6,7 +6,7 @@ namespace App\Modules\Demeter\Domain\Service;
 
 use App\Modules\Demeter\Domain\Repository\Election\VoteRepositoryInterface;
 use App\Modules\Demeter\Model\Election\Candidate;
-use App\Modules\Demeter\Model\Election\Election;
+use App\Modules\Demeter\Model\Election\PoliticalEvent;
 
 readonly class SortCandidatesByVotes
 {
@@ -15,9 +15,9 @@ readonly class SortCandidatesByVotes
 	) {
 	}
 
-	public function __invoke(Election $election): array
+	public function __invoke(PoliticalEvent $election): array
 	{
-		$votes = $this->voteRepository->getElectionVotes($election);
+		$votes = $this->voteRepository->getPoliticalEventVotes($election);
 		/** @var array<string, array{candidate: Candidate, votes_count: int}> $ballot */
 		$ballot = [];
 

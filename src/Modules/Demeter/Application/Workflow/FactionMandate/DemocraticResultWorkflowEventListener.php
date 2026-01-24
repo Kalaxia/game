@@ -8,7 +8,7 @@ use App\Classes\Library\DateTimeConverter;
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Event\NewDemocraticLeaderEvent;
 use App\Modules\Demeter\Domain\Event\NewLeaderEvent;
-use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Domain\Service\SortCandidatesByVotes;
 use App\Modules\Demeter\Message\CampaignMessage;
@@ -27,15 +27,15 @@ use Symfony\Component\Workflow\Event\EnterEvent;
 readonly class DemocraticResultWorkflowEventListener
 {
 	public function __construct(
-		private ConversationRepositoryInterface $conversationRepository,
-		private GetFactionsConfiguration $getFactionsConfiguration,
-		private ElectionRepositoryInterface $electionRepository,
-		private EventDispatcherInterface $eventDispatcher,
-		private PlayerRepositoryInterface $playerRepository,
-		private SortCandidatesByVotes $sortCandidatesByVotes,
-		private LoggerInterface $logger,
-		private MessageBusInterface $messageBus,
-		private NextElectionDateCalculator $nextElectionDateCalculator,
+		private ConversationRepositoryInterface   $conversationRepository,
+		private GetFactionsConfiguration          $getFactionsConfiguration,
+		private PoliticalEventRepositoryInterface $electionRepository,
+		private EventDispatcherInterface          $eventDispatcher,
+		private PlayerRepositoryInterface         $playerRepository,
+		private SortCandidatesByVotes             $sortCandidatesByVotes,
+		private LoggerInterface                   $logger,
+		private MessageBusInterface               $messageBus,
+		private NextElectionDateCalculator        $nextElectionDateCalculator,
 	) {
 	}
 
@@ -49,7 +49,7 @@ readonly class DemocraticResultWorkflowEventListener
 		/** @var Color $faction */
 		$faction = $event->getSubject();
 
-		$election = $this->electionRepository->getFactionLastElection($faction);
+		$election = $this->electionRepository->getFactionLastPoliticalEvent($faction);
 		$ballot = ($this->sortCandidatesByVotes)($election);
 
 		$previousLeader = $this->playerRepository->getFactionLeader($faction);
