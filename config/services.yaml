@@ -135,3 +135,9 @@ services:
     App\Modules\Travel\Domain\Service\CalculateTravelTime:
 
     App\Modules\Travel\Domain\Service\GetTravelDuration:
+
+
+when@test:
+    parameters:
+        galaxy.galaxy_configuration.class: App\Modules\Galaxy\Galaxy\GalaxyConfigurationTestEnvironment
+        game.available_factions: [1, 2]
