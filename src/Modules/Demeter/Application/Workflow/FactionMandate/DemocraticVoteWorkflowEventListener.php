@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Demeter\Application\Workflow\FactionMandate;
 
 use App\Classes\Library\DateTimeConverter;
-use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Message\BallotMessage;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\MandateState;
@@ -18,8 +18,8 @@ use Symfony\Component\Workflow\Event\GuardEvent;
 readonly class DemocraticVoteWorkflowEventListener
 {
 	public function __construct(
+		private PoliticalEventRepositoryInterface $politicalEventRepository,
 		private MessageBusInterface $messageBus,
-		private NextElectionDateCalculator $nextElectionDateCalculator,
 	) {
 	}
 
@@ -43,10 +43,11 @@ readonly class DemocraticVoteWorkflowEventListener
 	{
 		/** @var Color $faction */
 		$faction = $event->getSubject();
+		$election = $this->politicalEventRepository->getFactionLastPoliticalEvent($faction);
 
 		$this->messageBus->dispatch(
 			new BallotMessage($faction->id),
-			[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getStartDate($faction))]
+			[DateTimeConverter::to_delay_stamp($election->endedAt)]
 		);
 	}
 }

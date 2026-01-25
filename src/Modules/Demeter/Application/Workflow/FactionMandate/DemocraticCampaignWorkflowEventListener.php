@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\Modules\Demeter\Application\Workflow\FactionMandate;
 
-use App\Classes\Library\DateTimeConverter;
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
+use App\Modules\Demeter\Domain\Event\NewDemocraticCampaignEvent;
 use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\UpdateSenate;
-use App\Modules\Demeter\Message\ElectionMessage;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Demeter\Model\Election\PoliticalEvent;
+use App\Modules\Demeter\Model\Election\DemocraticElection;
 use App\Modules\Demeter\Model\Election\MandateState;
-use Symfony\Component\Messenger\MessageBusInterface;
+use App\Shared\Application\Handler\DurationHandler;
+use Psr\Clock\ClockInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Workflow\Attribute\AsEnteredListener;
 use Symfony\Component\Workflow\Attribute\AsEnterListener;
@@ -21,12 +22,14 @@ use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\EnterEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;
 
-class DemocraticCampaignWorkflowEventListener
+readonly class DemocraticCampaignWorkflowEventListener
 {
 	public function __construct(
+		private ClockInterface $clock,
+		private DurationHandler $durationHandler,
+		private EventDispatcherInterface $eventDispatcher,
 		private PoliticalEventRepositoryInterface $electionRepository,
 		private NextElectionDateCalculator        $nextElectionDateCalculator,
-		private MessageBusInterface               $messageBus,
 		private UpdateSenate                      $updateSenate,
 	) {
 	}
@@ -56,18 +59,26 @@ class DemocraticCampaignWorkflowEventListener
 	{
 		/** @var Color $faction */
 		$faction = $event->getSubject();
+		$now = $this->clock->now();
+		$campaignEndedAt = $this->durationHandler->getDurationEnd(
+			$now,
+			$this->nextElectionDateCalculator->getCampaignDuration(),
+		);
+		$electionEndedAt = $this->durationHandler->getDurationEnd(
+			$campaignEndedAt,
+			$this->nextElectionDateCalculator->getElectionDuration(),
+		);
 
-		$election = new PoliticalEvent(
+		$election = new DemocraticElection(
 			id: Uuid::v4(),
 			faction: $faction,
-			startedAt: $this->nextElectionDateCalculator->getCampaignEndDate($faction),
+			startedAt: $now,
+			campaignEndedAt: $campaignEndedAt,
+			endedAt: $electionEndedAt,
 		);
 
 		$this->electionRepository->save($election);
 
-		$this->messageBus->dispatch(
-			new ElectionMessage($faction->id),
-			[DateTimeConverter::to_delay_stamp($election->startedAt)],
-		);
+		$this->eventDispatcher->dispatch(new NewDemocraticCampaignEvent($election));
 	}
 }

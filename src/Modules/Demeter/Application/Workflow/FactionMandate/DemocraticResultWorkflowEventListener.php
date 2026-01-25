@@ -18,6 +18,8 @@ use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
+use App\Shared\Application\Handler\DurationHandler;
+use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -27,6 +29,8 @@ use Symfony\Component\Workflow\Event\EnterEvent;
 readonly class DemocraticResultWorkflowEventListener
 {
 	public function __construct(
+		private ClockInterface $clock,
+		private DurationHandler $durationHandler,
 		private ConversationRepositoryInterface   $conversationRepository,
 		private GetFactionsConfiguration          $getFactionsConfiguration,
 		private PoliticalEventRepositoryInterface $electionRepository,
@@ -74,6 +78,7 @@ readonly class DemocraticResultWorkflowEventListener
 		$faction->lastElectionHeldAt = new \DateTimeImmutable();
 
 		$factionPlayer = $this->playerRepository->getFactionAccount($faction);
+
 		$this->eventDispatcher->dispatch(new NewDemocraticLeaderEvent(
 			faction: $faction,
 			newLeader: $newLeader,
@@ -84,9 +89,14 @@ readonly class DemocraticResultWorkflowEventListener
 			candidatesData: $ballot,
 		));
 
+		$nextCampaignStartedAt = $this->durationHandler->getDurationEnd(
+			$this->clock->now(),
+			$this->nextElectionDateCalculator->getMandateDuration($faction),
+		);
+
 		$this->messageBus->dispatch(
 			new CampaignMessage($faction->id),
-			[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getCampaignStartDate($faction))],
+			[DateTimeConverter::to_delay_stamp($nextCampaignStartedAt)],
 		);
 	}
 }

@@ -103,7 +103,7 @@ class Color implements CreditHolderInterface
 		public bool $isInGame = false,
 		#[ORM\Column(type: 'json')]
 		public array $relations = [],
-		#[ORM\Column(type: 'string', length: 36)]
+		#[ORM\Column(type: 'string', enumType: MandateState::class, length: 36)]
 		public MandateState $mandateState = MandateState::Active,
 		#[ORM\Column(type: 'datetime_immutable', nullable: true)]
 		// @TODO move that field to the future Server entity

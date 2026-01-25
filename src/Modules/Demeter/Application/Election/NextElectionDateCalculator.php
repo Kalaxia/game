@@ -102,12 +102,12 @@ readonly class NextElectionDateCalculator
 		return $durationEnd;
 	}
 
-	private function getElectionDuration(): int
+	public function getElectionDuration(): int
 	{
 		return $this->timeMode->isStandard() ? $this->electionDuration : 1200;
 	}
 
-	private function getCampaignDuration(): int
+	public function getCampaignDuration(): int
 	{
 		return $this->timeMode->isStandard() ? $this->campaignDuration : 300;
 	}

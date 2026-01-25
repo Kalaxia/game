@@ -6,14 +6,18 @@ namespace App\Modules\Demeter\Application\Workflow\FactionMandate;
 
 use App\Classes\Library\DateTimeConverter;
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
+use App\Modules\Demeter\Domain\Event\NewPutschAttemptEvent;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Message\BallotMessage;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\MandateState;
+use App\Modules\Demeter\Model\Election\Putsch;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Infrastructure\Validator\IsFromFaction;
 use App\Modules\Zeus\Model\Player;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Workflow\Attribute\AsEnterListener;
@@ -24,11 +28,11 @@ use Symfony\Component\Workflow\Event\GuardEvent;
 readonly class RoyalisticPutschWorkflowEventListener
 {
 	public function __construct(
+		private EventDispatcherInterface $eventDispatcher,
 		private NotificationRepositoryInterface $notificationRepository,
+		private PoliticalEventRepositoryInterface $politicalEventRepository,
 		private PlayerRepositoryInterface $playerRepository,
 		private UrlGeneratorInterface $urlGenerator,
-		private NextElectionDateCalculator $nextElectionDateCalculator,
-		private MessageBusInterface $messageBus,
 	) {
 	}
 
@@ -73,9 +77,9 @@ readonly class RoyalisticPutschWorkflowEventListener
 			$this->notificationRepository->save($notificationBuilder->for($factionPlayer));
 		}
 
-		$this->messageBus->dispatch(
-			new BallotMessage($faction->id),
-			[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getPutschEndDate($faction))],
-		);
+		/** @var Putsch $putsch */
+		$putsch = $this->politicalEventRepository->getFactionLastPoliticalEvent($faction);
+
+		$this->eventDispatcher->dispatch(new NewPutschAttemptEvent($putsch));
 	}
 }

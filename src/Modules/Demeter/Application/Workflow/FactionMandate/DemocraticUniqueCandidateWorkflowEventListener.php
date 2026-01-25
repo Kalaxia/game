@@ -4,27 +4,37 @@ declare(strict_types=1);
 
 namespace App\Modules\Demeter\Application\Workflow\FactionMandate;
 
+use App\Classes\Library\DateTimeConverter;
+use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Event\UniqueCandidateEvent;
 use App\Modules\Demeter\Domain\Repository\Election\CandidateRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
+use App\Modules\Demeter\Message\CampaignMessage;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
+use App\Shared\Application\Handler\DurationHandler;
+use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Attribute\AsEnterListener;
 use Symfony\Component\Workflow\Event\EnterEvent;
 
 readonly class DemocraticUniqueCandidateWorkflowEventListener
 {
 	public function __construct(
+		private ClockInterface $clock,
+		private DurationHandler $durationHandler,
+		private NextElectionDateCalculator $nextElectionDateCalculator,
 		private EventDispatcherInterface          $eventDispatcher,
 		private PoliticalEventRepositoryInterface $electionRepository,
 		private CandidateRepositoryInterface      $candidateRepository,
 		private GetFactionsConfiguration          $getFactionsConfiguration,
 		private ConversationRepositoryInterface   $conversationRepository,
 		private PlayerRepositoryInterface         $playerRepository,
+		private MessageBusInterface               $messageBus,
 	) {
 	}
 
@@ -45,7 +55,7 @@ readonly class DemocraticUniqueCandidateWorkflowEventListener
 		$candidates = $this->candidateRepository->getByPoliticalEvent($election);
 
 		if (count($candidates) !== 1) {
-
+			throw new \LogicException('Expected exactly one candidate');
 		}
 
 		$this->eventDispatcher->dispatch(new UniqueCandidateEvent(
@@ -54,5 +64,15 @@ readonly class DemocraticUniqueCandidateWorkflowEventListener
 			factionConversation: $factionConversation,
 			newLeader: $candidates[0]->player,
 		));
+
+		$nextCampaignStartedAt = $this->durationHandler->getDurationEnd(
+			$this->clock->now(),
+			$this->nextElectionDateCalculator->getMandateDuration($faction),
+		);
+
+		$this->messageBus->dispatch(
+			new CampaignMessage($faction->id),
+			[DateTimeConverter::to_delay_stamp($nextCampaignStartedAt)],
+		);
 	}
 }
