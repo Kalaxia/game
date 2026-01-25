@@ -44,7 +44,6 @@ readonly class RoyalisticCrowningWorkflowEventListener
 		private UrlGeneratorInterface             $urlGenerator,
 		private NextElectionDateCalculator        $nextElectionDateCalculator,
 	) {
-
 	}
 
 	#[AsEnterListener(workflow: 'faction_mandate', place: MandateState::Active->value)]

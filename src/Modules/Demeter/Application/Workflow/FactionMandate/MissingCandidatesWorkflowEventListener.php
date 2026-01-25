@@ -6,15 +6,19 @@ namespace App\Modules\Demeter\Application\Workflow\FactionMandate;
 
 use App\Classes\Library\DateTimeConverter;
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
+use App\Modules\Demeter\Domain\Event\MissingCandidatesEvent;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Message\CampaignMessage;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Hermes\Model\ConversationMessage;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
+use App\Shared\Application\Handler\DurationHandler;
+use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
@@ -24,6 +28,9 @@ use Symfony\Component\Workflow\Event\EnterEvent;
 readonly class MissingCandidatesWorkflowEventListener
 {
 	public function __construct(
+		private ClockInterface $clock,
+		private DurationHandler $durationHandler,
+		private ConversationRepositoryInterface $factionConversationRepository,
 		private EventDispatcherInterface $eventDispatcher,
 		private MessageBusInterface $messageBus,
 		private NotificationRepositoryInterface $notificationRepository,
@@ -43,13 +50,6 @@ readonly class MissingCandidatesWorkflowEventListener
 
 		/** @var Color $faction */
 		$faction = $event->getSubject();
-
-		$this->messageBus->dispatch(
-			new CampaignMessage($faction->id),
-			[DateTimeConverter::to_delay_stamp(
-				$this->nextElectionDateCalculator->getCampaignStartDate($faction),
-			)],
-		);
 
 		$previousLeader = $this->playerRepository->getFactionLeader($faction);
 
@@ -71,5 +71,26 @@ readonly class MissingCandidatesWorkflowEventListener
 				))
 				->for($previousLeader));
 		}
+
+		$factionAccount = $this->playerRepository->getFactionAccount($faction);
+		$factionConversation = $this->factionConversationRepository->getOneByPlayer($factionAccount);
+
+		$this->eventDispatcher->dispatch(new MissingCandidatesEvent(
+			factionName: ($this->getFactionsConfiguration)($faction, 'popularName'),
+			factionAccount: $factionAccount,
+			factionConversation: $factionConversation,
+			regime: $faction->regime,
+			currentLeader: $previousLeader,
+		));
+
+		$nextCampaignStartedAt = $this->durationHandler->getDurationEnd(
+			$this->clock->now(),
+			$this->nextElectionDateCalculator->getMandateDuration($faction),
+		);
+
+		$this->messageBus->dispatch(
+			new CampaignMessage($faction->id),
+			[DateTimeConverter::to_delay_stamp($nextCampaignStartedAt)],
+		);
 	}
 }

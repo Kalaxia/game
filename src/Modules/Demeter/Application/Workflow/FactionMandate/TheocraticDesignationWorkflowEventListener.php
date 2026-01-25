@@ -15,6 +15,8 @@ use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
+use App\Shared\Application\Handler\DurationHandler;
+use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Attribute\AsEnterListener;
@@ -23,6 +25,8 @@ use Symfony\Component\Workflow\Event\EnterEvent;
 readonly class TheocraticDesignationWorkflowEventListener
 {
 	public function __construct(
+		private ClockInterface                  $clock,
+		private DurationHandler                 $durationHandler,
 		private EventDispatcherInterface          $eventDispatcher,
 		private PoliticalEventRepositoryInterface $electionRepository,
 		private CandidateRepositoryInterface      $candidateRepository,
@@ -40,12 +44,6 @@ readonly class TheocraticDesignationWorkflowEventListener
 		/** @var Color $faction */
 		$faction = $event->getSubject();
 
-		$date = $this->nextElectionDateCalculator->getNextElectionDate($faction);
-
-		$this->messageBus->dispatch(
-			new CampaignMessage($faction->id),
-			[DateTimeConverter::to_delay_stamp($date)],
-		);
 		$previousLeader = $this->playerRepository->getFactionLeader($faction);
 
 		$election = $this->electionRepository->getFactionLastPoliticalEvent($faction);
@@ -69,5 +67,15 @@ readonly class TheocraticDesignationWorkflowEventListener
 			factionConversation: $this->conversationRepository->getOneByPlayer($factionPlayer),
 			candidatesData: $ballot,
 		));
+
+		$nextCampaignStartedAt = $this->durationHandler->getDurationEnd(
+			$this->clock->now(),
+			$this->nextElectionDateCalculator->getMandateDuration($faction),
+		);
+
+		$this->messageBus->dispatch(
+			new CampaignMessage($faction->id),
+			[DateTimeConverter::to_delay_stamp($nextCampaignStartedAt)],
+		);
 	}
 }

@@ -47,5 +47,4 @@ readonly class MissingCandidatesEvent implements ConversationMessageEvent
 	{
 		return $this->factionAccount;
 	}
-
 }

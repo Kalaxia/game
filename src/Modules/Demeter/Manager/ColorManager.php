@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Demeter\Manager;
 
 use App\Classes\Library\DateTimeConverter;
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Message\BallotMessage;
 use App\Modules\Demeter\Message\CampaignMessage;
@@ -16,103 +19,101 @@ use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Infrastructure\Validator\IsParliamentMember;
-use App\Modules\Zeus\Model\Player;
+use App\Shared\Application\Handler\DurationHandler;
 use App\Shared\Application\SchedulerInterface;
-use Doctrine\ORM\EntityManagerInterface;
+use Psr\Clock\ClockInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 readonly class ColorManager implements SchedulerInterface
 {
 	public function __construct(
-		private ColorRepositoryInterface $colorRepository,
-		private GetFactionsConfiguration $getFactionsConfiguration,
-		private PlayerRepositoryInterface $playerRepository,
+		private DurationHandler $durationHandler,
+		private ColorRepositoryInterface        $colorRepository,
+		private GetFactionsConfiguration 		$getFactionsConfiguration,
+		private PlayerRepositoryInterface       $playerRepository,
+		private PoliticalEventRepositoryInterface $politicalEventRepository,
 		private NotificationRepositoryInterface $notificationRepository,
-		private MessageBusInterface $messageBus,
-		private UrlGeneratorInterface $urlGenerator,
-		private EntityManagerInterface $entityManager,
-		private NextElectionDateCalculator $nextElectionDateCalculator,
+		private MessageBusInterface             $messageBus,
+		private UrlGeneratorInterface           $urlGenerator,
+		private NextElectionDateCalculator      $nextElectionDateCalculator,
+		#[Autowire('%server_start_time%')]
+		private string $serverStartTime,
 	) {
 	}
 
 	public function schedule(): void
 	{
-		$this->scheduleSenateUpdate();
-		$this->scheduleElections();
-		$this->scheduleCampaigns();
-		$this->scheduleBallot();
-	}
-
-	public function scheduleSenateUpdate(): void
-	{
-		$factions = $this->colorRepository->getByRegimesAndMandateStates([Color::REGIME_ROYALISTIC], [MandateState::Active]);
-
-		foreach ($factions as $faction) {
-			$this->messageBus->dispatch(
-				new SenateUpdateMessage($faction->id),
-				[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getSenateUpdateMessage($faction))],
-			);
+		foreach ($this->colorRepository->getAll() as $faction) {
+			$this->scheduleFactionPoliticalEvents($faction);
+			$this->scheduleSenateUpdate($faction);
 		}
 	}
 
-	public function scheduleCampaigns(): void
+	private function scheduleFactionPoliticalEvents(Color $faction): void
 	{
-		$factions = $this->colorRepository->getByRegimesAndMandateStates(
-			[Color::REGIME_DEMOCRATIC, Color::REGIME_THEOCRATIC],
-			[MandateState::Active]
-		);
+		$lastEvent = $this->politicalEventRepository->getFactionLastPoliticalEvent($faction);
 
-		foreach ($factions as $faction) {
+		if (null === $lastEvent) {
+			$this->scheduleFirstEvent($faction);
+
+			return;
+		}
+
+		if (MandateState::Active === $faction->mandateState && !$faction->isRoyalistic()) {
 			$this->messageBus->dispatch(
 				new CampaignMessage($faction->id),
-				[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getCampaignStartDate($faction))],
+				[DateTimeConverter::to_delay_stamp($this->durationHandler->getDurationEnd(
+					$lastEvent->endedAt,
+					$this->nextElectionDateCalculator->getMandateDuration($faction),
+				))],
 			);
-		}
-		$factions = $this->colorRepository->getByRegimesAndMandateStates(
-			[Color::REGIME_ROYALISTIC],
-			[MandateState::Putsch],
-		);
-		foreach ($factions as $faction) {
-			$this->messageBus->dispatch(
-				new BallotMessage($faction->id),
-				[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getPutschEndDate($faction))],
-			);
-		}
-	}
 
-	public function scheduleElections(): void
-	{
-		$factions = $this->colorRepository->getByRegimesAndMandateStates(
-			[Color::REGIME_DEMOCRATIC],
-			[MandateState::DemocraticCampaign],
-		);
-		foreach ($factions as $faction) {
-			$this->messageBus->dispatch(
+			return;
+		}
+
+		match ($faction->mandateState) {
+			MandateState::DemocraticCampaign => $this->messageBus->dispatch(
 				new ElectionMessage($faction->id),
-				[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getNextElectionDate($faction))],
-			);
-		}
+				[DateTimeConverter::to_delay_stamp($lastEvent->campaignEndedAt)],
+			),
+			MandateState::DemocraticVote,
+			MandateState::TheocraticCampaign,
+			MandateState::Putsch => $this->messageBus->dispatch(
+				new BallotMessage($faction->id),
+				[DateTimeConverter::to_delay_stamp($lastEvent->endedAt)],
+			),
+		};
 	}
 
-	public function scheduleBallot(): void
+	private function scheduleFirstEvent(Color $faction): void
 	{
-		$factions = array_merge(
-			$this->colorRepository->getByRegimesAndMandateStates(
-				[Color::REGIME_DEMOCRATIC],
-				[MandateState::DemocraticVote],
-			),
-			$this->colorRepository->getByRegimesAndMandateStates(
-				[Color::REGIME_THEOCRATIC],
-				[MandateState::TheocraticCampaign],
-			)
-		);
-		foreach ($factions as $faction) {
-			$this->messageBus->dispatch(
-				new BallotMessage($faction->id),
-				[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getBallotDate($faction))],
-			);
+		if ($faction->isRoyalistic()) {
+			return;
 		}
+
+		$campaignStartedAt = $this->durationHandler->getDurationEnd(
+			new \DateTimeImmutable($this->serverStartTime),
+			$this->nextElectionDateCalculator->getCampaignDuration(),
+		);
+
+		$this->messageBus->dispatch(
+			new CampaignMessage($faction->id),
+			[DateTimeConverter::to_delay_stamp($campaignStartedAt)],
+		);
+	}
+
+	public function scheduleSenateUpdate(Color $faction): void
+	{
+		if (!$faction->isRoyalistic()) {
+			return;
+		}
+
+		$this->messageBus->dispatch(
+			new SenateUpdateMessage($faction->id),
+			[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getSenateUpdateMessage($faction))],
+		);
 	}
 
 	public function sendSenateNotif(Color $faction, bool $isFromChief = false): void
@@ -125,7 +126,7 @@ readonly class ColorManager implements SchedulerInterface
 				$isFromChief
 					? sprintf(
 						'Votre %s a appliqué une loi.',
-						($this->getFactionsConfiguration)($faction, 'status')[5]
+						($this->getFactionsConfiguration)($faction, 'status')[5],
 					)
 					: 'Votre gouvernement a proposé un projet de loi, en tant que membre du sénat,
 					il est de votre devoir de voter pour l\'acceptation ou non de ladite loi.',
