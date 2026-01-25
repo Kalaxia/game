@@ -72,14 +72,11 @@ class ColorRepository extends DoctrineRepository implements ColorRepositoryInter
 		return $qb->getQuery()->getResult();
 	}
 
-	/**
-	 * @return list<Color>
-	 */
-	public function getByRegimeAndElectionStatement($regimes, $electionStatements): array
+	public function getByRegimesAndMandateStates($regimes, $mandateStates): array
 	{
 		return $this->findBy([
 			'regime' => $regimes,
-			'electionStatement' => $electionStatements,
+			'mandateState' => $mandateStates,
 		]);
 	}
 }

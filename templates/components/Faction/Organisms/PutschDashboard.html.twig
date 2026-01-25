@@ -1,0 +1,30 @@
+<div class="faction-flow" style="margin: 20px 0 30px 0;">
+	{% if faction.isInElection %}
+		<div class="center-box">
+			<span class="label">La tentative de coup d'état se termine dans</span>
+			<span class="value">{{ remaining_coup_time|lite_seconds }}</span>
+		</div>
+		<a class="centred-link" href="{{ path('view_faction_election') }}">Prendre position sur le coup d'état</a>
+	{% else %}
+		{% if current_player.isParliamentMember %}
+			<twig:Button :faction="faction" onclick="document.getElementById('makeacoup').classList.toggle('hidden');">
+				Tenter un coup d'état
+			</twig:Button>
+
+			<form action="{{ path('initiate_faction_coup') }}" method="post" id="makeacoup" class="hidden">
+				<p><label for="program">Votre message politique</label></p>
+				<p class="input input-area">
+					<twig:Textarea id="program" name="program" required style="height: 200px;" />
+				</p>
+
+				<p class="button">
+					<twig:Button type="submit">
+						Lancer le coup d'état
+					</twig:Button>
+				</p>
+			</form>
+		{% else %}
+			<span class="centred-link">Vous ne pouvez pas tenter un coup d'état</span>
+		{% endif %}
+	{% endif %}
+</div>

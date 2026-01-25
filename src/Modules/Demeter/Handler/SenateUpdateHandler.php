@@ -5,7 +5,7 @@ namespace App\Modules\Demeter\Handler;
 use App\Classes\Library\DateTimeConverter;
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
-use App\Modules\Demeter\Manager\ColorManager;
+use App\Modules\Demeter\Domain\Service\UpdateSenate;
 use App\Modules\Demeter\Message\SenateUpdateMessage;
 use App\Modules\Demeter\Model\Color;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -16,18 +16,18 @@ readonly class SenateUpdateHandler
 {
 	public function __construct(
 		private ColorRepositoryInterface $colorRepository,
-		private ColorManager             $colorManager,
 		private MessageBusInterface      $messageBus,
 		private NextElectionDateCalculator $nextElectionDateCalculator,
+		private UpdateSenate $updateSenate,
 	) {
 	}
 
 	public function __invoke(SenateUpdateMessage $message): void
 	{
 		$faction = $this->colorRepository->get($message->getFactionId());
-		$this->colorManager->updateSenate($faction);
+		($this->updateSenate)($faction);
 
-		if ($faction->isRoyalistic() && Color::MANDATE === $faction->isInMandate()) {
+		if ($faction->isRoyalistic() && $faction->isInMandate()) {
 			$date = $this->nextElectionDateCalculator->getSenateUpdateMessage($faction);
 			$faction->lastElectionHeldAt = $date;
 

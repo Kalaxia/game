@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Demeter\Domain\Repository\Election;
 
-use App\Modules\Demeter\Model\Election\Election;
+use App\Modules\Demeter\Model\Election\PoliticalEvent;
 use App\Modules\Demeter\Model\Election\Vote;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
@@ -12,10 +14,10 @@ use App\Modules\Zeus\Model\Player;
  */
 interface VoteRepositoryInterface extends EntityRepositoryInterface
 {
-	public function getPlayerVote(Player $player, Election $election): Vote|null;
+	public function getPlayerVote(Player $player, PoliticalEvent $politicalEvent): Vote|null;
 
 	/**
 	 * @return list<Vote>
 	 */
-	public function getElectionVotes(Election $election): array;
+	public function getPoliticalEventVotes(PoliticalEvent $politicalEvent): array;
 }

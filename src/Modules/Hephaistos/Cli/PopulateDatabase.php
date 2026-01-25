@@ -10,6 +10,7 @@ use App\Modules\Athena\Model\Transaction;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
+use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Galaxy\Helper\GalaxyGenerator;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
@@ -72,7 +73,6 @@ class PopulateDatabase extends Command
 				Uuid::v4(),
 				identifier: $factionId,
 				alive: true,
-				electionStatement: Color::MANDATE,
 				regime: ($this->getFactionsConfiguration)($factionId, 'regime'),
 				isInGame: true,
 				relations: array_filter(

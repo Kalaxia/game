@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Demeter\Infrastructure\Controller;
 
 use App\Classes\Library\Format;
@@ -22,18 +24,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ViewOverview extends AbstractController
 {
-	public function __construct(
-		private readonly FactionRankingRepositoryInterface $factionRankingRepository,
-		private readonly NextElectionDateCalculator $nextElectionDateCalculator,
-		private readonly DurationHandler $durationHandler,
-	) {
-
-	}
-
 	public function __invoke(
 		Request $request,
 		Player $currentPlayer,
 		FactionNewsManager $factionNewsManager,
+		FactionRankingRepositoryInterface $factionRankingRepository,
 		FactionNewsRepositoryInterface $factionNewsRepository,
 		PlayerRepositoryInterface $playerRepository,
 		LawManager $lawManager,
@@ -49,8 +44,8 @@ class ViewOverview extends AbstractController
 			$mode = 'pin';
 		}
 
-		$data = [
-			'faction_ranking' => $this->factionRankingRepository->getLastRanking($faction),
+		return $this->render('pages/demeter/faction/overview.html.twig', [
+			'faction_ranking' => $factionRankingRepository->getLastRanking($faction),
 			'faction' => $faction,
 			'news' => $factionNews,
 			'news_mode' => $mode,
@@ -59,46 +54,6 @@ class ViewOverview extends AbstractController
 			'voting_laws' => $lawRepository->getByFactionAndStatements($faction, [Law::VOTATION]),
 			'sectors_count' => $sectorRepository->countFactionSectors($faction),
 			'active_players_count' => $playerRepository->countByFactionAndStatements($faction, [Player::ACTIVE]),
-		];
-
-		if ($faction->hasElections()) {
-			$data = array_merge($data, $this->getElectionsData($faction));
-		} elseif ($faction->isInElection()) {
-			$endPutsch = $this->nextElectionDateCalculator->getPutschEndDate($faction);
-
-			$data['remaining_coup_time'] = $this->durationHandler->getRemainingTime($endPutsch);
-		}
-
-		return $this->render('pages/demeter/faction/overview.html.twig', $data);
-	}
-
-	private function getElectionsData(Color $faction): array
-	{
-		// time variables
-		$startCampaign = $this->nextElectionDateCalculator->getCampaignStartDate($faction);
-		$endCampaign = $this->nextElectionDateCalculator->getCampaignEndDate($faction);
-		$endElection = $this->nextElectionDateCalculator->getBallotDate($faction);
-
-		$startMandate = $this->nextElectionDateCalculator->getNextElectionDate($faction);
-		$endMandate = $faction->isDemocratic()
-			? $endElection
-			: $endCampaign;
-
-		$now = new \DateTimeImmutable();
-		$totalCampaignElection = $this->durationHandler->getDiff($startCampaign, $endElection);
-		$remainingCampaignElection = $this->durationHandler->getDiff($now, $startCampaign);
-
-		// @TODO Rename these keys to give more meaning
-		return [
-			'total_mandate' => $this->durationHandler->getDiff($startMandate, $endMandate),
-			'remaining_mandate' => $this->durationHandler->getDiff($startMandate, $now),
-			'total_before_campaign' => $this->durationHandler->getDiff($startMandate, $startCampaign),
-			'total_campaign_election' => $totalCampaignElection,
-			'total_campaign' => $this->durationHandler->getDiff($startCampaign, $endCampaign),
-			'remaining_campaign_election' => $remainingCampaignElection,
-			'election_progress' => $now > $startCampaign
-				? Format::percent($remainingCampaignElection, $totalCampaignElection, false)
-				: '0',
-		];
+		]);
 	}
 }
