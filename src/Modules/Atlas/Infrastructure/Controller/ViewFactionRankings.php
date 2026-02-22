@@ -2,9 +2,7 @@
 
 namespace App\Modules\Atlas\Infrastructure\Controller;
 
-use App\Classes\Library\Utils;
 use App\Modules\Atlas\Domain\Repository\FactionRankingRepositoryInterface;
-use App\Modules\Atlas\Model\Ranking;
 use App\Modules\Atlas\Repository\RankingRepository;
 use App\Shared\Application\Handler\DurationHandler;
 use Psr\Clock\ClockInterface;

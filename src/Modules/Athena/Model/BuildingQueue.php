@@ -9,14 +9,13 @@ use Symfony\Component\Uid\Uuid;
 class BuildingQueue implements QueueableInterface
 {
 	public function __construct(
-		public Uuid                    $id,
-		public Planet                  $base,
-		public int                     $buildingNumber,
-		public int                     $targetLevel,
-		public \DateTimeImmutable      $startedAt,
-		public \DateTimeImmutable|null $endedAt = null,
+		public Uuid $id,
+		public Planet $base,
+		public int $buildingNumber,
+		public int $targetLevel,
+		public \DateTimeImmutable $startedAt,
+		public ?\DateTimeImmutable $endedAt = null,
 	) {
-			
 	}
 
 	public function getStartDate(): \DateTimeImmutable

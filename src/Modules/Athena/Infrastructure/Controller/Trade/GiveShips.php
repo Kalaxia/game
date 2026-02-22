@@ -31,18 +31,18 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class GiveShips extends AbstractController
 {
 	public function __invoke(
-        Request                               $request,
-        GetTravelDuration                     $getTravelDuration,
-        Player                                $currentPlayer,
-        Planet                                $currentPlanet,
-        CommercialShippingRepositoryInterface $commercialShippingRepository,
-        MessageBusInterface                   $messageBus,
-        PlanetRepositoryInterface             $planetRepository,
-        PlanetHelper                          $planetHelper,
-        TransactionRepositoryInterface        $transactionRepository,
-        NotificationRepositoryInterface       $notificationRepository,
-        CountNeededCommercialShips            $countNeededCommercialShips,
-        TranslatorInterface                   $translator,
+		Request $request,
+		GetTravelDuration $getTravelDuration,
+		Player $currentPlayer,
+		Planet $currentPlanet,
+		CommercialShippingRepositoryInterface $commercialShippingRepository,
+		MessageBusInterface $messageBus,
+		PlanetRepositoryInterface $planetRepository,
+		PlanetHelper $planetHelper,
+		TransactionRepositoryInterface $transactionRepository,
+		NotificationRepositoryInterface $notificationRepository,
+		CountNeededCommercialShips $countNeededCommercialShips,
+		TranslatorInterface $translator,
 	): Response {
 		$planetId = $request->request->get('planetId') ?? throw new BadRequestHttpException('Missing base id');
 
@@ -154,7 +154,6 @@ class GiveShips extends AbstractController
 		$planetRepository->save($currentPlanet);
 
 		if ($currentPlanet->player->id !== $otherBase->player->id) {
-
 			$notification = NotificationBuilder::new()
 				->setTitle('Envoi de vaisseaux')
 				->setContent(
@@ -167,7 +166,7 @@ class GiveShips extends AbstractController
 						),
 						' a lancé un convoi de ',
 						NotificationBuilder::bold(Format::numberFormat($ships)),
-						' ' . $translator->trans(sprintf('ship_categories.%s.name', $shipIdentifier)) . ' depuis sa base ',
+						' '.$translator->trans(sprintf('ship_categories.%s.name', $shipIdentifier)).' depuis sa base ',
 						NotificationBuilder::link(
 							$this->generateUrl('map', ['place' => $currentPlanet->id]),
 							$currentPlanet->name,

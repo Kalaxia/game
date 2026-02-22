@@ -19,7 +19,7 @@ class LiveReportRepository extends DoctrineRepository implements LiveReportRepos
 		parent::__construct($registry, Report::class);
 	}
 
-	public function get(Uuid $id): Report|null
+	public function get(Uuid $id): ?Report
 	{
 		return $this->find($id);
 	}

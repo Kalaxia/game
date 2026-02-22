@@ -3,7 +3,6 @@
 namespace App\Modules\Ares\Domain\Specification\Player;
 
 use App\Modules\Galaxy\Domain\Entity\Place;
-use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Zeus\Model\Player;
 
 class CanPlayerMoveToPlace extends PlayerSpecification

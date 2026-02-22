@@ -18,7 +18,7 @@ class LawRepository extends DoctrineRepository implements LawRepositoryInterface
 		parent::__construct($registry, Law::class);
 	}
 
-	public function get(Uuid $id): Law|null
+	public function get(Uuid $id): ?Law
 	{
 		return $this->find($id);
 	}

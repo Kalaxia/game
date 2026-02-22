@@ -13,9 +13,8 @@ readonly class UpdatePlanetPoints
 {
 	public function __construct(
 		private BuildingLevelHandler $buildingLevelHandler,
-		private PlanetHelper         $planetHelper,
+		private PlanetHelper $planetHelper,
 	) {
-
 	}
 
 	public function updatePoints(Planet $planet): int

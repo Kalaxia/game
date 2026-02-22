@@ -17,17 +17,17 @@ use Twig\Environment;
 
 class TwigEventSubscriber implements EventSubscriberInterface
 {
-	protected SessionInterface|null $session = null;
+	protected ?SessionInterface $session = null;
 
 	public function __construct(
-		private readonly Environment                        $twig,
-		private readonly CommanderRepositoryInterface       $commanderRepository,
-		private readonly ConversationRepositoryInterface    $conversationRepository,
-		private readonly NotificationRepositoryInterface    $notificationRepository,
-		private readonly CurrentPlayerRegistry              $currentPlayerRegistry,
-		private readonly CurrentPlayerPlanetsRegistry       $currentPlayerPlanetsRegistry,
-		private readonly ShipQueueRepositoryInterface       $shipQueueRepository,
-		private readonly BuildingQueueRepositoryInterface   $buildingQueueRepository,
+		private readonly Environment $twig,
+		private readonly CommanderRepositoryInterface $commanderRepository,
+		private readonly ConversationRepositoryInterface $conversationRepository,
+		private readonly NotificationRepositoryInterface $notificationRepository,
+		private readonly CurrentPlayerRegistry $currentPlayerRegistry,
+		private readonly CurrentPlayerPlanetsRegistry $currentPlayerPlanetsRegistry,
+		private readonly ShipQueueRepositoryInterface $shipQueueRepository,
+		private readonly BuildingQueueRepositoryInterface $buildingQueueRepository,
 		private readonly TechnologyQueueRepositoryInterface $technologyQueueRepository,
 	) {
 	}

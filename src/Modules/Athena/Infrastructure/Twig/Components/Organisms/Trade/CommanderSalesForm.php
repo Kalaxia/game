@@ -20,7 +20,7 @@ readonly class CommanderSalesForm
 
 	public function __construct(
 		private CurrentPlayerPlanetsRegistry $currentPlayerBasesRegistry,
-		private CommanderRepositoryInterface $commanderRepository
+		private CommanderRepositoryInterface $commanderRepository,
 	) {
 	}
 

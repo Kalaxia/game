@@ -2,7 +2,7 @@
 
 echo '<h2>Ajout de la table DA_PlayerDaily</h2>';
 
-$db = $this->getContainer()->get(\App\Classes\Database\Database::class);
+$db = $this->getContainer()->get(App\Classes\Database\Database::class);
 $db->query('DROP TABLE IF EXISTS `DA_PlayerDaily`');
 $db->query('CREATE TABLE IF NOT EXISTS `DA_PlayerDaily` (
 	`id` INT unsigned NOT NULL AUTO_INCREMENT,

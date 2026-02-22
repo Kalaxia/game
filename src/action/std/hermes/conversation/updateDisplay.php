@@ -5,8 +5,8 @@ use App\Classes\Library\Flashbag;
 use App\Modules\Hermes\Model\ConversationUser;
 
 $request = $this->getContainer()->get('app.request');
-$session = $this->getContainer()->get(\App\Classes\Library\Session\SessionWrapper::class);
-$conversationManager = $this->getContainer()->get(\App\Modules\Hermes\Manager\ConversationManager::class);
+$session = $this->getContainer()->get(App\Classes\Library\Session\SessionWrapper::class);
+$conversationManager = $this->getContainer()->get(App\Modules\Hermes\Manager\ConversationManager::class);
 
 $conversation = $request->query->get('conversation');
 

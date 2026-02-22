@@ -19,24 +19,16 @@ class ColorRepository extends DoctrineRepository implements ColorRepositoryInter
 		parent::__construct($registry, Color::class);
 	}
 
-	public function get(Uuid $id): Color|null
+	public function get(Uuid $id): ?Color
 	{
 		return $this->find($id);
 	}
 
-	public function getOneByIdentifier(int $identifier): Color|null
+	public function getOneByIdentifier(int $identifier): ?Color
 	{
 		return $this->findOneBy([
 			'identifier' => $identifier,
 		]);
-	}
-
-	/**
-	 * @return list<Color>
-	 */
-	public function getAll(): array
-	{
-		return $this->findAll();
 	}
 
 	/**

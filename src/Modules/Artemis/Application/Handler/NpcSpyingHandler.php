@@ -13,7 +13,6 @@ readonly class NpcSpyingHandler extends SpyingHandler
 		private VirtualCommanderHandler $virtualCommanderHandler,
 		private CommanderArmyHandler $commanderArmyHandler,
 	) {
-
 	}
 
 	protected function processSpyingMission(SpyReport $spyReport): void
@@ -42,7 +41,7 @@ readonly class NpcSpyingHandler extends SpyingHandler
 	}
 
 	#[\Override]
-    protected function getTypeOfSpy(int $success, int $antiSpy): int
+	protected function getTypeOfSpy(int $success, int $antiSpy): int
 	{
 		return SpyReport::TYP_NOT_CAUGHT;
 	}

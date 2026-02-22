@@ -238,6 +238,6 @@ class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatabl
 
 	public function isVirtual(): bool
 	{
-		return $this->player === null;
+		return null === $this->player;
 	}
 }

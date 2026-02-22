@@ -18,15 +18,14 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 )]
 final class BuildingQueue extends Queue
 {
-	public BuildingQueueModel|null $queue = null;
+	public ?BuildingQueueModel $queue = null;
 
 	public function __construct(
 		private readonly DurationHandler $durationHandler,
-		private readonly PlanetHelper    $planetHelper,
+		private readonly PlanetHelper $planetHelper,
 		#[Autowire('%athena.building.building_queue_resource_refund%')]
-		public readonly float            $buildingResourceRefund,
+		public readonly float $buildingResourceRefund,
 	) {
-
 	}
 
 	public function getName(): string

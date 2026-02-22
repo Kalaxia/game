@@ -25,7 +25,7 @@ readonly class CalculateTravelTime
 	) {
 	}
 
-	public function __invoke(Place $from, Place $to, TravelType $travelType, Player|null $player = null): int
+	public function __invoke(Place $from, Place $to, TravelType $travelType, ?Player $player = null): int
 	{
 		return match ($this->timeMode) {
 			TimeMode::Fast => match ($travelType) {
@@ -46,7 +46,7 @@ readonly class CalculateTravelTime
 		return intval(round((Commander::COEFFMOVEINSYSTEM * $distance) * ((40 - $distance) / 50) + 180));
 	}
 
-	private function getTimeTravelOutOfSystem(Place $from, Place $to, Player|null $player): int
+	private function getTimeTravelOutOfSystem(Place $from, Place $to, ?Player $player): int
 	{
 		$playerBonus = null !== $player ? $this->playerBonusManager->getBonusByPlayer($player) : null;
 		$distance = ($this->getDistanceBetweenPlaces)($from, $to);

@@ -64,11 +64,11 @@ abstract class Place implements SystemUpdatable
 	public function __construct(
 		#[ORM\Id]
 		#[ORM\Column(type: 'uuid')]
-		public Uuid        $id,
+		public Uuid $id,
 		#[ORM\ManyToOne(targetEntity: System::class)]
-		public System      $system,
+		public System $system,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
-		public int         $position,
+		public int $position,
 		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $updatedAt,
 	) {

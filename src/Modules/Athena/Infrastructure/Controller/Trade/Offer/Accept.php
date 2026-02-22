@@ -31,20 +31,20 @@ use Symfony\Component\Uid\Uuid;
 class Accept extends AbstractController
 {
 	public function __invoke(
-        Request                               $request,
-        Planet                                $currentBase,
-        Player                                $currentPlayer,
-        CalculateNewRate                      $calculateNewRate,
-        GetTravelDuration                     $getTravelDuration,
-        TransactionManager                    $transactionManager,
-        CommercialShippingRepositoryInterface $commercialShippingRepository,
-        HubInterface                          $mercure,
-        MessageBusInterface                   $messageBus,
-        NotificationRepositoryInterface       $notificationRepository,
-        PlayerManager                         $playerManager,
-        TransactionRepositoryInterface        $transactionRepository,
-        EntityManagerInterface $entityManager,
-        Uuid $id,
+		Request $request,
+		Planet $currentBase,
+		Player $currentPlayer,
+		CalculateNewRate $calculateNewRate,
+		GetTravelDuration $getTravelDuration,
+		TransactionManager $transactionManager,
+		CommercialShippingRepositoryInterface $commercialShippingRepository,
+		HubInterface $mercure,
+		MessageBusInterface $messageBus,
+		NotificationRepositoryInterface $notificationRepository,
+		PlayerManager $playerManager,
+		TransactionRepositoryInterface $transactionRepository,
+		EntityManagerInterface $entityManager,
+		Uuid $id,
 	): Response {
 		if (0 === $currentBase->levelCommercialPlateforme) {
 			throw $this->createAccessDeniedException('YOu cannot accept offers without a trading platform');

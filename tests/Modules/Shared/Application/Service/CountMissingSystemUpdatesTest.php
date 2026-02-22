@@ -9,14 +9,12 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Clock\Clock;
 use Symfony\Component\Clock\MockClock;
-use Generator;
 
 class CountMissingSystemUpdatesTest extends KernelTestCase
 {
-
 	#[DataProvider('provideData')]
-    public function test(string $currentDate, string $lastUpdatedAt, string $timeMode, int $expectedMissingUpdatesCount): void
-    {
+	public function test(string $currentDate, string $lastUpdatedAt, string $timeMode, int $expectedMissingUpdatesCount): void
+	{
 		$_ENV['SERVER_TIME_MODE'] = $timeMode;
 		Clock::set(new MockClock($currentDate));
 		/** @var CountMissingSystemUpdates $countMissingSystemUpdates */
@@ -28,9 +26,9 @@ class CountMissingSystemUpdatesTest extends KernelTestCase
 		])->object();
 
 		static::assertSame($expectedMissingUpdatesCount, $countMissingSystemUpdates($player));
-    }
+	}
 
-	public static function provideData(): Generator
+	public static function provideData(): \Generator
 	{
 		yield [
 			'2024-05-01 10:00:00',

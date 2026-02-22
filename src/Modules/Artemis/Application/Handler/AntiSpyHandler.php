@@ -18,7 +18,6 @@ readonly class AntiSpyHandler
 		private GetTravelDuration $getTravelDuration,
 		private GetDistanceBetweenPlaces $getDistanceBetweenPlaces,
 	) {
-
 	}
 
 	// TODO Maybe transform it in Twig extension method ?
@@ -32,7 +31,7 @@ readonly class AntiSpyHandler
 	}
 
 	/**
-	 * TODO Figure out which mean the true values
+	 * TODO Figure out which mean the true values.
 	 *
 	 * @return list<\DateTimeImmutable|true>
 	 */
@@ -100,7 +99,7 @@ readonly class AntiSpyHandler
 	}
 
 	/**
-	 * TODO Sanitize the parameters and include ratio calculation
+	 * TODO Sanitize the parameters and include ratio calculation.
 	 */
 	public function getRemainingSeconds(float|int $ratio, float|int $secRemaining): int
 	{

@@ -28,15 +28,15 @@ class CancelQueue extends AbstractController
 		methods: [Request::METHOD_GET],
 	)]
 	public function __invoke(
-		Request                        $request,
-		DurationHandler                $durationHandler,
-		Player                         $currentPlayer,
-		Planet                         $currentBase,
-		PlanetManager                  $planetManager,
-		ShipQueueManager               $shipQueueManager,
-		ShipQueueRepositoryInterface   $shipQueueRepository,
+		Request $request,
+		DurationHandler $durationHandler,
+		Player $currentPlayer,
+		Planet $currentBase,
+		PlanetManager $planetManager,
+		ShipQueueManager $shipQueueManager,
+		ShipQueueRepositoryInterface $shipQueueRepository,
 		GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
-		Uuid                           $id,
+		Uuid $id,
 	): Response {
 		$dock = $request->query->get('dock') ?? throw new BadRequestHttpException('Missing dock parameter');
 

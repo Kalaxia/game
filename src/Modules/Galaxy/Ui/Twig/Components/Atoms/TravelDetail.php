@@ -12,8 +12,8 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 )]
 class TravelDetail
 {
-	public string|null $labelId = '';
-	public string|null $label = '';
-	public string|null $valueId = '';
-	public string|null $value = '';
+	public ?string $labelId = '';
+	public ?string $label = '';
+	public ?string $valueId = '';
+	public ?string $value = '';
 }

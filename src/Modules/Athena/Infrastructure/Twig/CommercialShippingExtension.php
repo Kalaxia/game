@@ -3,7 +3,6 @@
 namespace App\Modules\Athena\Infrastructure\Twig;
 
 use App\Classes\Library\Format;
-use App\Classes\Library\Game;
 use App\Modules\Athena\Domain\Service\Transaction\GetMinPriceRelativeToRate;
 use App\Modules\Athena\Manager\TransactionManager;
 use App\Modules\Athena\Model\CommercialShipping;
@@ -22,7 +21,7 @@ class CommercialShippingExtension extends AbstractExtension
 	}
 
 	#[\Override]
-    public function getFilters(): array
+	public function getFilters(): array
 	{
 		return [
 			new TwigFilter('commercial_shipping_picto', fn (CommercialShipping $commercialShipping) => Transaction::getResourcesIcon($commercialShipping->transaction?->quantity ?? $commercialShipping->resourceTransported)),
@@ -31,7 +30,7 @@ class CommercialShippingExtension extends AbstractExtension
 	}
 
 	#[\Override]
-    public function getFunctions(): array
+	public function getFunctions(): array
 	{
 		return [
 			new TwigFunction('get_min_price', fn (string $transactionType, int $quantity, ?int $identifier = null) => ($this->getMinPriceRelativeToRate)($transactionType, 1, $identifier)),

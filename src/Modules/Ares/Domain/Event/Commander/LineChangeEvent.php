@@ -20,7 +20,7 @@ class LineChangeEvent implements TutorialEvent
 		return $this->player;
 	}
 
-	public function getTutorialStep(): int|null
+	public function getTutorialStep(): ?int
 	{
 		return TutorialResource::MOVE_FLEET_LINE;
 	}

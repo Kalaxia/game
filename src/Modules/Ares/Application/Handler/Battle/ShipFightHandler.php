@@ -16,10 +16,9 @@ readonly class ShipFightHandler
 		private ShipStatsHandler $shipStatsHandler,
 		private LoggerInterface $logger,
 	) {
-
 	}
 
-	public function engage(Ship $ship, Squadron $enemySquadron, PlayerBonus|null $playerBonus = null): void
+	public function engage(Ship $ship, Squadron $enemySquadron, ?PlayerBonus $playerBonus = null): void
 	{
 		$attacksCount = count($this->shipStatsHandler->getStats($ship, ShipStat::Attack, $playerBonus));
 
@@ -48,7 +47,7 @@ readonly class ShipFightHandler
 		return random_int(0, $enemySquadron->getShipsCount() - 1);
 	}
 
-	private function attack(Ship $ship, int $key, int $attackNumber, Squadron $enemySquadron, PlayerBonus|null $playerBonus = null): void
+	private function attack(Ship $ship, int $key, int $attackNumber, Squadron $enemySquadron, ?PlayerBonus $playerBonus = null): void
 	{
 		$targetShip = $enemySquadron->ships[$key];
 
@@ -77,14 +76,14 @@ readonly class ShipFightHandler
 		$this->receiveDamages($enemySquadron, $key, $damages, $playerBonus);
 	}
 
-	private function doesDodge(Ship $ship, PlayerBonus|null $playerBonus = null): bool
+	private function doesDodge(Ship $ship, ?PlayerBonus $playerBonus = null): bool
 	{
 		$avoidance = random_int(0, intval(round($this->shipStatsHandler->getStats($ship, ShipStat::Speed, $playerBonus))));
 
 		return $avoidance > 80;
 	}
 
-	private function receiveDamages(Squadron $squadron, int $key, int $damages, PlayerBonus|null $playerBonus = null): void
+	private function receiveDamages(Squadron $squadron, int $key, int $damages, ?PlayerBonus $playerBonus = null): void
 	{
 		$ship = $squadron->ships[$key];
 

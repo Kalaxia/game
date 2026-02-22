@@ -6,14 +6,13 @@ use App\Modules\Demeter\Model\Color;
 use App\Modules\Portal\Domain\Entity\User;
 use App\Modules\Shared\Domain\Model\SystemUpdatable;
 use App\Modules\Zeus\Resource\TutorialResource;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class Player implements CreditHolderInterface, SystemUpdatable, \JsonSerializable
 {
-	public int|null $id = 0;
-	public User|null $user = null;
-	public Color|null $faction = null;
-	public Player|null $godFather = null;
+	public ?int $id = 0;
+	public ?User $user = null;
+	public ?Color $faction = null;
+	public ?Player $godFather = null;
 	public string $name = '';
 	public int $sex = 0;
 	public string $description = '';
@@ -33,10 +32,10 @@ class Player implements CreditHolderInterface, SystemUpdatable, \JsonSerializabl
 	public int $partLifeSciences = 25;
 	public int $partSocialPoliticalSciences = 25;
 	public int $partInformaticEngineering = 25;
-	public \DateTimeImmutable|null $uPlayer = null;
-	public \DateTimeImmutable|null $dInscription = null;
-	public \DateTimeImmutable|null $dLastConnection = null;
-	public \DateTimeImmutable|null $dLastActivity = null;
+	public ?\DateTimeImmutable $uPlayer = null;
+	public ?\DateTimeImmutable $dInscription = null;
+	public ?\DateTimeImmutable $dLastConnection = null;
+	public ?\DateTimeImmutable $dLastActivity = null;
 	public bool $premium = false;
 	public int $statement = 0;
 
@@ -123,6 +122,7 @@ class Player implements CreditHolderInterface, SystemUpdatable, \JsonSerializabl
 	{
 		return $this->credit >= $amount;
 	}
+
 	public function lastUpdatedBySystemAt(): \DateTimeImmutable
 	{
 		return $this->uPlayer;

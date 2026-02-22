@@ -22,7 +22,7 @@ class PlaceRepository extends DoctrineRepository implements PlaceRepositoryInter
 		parent::__construct($registry, Place::class);
 	}
 
-	public function get(Uuid $id): Place|null
+	public function get(Uuid $id): ?Place
 	{
 		return $this->find($id);
 	}

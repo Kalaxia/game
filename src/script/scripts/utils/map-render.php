@@ -1,6 +1,6 @@
 <?php
 
-$systems = $this->getContainer()->get(\App\Modules\Galaxy\Manager\SystemManager::class)->getAll();
+$systems = $this->getContainer()->get(App\Modules\Galaxy\Manager\SystemManager::class)->getAll();
 
 // functions
 function getPosition($type, $x, $y, $multiply = 4)
@@ -71,15 +71,20 @@ function getPosition($type, $x, $y, $multiply = 4)
 
 <?php
 echo '<div id="lieux">';
-	foreach ($systems as $system) {
-		switch ($system->typeOfSystem) {
-			case 1: echo '<div class="lieu l1" '.getPosition($system->typeOfSystem, $system->xPosition, $system->yPosition).'></div>'; break;
-			case 2: echo '<div class="lieu l2" '.getPosition($system->typeOfSystem, $system->xPosition, $system->yPosition).'></div>'; break;
-			case 3: echo '<div class="lieu l3" '.getPosition($system->typeOfSystem, $system->xPosition, $system->yPosition).'></div>'; break;
-			case 4: echo '<div class="lieu l4" '.getPosition($system->typeOfSystem, $system->xPosition, $system->yPosition).'></div>'; break;
-			case 5: echo '<div class="lieu l5" '.getPosition($system->typeOfSystem, $system->xPosition, $system->yPosition).'></div>'; break;
-			default:
-					break;
-		}
+foreach ($systems as $system) {
+	switch ($system->typeOfSystem) {
+		case 1: echo '<div class="lieu l1" '.getPosition($system->typeOfSystem, $system->xPosition, $system->yPosition).'></div>';
+			break;
+		case 2: echo '<div class="lieu l2" '.getPosition($system->typeOfSystem, $system->xPosition, $system->yPosition).'></div>';
+			break;
+		case 3: echo '<div class="lieu l3" '.getPosition($system->typeOfSystem, $system->xPosition, $system->yPosition).'></div>';
+			break;
+		case 4: echo '<div class="lieu l4" '.getPosition($system->typeOfSystem, $system->xPosition, $system->yPosition).'></div>';
+			break;
+		case 5: echo '<div class="lieu l5" '.getPosition($system->typeOfSystem, $system->xPosition, $system->yPosition).'></div>';
+			break;
+		default:
+			break;
 	}
+}
 echo '</div>';

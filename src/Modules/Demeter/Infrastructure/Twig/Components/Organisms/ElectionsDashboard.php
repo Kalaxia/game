@@ -6,10 +6,14 @@ namespace App\Modules\Demeter\Infrastructure\Twig\Components\Organisms;
 
 use App\Classes\Library\Format;
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
+use App\Modules\Demeter\Domain\Repository\Election\MandateRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Shared\Application\PercentageApplier;
+use App\Modules\Demeter\Model\Election\Mandate;
+use App\Modules\Demeter\Model\Election\PoliticalEvent;
 use App\Shared\Application\Handler\DurationHandler;
 use Psr\Clock\ClockInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent(
@@ -19,20 +23,22 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 class ElectionsDashboard
 {
 	public Color $faction;
+	public Mandate $currentMandate;
+	public ?PoliticalEvent $lastPoliticalEvent;
 	public \DateTimeImmutable $campaignStartedAt;
 	public \DateTimeImmutable $campaignEndedAt;
 	public \DateTimeImmutable $electionEndedAt;
 	public \DateTimeImmutable $mandateStartedAt;
 	public \DateTimeImmutable $mandateEndedAt;
-	public int $completeElectionTime;
-	public int $remainingTimeUntilCampaign;
 	public int $totalMandateTime;
-	public int $remainingMandateTime;
+	public int $currentMandateTime;
 	public int $timeUntilCampaign;
-	public int $fullCampaignTime;
+	public int $electionTime;
 
 	public function __construct(
 		private readonly ClockInterface $clock,
+		private readonly MandateRepositoryInterface $mandateRepository,
+		private readonly PoliticalEventRepositoryInterface $politicalEventRepository,
 		private readonly NextElectionDateCalculator $nextElectionDateCalculator,
 		private readonly DurationHandler $durationHandler,
 	) {
@@ -41,46 +47,69 @@ class ElectionsDashboard
 	public function mount(Color $faction): void
 	{
 		$this->faction = $faction;
+		$this->currentMandate = $this->mandateRepository->getCurrentMandate($faction)
+			?? throw new \RuntimeException(sprintf('No mandate found for faction %s.', $faction->identifier));
+		$this->lastPoliticalEvent = $this->politicalEventRepository->getFactionLastPoliticalEvent($faction);
+		$mandateDuration = $this->nextElectionDateCalculator->getMandateDuration($faction);
+		$this->mandateStartedAt = $this->currentMandate->startedAt;
 		// time variables
-		$this->campaignStartedAt = $this->nextElectionDateCalculator->getCampaignStartDate($faction);
-		$this->campaignEndedAt = $this->nextElectionDateCalculator->getCampaignEndDate($faction);
-		$this->electionEndedAt = $this->nextElectionDateCalculator->getBallotDate($faction);
+		$this->campaignStartedAt = $this->durationHandler->getDurationEnd(
+			$this->mandateStartedAt,
+			$mandateDuration,
+		);
+		$this->campaignEndedAt = $this->durationHandler->getDurationEnd(
+			$this->campaignStartedAt,
+			$this->nextElectionDateCalculator->getCampaignDuration(),
+		);
+		$this->electionEndedAt = $this->lastPoliticalEvent?->endedAt
+			?? $this->durationHandler->getDurationEnd(
+				$this->campaignStartedAt,
+				$this->nextElectionDateCalculator->getCampaignDuration()
+				+ ($faction->isDemocratic())
+					? $this->nextElectionDateCalculator->getElectionDuration()
+					: 0,
+			);
 
-		$this->mandateStartedAt = $this->nextElectionDateCalculator->getNextElectionDate($faction);
-		$this->mandateEndedAt = $faction->isDemocratic()
-			? $this->electionEndedAt
-			: $this->campaignEndedAt;
+		$this->mandateEndedAt = $this->currentMandate->expiredAt;
 
 		$now = $this->clock->now();
-		$this->completeElectionTime = $this->durationHandler->getDiff($this->campaignStartedAt, $this->electionEndedAt);
-		$this->remainingTimeUntilCampaign = $this->durationHandler->getDiff($now, $this->campaignStartedAt);
 
 		$this->totalMandateTime = $this->durationHandler->getDiff($this->mandateStartedAt, $this->mandateEndedAt);
-		$this->remainingMandateTime = $this->durationHandler->getDiff($this->mandateStartedAt, $now);
 		$this->timeUntilCampaign = $this->durationHandler->getDiff($this->mandateStartedAt, $this->campaignStartedAt);
 
-		$this->fullCampaignTime = $this->durationHandler->getDiff($this->campaignStartedAt, $this->campaignEndedAt);
+		$this->currentMandateTime = $this->durationHandler->getDiff($this->mandateStartedAt, $now);
+		$this->electionTime = $this->durationHandler->getDiff($this->mandateStartedAt, $this->campaignEndedAt);
 	}
 
-	public function getElectionProgress(): float
+	public function getCampaignStartPosition(): float
 	{
-		return $this->clock->now() > $this->campaignStartedAt
-			? Format::percent($this->remainingTimeUntilCampaign, $this->completeElectionTime, false)
-			: 0;
+		return Format::percent(
+			$this->timeUntilCampaign,
+			$this->totalMandateTime,
+		);
 	}
 
-	public function getCampaignPercent(): float
+	public function getCampaignCurrentPosition(): float
 	{
-		return PercentageApplier::toFloat($this->fullCampaignTime, $this->completeElectionTime);
+		return Format::percent(
+			$this->currentMandateTime - $this->timeUntilCampaign,
+			$this->totalMandateTime - $this->timeUntilCampaign,
+		);
 	}
 
-	public function getRemainingMandateTime1(): float
+	public function getElectionStartPosition(): float
 	{
-		return (100 - PercentageApplier::toFloat($this->remainingTimeUntilCampaign, $this->totalMandateTime));
+		return Format::percent(
+			$this->electionTime,
+			$this->totalMandateTime,
+		);
 	}
 
 	public function getRemainingMandateTimeAlt(): float
 	{
-		return PercentageApplier::toFloat($this->remainingMandateTime, $this->totalMandateTime);
+		return Format::percent(
+			$this->currentMandateTime,
+			$this->totalMandateTime,
+		);
 	}
 }

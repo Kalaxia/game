@@ -13,7 +13,7 @@ class ForumExtension extends AbstractExtension
 	}
 
 	#[\Override]
-    public function getFunctions(): array
+	public function getFunctions(): array
 	{
 		return [
 			// @TODO move get_faction_info here and replace these methods

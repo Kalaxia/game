@@ -51,7 +51,6 @@ class HasUnlockedBuildingValidator extends ConstraintValidator
 			return;
 		}
 
-
 		if (1 !== $buildingConstructionOrder->getTechnology()->getTechnology($data['techno'])) {
 			$this->context
 				->buildViolation(sprintf(

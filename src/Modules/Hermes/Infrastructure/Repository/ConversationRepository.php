@@ -30,7 +30,7 @@ class ConversationRepository extends DoctrineRepository implements ConversationR
 		return $qb->getQuery()->getSingleResult();
 	}
 
-	public function getOne(Uuid $id): Conversation|null
+	public function getOne(Uuid $id): ?Conversation
 	{
 		return $this->find($id);
 	}

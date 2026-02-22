@@ -18,7 +18,7 @@ class ArchiveReport extends AbstractController
 	public function __invoke(
 		Player $currentPlayer,
 		ReportRepositoryInterface $reportRepository,
-		Uuid $id
+		Uuid $id,
 	): Response {
 		if (($report = $reportRepository->get($id)) !== null) {
 			if ($currentPlayer->id === $report->attacker->id) {

@@ -9,14 +9,13 @@ use App\Modules\Galaxy\Infrastructure\DataFixtures\Factory\PlaceFactory;
 use App\Modules\Galaxy\Infrastructure\DataFixtures\Factory\SectorFactory;
 use App\Modules\Galaxy\Infrastructure\DataFixtures\Factory\SystemFactory;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Generator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class GetDistanceBetweenPlacesTest extends KernelTestCase
 {
 	#[DataProvider('provideData')]
-    public function test(int $xA, int $yA, int $xB, int $yB, float $expectedDistance): void
-    {
+	public function test(int $xA, int $yA, int $xB, int $yB, float $expectedDistance): void
+	{
 		static::bootKernel();
 		$getDistanceBetweenPlaces = new GetDistanceBetweenPlaces();
 
@@ -37,9 +36,9 @@ class GetDistanceBetweenPlacesTest extends KernelTestCase
 		])->object();
 
 		static::assertSame($expectedDistance, $getDistanceBetweenPlaces($from, $to));
-    }
+	}
 
-	public static function provideData(): Generator
+	public static function provideData(): \Generator
 	{
 		yield [
 			20,

@@ -15,14 +15,14 @@ use Symfony\Component\HttpFoundation\Response;
 class ViewTechnologyPanel extends AbstractController
 {
 	public function __invoke(
-		Request                       $request,
-		Player                        $currentPlayer,
+		Request $request,
+		Player $currentPlayer,
 		TechnologyRepositoryInterface $technologyRepository,
-		TechnologyHelper              $technologyHelper,
-		ResearchRepositoryInterface   $researchRepository,
-		ResearchManager               $researchManager,
-		ResearchHelper                $researchHelper,
-		int                           $identifier,
+		TechnologyHelper $technologyHelper,
+		ResearchRepositoryInterface $researchRepository,
+		ResearchManager $researchManager,
+		ResearchHelper $researchHelper,
+		int $identifier,
 	): Response {
 		if (!$technologyHelper->isATechnology($identifier)) {
 			throw $this->createNotFoundException('This technology does not exist');

@@ -15,8 +15,8 @@ readonly class WarDeclarationResultHandler
 {
 	public function __construct(
 		private ColorRepositoryInterface $colorRepository,
-		private CommercialRouteManager   $commercialRouteManager,
-		private LawRepositoryInterface   $lawRepository,
+		private CommercialRouteManager $commercialRouteManager,
+		private LawRepositoryInterface $lawRepository,
 	) {
 	}
 

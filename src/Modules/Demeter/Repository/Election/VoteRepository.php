@@ -22,7 +22,7 @@ class VoteRepository extends DoctrineRepository implements VoteRepositoryInterfa
 		parent::__construct($registry, Vote::class);
 	}
 
-	public function getPlayerVote(Player $player, PoliticalEvent $politicalEvent): Vote|null
+	public function getPlayerVote(Player $player, PoliticalEvent $politicalEvent): ?Vote
 	{
 		$qb = $this->createQueryBuilder('v');
 

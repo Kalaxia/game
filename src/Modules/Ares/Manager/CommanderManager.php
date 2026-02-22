@@ -123,7 +123,7 @@ readonly class CommanderManager implements SchedulerInterface
 		// on pose la flotte si il y a assez de place
 		// sinon on met la flotte dans les hangars
 		// TODO replace with specification
-		if ($place === null || $place->player->id !== $commander->player->id) {
+		if (null === $place || $place->player->id !== $commander->player->id) {
 			// retour forcé
 			($this->moveFleet)(
 				commander: $commander,

@@ -8,8 +8,8 @@ class HasFreeBuildingSlots extends Constraint
 {
 	public function __construct(
 		public readonly int $buildingQueuesCount,
-		array|null $groups = null,
-		mixed $payload = null
+		?array $groups = null,
+		mixed $payload = null,
 	) {
 		parent::__construct(
 			groups: $groups,

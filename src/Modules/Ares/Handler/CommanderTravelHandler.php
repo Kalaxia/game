@@ -20,12 +20,12 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 readonly class CommanderTravelHandler
 {
 	public function __construct(
-		private CommanderManager             $commanderManager,
+		private CommanderManager $commanderManager,
 		private CommanderRepositoryInterface $commanderRepository,
-		private ConquestManager              $conquestManager,
-		private LootManager                  $lootManager,
-		private PlaceManager                 $placeManager,
-		private PlanetManager                $planetManager,
+		private ConquestManager $conquestManager,
+		private LootManager $lootManager,
+		private PlaceManager $placeManager,
+		private PlanetManager $planetManager,
 	) {
 	}
 
@@ -40,10 +40,7 @@ readonly class CommanderTravelHandler
 			CommanderMission::Loot => $this->lootManager->loot($commander),
 			CommanderMission::Colo => $this->conquestManager->conquer($commander),
 			CommanderMission::Back => $this->moveBack($commander),
-			default => throw new \LogicException(sprintf(
-				'Commander %s has arrived without mission',
-				$commander->id->toRfc4122(),
-			)),
+			default => throw new \LogicException(sprintf('Commander %s has arrived without mission', $commander->id->toRfc4122())),
 		};
 	}
 

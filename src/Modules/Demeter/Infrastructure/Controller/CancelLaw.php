@@ -27,6 +27,7 @@ class CancelLaw extends AbstractController
 		if ($currentPlayer->status !== LawResources::getInfo($law->type, 'department')) {
 			throw $this->createAccessDeniedException('Vous n\'avez pas le droit d\'annuler cette loi.');
 		}
+
 		// @TODO implement law cancellation
 		return $this->redirect($request->headers->get('referer'));
 	}

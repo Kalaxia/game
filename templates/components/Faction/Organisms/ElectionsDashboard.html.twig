@@ -1,36 +1,102 @@
 <div class="faction-flow" style="margin: 10px 0 40px 0;">
-	<div class="mandate" style="padding: 50px 20px 10px 20px;">
-		<div class="relative w-full">
+	{% if app.debug %}
+		<details>
+			<summary class="px-4 sm:px-0 text-base/7 font-bold text-light{{ current_player.faction.identifier }}">
+				Debug
+			</summary>
+			<div class="mt-6 border-y border-gray-100">
+				<dl class="divide-y divide-gray-100">
+					<div class="px-4 py-6 flex justify-between">
+						<dt class="text-sm/6 font-medium">last political event started at</dt>
+						<dd class="mt-1 text-sm/6 text-light{{ current_player.faction.identifier }} sm:col-span-2 sm:mt-0">
+							{{ lastPoliticalEvent.startedAt.format('c') }}
+						</dd>
+					</div>
+					<div class="px-4 py-6 flex justify-between">
+						<dt class="text-sm/6 font-medium">mandate started at</dt>
+						<dd class="mt-1 text-sm/6 text-light{{ current_player.faction.identifier }} sm:col-span-2 sm:mt-0">
+							{{ mandateStartedAt.format('c') }}
+						</dd>
+					</div>
+					<div class="px-4 py-6 flex justify-between">
+						<dt class="text-sm/6 font-medium">Campaign started at</dt>
+						<dd class="mt-1 text-sm/6 text-light{{ current_player.faction.identifier }} sm:col-span-2 sm:mt-0">
+							{{ campaignStartedAt.format('c') }}
+						</dd>
+					</div>
+					<div class="px-4 py-6 flex justify-between">
+						<dt class="text-sm/6 font-medium">Campaign ended at</dt>
+						<dd class="mt-1 text-sm/6 text-light{{ current_player.faction.identifier }} sm:col-span-2 sm:mt-0">
+							{{ campaignEndedAt.format('c') }}
+						</dd>
+					</div>
+					<div class="px-4 py-6 flex justify-between">
+						<dt class="text-sm/6 font-medium">election ended at</dt>
+						<dd class="mt-1 text-sm/6 text-light{{ current_player.faction.identifier }} sm:col-span-2 sm:mt-0">
+							{{ electionEndedAt.format('c') }}
+						</dd>
+					</div>
+					<div class="px-4 py-6 flex justify-between">
+						<dt class="text-sm/6 font-medium">mandate ended at</dt>
+						<dd class="mt-1 text-sm/6 text-light{{ current_player.faction.identifier }} sm:col-span-2 sm:mt-0">
+							{{ mandateEndedAt.format('c') }}
+						</dd>
+					</div>
+					<div class="px-4 py-6 flex justify-between">
+						<dt class="text-sm/6 font-medium">last political event ended at</dt>
+						<dd class="mt-1 text-sm/6 text-light{{ current_player.faction.identifier }} sm:col-span-2 sm:mt-0">
+							{{ lastPoliticalEvent.endedAt.format('c') }}
+						</dd>
+					</div>
+				</dl>
+			</div>
+		</details>
+	{% endif %}
+
+	<div class="mandate h-24" style="padding: 50px 20px 10px 20px;">
+		<div class="relative w-full h-4">
 			<twig:ProgressBar :current="this.getRemainingMandateTimeAlt()" :faction="faction" />
+
+			<div class="absolute -top-1 w-4 h-4 border rounded-lg border-medium{{ current_player.faction.identifier }} bg-light{{ current_player.faction.identifier }}" style="left: 0%;"></div>
+			<div class="absolute -top-1 w-4 h-4 border rounded-lg border-medium{{ current_player.faction.identifier }} bg-light{{ current_player.faction.identifier }}" style="right: 0%;"></div>
+		</div>
+		<div class="relative">
 			<span class="absolute" style="left: 0%;">
 				<span class="label">Début du mandat courant</span>
 			</span>
-			<span class="absolute" style="left: 100%;">
+
+			<span class="absolute" style="right: 0%;">
 				<span class="label right">Fin du mandat courant</span>
 			</span>
 		</div>
 	</div>
 
 	<div class="election" style="padding: 10px 20px;">
-		<span class="relative" style="width: {{ this.getRemainingMandateTime1() }}%; margin-left: auto;">
-			<twig:ProgressBar :current="this.getElectionProgress()" :faction="faction" />
-			<span class="absolute" style="left: 0%;">
+		<div class="relative h-4">
+			<twig:ProgressBar class="absolute" :current="this.getCampaignCurrentPosition()" :faction="faction" style="left: {{ this.getCampaignStartPosition() }}%; width: {{ 100 - this.getCampaignStartPosition() }}% " />
+
+			<div class="absolute -top-1 w-4 h-4 border rounded-lg border-medium{{ current_player.faction.identifier }} bg-light{{ current_player.faction.identifier }}" style="left: {{ this.getCampaignStartPosition() }}%;"></div>
+			<div class="absolute -top-1 w-4 h-4 border rounded-lg border-medium{{ current_player.faction.identifier }} bg-light{{ current_player.faction.identifier }}" style="left: {{ this.getElectionStartPosition() }}%;"></div>
+			<div class="absolute -top-1 w-4 h-4 border rounded-lg border-medium{{ current_player.faction.identifier }} bg-light{{ current_player.faction.identifier }}" style="right: 0%;"></div>
+		</div>
+		<div class="relative">
+			<div class="absolute" style="left: {{ this.getCampaignStartPosition() }}%;">
 				<span class="label bottom right">Campagne</span>
-			</span>
+			</div>
 
 			{% if faction.isDemocratic %}
-				<span class="absolute" style="left: {{ this.getElectionProgress() }}%;">
+				<div class="absolute" style="left: {{ this.getElectionStartPosition() }}%;">
 					<span class="label bottom right">Elections</span>
-				</span>
-				<span class="absolute" style="left: 100%;">
+				</div>
+				<div class="absolute" style="right: 0%;">
 					<span class="label bottom right">Résultats</span>
-				</span>
+				</div>
 			{% else %}
-				<span class="absolute" style="left: 100%;">
+				<div class="absolute" style="right: 0%;">
 					<span class="label bottom right">Décision divine</span>
-				</span>
+				</div>
 			{% endif %}
-		</span>
+		</div>
 	</div>
 </div>
 

@@ -17,8 +17,6 @@ class ArrayList implements \Stringable
 
 	/**
 	 * @param string $key
-	 *
-	 * @return mixed
 	 */
 	public function get($key)
 	{
@@ -42,7 +40,6 @@ class ArrayList implements \Stringable
 
 	/**
 	 * @param string $key
-	 * @param mixed  $value
 	 *
 	 * @return bool
 	 */
@@ -53,7 +50,6 @@ class ArrayList implements \Stringable
 
 	/**
 	 * @param string $key
-	 * @param mixed  $value
 	 */
 	public function add($key, $value)
 	{

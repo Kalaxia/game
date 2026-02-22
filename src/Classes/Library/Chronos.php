@@ -48,7 +48,7 @@ class Chronos
 		$now = time();
 		$date = strtotime((string) $_ENV['SERVER_START_TIME']);
 		$intr = $now - $date;
-		$rel = (floor($intr / 3600)) + ($_ENV['SEGMENT_SHIFT'] * Chronos::CO_SEG);
+		$rel = floor($intr / 3600) + ($_ENV['SEGMENT_SHIFT'] * Chronos::CO_SEG);
 
 		if ('str' == $type) {
 			return floor($rel / Chronos::CO_STR);
@@ -68,7 +68,7 @@ class Chronos
 		$date = strtotime((string) $date);
 		$intr = $date - $origin;
 
-		return (floor($intr / 3600)) + ($_ENV['SEGMENT_SHIFT'] * Chronos::CO_SEG);
+		return floor($intr / 3600) + ($_ENV['SEGMENT_SHIFT'] * Chronos::CO_SEG);
 	}
 
 	/*

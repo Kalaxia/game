@@ -19,7 +19,7 @@ class System
 		public Sector $sector,
 		#[ORM\ManyToOne(targetEntity: Color::class)]
 		#[ORM\JoinColumn(nullable: true)]
-		public Color|null $faction,
+		public ?Color $faction,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int $xPosition,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
@@ -27,6 +27,5 @@ class System
 		#[ORM\Column(type: 'smallint', enumType: SystemType::class, options: ['unsigned' => true])]
 		public SystemType $typeOfSystem,
 	) {
-			
 	}
 }

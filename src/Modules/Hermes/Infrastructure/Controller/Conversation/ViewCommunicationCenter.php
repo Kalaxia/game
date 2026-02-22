@@ -30,14 +30,14 @@ class ViewCommunicationCenter extends AbstractController
 		methods: Request::METHOD_GET
 	)]
 	public function __invoke(
-		Request                         $request,
+		Request $request,
 		ConversationRepositoryInterface $conversationRepository,
 		ConversationUserRepositoryInterface $conversationUserRepository,
 		ConversationMessageRepositoryInterface $conversationMessageRepository,
 		NotificationRepositoryInterface $notificationRepository,
-		PlayerRepositoryInterface	    $playerRepository,
-		Player                          $currentPlayer,
-		string|null                     $conversationId = null,
+		PlayerRepositoryInterface $playerRepository,
+		Player $currentPlayer,
+		?string $conversationId = null,
 	): Response {
 		$mode = (ConversationUser::CS_ARCHIVED === $request->query->getInt('mode'))
 			? ConversationUser::CS_ARCHIVED

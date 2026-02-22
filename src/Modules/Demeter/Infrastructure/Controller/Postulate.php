@@ -2,12 +2,10 @@
 
 namespace App\Modules\Demeter\Infrastructure\Controller;
 
-use App\Classes\Library\Utils;
 use App\Modules\Demeter\Domain\Repository\Election\CandidateRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\VoteRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Forum\ForumTopicRepositoryInterface;
-use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\Candidate;
 use App\Modules\Demeter\Model\Forum\ForumTopic;
 use App\Modules\Demeter\Resource\ColorResource;
@@ -18,27 +16,26 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Uid\Uuid;
 
 class Postulate extends AbstractController
 {
 	public function __invoke(
-		Request                           $request,
-		Player                            $currentPlayer,
-		PlayerManager                     $playerManager,
-		CandidateRepositoryInterface      $candidateRepository,
+		Request $request,
+		Player $currentPlayer,
+		PlayerManager $playerManager,
+		CandidateRepositoryInterface $candidateRepository,
 		PoliticalEventRepositoryInterface $electionRepository,
-		ForumTopicRepositoryInterface     $forumTopicRepository,
-		VoteRepositoryInterface           $voteRepository,
-		Uuid                              $id,
+		ForumTopicRepositoryInterface $forumTopicRepository,
+		VoteRepositoryInterface $voteRepository,
+		Uuid $id,
 	): Response {
 		$program = $request->request->get('program')
 			?? throw new BadRequestHttpException('Missing program');
-//		$chiefChoice = $request->request->get('chiefchoice');
-//		$treasurerChoice = $request->request->get('treasurerchoice');
-//		$warlordChoice = $request->request->get('warlordchoice');
-//		$ministerChoice = $request->request->get('ministerchoice');
+		//		$chiefChoice = $request->request->get('chiefchoice');
+		//		$treasurerChoice = $request->request->get('treasurerchoice');
+		//		$warlordChoice = $request->request->get('warlordchoice');
+		//		$ministerChoice = $request->request->get('ministerchoice');
 
 		$election = $electionRepository->get($id)
 			?? throw $this->createNotFoundException(sprintf('Election %s not found', $id->toBase32()));
@@ -65,7 +62,7 @@ class Postulate extends AbstractController
 		}
 		$candidate = new Candidate(
 			id: Uuid::v4(),
-            politicalEvent: $election,
+			politicalEvent: $election,
 			player: $currentPlayer,
 			program: $program,
 		);

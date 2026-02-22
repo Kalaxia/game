@@ -14,8 +14,8 @@ use App\Modules\Zeus\Application\Registry\CurrentPlayerRegistry;
 readonly class CommercialRouteManager
 {
 	public function __construct(
-		private PlanetHelper                       $planetHelper,
-		private CurrentPlayerRegistry              $currentPlayerRegistry,
+		private PlanetHelper $planetHelper,
+		private CurrentPlayerRegistry $currentPlayerRegistry,
 		private CommercialRouteRepositoryInterface $commercialRouteRepository,
 	) {
 	}

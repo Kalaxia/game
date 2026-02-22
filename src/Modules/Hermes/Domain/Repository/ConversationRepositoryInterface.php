@@ -14,7 +14,7 @@ interface ConversationRepositoryInterface extends EntityRepositoryInterface
 	 */
 	public function getOneByPlayer(Player $player): Conversation;
 
-	public function getOne(Uuid $id): Conversation|null;
+	public function getOne(Uuid $id): ?Conversation;
 
 	public function countPlayerUnreadConversations(Player $player): int;
 

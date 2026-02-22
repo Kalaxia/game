@@ -6,5 +6,4 @@ use Symfony\Component\Validator\Constraint;
 
 class HasShips extends Constraint
 {
-
 }

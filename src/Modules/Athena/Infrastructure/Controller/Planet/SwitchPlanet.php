@@ -20,16 +20,16 @@ class SwitchPlanet extends AbstractController
 		path: '/switchplanet/{planetId}/{page}',
 		name: 'switchplanet',
 		defaults: [
-			'page' => 'current'
+			'page' => 'current',
 		],
 		methods: [Request::METHOD_GET],
 	)]
 	public function __invoke(
-		Request                   $request,
-		Player                    $currentPlayer,
+		Request $request,
+		Player $currentPlayer,
 		PlanetRepositoryInterface $planetRepository,
-		Uuid                      $planetId,
-		string                    $page,
+		Uuid $planetId,
+		string $page,
 	): Response {
 		if (null === ($planet = $planetRepository->get($planetId))) {
 			throw new NotFoundHttpException('Base not found');

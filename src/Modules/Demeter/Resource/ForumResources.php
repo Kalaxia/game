@@ -80,12 +80,12 @@ class ForumResources
 		if ($id <= self::size()) {
 			if (in_array($info, ['id', 'devName', 'name', 'shortDescription', 'longDescription', 'image'])) {
 				return self::$forums[$id - 1][$info];
-			} else {
-				return false;
 			}
-		} else {
+
 			return false;
 		}
+
+		return false;
 	}
 
 	public static function getInfoForId($id, $info)
@@ -94,9 +94,9 @@ class ForumResources
 			$tmp = array_keys(self::$idLink, $id);
 
 			return self::$forums[$tmp[0]][$info];
-		} else {
-			return false;
 		}
+
+		return false;
 	}
 
 	public static function size()

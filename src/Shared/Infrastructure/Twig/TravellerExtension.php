@@ -12,11 +12,10 @@ class TravellerExtension extends AbstractExtension
 	public function __construct(
 		private readonly DurationHandler $durationHandler,
 	) {
-
 	}
 
 	#[\Override]
-    public function getFilters(): array
+	public function getFilters(): array
 	{
 		return [
 			new TwigFilter(

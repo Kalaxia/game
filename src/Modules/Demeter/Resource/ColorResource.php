@@ -2,8 +2,6 @@
 
 namespace App\Modules\Demeter\Resource;
 
-use App\Modules\Demeter\Model\Color;
-
 class ColorResource
 {
 	// constants for factions

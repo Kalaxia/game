@@ -12,7 +12,7 @@ use Symfony\Component\Uid\Uuid;
  */
 interface RecyclingMissionRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): RecyclingMission|null;
+	public function get(Uuid $id): ?RecyclingMission;
 
 	/**
 	 * @return list<RecyclingMission>

@@ -15,14 +15,13 @@ readonly class SquadronFightHandler
 		private LoggerInterface $logger,
 		private ShipFightHandler $shipFightHandler,
 	) {
-
 	}
 
 	public function engage(
 		Squadron $squadron,
 		Commander $enemyCommander,
-		PlayerBonus|null $attackerBonus = null,
-		PlayerBonus|null $enemyBonus = null,
+		?PlayerBonus $attackerBonus = null,
+		?PlayerBonus $enemyBonus = null,
 	): void {
 		$squadron->targetId = $this->chooseEnemy($squadron, $enemyCommander);
 		if (null === $squadron->targetId) {
@@ -90,7 +89,7 @@ readonly class SquadronFightHandler
 		$this->fight($enemySquadron, $squadron, $enemyBonus);
 	}
 
-	private function chooseEnemy(Squadron $squadron, Commander $enemyCommander): int|null
+	private function chooseEnemy(Squadron $squadron, Commander $enemyCommander): ?int
 	{
 		$nbrShipsInLine = 0;
 		foreach ($enemyCommander->army as $enemySquadron) {
@@ -102,22 +101,21 @@ readonly class SquadronFightHandler
 			return null;
 		} elseif (null != $squadron->targetId and $enemyCommander->getSquadron($squadron->targetId)->getShipsCount() > 0) {
 			return $squadron->targetId;
-		} else {
-			/** @var list<Squadron> $squadrons */
-			$squadrons = $enemyCommander->squadrons->toArray();
-			shuffle($squadrons);
-
-			foreach ($squadrons as $squadron) {
-				if ($squadron->lineCoord * 3 <= FightManager::getCurrentLine() && $squadron->getShipsCount() > 0) {
-					return $squadron->position;
-				}
-			}
-
-			return null;
 		}
+		/** @var list<Squadron> $squadrons */
+		$squadrons = $enemyCommander->squadrons->toArray();
+		shuffle($squadrons);
+
+		foreach ($squadrons as $squadron) {
+			if ($squadron->lineCoord * 3 <= FightManager::getCurrentLine() && $squadron->getShipsCount() > 0) {
+				return $squadron->position;
+			}
+		}
+
+		return null;
 	}
 
-	private function fight(Squadron $squadron, Squadron $enemySquadron, PlayerBonus|null $playerBonus = null): void
+	private function fight(Squadron $squadron, Squadron $enemySquadron, ?PlayerBonus $playerBonus = null): void
 	{
 		foreach ($squadron->ships as $ship) {
 			if (0 === $enemySquadron->getShipsCount()) {

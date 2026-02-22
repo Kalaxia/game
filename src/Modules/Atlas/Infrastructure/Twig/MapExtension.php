@@ -40,7 +40,7 @@ class MapExtension extends AbstractExtension
 	}
 
 	#[\Override]
-    public function getFilters(): array
+	public function getFilters(): array
 	{
 		return [
 			new TwigFilter('coords', fn (System $system) => Game::formatCoord($system->xPosition, $system->yPosition)),
@@ -48,7 +48,7 @@ class MapExtension extends AbstractExtension
 	}
 
 	#[\Override]
-    public function getFunctions(): array
+	public function getFunctions(): array
 	{
 		return [
 			new TwigFunction('get_planet_antispy_radius', fn (Planet $base) => $this->antiSpyHandler->getAntiSpyRadius($base->antiSpyAverage)),

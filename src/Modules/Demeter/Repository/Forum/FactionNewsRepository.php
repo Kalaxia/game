@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Demeter\Repository\Forum;
 
-use App\Classes\Library\Utils;
 use App\Modules\Demeter\Domain\Repository\Forum\FactionNewsRepositoryInterface;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Forum\FactionNews;
@@ -19,12 +18,12 @@ class FactionNewsRepository extends DoctrineRepository implements FactionNewsRep
 		parent::__construct($registry, FactionNews::class);
 	}
 
-	public function get(Uuid $id): FactionNews|null
+	public function get(Uuid $id): ?FactionNews
 	{
 		return $this->find($id);
 	}
 
-	public function getPinnedNew(Color $faction): FactionNews|null
+	public function getPinnedNew(Color $faction): ?FactionNews
 	{
 		return $this->findOneBy([
 			'faction' => $faction,

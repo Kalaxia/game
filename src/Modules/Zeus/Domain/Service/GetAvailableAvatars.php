@@ -19,7 +19,7 @@ readonly class GetAvailableAvatars
 	/**
 	 * @return list<string>
 	 */
-	public function __invoke(Color|null $faction = null): array
+	public function __invoke(?Color $faction = null): array
 	{
 		$finder = new Finder();
 		$finder->files()->in(sprintf('%s/assets/images/avatars/', $this->projectDir));

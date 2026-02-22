@@ -18,7 +18,7 @@ class ForumTopicLastViewRepository extends DoctrineRepository implements ForumTo
 		parent::__construct($registry, ForumTopicLastView::class);
 	}
 
-	public function getByTopicAndPlayer(ForumTopic $forumTopic, Player $player): ForumTopicLastView|null
+	public function getByTopicAndPlayer(ForumTopic $forumTopic, Player $player): ?ForumTopicLastView
 	{
 		return $this->findOneBy([
 			'forumTopic' => $forumTopic,

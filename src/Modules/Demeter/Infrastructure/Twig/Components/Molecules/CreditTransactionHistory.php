@@ -6,7 +6,6 @@ namespace App\Modules\Demeter\Infrastructure\Twig\Components\Molecules;
 
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Zeus\Model\CreditHolderInterface;
 use App\Modules\Zeus\Model\CreditTransaction;
 use App\Modules\Zeus\Model\Player;
@@ -28,7 +27,7 @@ class CreditTransactionHistory
 
 	public function displayLink(): string
 	{
-		return $this->side === 'sender' ? $this->getSenderLink() : $this->getReceiverLink();
+		return 'sender' === $this->side ? $this->getSenderLink() : $this->getReceiverLink();
 	}
 
 	public function getReceiverLink(): string
@@ -41,21 +40,18 @@ class CreditTransactionHistory
 		return $this->getLink($this->transaction->getSender());
 	}
 
-	/**
-	 * @return string
-	 */
 	private function getLink(CreditHolderInterface $part): string
 	{
 		return match (get_class($part)) {
-			Color::class => '/embassy/faction-' . $part->id,
-			Player::class => '/embassy/player-' . $part->id,
+			Color::class => '/embassy/faction-'.$part->id,
+			Player::class => '/embassy/player-'.$part->id,
 			default => throw new \RuntimeException('Match case not implemented'),
 		};
 	}
 
 	public function displayName(): string
 	{
-		return $this->side === 'sender' ? $this->getSenderName() : $this->getReceiverName();
+		return 'sender' === $this->side ? $this->getSenderName() : $this->getReceiverName();
 	}
 
 	public function getReceiverName(): string
@@ -79,7 +75,7 @@ class CreditTransactionHistory
 
 	public function displayAvatar(): string
 	{
-		return $this->side === 'sender' ? $this->getSenderAvatar() : $this->getReceiverAvatar();
+		return 'sender' === $this->side ? $this->getSenderAvatar() : $this->getReceiverAvatar();
 	}
 
 	public function getReceiverAvatar(): string
@@ -95,7 +91,7 @@ class CreditTransactionHistory
 	private function getAvatar(CreditHolderInterface $part): string
 	{
 		return match (get_class($part)) {
-			Color::class => 'color-' . $part->identifier,
+			Color::class => 'color-'.$part->identifier,
 			Player::class => $part->avatar,
 			default => throw new \RuntimeException('Match case not implemented'),
 		};
@@ -103,7 +99,7 @@ class CreditTransactionHistory
 
 	public function displayStatus(): string
 	{
-		return $this->side === 'sender' ? $this->getSenderStatus() : $this->getReceiverStatus();
+		return 'sender' === $this->side ? $this->getSenderStatus() : $this->getReceiverStatus();
 	}
 
 	public function getReceiverStatus(): string
@@ -128,7 +124,7 @@ class CreditTransactionHistory
 
 	public function displayFaction(): int
 	{
-		return $this->side === 'sender' ? $this->getSenderColor() : $this->getReceiverColor();
+		return 'sender' === $this->side ? $this->getSenderColor() : $this->getReceiverColor();
 	}
 
 	public function getReceiverColor(): int

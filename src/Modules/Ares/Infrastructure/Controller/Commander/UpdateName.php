@@ -37,7 +37,7 @@ class UpdateName extends AbstractController
 
 		$commanderRepository->save($commander);
 
-		$this->addFlash('success', 'le nom de votre commandant est maintenant ' . $name);
+		$this->addFlash('success', 'le nom de votre commandant est maintenant '.$name);
 
 		return $this->redirect($request->headers->get('referer'));
 	}

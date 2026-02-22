@@ -32,23 +32,23 @@ readonly class PlayerCreditUpdateHandler
 	private const int MAX_MISSING_UPDATES = 24;
 
 	public function __construct(
-		private EntityManagerInterface                   $entityManager,
-		private CommercialRouteIncomeHandler             $commercialRouteIncomeHandler,
+		private EntityManagerInterface $entityManager,
+		private CommercialRouteIncomeHandler $commercialRouteIncomeHandler,
 		private CommercialRouteConstructionReportHandler $commercialRouteConstructionReportHandler,
-		private CommanderRepositoryInterface             $commanderRepository,
-		private CreditTransactionReportHandler           $creditTransactionReportHandler,
-		private GameTimeConverter                        $gameTimeConverter,
-		private PlanetRepositoryInterface                $planetRepository,
-		private PlayerRepositoryInterface                $playerRepository,
+		private CommanderRepositoryInterface $commanderRepository,
+		private CreditTransactionReportHandler $creditTransactionReportHandler,
+		private GameTimeConverter $gameTimeConverter,
+		private PlanetRepositoryInterface $planetRepository,
+		private PlayerRepositoryInterface $playerRepository,
 		private PlayerFinancialReportRepositoryInterface $playerFinancialReportRepository,
-		private PlayerTransactionReportHandler           $playerTransactionReportHandler,
-		private PlayerBonusManager                       $playerBonusManager,
-		private PopulationTaxHandler                     $populationTaxHandler,
-		private CommanderWageHandler                     $commanderWageHandler,
-		private MessageBusInterface                      $messageBus,
-		private ShipsWageHandler                         $shipsWageHandler,
-		private UniversityInvestmentHandler              $universityInvestmentHandler,
-		private LoggerInterface                          $logger,
+		private PlayerTransactionReportHandler $playerTransactionReportHandler,
+		private PlayerBonusManager $playerBonusManager,
+		private PopulationTaxHandler $populationTaxHandler,
+		private CommanderWageHandler $commanderWageHandler,
+		private MessageBusInterface $messageBus,
+		private ShipsWageHandler $shipsWageHandler,
+		private UniversityInvestmentHandler $universityInvestmentHandler,
+		private LoggerInterface $logger,
 		private TechnologyInvestmentReportHandler $technologyInvestmentReportHandler,
 		private CurrentPlayerRegistry $currentPlayerRegistry,
 		private CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
@@ -113,7 +113,7 @@ readonly class PlayerCreditUpdateHandler
 			$launchNewMessage = false;
 
 			for ($i = 0; $i < $missingUpdatesCount; ++$i) {
-				if ($i === self::MAX_UPDATES_TO_HANDLE) {
+				if (self::MAX_UPDATES_TO_HANDLE === $i) {
 					$launchNewMessage = true;
 
 					break;
@@ -182,13 +182,13 @@ readonly class PlayerCreditUpdateHandler
 	}
 
 	/**
-	 * TODO call a Symfony service iterator instead of all explicit calls here
+	 * TODO call a Symfony service iterator instead of all explicit calls here.
 	 *
 	 * @param list<Planet> $bases
 	 */
 	private function updatePlayerCredits(
 		PlayerFinancialReport $playerFinancialReport,
-		PlayerFinancialReport|null $lastFinancialReport,
+		?PlayerFinancialReport $lastFinancialReport,
 		Player $rebelPlayer,
 		array $commanders,
 		array $bases,

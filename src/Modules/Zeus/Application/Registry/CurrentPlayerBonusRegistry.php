@@ -7,7 +7,7 @@ use Symfony\Contracts\Service\ResetInterface;
 
 class CurrentPlayerBonusRegistry implements ResetInterface
 {
-	private PlayerBonus|null $playerBonus = null;
+	private ?PlayerBonus $playerBonus = null;
 	private bool $isInitialized = false;
 
 	public function setPlayerBonus(PlayerBonus $playerBonus): void
@@ -16,7 +16,7 @@ class CurrentPlayerBonusRegistry implements ResetInterface
 		$this->isInitialized = true;
 	}
 
-	public function getPlayerBonus(): PlayerBonus|null
+	public function getPlayerBonus(): ?PlayerBonus
 	{
 		return $this->playerBonus;
 	}

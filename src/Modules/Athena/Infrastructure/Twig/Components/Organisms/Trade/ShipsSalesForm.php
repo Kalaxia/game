@@ -8,7 +8,6 @@ use App\Modules\Athena\Model\CommercialShipping;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
-use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsLiveComponent(
 	name: 'ShipsSalesForm',
@@ -19,7 +18,7 @@ class ShipsSalesForm
 	use DefaultActionTrait;
 
 	#[LiveProp(writable: true)]
-	public int|null $quantity = null;
+	public ?int $quantity = null;
 	#[LiveProp]
 	public int $shipQuantity;
 	#[LiveProp]
@@ -32,7 +31,7 @@ class ShipsSalesForm
 		return intval(ceil($this->quantity * $minPrice));
 	}
 
-	public function getRequiredShipsCount($rate): int|null
+	public function getRequiredShipsCount($rate): ?int
 	{
 		return $this->quantity > 0 ? intval(ceil($this->quantity / CommercialShipping::WEDGE)) : null;
 	}

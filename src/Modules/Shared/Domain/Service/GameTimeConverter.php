@@ -16,16 +16,14 @@ readonly class GameTimeConverter
 	public const STRATUM_CYCLES_COUNT = 2400;
 	public const SEGMENT_CYCLES_COUNT = 24;
 
-
 	private const array GAME_CYCLE_SECONDS = [
 		TimeMode::Standard->name => self::GAME_CYCLE_SECONDS_STANDARD_MODE,
 		TimeMode::Fast->name => self::GAME_CYCLE_SECONDS_FAST_MODE,
 	];
 
-
 	/**
 	 * Server segment shift : Number of segments added to the server start date
-	 *     Example : if the server started 2 days ago and the shift is 100, the date will be SEG102
+	 *     Example : if the server started 2 days ago and the shift is 100, the date will be SEG102.
 	 */
 	public function __construct(
 		private DurationHandler $durationHandler,
@@ -36,7 +34,6 @@ readonly class GameTimeConverter
 		#[Autowire('%server_time_mode%')]
 		private TimeMode $timeMode,
 	) {
-
 	}
 
 	public function convertSecondsToGameCycles(int $seconds): int
@@ -48,7 +45,6 @@ readonly class GameTimeConverter
 	{
 		return self::GAME_CYCLE_SECONDS[$this->timeMode->name] * $gameCycles;
 	}
-
 
 	public function convertDatetimeToGameDate(string|\DateTimeImmutable $sourceDate, bool $returnHtml = true): string
 	{

@@ -10,8 +10,8 @@ class SectorGenerationMessage implements AsyncMessage
 {
 	public function __construct(
 		public int $identifier,
-		public string|null $name,
-		public int|null $factionIdentifier,
+		public ?string $name,
+		public ?int $factionIdentifier,
 		public int $xPosition,
 		public int $yPosition,
 		public int $xBarycenter,

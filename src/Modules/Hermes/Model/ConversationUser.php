@@ -20,12 +20,10 @@ class ConversationUser
 		public Uuid $id,
 		public Conversation $conversation,
 		public Player $player,
-		public \DateTimeImmutable|null $lastViewedAt,
-	
+		public ?\DateTimeImmutable $lastViewedAt,
 		public int $playerStatus = self::US_STANDARD,
 		public int $conversationStatus = self::CS_DISPLAY,
 	) {
-			
 	}
 
 	public static function getPlayerStatement(int $statement): string

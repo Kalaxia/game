@@ -9,6 +9,5 @@ readonly class CommercialRouteIncome
 		public int $bonus,
 		public int $total,
 	) {
-
 	}
 }

@@ -18,21 +18,21 @@ readonly class DailyRoutineHandler
 {
 	public function __construct(
 		private ClockInterface $clock,
-		private PlayerManager             $playerManager,
+		private PlayerManager $playerManager,
 		private DurationHandler $durationHandler,
 		private PlayerRepositoryInterface $playerRepository,
 		private NotificationRepositoryInterface $notificationRepository,
 		private PlayerFinancialReportRepositoryInterface $playerFinancialReportRepository,
 		#[Autowire('%zeus.player.inactive_time_limit%')]
-		private int                       $playerInactiveTimeLimit,
+		private int $playerInactiveTimeLimit,
 		#[Autowire('%zeus.player.global_inactive_time%')]
-		private int                       $playerGlobalInactiveTime,
+		private int $playerGlobalInactiveTime,
 		#[Autowire('%hermes.notifications.timeout.read%')]
-		private int                       $notificationsReadTimeout,
+		private int $notificationsReadTimeout,
 		#[Autowire('%hermes.notifications.timeout.unread%')]
-		private int                       $notificationsUnreadTimeout,
+		private int $notificationsUnreadTimeout,
 		#[Autowire('%zeus.player_financial_reports.timeout%')]
-		private int                       $playerFinancialReportsTimeout,
+		private int $playerFinancialReportsTimeout,
 	) {
 	}
 
@@ -57,11 +57,11 @@ readonly class DailyRoutineHandler
 				$player->statement = Player::INACTIVE;
 				$this->playerRepository->save($player);
 
-//				if ('enabled' === $this->apiMode) {
-//					// sending email API call
-//					// TODO Modify this behavior
-//					// $this->api->sendMail($player->bind, API::TEMPLATE_INACTIVE_PLAYER);
-//				}
+				//				if ('enabled' === $this->apiMode) {
+				//					// sending email API call
+				//					// TODO Modify this behavior
+				//					// $this->api->sendMail($player->bind, API::TEMPLATE_INACTIVE_PLAYER);
+				//				}
 			}
 		}
 	}

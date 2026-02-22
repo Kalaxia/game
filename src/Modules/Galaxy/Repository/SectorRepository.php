@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Galaxy\Repository;
 
-use App\Classes\Entity\AbstractRepository;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Galaxy\Domain\Entity\Sector;
 use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
@@ -19,12 +18,12 @@ class SectorRepository extends DoctrineRepository implements SectorRepositoryInt
 		parent::__construct($registry, Sector::class);
 	}
 
-	public function get(Uuid $id): Sector|null
+	public function get(Uuid $id): ?Sector
 	{
 		return $this->find($id);
 	}
 
-	public function getOneByIdentifier(int $identifier): Sector|null
+	public function getOneByIdentifier(int $identifier): ?Sector
 	{
 		return $this->findOneBy(['identifier' => $identifier]);
 	}

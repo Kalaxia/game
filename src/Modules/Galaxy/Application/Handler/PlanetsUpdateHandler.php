@@ -14,7 +14,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 readonly class PlanetsUpdateHandler
 {
 	public function __construct(
-		private MessageBusInterface       $messageBus,
+		private MessageBusInterface $messageBus,
 		private PlanetRepositoryInterface $planetRepository,
 	) {
 	}

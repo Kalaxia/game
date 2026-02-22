@@ -24,11 +24,11 @@ class RenamePlanet extends AbstractController
 		methods: [Request::METHOD_POST],
 	)]
 	public function __invoke(
-		Request                $request,
-		Player                 $currentPlayer,
-		Planet                 $currentPlanet,
-		Parser                 $parser,
-		PlanetManager          $planetManager,
+		Request $request,
+		Player $currentPlayer,
+		Planet $currentPlanet,
+		Parser $parser,
+		PlanetManager $planetManager,
 		EntityManagerInterface $entityManager,
 	): Response {
 		// protection du nouveau nom de la base
@@ -50,7 +50,7 @@ class RenamePlanet extends AbstractController
 
 		$entityManager->flush();
 
-		$this->addFlash('success', 'Le nom a été changé en ' . $name . ' avec succès');
+		$this->addFlash('success', 'Le nom a été changé en '.$name.' avec succès');
 
 		return $this->redirectToRoute('base_overview');
 	}

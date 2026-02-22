@@ -21,10 +21,10 @@ class PlayerRoutineHandler
 	public const COEF_RESOURCE = 0.001;
 
 	public function __construct(
-		private readonly PlayerRepositoryInterface        $playerRepository,
+		private readonly PlayerRepositoryInterface $playerRepository,
 		private readonly PlayerRankingRepositoryInterface $playerRankingRepository,
-		private readonly PlanetHelper                     $planetHelper,
-		private readonly GetShipCategoriesConfiguration   $getShipCategoriesConfiguration,
+		private readonly PlanetHelper $planetHelper,
+		private readonly GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 	) {
 	}
 
@@ -353,61 +353,61 @@ class PlayerRoutineHandler
 	 * @param array<string, mixed> $b
 	 */
 	protected function cmpGeneral(array $a, array $b): int
-    {
-        return $b['general'] <=> $a['general'];
-    }
+	{
+		return $b['general'] <=> $a['general'];
+	}
 
 	/**
 	 * @param array<string, mixed> $a
 	 * @param array<string, mixed> $b
 	 */
 	protected function cmpResources(array $a, array $b): int
-    {
-        return $b['resources'] <=> $a['resources'];
-    }
+	{
+		return $b['resources'] <=> $a['resources'];
+	}
 
 	/**
 	 * @param array<string, mixed> $a
 	 * @param array<string, mixed> $b
 	 */
 	protected function cmpExperience(array $a, array $b): int
-    {
-        return $b['experience'] <=> $a['experience'];
-    }
+	{
+		return $b['experience'] <=> $a['experience'];
+	}
 
 	/**
 	 * @param array<string, mixed> $a
 	 * @param array<string, mixed> $b
 	 */
 	protected function cmpFight(array $a, array $b): int
-    {
-        return $b['fight'] <=> $a['fight'];
-    }
+	{
+		return $b['fight'] <=> $a['fight'];
+	}
 
 	/**
 	 * @param array<string, mixed> $a
 	 * @param array<string, mixed> $b
 	 */
 	protected function cmpArmies(array $a, array $b): int
-    {
-        return $b['armies'] <=> $a['armies'];
-    }
+	{
+		return $b['armies'] <=> $a['armies'];
+	}
 
 	/**
 	 * @param array<string, mixed> $a
 	 * @param array<string, mixed> $b
 	 */
 	protected function cmpButcher(array $a, array $b): int
-    {
-        return $b['butcher'] <=> $a['butcher'];
-    }
+	{
+		return $b['butcher'] <=> $a['butcher'];
+	}
 
 	/**
 	 * @param array<string, mixed> $a
 	 * @param array<string, mixed> $b
 	 */
 	protected function cmpTrader(array $a, array $b): int
-    {
-        return $b['trader'] <=> $a['trader'];
-    }
+	{
+		return $b['trader'] <=> $a['trader'];
+	}
 }

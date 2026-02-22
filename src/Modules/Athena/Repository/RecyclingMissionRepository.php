@@ -18,7 +18,7 @@ class RecyclingMissionRepository extends DoctrineRepository implements Recycling
 		parent::__construct($registry, RecyclingMission::class);
 	}
 
-	public function get(Uuid $id): RecyclingMission|null
+	public function get(Uuid $id): ?RecyclingMission
 	{
 		return $this->find($id);
 	}

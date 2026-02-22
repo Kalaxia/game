@@ -35,24 +35,24 @@ class Transaction implements \JsonSerializable
 	public const MAX_RATE_COMMANDER = 100;
 
 	public function __construct(
-		public Uuid               $id,
-		public Player             $player,
-		public Planet|null        $base,
-		public int                $type,			// see const TYP_*
-		public int                $quantity,		// if ($type == TYP_RESOURCE) 	--> resource
+		public Uuid $id,
+		public Player $player,
+		public ?Planet $base,
+		public int $type,			// see const TYP_*
+		public int $quantity,		// if ($type == TYP_RESOURCE) 	--> resource
 		// if ($type == TYP_SHIP) 		--> ship quantity
 		// if ($type == TYP_COMMANDER) 	--> experience
-		public int                $identifier,		// if ($type == TYP_RESOURCE) 	--> NULL
+		public int $identifier,		// if ($type == TYP_RESOURCE) 	--> NULL
 		// if ($type == TYP_SHIP) 		--> shipId
 		// if ($type == TYP_COMMANDER) 	--> rCommander
 		public \DateTimeImmutable $publishedAt,
-		public float              $currentRate,
+		public float $currentRate,
 		#[Assert\Expression(
-			"this.type == " . self::TYP_COMMANDER . " and value == null",
+			'this.type == '.self::TYP_COMMANDER.' and value == null',
 			message: 'A commander transaction must have a commander set',
 		)]
-		public Commander|null     $commander = null,
-		public Player|null $buyer = null,
+		public ?Commander $commander = null,
+		public ?Player $buyer = null,
 		public int $sellerFactionFees = 0,
 		public int $sellerFactionTaxRate = 0,
 		public int $buyerFactionFees = 0,
@@ -60,7 +60,7 @@ class Transaction implements \JsonSerializable
 		public int $price = 0,
 		public int $commercialShipQuantity = 0,	// ship needed for the transport
 		public int $statement = 0,
-		public \DateTimeImmutable|null $validatedAt = null,
+		public ?\DateTimeImmutable $validatedAt = null,
 		// date of acceptance or cancellation
 		// 1 resource = x credits (for resources et ships)
 		// 1 experience = x credits
@@ -87,9 +87,9 @@ class Transaction implements \JsonSerializable
 			return 3;
 		} elseif (10000 <= $quantity && $quantity < 100000) {
 			return 2;
-		} else {
-			return 1;
 		}
+
+		return 1;
 	}
 
 	public function hasResources(): bool

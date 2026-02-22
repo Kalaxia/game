@@ -27,19 +27,19 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class Conquer extends AbstractController
 {
 	public function __invoke(
-		Request                       $request,
-		Player                        $currentPlayer,
-		Planet                        $planet,
-		CountPlayerPlanets            $countPlayerBases,
-		CommanderRepositoryInterface  $commanderRepository,
-		GetFactionsConfiguration      $getFactionsConfiguration,
-		MoveFleet                     $moveFleet,
-		PlaceRepositoryInterface      $placeRepository,
-		PlayerManager                 $playerManager,
+		Request $request,
+		Player $currentPlayer,
+		Planet $planet,
+		CountPlayerPlanets $countPlayerBases,
+		CommanderRepositoryInterface $commanderRepository,
+		GetFactionsConfiguration $getFactionsConfiguration,
+		MoveFleet $moveFleet,
+		PlaceRepositoryInterface $placeRepository,
+		PlayerManager $playerManager,
 		TechnologyRepositoryInterface $technologyRepository,
-		EntityManagerInterface        $entityManager,
-		ValidatorInterface            $validator,
-		Uuid                          $id,
+		EntityManagerInterface $entityManager,
+		ValidatorInterface $validator,
+		Uuid $id,
 	): Response {
 		$conquestCost = $this->getParameter('ares.coeff.conquest_cost');
 		$placeId = $request->query->get('placeId') ?? throw new BadRequestHttpException('Missing place id');

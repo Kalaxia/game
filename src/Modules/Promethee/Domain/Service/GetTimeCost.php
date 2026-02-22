@@ -24,10 +24,9 @@ readonly class GetTimeCost
 		#[Autowire('%server_time_mode%')]
 		private TimeMode $timeMode,
 	) {
-
 	}
 
-	public function __invoke(int $identifier, int $targetLevel, int $scienceCoeff, Player|null $researcher = null): int
+	public function __invoke(int $identifier, int $targetLevel, int $scienceCoeff, ?Player $researcher = null): int
 	{
 		$researcher ??= $this->currentPlayerRegistry->get();
 		$time = $this->timeMode->isStandard()

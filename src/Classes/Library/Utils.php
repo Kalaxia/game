@@ -80,7 +80,7 @@ class Utils
 			}
 		} elseif ('d' == $precision) {
 			// the changement is at 01:00:00
-			$daysInterval = floor((abs(strtotime((string) $date1) - strtotime((string) $date2))) / (60 * 60 * 24));
+			$daysInterval = floor(abs(strtotime((string) $date1) - strtotime((string) $date2)) / (60 * 60 * 24));
 
 			$seconds = strtotime((string) $baseDate) + 86400;
 			$nextDay = floor($seconds / 86400) * 86400;

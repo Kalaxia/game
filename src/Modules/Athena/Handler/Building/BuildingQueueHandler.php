@@ -16,13 +16,13 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 readonly class BuildingQueueHandler
 {
 	public function __construct(
-		private PlayerManager                    $playerManager,
-		private UpdatePlanetPoints               $updatePlanetPoints,
-		private PlanetRepositoryInterface        $planetRepository,
+		private PlayerManager $playerManager,
+		private UpdatePlanetPoints $updatePlanetPoints,
+		private PlanetRepositoryInterface $planetRepository,
 		private BuildingQueueRepositoryInterface $buildingQueueRepository,
-		private PlanetHelper                     $planetHelper,
-		private BuildingLevelHandler             $buildingLevelHandler,
-		private LoggerInterface                  $logger,
+		private PlanetHelper $planetHelper,
+		private BuildingLevelHandler $buildingLevelHandler,
+		private LoggerInterface $logger,
 	) {
 	}
 

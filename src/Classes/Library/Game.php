@@ -19,9 +19,9 @@ class Game
 			return 1;
 		} elseif ($population < 200) {
 			return 2;
-		} else {
-			return 3;
 		}
+
+		return 3;
 	}
 
 	public static function formatCoord(int $xCoord, int $yCoord, int $planetPosition = 0, int $sectorLocation = 0): string
@@ -30,9 +30,9 @@ class Game
 			return '⟨'.$sectorLocation.'⟩ '.$xCoord.':'.$yCoord.':'.$planetPosition.'';
 		} elseif ($planetPosition > 0) {
 			return $xCoord.':'.$yCoord.':'.$planetPosition;
-		} else {
-			return $xCoord.':'.$yCoord;
 		}
+
+		return $xCoord.':'.$yCoord;
 	}
 
 	public static function resourceProduction(float $coeffRefinery, int $coeffPlanet): float
@@ -75,8 +75,8 @@ class Game
 			return 0;
 		} elseif ($coef >= 100) {
 			return 40;
-		} else {
-			return intval(ceil(0.004 * $coef * $coef - 0.01 * $coef + 0.7));
 		}
+
+		return intval(ceil(0.004 * $coef * $coef - 0.01 * $coef + 0.7));
 	}
 }

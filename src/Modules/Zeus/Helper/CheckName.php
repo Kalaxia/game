@@ -96,9 +96,9 @@ class CheckName
 
 		if ($newStr === $str) {
 			return true;
-		} else {
-			return $newStr;
 		}
+
+		return $newStr;
 	}
 
 	public static function getPackOfNames($size = 5, $used = false, $tag = [])
@@ -109,6 +109,6 @@ class CheckName
 	{
 		$name = ['Ametah', 'Anla', 'Aumshi', 'Bastier', 'Enigma', 'Eirukis', 'Erah', 'Ehdis', 'Fransa', 'Greider', 'Grerid', 'Haema', 'Hemhild', 'Renga', 'Hidar', 'Horski', 'Hreirek', 'Hroa', 'Hordis', 'Hydring', 'Imsin', 'Asmin', 'Ansami', 'Kar', 'Kili', 'Kolver', 'Kolfinna', 'Lisa', 'Marta', 'Meto', 'Leto', 'Ragni', 'Ranela', 'Runa', 'Siri', 'Mastro', 'Svenh', 'Thalestris', 'Thannd', 'Arsine', 'Val', 'Vori', 'Yi', 'Agata', 'Agneta', 'Nolgi', 'Edla', 'Else', 'Eyja', 'Jensine', 'Kirsten', 'Maeva', 'Malena', 'Magarte', 'Olava', 'Petrine', 'Rigmor', 'Signy', 'Sigrid', 'Skjorta'];
 
-		return $name[random_int(0, (count($name) - 1))];
+		return $name[random_int(0, count($name) - 1)];
 	}
 }

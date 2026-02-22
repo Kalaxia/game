@@ -13,10 +13,9 @@ readonly class PlayerTransactionReportHandler
 	public function __construct(
 		private TransactionRepositoryInterface $transactionRepository,
 	) {
-
 	}
 
-	public function __invoke(PlayerFinancialReport $playerFinancialReport, PlayerFinancialReport|null $lastFinancialReport): void
+	public function __invoke(PlayerFinancialReport $playerFinancialReport, ?PlayerFinancialReport $lastFinancialReport): void
 	{
 		$transactions = $this->transactionRepository->matchPlayerCompletedTransactionsSince(
 			$playerFinancialReport->player,
@@ -39,7 +38,7 @@ readonly class PlayerTransactionReportHandler
 					case Transaction::TYP_COMMANDER:
 						$playerFinancialReport->commandersSales += $sellerPrice;
 						break;
-				};
+				}
 
 				continue;
 			}
@@ -53,7 +52,7 @@ readonly class PlayerTransactionReportHandler
 				case Transaction::TYP_COMMANDER:
 					$playerFinancialReport->commandersPurchases += $buyerPrice;
 					break;
-			};
+			}
 		}
 	}
 }

@@ -12,13 +12,13 @@ class ShipExtension extends AbstractExtension
 {
 	public function __construct(
 		private readonly CountShipResourceCost $countShipResourceCost,
-		private readonly CountShipTimeCost     $countShipTimeCost,
+		private readonly CountShipTimeCost $countShipTimeCost,
 		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 	) {
 	}
 
 	#[\Override]
-    public function getFunctions(): array
+	public function getFunctions(): array
 	{
 		return [
 			new TwigFunction('get_ship_info', fn (int $shipNumber, string $info) => ($this->getShipCategoriesConfiguration)($shipNumber, $info)),

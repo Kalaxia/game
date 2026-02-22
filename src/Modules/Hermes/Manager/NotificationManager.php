@@ -9,7 +9,6 @@ readonly class NotificationManager
 {
 	public function __construct(private NotificationRepositoryInterface $notificationRepository)
 	{
-
 	}
 
 	public function patchForMultiCombats(

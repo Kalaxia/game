@@ -12,12 +12,12 @@ use Symfony\Component\Uid\Uuid;
  */
 interface NotificationRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): Notification|null;
+	public function get(Uuid $id): ?Notification;
 
 	/**
 	 * @return list<Notification>
 	 */
-	public function getUnreadNotifications(Player $player, int|null $limit = null): array;
+	public function getUnreadNotifications(Player $player, ?int $limit = null): array;
 
 	public function countUnreadNotifications(Player $player): int;
 

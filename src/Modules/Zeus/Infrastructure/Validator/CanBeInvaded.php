@@ -8,9 +8,9 @@ use Symfony\Component\Validator\Constraint;
 class CanBeInvaded extends Constraint
 {
 	public function __construct(
-		public Player|null $targetedPlayer = null,
+		public ?Player $targetedPlayer = null,
 		?array $groups = null,
-		mixed $payload = null
+		mixed $payload = null,
 	) {
 		parent::__construct(
 			groups: $groups,

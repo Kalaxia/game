@@ -12,5 +12,5 @@ use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
  */
 interface RankingRepositoryInterface extends EntityRepositoryInterface
 {
-	public function getLastRanking(): Ranking|null;
+	public function getLastRanking(): ?Ranking;
 }

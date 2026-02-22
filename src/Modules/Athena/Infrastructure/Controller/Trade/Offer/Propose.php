@@ -2,7 +2,6 @@
 
 namespace App\Modules\Athena\Infrastructure\Controller\Trade\Offer;
 
-use App\Classes\Library\Game;
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Manager\CommanderManager;
@@ -36,23 +35,23 @@ use Symfony\UX\Turbo\TurboBundle;
 class Propose extends AbstractController
 {
 	public function __invoke(
-        Request                               $request,
-        Player                                $currentPlayer,
-        Planet                                $currentPlanet,
-        PlanetManager                         $planetManager,
-        PlanetHelper                          $planetHelper,
-		GetMinPriceRelativeToRate               $getMinPriceRelativeToRate,
-		GetMaxPriceRelativeToRate               $getMaxPriceRelativeToRate,
-        GetBaseCommercialShippingData         $getBaseCommercialShippingData,
-        CommanderManager                      $commanderManager,
-        CommanderRepositoryInterface          $commanderRepository,
-        TransactionRepositoryInterface        $transactionRepository,
-        CountNeededCommercialShips            $countNeededCommercialShips,
-        CountAvailableCommercialShips         $countAvailableCommercialShips,
-        CommercialShippingRepositoryInterface $commercialShippingRepository,
-        HubInterface                          $mercureHub,
-        SerializerInterface                   $serializer,
-        ValidatorInterface                    $validator,
+		Request $request,
+		Player $currentPlayer,
+		Planet $currentPlanet,
+		PlanetManager $planetManager,
+		PlanetHelper $planetHelper,
+		GetMinPriceRelativeToRate $getMinPriceRelativeToRate,
+		GetMaxPriceRelativeToRate $getMaxPriceRelativeToRate,
+		GetBaseCommercialShippingData $getBaseCommercialShippingData,
+		CommanderManager $commanderManager,
+		CommanderRepositoryInterface $commanderRepository,
+		TransactionRepositoryInterface $transactionRepository,
+		CountNeededCommercialShips $countNeededCommercialShips,
+		CountAvailableCommercialShips $countAvailableCommercialShips,
+		CommercialShippingRepositoryInterface $commercialShippingRepository,
+		HubInterface $mercureHub,
+		SerializerInterface $serializer,
+		ValidatorInterface $validator,
 	): Response {
 		$type = $request->query->get('type') ?? throw new BadRequestHttpException('Missing type');
 		$quantity = $request->request->getInt('quantity');
@@ -63,7 +62,7 @@ class Propose extends AbstractController
 		// TODO Move to validator component constraint
 		switch ($type) {
 			case Transaction::TYP_RESOURCE:
-				if ($quantity === 0) {
+				if (0 === $quantity) {
 					throw new BadRequestHttpException('Invalid quantity');
 				}
 				if ($currentPlanet->resourcesStorage < $quantity) {
@@ -76,7 +75,7 @@ class Propose extends AbstractController
 					throw new BadRequestHttpException('Invalid ship identifier');
 				}
 
-				if ($quantity === 0) {
+				if (0 === $quantity) {
 					throw new BadRequestHttpException('Invalid quantity');
 				}
 

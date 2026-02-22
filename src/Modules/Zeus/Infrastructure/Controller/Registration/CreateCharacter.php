@@ -31,7 +31,7 @@ class CreateCharacter extends AbstractController
 		$session = $request->getSession();
 		if (!$session->has('inscription')) {
 			// TODO Replace when portal is implemented
-			return $this->redirect($this->getParameter('getout_root') . 'serveurs/message-forbiddenaccess');
+			return $this->redirect($this->getParameter('getout_root').'serveurs/message-forbiddenaccess');
 		}
 
 		if (Request::METHOD_POST === $request->getMethod()) {

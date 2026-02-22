@@ -11,9 +11,9 @@ use Symfony\Component\Uid\Uuid;
 
 interface TransactionRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): Transaction|null;
+	public function get(Uuid $id): ?Transaction;
 
-	public function getLastCompletedTransaction(int $type): Transaction|null;
+	public function getLastCompletedTransaction(int $type): ?Transaction;
 
 	public function getProposedTransactions(int $type): array;
 

@@ -29,7 +29,6 @@ class CommercialTaxRepository extends DoctrineRepository implements CommercialTa
 		]) ?? throw new NoResultException();
 	}
 
-
 	public function getFactionTaxesByImport(Color $faction): array
 	{
 		return $this->findBy([

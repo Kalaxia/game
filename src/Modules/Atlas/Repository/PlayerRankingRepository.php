@@ -36,7 +36,7 @@ class PlayerRankingRepository extends DoctrineRepository implements PlayerRankin
 		return $qb->getQuery()->getResult();
 	}
 
-	public function getPlayerLastRanking(Player $player): PlayerRanking|null
+	public function getPlayerLastRanking(Player $player): ?PlayerRanking
 	{
 		$qb = $this->createQueryBuilder('pr');
 
@@ -49,7 +49,7 @@ class PlayerRankingRepository extends DoctrineRepository implements PlayerRankin
 		return $qb->getQuery()->getOneOrNullResult();
 	}
 
-	public function getBestPlayerRanking(): PlayerRanking|null
+	public function getBestPlayerRanking(): ?PlayerRanking
 	{
 		return $this->findOneBy([], [
 			'generalPosition' => 'ASC',
@@ -61,11 +61,11 @@ class PlayerRankingRepository extends DoctrineRepository implements PlayerRankin
 		$qb = $this->getEntityManager()->getConnection()->createQueryBuilder();
 
 		$qb->select(
-				'p.id AS player_id,
+			'p.id AS player_id,
 				(SUM(r.attacker_pev_at_beginning) - SUM(r.attacker_pev_at_end)) AS lostPEV,
 				(SUM(r.defender_pev_at_beginning) - SUM(r.defender_pev_at_end)) AS destroyedPEV,
 				(SUM(r.attacker_pev_at_beginning) - SUM(r.attacker_pev_at_end) - SUM(r.defender_pev_at_beginning) - SUM(r.defender_pev_at_end)) AS score'
-			)
+		)
 			->from('report', 'r')
 			->join('r', 'player', 'p', 'r.attacker_id = p.id')
 			->where('p.statement IN (:statements)')
@@ -81,11 +81,11 @@ class PlayerRankingRepository extends DoctrineRepository implements PlayerRankin
 		$qb = $this->getEntityManager()->getConnection()->createQueryBuilder();
 
 		$qb->select(
-				'p.id AS player_id,
+			'p.id AS player_id,
 				(SUM(r.defender_pev_at_beginning) - SUM(r.defender_pev_at_end)) AS lostPEV,
 				(SUM(r.attacker_pev_at_beginning) - SUM(r.attacker_pev_at_end)) AS destroyedPEV,
 				(SUM(r.defender_pev_at_beginning) - SUM(r.defender_pev_at_end) - SUM(r.attacker_pev_at_beginning) - SUM(r.attacker_pev_at_end)) AS score'
-			)
+		)
 			->from('report', 'r')
 			->join('r', 'player', 'p', 'r.defender_id = p.id')
 			->where('p.statement IN (:statements)')
@@ -185,9 +185,9 @@ class PlayerRankingRepository extends DoctrineRepository implements PlayerRankin
 		$qb = $this->getEntityManager()->getConnection()->createQueryBuilder();
 
 		$qb->select(
-				'p.id AS player,
+			'p.id AS player,
 				COUNT(pl.id) AS sumPlanets'
-			)
+		)
 			->from('galaxy__planets', 'pl')
 			->join('pl', 'player', 'p', 'p.id = pl.player_id')
 			->where('p.statement IN (:statements)')
@@ -202,9 +202,9 @@ class PlayerRankingRepository extends DoctrineRepository implements PlayerRankin
 		$qb = $this->getEntityManager()->getConnection()->createQueryBuilder();
 
 		$qb->select(
-				'p.id AS player,
+			'p.id AS player,
 				SUM(c.income) AS income'
-			)
+		)
 			->from('commercialRoute', 'c')
 			->join('c', 'galaxy__planets', 'pl', 'pl.id = c.origin_base_id')
 			->join('pl', 'player', 'p', 'p.id = pl.player_id')
@@ -221,9 +221,9 @@ class PlayerRankingRepository extends DoctrineRepository implements PlayerRankin
 		$qb = $this->getEntityManager()->getConnection()->createQueryBuilder();
 
 		$qb->select(
-				'p.id AS player,
+			'p.id AS player,
 				SUM(c.income) AS income'
-			)
+		)
 			->from('commercialRoute', 'c')
 			->join('c', 'galaxy__planets', 'pl', 'pl.id = c.destination_base_id')
 			->join('pl', 'player', 'p', 'p.id = pl.player_id')

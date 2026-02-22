@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Demeter\Model\Law;
 
 use App\Modules\Demeter\Model\Color;
-use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'law')]
@@ -54,7 +54,6 @@ class Law
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int $againstVote = 0,
 	) {
-		
 	}
 
 	public function isBeingVoted(): bool

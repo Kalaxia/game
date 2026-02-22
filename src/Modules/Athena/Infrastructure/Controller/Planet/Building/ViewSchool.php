@@ -25,10 +25,10 @@ class ViewSchool extends AbstractController
 		methods: [Request::METHOD_GET],
 	)]
 	public function __invoke(
-        Request                      $request,
-        CurrentPlayerBonusRegistry   $currentPlayerBonusRegistry,
-        Planet                       $currentBase,
-        CommanderRepositoryInterface $commanderRepository,
+		Request $request,
+		CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
+		Planet $currentBase,
+		CommanderRepositoryInterface $commanderRepository,
 	): Response {
 		$commanderInvestBonus = $currentPlayerBonusRegistry->getPlayerBonus()->bonuses->get(PlayerBonusId::COMMANDER_INVEST);
 

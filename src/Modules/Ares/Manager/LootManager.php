@@ -24,15 +24,15 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 readonly class LootManager
 {
 	public function __construct(
-		private EntityManagerInterface       $entityManager,
-		private EventDispatcherInterface     $eventDispatcher,
-		private CommanderManager             $commanderManager,
+		private EntityManagerInterface $entityManager,
+		private EventDispatcherInterface $eventDispatcher,
+		private CommanderManager $commanderManager,
 		private CommanderRepositoryInterface $commanderRepository,
-		private MoveFleet                    $moveFleet,
-		private PlanetManager                $planetManager,
-		private PlaceManager                 $placeManager,
-		private PlayerBonusManager           $playerBonusManager,
-		private CommanderArmyHandler         $commanderArmyHandler,
+		private MoveFleet $moveFleet,
+		private PlanetManager $planetManager,
+		private PlaceManager $placeManager,
+		private PlayerBonusManager $playerBonusManager,
+		private CommanderArmyHandler $commanderArmyHandler,
 	) {
 	}
 
@@ -126,7 +126,7 @@ readonly class LootManager
 
 						$this->placeManager->sendNotif($place, Planet::LOOTPLAYERWHITBATTLESUCCESS, $commander, $report);
 
-					// défaite
+						// défaite
 					} else {
 						// création du rapport
 						$report = $this->commanderManager->createReport($place);

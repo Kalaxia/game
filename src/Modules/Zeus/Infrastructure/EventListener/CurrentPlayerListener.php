@@ -15,12 +15,12 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 readonly class CurrentPlayerListener
 {
 	public function __construct(
-		private PlayerRepositoryInterface    $playerRepository,
-		private PlayerBonusManager           $playerBonusManager,
-		private PlanetRepositoryInterface    $planetRepository,
-		private CurrentPlayerRegistry        $currentPlayerRegistry,
+		private PlayerRepositoryInterface $playerRepository,
+		private PlayerBonusManager $playerBonusManager,
+		private PlanetRepositoryInterface $planetRepository,
+		private CurrentPlayerRegistry $currentPlayerRegistry,
 		private CurrentPlayerPlanetsRegistry $currentPlayerPlanetsRegistry,
-		private CurrentPlayerBonusRegistry   $currentPlayerBonusRegistry,
+		private CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
 	) {
 	}
 

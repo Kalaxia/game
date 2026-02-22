@@ -17,7 +17,7 @@ interface FactionRankingRepositoryInterface extends EntityRepositoryInterface
 	 */
 	public function getRoutesIncome(Color $faction): array;
 
-	public function getLastRanking(Color $faction): FactionRanking|null;
+	public function getLastRanking(Color $faction): ?FactionRanking;
 
 	/**
 	 * @return list<FactionRanking>

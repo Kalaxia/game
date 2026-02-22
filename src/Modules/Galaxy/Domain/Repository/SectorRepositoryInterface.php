@@ -12,9 +12,9 @@ use Symfony\Component\Uid\Uuid;
  */
 interface SectorRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): Sector|null;
+	public function get(Uuid $id): ?Sector;
 
-	public function getOneByIdentifier(int $identifier): Sector|null;
+	public function getOneByIdentifier(int $identifier): ?Sector;
 
 	/**
 	 * @return list<Sector>

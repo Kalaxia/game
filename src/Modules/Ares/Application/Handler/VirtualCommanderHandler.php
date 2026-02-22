@@ -13,7 +13,6 @@ readonly class VirtualCommanderHandler
 	public function __construct(
 		private CommanderArmyHandler $commanderArmyHandler,
 	) {
-
 	}
 
 	public function createVirtualCommander(Planet $place): Commander

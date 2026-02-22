@@ -9,7 +9,7 @@ use Symfony\Component\Uid\Uuid;
 
 interface BuildingQueueRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): BuildingQueue|null;
+	public function get(Uuid $id): ?BuildingQueue;
 
 	/**
 	 * @return list<BuildingQueue>

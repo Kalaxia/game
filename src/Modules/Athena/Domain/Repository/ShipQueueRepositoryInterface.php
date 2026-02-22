@@ -9,7 +9,7 @@ use Symfony\Component\Uid\Uuid;
 
 interface ShipQueueRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): ShipQueue|null;
+	public function get(Uuid $id): ?ShipQueue;
 
 	/**
 	 * @return list<ShipQueue>

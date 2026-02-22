@@ -2,7 +2,6 @@
 
 namespace App\Modules\Demeter\Infrastructure\Controller;
 
-use App\Classes\Library\Utils;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;

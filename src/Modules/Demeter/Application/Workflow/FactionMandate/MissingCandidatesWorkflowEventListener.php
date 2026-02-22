@@ -4,47 +4,40 @@ declare(strict_types=1);
 
 namespace App\Modules\Demeter\Application\Workflow\FactionMandate;
 
-use App\Classes\Library\DateTimeConverter;
-use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Event\MissingCandidatesEvent;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
-use App\Modules\Demeter\Message\CampaignMessage;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
-use App\Modules\Hermes\Model\ConversationMessage;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
-use App\Shared\Application\Handler\DurationHandler;
-use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Uid\Uuid;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Workflow\Attribute\AsEnteredListener;
 use Symfony\Component\Workflow\Attribute\AsEnterListener;
+use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\EnterEvent;
 
 readonly class MissingCandidatesWorkflowEventListener
 {
 	public function __construct(
-		private ClockInterface $clock,
-		private DurationHandler $durationHandler,
 		private ConversationRepositoryInterface $factionConversationRepository,
 		private EventDispatcherInterface $eventDispatcher,
-		private MessageBusInterface $messageBus,
+		private LoggerInterface $logger,
 		private NotificationRepositoryInterface $notificationRepository,
 		private PlayerRepositoryInterface $playerRepository,
+		private PoliticalEventRepositoryInterface $politicalEventRepository,
 		private GetFactionsConfiguration $getFactionsConfiguration,
-		private NextElectionDateCalculator $nextElectionDateCalculator,
 	) {
 	}
-
 
 	#[AsEnterListener(workflow: 'faction_mandate', place: MandateState::Active->value)]
 	public function onMissingCandidates(EnterEvent $event): void
 	{
-		if ($event->getTransition()->getName() !== 'missing_candidates') {
+		if ('missing_candidates' !== $event->getTransition()->getName()) {
 			return;
 		}
 
@@ -62,7 +55,7 @@ readonly class MissingCandidatesWorkflowEventListener
 					($this->getFactionsConfiguration)($faction, 'popularName'),
 				))
 				->for($previousLeader));
-		} elseif (Color::REGIME_THEOCRATIC === $faction->regime) {
+		} elseif (null !== $previousLeader && Color::REGIME_THEOCRATIC === $faction->regime) {
 			$this->notificationRepository->save(NotificationBuilder::new()
 				->setTitle('Vous avez été nommé Guide')
 				->setContent(NotificationBuilder::paragraph(
@@ -72,25 +65,40 @@ readonly class MissingCandidatesWorkflowEventListener
 				->for($previousLeader));
 		}
 
-		$factionAccount = $this->playerRepository->getFactionAccount($faction);
+		$factionAccount = $this->playerRepository->getFactionAccount($faction)
+			?? throw new \LogicException(sprintf('Faction %d account not found', $faction->identifier));
 		$factionConversation = $this->factionConversationRepository->getOneByPlayer($factionAccount);
 
 		$this->eventDispatcher->dispatch(new MissingCandidatesEvent(
 			factionName: ($this->getFactionsConfiguration)($faction, 'popularName'),
 			factionAccount: $factionAccount,
+			politicalEvent: $this->politicalEventRepository->getFactionLastPoliticalEvent($faction),
 			factionConversation: $factionConversation,
 			regime: $faction->regime,
 			currentLeader: $previousLeader,
 		));
+	}
 
-		$nextCampaignStartedAt = $this->durationHandler->getDurationEnd(
-			$this->clock->now(),
-			$this->nextElectionDateCalculator->getMandateDuration($faction),
-		);
+	#[AsEnteredListener(workflow: 'faction_mandate', place: MandateState::Active->value)]
+	public function onMissingCandidatesEntered(EnteredEvent $event): void
+	{
+		/** @var Color $faction */
+		$faction = $event->getSubject();
 
-		$this->messageBus->dispatch(
-			new CampaignMessage($faction->id),
-			[DateTimeConverter::to_delay_stamp($nextCampaignStartedAt)],
-		);
+		if ('missing_candidates' !== $event->getTransition()->getName()) {
+			$this->logger->debug('Faction {factionIdentifier} entered {state} state through {transition} transition, skipping MissingCandidatesEntered event listener.', [
+				'factionIdentifier' => $faction->identifier,
+				'state' => MandateState::Active->value,
+				'transition' => $event->getTransition()->getName(),
+			]);
+
+			return;
+		}
+
+		$this->logger->debug('Faction {factionIdentifier} entered {state} state through {transition} transition, executing MissingCandidatesEntered event listener.', [
+			'factionIdentifier' => $faction->identifier,
+			'state' => MandateState::Active->value,
+			'transition' => $event->getTransition()->getName(),
+		]);
 	}
 }

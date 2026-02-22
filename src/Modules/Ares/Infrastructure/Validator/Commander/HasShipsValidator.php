@@ -14,7 +14,6 @@ class HasShipsValidator extends ConstraintValidator
 	public function __construct(
 		private readonly CommanderArmyHandler $commanderArmyHandler,
 	) {
-
 	}
 
 	public function validate($value, Constraint $constraint): void

@@ -12,20 +12,20 @@
  * The "importmap:require" command can be used to add new entries to this file.
  */
 return [
-    'app' => [
-        'path' => './assets/app.js',
-        'entrypoint' => true,
-    ],
-    '@symfony/stimulus-bundle' => [
-        'path' => './vendor/symfony/stimulus-bundle/assets/dist/loader.js',
-    ],
-    '@symfony/ux-live-component' => [
-        'path' => './vendor/symfony/ux-live-component/assets/dist/live_controller.js',
-    ],
-    '@hotwired/stimulus' => [
-        'version' => '3.2.2',
-    ],
-    '@hotwired/turbo' => [
-        'version' => '8.0.13',
-    ],
+	'app' => [
+		'path' => './assets/app.js',
+		'entrypoint' => true,
+	],
+	'@symfony/stimulus-bundle' => [
+		'path' => './vendor/symfony/stimulus-bundle/assets/dist/loader.js',
+	],
+	'@symfony/ux-live-component' => [
+		'path' => './vendor/symfony/ux-live-component/assets/dist/live_controller.js',
+	],
+	'@hotwired/stimulus' => [
+		'version' => '3.2.2',
+	],
+	'@hotwired/turbo' => [
+		'version' => '8.0.13',
+	],
 ];

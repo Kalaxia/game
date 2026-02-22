@@ -3,13 +3,9 @@
 namespace App\Modules\Athena\Manager;
 
 use App\Classes\Library\DateTimeConverter;
-use App\Modules\Athena\Domain\Event\NewShipQueueEvent;
 use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
 use App\Modules\Athena\Message\Ship\ShipQueueMessage;
-use App\Modules\Athena\Model\ShipQueue;
-use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\SchedulerInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 readonly class ShipQueueManager implements SchedulerInterface

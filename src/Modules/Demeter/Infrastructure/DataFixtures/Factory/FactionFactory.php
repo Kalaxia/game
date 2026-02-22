@@ -44,8 +44,6 @@ class FactionFactory extends PersistentObjectFactory
 			'relations' => [],
 			// @TODO move that field to the future Server entity
 			'victoryClaimedAt' => null,
-			// @TODO get that field from the Election table
-			'lastElectionHeldAt' => null,
 		];
 	}
 

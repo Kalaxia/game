@@ -13,7 +13,7 @@ readonly class CountAvailableCommercialShips
 {
 	public function __construct(
 		private CommercialShippingRepositoryInterface $commercialShippingRepository,
-		private PlanetHelper                          $planetHelper,
+		private PlanetHelper $planetHelper,
 	) {
 	}
 

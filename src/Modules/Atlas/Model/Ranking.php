@@ -12,6 +12,5 @@ class Ranking
 		public Uuid $id,
 		public \DateTimeImmutable $createdAt,
 	) {
-
 	}
 }

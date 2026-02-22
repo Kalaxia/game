@@ -9,7 +9,6 @@ use App\Modules\Demeter\Message\Law\AllianceDeclarationResultMessage;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Law\Law;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Uid\Uuid;
 
 #[AsMessageHandler]
 readonly class AllianceDeclarationResultHandler

@@ -33,8 +33,7 @@ final readonly class SectorGenerationHandler
 	{
 		$faction = (null !== $message->factionIdentifier)
 			? $this->colorRepository->getOneByIdentifier($message->factionIdentifier)
-				?? throw new \LogicException('Faction not found')
-			: null;
+				?? throw new \LogicException('Faction not found') : null;
 
 		$sector = new Sector(
 			id: Uuid::v4(),
@@ -93,10 +92,9 @@ final readonly class SectorGenerationHandler
 
 		[$minX, $minY, $maxX, $maxY] = $this->polygonBounds($vertices);
 
-
 		// Paramètres simples: ajuster le nombre de points avec le "danger"
 		$baseCount = 25; // valeur de base
-		$targetCount = max(1, (int)round($baseCount * (1.0 + ($sectorDanger / 10.0))));
+		$targetCount = max(1, (int) round($baseCount * (1.0 + ($sectorDanger / 10.0))));
 		$minSpacing = $this->suggestSpacing($vertices); // espacement minimal en fonction de l'échelle
 		$minSpacing2 = $minSpacing * $minSpacing;
 
@@ -172,6 +170,7 @@ final readonly class SectorGenerationHandler
 	 * Calcule la bbox [minX, minY, maxX, maxY].
 	 *
 	 * @param list<array{0: float, 1: float, 2: float, 3: float} $vertices
+	 *
 	 * @return array{0: float, 1: float, 2: float, 3: float}
 	 */
 	private function polygonBounds(array $vertices): array
@@ -193,6 +192,7 @@ final readonly class SectorGenerationHandler
 				$maxY = $y;
 			}
 		}
+
 		return [$minX, $minY, $maxX, $maxY];
 	}
 
@@ -217,6 +217,7 @@ final readonly class SectorGenerationHandler
 				$inside = !$inside;
 			}
 		}
+
 		return $inside;
 	}
 
@@ -229,6 +230,7 @@ final readonly class SectorGenerationHandler
 	{
 		$dx = $x1 - $x2;
 		$dy = $y1 - $y2;
+
 		return $dx * $dx + $dy * $dy;
 	}
 

@@ -25,6 +25,5 @@ class RecyclingLog
 		public int $ship10 = 0,
 		public int $ship11 = 0,
 	) {
-		
 	}
 }

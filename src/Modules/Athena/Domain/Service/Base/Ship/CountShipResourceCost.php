@@ -21,7 +21,7 @@ readonly class CountShipResourceCost
 	) {
 	}
 
-	public function __invoke(int $identifier, int $quantity, Player|null $manufacturer = null): int
+	public function __invoke(int $identifier, int $quantity, ?Player $manufacturer = null): int
 	{
 		$manufacturer ??= $this->currentPlayerRegistry->get();
 		// débit des ressources au joueur

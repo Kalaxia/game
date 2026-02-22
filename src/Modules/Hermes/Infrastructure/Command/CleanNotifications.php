@@ -21,9 +21,9 @@ class CleanNotifications extends Command
 	public function __construct(
 		private readonly NotificationRepositoryInterface $notificationRepository,
 		#[Autowire('%hermes.notifications.timeout.read%')]
-		private readonly int                       $notificationsReadTimeout,
+		private readonly int $notificationsReadTimeout,
 		#[Autowire('%hermes.notifications.timeout.unread%')]
-		private readonly int                       $notificationsUnreadTimeout,
+		private readonly int $notificationsUnreadTimeout,
 	) {
 		parent::__construct();
 	}

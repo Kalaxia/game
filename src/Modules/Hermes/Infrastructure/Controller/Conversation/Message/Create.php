@@ -31,12 +31,12 @@ class Create extends AbstractController
 		methods: Request::METHOD_POST,
 	)]
 	public function __invoke(
-		Request                                $request,
-		Player                                 $currentPlayer,
-		ConversationRepositoryInterface        $conversationRepository,
+		Request $request,
+		Player $currentPlayer,
+		ConversationRepositoryInterface $conversationRepository,
 		ConversationMessageRepositoryInterface $conversationMessageRepository,
-		Parser                                 $parser,
-		Uuid                                   $conversationId,
+		Parser $parser,
+		Uuid $conversationId,
 	): Response {
 		$conversation = $conversationRepository->getOne($conversationId)
 			?? throw $this->createNotFoundException('Conversation not found');
@@ -64,7 +64,7 @@ class Create extends AbstractController
 				}
 			}
 
-			$conversation->messagesCount++;
+			++$conversation->messagesCount;
 			// création du message
 			$message = new ConversationMessage(
 				id: Uuid::v4(),
@@ -78,6 +78,7 @@ class Create extends AbstractController
 			$conversationMessageRepository->save($message);
 			$conversationRepository->save($conversation);
 		}
+
 		return $this->redirectToRoute('communication_center', [
 			'conversationId' => $conversation->id,
 		]);

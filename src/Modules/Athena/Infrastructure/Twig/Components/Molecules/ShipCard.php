@@ -23,7 +23,7 @@ class ShipCard extends Card
 	public int $shipIdentifier;
 	public int $maxShips;
 	public int $dockNeededLevel;
-	public string|null $missingTechnology = null;
+	public ?string $missingTechnology = null;
 	public string|bool $hasTechnologyRequirements;
 	public string|bool $hasShipQueueRequirements;
 	public string|bool $hasShipTreeRequirements;
@@ -33,10 +33,10 @@ class ShipCard extends Card
 	public bool $isHeavyShipyard;
 
 	public function __construct(
-		private readonly CountAffordableShips  $countAffordableShips,
+		private readonly CountAffordableShips $countAffordableShips,
 		private readonly CountShipResourceCost $countShipResourceCost,
-		private readonly CountShipTimeCost     $countShipTimeCost,
-		private readonly ShipHelper            $shipHelper,
+		private readonly CountShipTimeCost $countShipTimeCost,
+		private readonly ShipHelper $shipHelper,
 	) {
 	}
 
@@ -47,7 +47,7 @@ class ShipCard extends Card
 	{
 		$this->dockType = $dockType;
 		$this->shipIdentifier = $shipIdentifier;
-		$this->isHeavyShipyard = $dockType === DockType::Shipyard;
+		$this->isHeavyShipyard = DockType::Shipyard === $dockType;
 
 		$this->maxShips = ($this->countAffordableShips)(
 			shipIdentifier: $shipIdentifier,

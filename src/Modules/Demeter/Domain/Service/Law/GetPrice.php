@@ -16,7 +16,7 @@ readonly class GetPrice
 	) {
 	}
 
-	public function __invoke(int $type, Color $faction, int|null $gameCycles): int
+	public function __invoke(int $type, Color $faction, ?int $gameCycles): int
 	{
 		$baseLawPrice = LawResources::getInfo($type, 'price');
 

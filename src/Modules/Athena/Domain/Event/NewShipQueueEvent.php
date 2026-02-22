@@ -21,7 +21,7 @@ class NewShipQueueEvent implements TutorialEvent, TrackingEvent
 		return $this->shipQueue->base->player;
 	}
 
-	public function getTutorialStep(): int|null
+	public function getTutorialStep(): ?int
 	{
 		return match (ShipCategory::tryFrom($this->shipQueue->shipNumber)) {
 			ShipCategory::LightFighter => TutorialResource::BUILD_SHIP0,

@@ -1,3 +1,3 @@
 <?php
 
-\App\Modules\Galaxy\Manager\GalaxyColorManager::apply();
+App\Modules\Galaxy\Manager\GalaxyColorManager::apply();

@@ -18,12 +18,12 @@ readonly class ShipStatsHandler
 	) {
 	}
 
-	public function getStats(Ship $ship, ShipStat $stat, PlayerBonus|null $playerBonus = null): mixed
+	public function getStats(Ship $ship, ShipStat $stat, ?PlayerBonus $playerBonus = null): mixed
 	{
 		return $this->getStatsByShipNumber($ship->shipNumber, $stat, $playerBonus);
 	}
-	
-	public function getStatsByShipNumber(int $shipNumber, ShipStat $stat, PlayerBonus|null $playerBonus = null): mixed
+
+	public function getStatsByShipNumber(int $shipNumber, ShipStat $stat, ?PlayerBonus $playerBonus = null): mixed
 	{
 		if (in_array($stat, [ShipStat::Name])) {
 			trigger_error('Calling ShipStatsHandler to retrieve a ship\'s name is deprecated, use the translator instead', E_USER_DEPRECATED);
@@ -45,15 +45,17 @@ readonly class ShipStatsHandler
 				$playerBonus,
 			);
 		}
+
 		return $initialValue;
 	}
 
 	/**
-	 * TODO think bout a way to be warned when a ship does not have an associated bonus
+	 * TODO think bout a way to be warned when a ship does not have an associated bonus.
 	 */
-	private function getBonusIdForStat(int $shipNumber, ShipStat $stat): int|null
+	private function getBonusIdForStat(int $shipNumber, ShipStat $stat): ?int
 	{
 		$shipCategory = ShipCategory::tryFrom($shipNumber);
+
 		return match ($stat) {
 			ShipStat::Attack => match ($shipCategory) {
 				ShipCategory::LightFighter, ShipCategory::Fighter, ShipCategory::HeavyFighter => PlayerBonusId::FIGHTER_ATTACK,

@@ -19,12 +19,12 @@ class Report
 	public array $attackerArmyAtEnd = [];
 	public array $defenderArmyAtEnd = [];
 	public array $fight = [];
-	public array $attackerTotalInBegin = [0,0,0,0,0,0,0,0,0,0,0,0];
-	public array $defenderTotalInBegin = [0,0,0,0,0,0,0,0,0,0,0,0];
-	public array $attackerTotalAtEnd = [0,0,0,0,0,0,0,0,0,0,0,0];
-	public array $defenderTotalAtEnd = [0,0,0,0,0,0,0,0,0,0,0,0];
-	public array $attackerDifference = [0,0,0,0,0,0,0,0,0,0,0,0];
-	public array $defenderDifference = [0,0,0,0,0,0,0,0,0,0,0,0];
+	public array $attackerTotalInBegin = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	public array $defenderTotalInBegin = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	public array $attackerTotalAtEnd = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	public array $defenderTotalAtEnd = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	public array $attackerDifference = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	public array $defenderDifference = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 	public bool $armiesDone = false;
 	public int $attackerPevAtBeginning = 0;
 	public int $defenderPevAtBeginning = 0;
@@ -34,27 +34,24 @@ class Report
 	public int $defenderStatement = self::STANDARD;
 	public bool $hasBeenPunished = false;
 
-	/**
-	 * @param array $squadrons
-	 */
 	public function __construct(
-		public Uuid           $id,
-		public Player         $attacker,
-		public Player|null    $defender,
-		public Player|null    $winner,
-		public Commander|null $attackerCommander,
-		public Commander|null $defenderCommander,
-		public Planet         $place,
-		public int            $type,
-		public int            $attackerLevel,
-		public int            $defenderLevel,
-		public int            $attackerExperience,
-		public int            $defenderExperience,
-		public int            $attackerPalmares,
-		public int            $defenderPalmares,
-		public int            $resources,
-		public int            $attackerCommanderExperience,
-		public int            $defenderCommanderExperience,
+		public Uuid $id,
+		public Player $attacker,
+		public ?Player $defender,
+		public ?Player $winner,
+		public ?Commander $attackerCommander,
+		public ?Commander $defenderCommander,
+		public Planet $place,
+		public int $type,
+		public int $attackerLevel,
+		public int $defenderLevel,
+		public int $attackerExperience,
+		public int $defenderExperience,
+		public int $attackerPalmares,
+		public int $defenderPalmares,
+		public int $resources,
+		public int $attackerCommanderExperience,
+		public int $defenderCommanderExperience,
 		public int $earnedExperience,
 		public bool $isLegal,
 		public int $round,

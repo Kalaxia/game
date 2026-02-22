@@ -17,7 +17,7 @@ class Squadron implements \JsonSerializable
 		public \DateTimeImmutable $updatedAt,
 		public int $lineCoord = 0,
 		public int $position = 0, // position dans le tableau de l'armée
-		public int|null $targetId = null,
+		public ?int $targetId = null,
 		public int $ship0 = 0,
 		public int $ship1 = 0,
 		public int $ship2 = 0,

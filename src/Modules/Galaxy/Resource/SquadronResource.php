@@ -5,16 +5,16 @@ namespace App\Modules\Galaxy\Resource;
 class SquadronResource
 {
 	public static $squadrons = [
-	//	niv min, niv max, liste de vaisseaux
+		//	niv min, niv max, liste de vaisseaux
 
-	//	extrèmement petit officier (lvl 1)
+		//	extrèmement petit officier (lvl 1)
 		[1, 1, [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
 		[1, 1, [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
 		[1, 1, [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
 		[1, 1, [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
 		[1, 1, [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
 
-	//	très petit officier (lvl 2-4)
+		//	très petit officier (lvl 2-4)
 		[2, 2, [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
 		[2, 2, [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
 		[2, 2, [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
@@ -29,24 +29,24 @@ class SquadronResource
 		[2, 6, [5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
 		[2, 6, [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0]],
 
-	//	officier moyen (5-9)
-	//	escadrille moyenne chasseur
+		//	officier moyen (5-9)
+		//	escadrille moyenne chasseur
 		[4, 12, [15, 8, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
 		[4, 12, [0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
 		[4, 12, [0, 0, 4, 4, 1, 0, 0, 0, 0, 0, 0, 0]],
 		[4, 12, [8, 8, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0]],
 
-	//	escadrille moyenne gros
+		//	escadrille moyenne gros
 		[4, 12, [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0]],
 		[4, 12, [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0]],
 		[4, 12, [0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0]],
 		[4, 12, [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]],
 
-	//	escadrille moyenne mixte
+		//	escadrille moyenne mixte
 		[4, 12, [0, 5, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0]],
 		[4, 12, [12, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0]],
 
-	//	escadrille forte chasseur
+		//	escadrille forte chasseur
 		[8, 16, [20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
 		[8, 16, [0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
 		[8, 16, [0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
@@ -55,7 +55,7 @@ class SquadronResource
 		[8, 18, [10, 8, 8, 2, 2, 2, 0, 0, 0, 0, 0, 0]],
 		[8, 18, [0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0]],
 
-	//	escadrille forte gros
+		//	escadrille forte gros
 		[11, 20, [0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0]],
 		[11, 20, [0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0]],
 		[11, 20, [0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0]],
@@ -65,7 +65,7 @@ class SquadronResource
 		[11, 20, [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]],
 		[11, 20, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]],
 
-	//	escadrille forte mixte
+		//	escadrille forte mixte
 		[11, 20, [10, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0]],
 		[11, 20, [5, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0]],
 		[11, 20, [0, 1, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0]],
@@ -75,7 +75,7 @@ class SquadronResource
 		[11, 20, [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]],
 		[11, 20, [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]],
 
-	//	extrèmement fort officier (lvl 20)
+		//	extrèmement fort officier (lvl 20)
 		[20, 20, [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]],
 	];
 }

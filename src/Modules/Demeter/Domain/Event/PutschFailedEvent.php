@@ -9,17 +9,26 @@ use App\Modules\Hermes\Domain\Event\ConversationMessageEvent;
 use App\Modules\Hermes\Domain\Event\NotificationEvent;
 use App\Modules\Hermes\Model\Conversation;
 use App\Modules\Zeus\Model\Player;
+use App\Shared\Domain\Event\LoggerEvent;
 use App\Shared\Domain\Specification\SelectorSpecification;
+use Psr\Log\LoggerInterface;
 
-readonly class PutschFailedEvent implements NotificationEvent, ConversationMessageEvent
+readonly class PutschFailedEvent implements LoggerEvent, NotificationEvent, ConversationMessageEvent
 {
 	public function __construct(
 		public Player $putchist,
-		public Player|null $leader,
+		public ?Player $leader,
 		public Player $factionAccount,
 		public Conversation $factionConversation,
 		public string $factionName,
 	) {
+	}
+
+	public function log(LoggerInterface $logger): void
+	{
+		$logger->info('Putsch failed for {factionName}.', [
+			'factionName' => $this->factionName,
+		]);
 	}
 
 	public function getConversation(): Conversation
@@ -55,7 +64,7 @@ readonly class PutschFailedEvent implements NotificationEvent, ConversationMessa
 		return [$this->putchist];
 	}
 
-	public function getNotificationRecipientsSpecification(): SelectorSpecification|null
+	public function getNotificationRecipientsSpecification(): ?SelectorSpecification
 	{
 		return null;
 	}

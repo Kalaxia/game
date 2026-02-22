@@ -30,16 +30,16 @@ class ViewSpatioport extends AbstractController
 		methods: [Request::METHOD_GET, Request::METHOD_POST],
 	)]
 	public function __invoke(
-        Request                            $request,
-        Player                             $currentPlayer,
-        CurrentPlayerBonusRegistry         $currentPlayerBonusRegistry,
-        Planet                             $currentBase,
-        CommercialRouteManager             $commercialRouteManager,
-        CommercialRouteRepositoryInterface $commercialRouteRepository,
-        ColorManager                       $colorManager,
-        ColorRepositoryInterface           $colorRepository,
+		Request $request,
+		Player $currentPlayer,
+		CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
+		Planet $currentBase,
+		CommercialRouteManager $commercialRouteManager,
+		CommercialRouteRepositoryInterface $commercialRouteRepository,
+		ColorManager $colorManager,
+		ColorRepositoryInterface $colorRepository,
 	): Response {
-		if ($currentBase->levelSpatioport === 0) {
+		if (0 === $currentBase->levelSpatioport) {
 			return $this->redirectToRoute('base_overview');
 		}
 

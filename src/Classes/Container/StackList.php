@@ -17,8 +17,6 @@ class StackList implements \Stringable
 
 	/**
 	 * @param int $index
-	 *
-	 * @return mixed
 	 */
 	public function get($index = 0)
 	{
@@ -42,7 +40,6 @@ class StackList implements \Stringable
 
 	/**
 	 * @param string $key
-	 * @param mixed  $value
 	 */
 	public function add($key, $value)
 	{
@@ -51,7 +48,6 @@ class StackList implements \Stringable
 
 	/**
 	 * @param string $key
-	 * @param mixed  $value
 	 */
 	public function increase($key, $value)
 	{
@@ -59,12 +55,11 @@ class StackList implements \Stringable
 						(isset($this->elements[$key]))
 						? $this->elements[$key] + $value
 						: $value
-				;
+		;
 	}
 
 	/**
 	 * @param string $key
-	 * @param mixed  $value
 	 */
 	public function insert($key, $value)
 	{
@@ -79,17 +74,11 @@ class StackList implements \Stringable
 		}
 	}
 
-	/**
-	 * @param mixed $element
-	 */
 	public function append($value)
 	{
 		$this->elements[] = $value;
 	}
 
-	/**
-	 * @param mixed $value
-	 */
 	public function prepend($value)
 	{
 		array_unshift($this->elements, $value);

@@ -34,12 +34,12 @@ class SearchPlayer extends AbstractController
 		return $this->redirectToRoute('embassy', ['player' => $player->id]);
 	}
 
-	private function searchById(int $id): Player|null
+	private function searchById(int $id): ?Player
 	{
 		return $this->playerRepository->get($id);
 	}
 
-	private function searchByName(string $name): Player|null
+	private function searchByName(string $name): ?Player
 	{
 		return $this->playerRepository->getByName($name);
 	}

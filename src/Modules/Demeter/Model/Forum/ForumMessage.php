@@ -36,8 +36,7 @@ class ForumMessage
 		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $createdAt,
 		#[ORM\Column(type: 'datetime_immutable', nullable: true)]
-		public \DateTimeImmutable|null $updatedAt = null,
+		public ?\DateTimeImmutable $updatedAt = null,
 	) {
-
 	}
 }

@@ -11,7 +11,6 @@
 
 namespace App\Modules\Athena\Model;
 
-use App\Modules\Galaxy\Domain\Entity\Place;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Entity\UninhabitedPlace;
 use Symfony\Component\Uid\Uuid;
@@ -25,17 +24,17 @@ class RecyclingMission
 	public const RECYCLER_CAPACTIY = 400;
 	public const RECYCLING_TIME = 28800; // 8 hours, in seconds
 	public const COEF_SHIP = 1.6; // to convert points to resource for ships
-		// coef_ship a été calculé par un ingénieur. Si on change la capacité, il faut rechanger coef_ship
+	// coef_ship a été calculé par un ingénieur. Si on change la capacité, il faut rechanger coef_ship
 
 	public function __construct(
-		public Uuid                    $id,
-		public Planet                  $base,
-		public UninhabitedPlace        $target,
-		public int                     $cycleTime = 0,
-		public int                     $recyclerQuantity = 0,
-		public int                     $addToNextMission = 0,
-		public int                     $statement = self::ST_ACTIVE,
-		public \DateTimeImmutable|null $endedAt = null,
+		public Uuid $id,
+		public Planet $base,
+		public UninhabitedPlace $target,
+		public int $cycleTime = 0,
+		public int $recyclerQuantity = 0,
+		public int $addToNextMission = 0,
+		public int $statement = self::ST_ACTIVE,
+		public ?\DateTimeImmutable $endedAt = null,
 	) {
 	}
 

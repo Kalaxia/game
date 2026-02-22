@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace App\Modules\Demeter\Domain\Event;
 
-use App\Classes\Library\Format;
-use App\Modules\Demeter\Model\Election\Candidate;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Zeus\Model\Player;
+use Psr\Log\LoggerInterface;
 
 class NewRoyalisticLeaderEvent extends NewLeaderEvent
 {
+	public function log(LoggerInterface $logger): void
+	{
+		$logger->info('Faction {factionName} has a new royalistic leader: {newLeaderName}.', [
+			'factionName' => $this->factionName,
+			'newLeaderName' => $this->newLeader->name,
+		]);
+	}
+
 	public function getConversationMessageContent(): string
 	{
 		return sprintf(

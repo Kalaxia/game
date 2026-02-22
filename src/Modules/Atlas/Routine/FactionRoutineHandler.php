@@ -83,7 +83,7 @@ class FactionRoutineHandler
 	public function processResults(
 		Ranking $ranking,
 		array $factions,
-	): Color|null {
+	): ?Color {
 		// ---------------- COMPUTING -------------------#
 
 		// copy the arrays
@@ -245,24 +245,24 @@ class FactionRoutineHandler
 	}
 
 	protected function cmpFactionGeneral(array $a, array $b): int
-    {
-        return $b['general'] <=> $a['general'];
-    }
+	{
+		return $b['general'] <=> $a['general'];
+	}
 
 	protected function cmpWealth(array $a, array $b): int
-    {
-        return $b['wealth'] <=> $a['wealth'];
-    }
+	{
+		return $b['wealth'] <=> $a['wealth'];
+	}
 
 	protected function cmpTerritorial(array $a, array $b): int
-    {
-        return $b['territorial'] <=> $a['territorial'];
-    }
+	{
+		return $b['territorial'] <=> $a['territorial'];
+	}
 
 	protected function cmpPoints(array $a, array $b): int
-    {
-        return $b['points'] <=> $a['points'];
-    }
+	{
+		return $b['points'] <=> $a['points'];
+	}
 
 	protected function setPositions(array $list, $attribute): array
 	{

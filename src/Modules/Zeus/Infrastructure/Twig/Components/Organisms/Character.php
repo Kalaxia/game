@@ -32,6 +32,5 @@ final class Character
 		// @TODO Not quite sure that this is the next experience level. To check and rename accordingly
 		$this->playerNextLevelExperience = intval($this->baseLevelPlayer * (2 ** ($player->level - 2)));
 		$this->playerExperienceProgress = ((($player->experience - $this->playerNextLevelExperience) * 200) / $this->playerMissingExperience);
-
 	}
 }

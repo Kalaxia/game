@@ -81,12 +81,12 @@ class CommanderResources
 		if ($level <= self::size()) {
 			if (in_array($info, ['grade'])) {
 				return self::$commanders[$level - 1][$info];
-			} else {
-				return false;
 			}
-		} else {
+
 			return false;
 		}
+
+		return false;
 	}
 
 	public static function size()

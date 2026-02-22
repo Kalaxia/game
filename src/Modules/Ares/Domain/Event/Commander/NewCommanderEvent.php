@@ -21,7 +21,7 @@ readonly class NewCommanderEvent implements TutorialEvent, TrackingEvent
 		return $this->player;
 	}
 
-	public function getTutorialStep(): int|null
+	public function getTutorialStep(): ?int
 	{
 		return TutorialResource::CREATE_COMMANDER;
 	}

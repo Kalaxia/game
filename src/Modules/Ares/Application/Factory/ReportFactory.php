@@ -18,11 +18,10 @@ readonly class ReportFactory
 	}
 
 	/**
-	 * TODO Avoid having LiveReport using static
+	 * TODO Avoid having LiveReport using static.
 	 */
 	public function create(Planet $place): Report
 	{
-
 		$report = new Report(
 			id: Uuid::v4(),
 			attacker: LiveReport::$rPlayerAttacker,
@@ -53,7 +52,6 @@ readonly class ReportFactory
 
 		return $report;
 	}
-
 
 	public function setPev(Report $report): void
 	{

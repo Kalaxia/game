@@ -27,43 +27,39 @@ final readonly class GetFactionsConfiguration
 
 		return $this->factionsConfiguration[$identifier][$info]
 			?? $this->tryToTranslate($identifier, $info)
-			?? throw new \InvalidArgumentException(sprintf(
-				'Faction configuration %s not found for Faction %d',
-				$info,
-				$identifier,
-			));
+			?? throw new \InvalidArgumentException(sprintf('Faction configuration %s not found for Faction %d', $info, $identifier));
 	}
 
 	#[\Deprecated(message: 'Use the translator directly instead of this method')]
 	private function tryToTranslate(int $identifier, string $info): array|string|null
 	{
-		if ($info === 'status') {
+		if ('status' === $info) {
 			return array_map(
 				fn ($key) => $this->translator->trans(sprintf('factions.%d.status.%s', $identifier, $key)),
 				[
 					'player',
-                    'elite',
-                    'treasurer',
-                    'commander',
-                    'minister',
-                    'leader',
+					'elite',
+					'treasurer',
+					'commander',
+					'minister',
+					'leader',
 				],
 			);
 		}
 
 		$key = match ($info) {
 			'officialName' => 'name.official',
-            'popularName' => 'name.popular',
-            'government' => 'name.government',
-            'demonym' => 'name.demonym',
+			'popularName' => 'name.popular',
+			'government' => 'name.government',
+			'demonym' => 'name.demonym',
 			'devise' => 'devise',
 			'factionPoints' => 'faction_points',
-            'desc1' => 'descriptions.general',
-            'desc2' => 'descriptions.morals',
-            'desc3' => 'descriptions.war',
-            'desc4' => 'descriptions.culture',
-            'senate' => 'descriptions.senate',
-            'campaign' => 'descriptions.campaign',
+			'desc1' => 'descriptions.general',
+			'desc2' => 'descriptions.morals',
+			'desc3' => 'descriptions.war',
+			'desc4' => 'descriptions.culture',
+			'senate' => 'descriptions.senate',
+			'campaign' => 'descriptions.campaign',
 			default => null,
 		};
 

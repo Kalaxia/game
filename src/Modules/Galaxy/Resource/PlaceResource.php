@@ -8,9 +8,9 @@ class PlaceResource
 	{
 		if (in_array($info, ['name', 'desc', 'price', 'school-size', 'tax', 'l-line', 'r-line', 'l-line-position', 'r-line-position'])) {
 			return self::$place[$type][$info];
-		} else {
-			return false;
 		}
+
+		return false;
 	}
 
 	private static array $place = [

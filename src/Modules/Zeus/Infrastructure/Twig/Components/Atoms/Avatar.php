@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Modules\Zeus\Infrastructure\Twig\Components\Atoms;
 
@@ -13,8 +13,8 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 )]
 class Avatar
 {
-	public Player|null $player = null;
-	public string|null $avatar = null;
+	public ?Player $player = null;
+	public ?string $avatar = null;
 
 	public function getAvatar(): string
 	{

@@ -30,8 +30,8 @@ class Step
 	{
 		return match ($this->status) {
 			'done' => 'text-gray-900',
-			'current'=> 'text-stone-200',
-			'next'=> 'text-gray-500 group-hover:text-gray-600',
+			'current' => 'text-stone-200',
+			'next' => 'text-gray-500 group-hover:text-gray-600',
 		};
 	}
 }

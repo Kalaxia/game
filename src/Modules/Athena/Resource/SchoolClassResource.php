@@ -45,6 +45,7 @@ class SchoolClassResource
 		if ($i < self::size()) {
 			return self::$classes[$i][$info];
 		}
+
 		return false;
 	}
 

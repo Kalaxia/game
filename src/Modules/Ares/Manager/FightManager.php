@@ -123,8 +123,8 @@ class FightManager
 	private function processPartyRound(
 		Commander $commander,
 		Commander $opponent,
-		PlayerBonus|null $playerBonus = null,
-		PlayerBonus|null $opponentBonus = null,
+		?PlayerBonus $playerBonus = null,
+		?PlayerBonus $opponentBonus = null,
 	): bool {
 		$this->engage($commander, $opponent, $playerBonus, $opponentBonus);
 		++LiveReport::$halfRound;
@@ -239,8 +239,8 @@ class FightManager
 	private function engage(
 		Commander $commander,
 		Commander $enemyCommander,
-		PlayerBonus|null $playerBonus = null,
-		PlayerBonus|null $enemyBonus = null,
+		?PlayerBonus $playerBonus = null,
+		?PlayerBonus $enemyBonus = null,
 	): void {
 		foreach ($commander->army as $squadron) {
 			$squadron->targetId = null;
