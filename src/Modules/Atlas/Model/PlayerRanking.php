@@ -49,6 +49,5 @@ class PlayerRanking
 		public int $resourcesVariation,
 		public \DateTimeImmutable $createdAt,
 	) {
-
 	}
 }

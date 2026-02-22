@@ -4,8 +4,8 @@ use App\Classes\Exception\ErrorException;
 use App\Modules\Zeus\Model\Player;
 
 $request = $this->getContainer()->get('app.request');
-$session = $this->getContainer()->get(\App\Classes\Library\Session\SessionWrapper::class);
-$topicManager = $this->getContainer()->get(\App\Modules\Demeter\Manager\Forum\ForumTopicManager::class);
+$session = $this->getContainer()->get(App\Classes\Library\Session\SessionWrapper::class);
+$topicManager = $this->getContainer()->get(App\Modules\Demeter\Manager\Forum\ForumTopicManager::class);
 
 $id = $request->query->get('id');
 

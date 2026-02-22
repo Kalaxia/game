@@ -18,7 +18,7 @@ class Sector
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int $identifier,
 		#[ORM\ManyToOne(targetEntity: Color::class)]
-		public Color|null $faction,
+		public ?Color $faction,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int $xPosition,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
@@ -30,7 +30,7 @@ class Sector
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int $tax,
 		#[ORM\Column(type: 'string', length: 255, nullable: true)]
-		public string|null $name,
+		public ?string $name,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 1])]
 		public int $points,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]

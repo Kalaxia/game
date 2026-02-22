@@ -19,9 +19,9 @@ interface PlayerRankingRepositoryInterface extends EntityRepositoryInterface
 	 */
 	public function getFactionPlayerRankings(Ranking $ranking, Color $faction): array;
 
-	public function getPlayerLastRanking(Player $player): PlayerRanking|null;
+	public function getPlayerLastRanking(Player $player): ?PlayerRanking;
 
-	public function getBestPlayerRanking(): PlayerRanking|null;
+	public function getBestPlayerRanking(): ?PlayerRanking;
 
 	/**
 	 * @return list<PlayerRanking>

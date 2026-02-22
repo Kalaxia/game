@@ -17,14 +17,13 @@ class Conversation
 	public function __construct(
 		public Uuid $id,
 		public \DateTimeImmutable $createdAt,
-		public string|null $title = null,
-		public \DateTimeImmutable|null $lastMessageAt = null,
+		public ?string $title = null,
+		public ?\DateTimeImmutable $lastMessageAt = null,
 		public int $messagesCount = 0,
 		public int $type = self::TY_USER,
 		/** @var Collection<ConversationUser> $players */
 		public Collection $players = new ArrayCollection(),
 	) {
-			
 	}
 
 	public function hasPlayer(Player $player): bool
@@ -34,6 +33,7 @@ class Conversation
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -50,7 +50,7 @@ class Conversation
 	public function getInitiator(): Player
 	{
 		foreach ($this->players as $conversationUser) {
-			if ($conversationUser->playerStatus === ConversationUser::US_ADMIN) {
+			if (ConversationUser::US_ADMIN === $conversationUser->playerStatus) {
 				return $conversationUser->player;
 			}
 		}

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Galaxy\Infrastructure\DataFixtures\Factory;
 
 use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Galaxy\Domain\Enum\PlanetType;
 use App\Modules\Zeus\Infrastructure\DataFixtures\Factory\PlayerFactory;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
@@ -18,7 +19,7 @@ class PlanetFactory extends PersistentObjectFactory
 	{
 		return [
 			'id' => Uuid::v4(),
-			'place' => PlaceFactory::randomOrCreate(),
+			'planetType' => self::faker()->randomElement(PlanetType::cases()),
 			'player' => PlayerFactory::randomOrCreate(),
 			'name' => 'Colonie',
 			'typeOfBase' => Planet::BASE_TYPE_COLONY,

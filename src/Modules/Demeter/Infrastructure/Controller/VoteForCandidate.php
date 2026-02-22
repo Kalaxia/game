@@ -3,9 +3,9 @@
 namespace App\Modules\Demeter\Infrastructure\Controller;
 
 use App\Modules\Demeter\Domain\Repository\Election\CandidateRepositoryInterface;
-use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\VoteRepositoryInterface;
-use App\Modules\Demeter\Model\Color;
+use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Demeter\Model\Election\Vote;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
@@ -21,14 +21,13 @@ class VoteForCandidate extends AbstractController
 	public function __construct(
 		private readonly CandidateRepositoryInterface $candidateRepository,
 	) {
-
 	}
 
 	public function __invoke(
 		Request $request,
 		Player $currentPlayer,
 		PlayerRepositoryInterface $playerRepository,
-		ElectionRepositoryInterface $electionRepository,
+		PoliticalEventRepositoryInterface $electionRepository,
 		VoteRepositoryInterface $voteRepository,
 		Uuid $electionId,
 		Uuid $candidateId,
@@ -45,7 +44,7 @@ class VoteForCandidate extends AbstractController
 			throw new ConflictHttpException('Vous avez déjà voté.');
 		}
 
-		if (Color::ELECTION !== $election->faction->electionStatement) {
+		if (MandateState::DemocraticVote !== $election->faction->mandateState) {
 			throw new ConflictHttpException('Vous ne pouvez voter pour un candidat qu\'en période d\'élection.');
 		}
 

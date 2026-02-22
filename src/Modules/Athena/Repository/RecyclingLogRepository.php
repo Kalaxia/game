@@ -41,7 +41,7 @@ class RecyclingLogRepository extends DoctrineRepository implements RecyclingLogR
 			->join('rl.mission', 'rm')
 			->join('rm.base', 'ob')
 			->where('ob.player = :player')
-			->andWhere($qb->expr()->gte('rl.createdAt',  ':since'))
+			->andWhere($qb->expr()->gte('rl.createdAt', ':since'))
 			->setParameter('player', $player->id)
 			->setParameter('since', $since);
 

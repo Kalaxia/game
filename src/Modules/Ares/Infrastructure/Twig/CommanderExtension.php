@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Ares\Infrastructure\Twig;
 
-use App\Classes\Library\Game;
 use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Application\Handler\CommanderExperienceHandler;
 use App\Modules\Ares\Domain\Model\CommanderMission;
@@ -30,15 +29,15 @@ class CommanderExtension extends AbstractExtension
 	}
 
 	#[\Override]
-    public function getFilters(): array
+	public function getFilters(): array
 	{
 		return [
 			new TwigFilter('mission_label', fn (Commander $commander) => match ($commander->travelType) {
-				CommanderMission::Move => 'déplacement vers ' . ($commander->destinationPlace->base?->name ?? 'colonie rebelle'),
-				CommanderMission::Loot => 'pillage de ' . ($commander->destinationPlace->base?->name ?? 'colonie rebelle'),
-				CommanderMission::Colo => 'colonisation de ' . ($commander->destinationPlace->base?->name ?? 'colonie rebelle'),
-				CommanderMission::Back => 'retour vers ' . ($commander->destinationPlace->base?->name ?? 'colonie rebelle'),
-				default => 'autre'
+				CommanderMission::Move => 'déplacement vers '.($commander->destinationPlace->base?->name ?? 'colonie rebelle'),
+				CommanderMission::Loot => 'pillage de '.($commander->destinationPlace->base?->name ?? 'colonie rebelle'),
+				CommanderMission::Colo => 'colonisation de '.($commander->destinationPlace->base?->name ?? 'colonie rebelle'),
+				CommanderMission::Back => 'retour vers '.($commander->destinationPlace->base?->name ?? 'colonie rebelle'),
+				default => 'autre',
 			}),
 			new TwigFilter('commander_rank', fn (Commander $commander) => $this->getCommanderLevel($commander->level)),
 			new TwigFilter('pev', fn (Commander|Squadron $item) => match (get_class($item)) {
@@ -50,7 +49,7 @@ class CommanderExtension extends AbstractExtension
 	}
 
 	#[\Override]
-    public function getFunctions(): array
+	public function getFunctions(): array
 	{
 		return [
 			new TwigFunction('get_commander_level_up_from_report', fn (int $level, int $newExperience) => $this->commanderExperienceHandler->nbLevelUp($level, $newExperience)),

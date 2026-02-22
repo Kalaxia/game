@@ -13,11 +13,11 @@ use Symfony\Component\HttpFoundation\Response;
 class ProfileController extends AbstractController
 {
 	public function __invoke(
-        Request                   $request,
-        Player                    $currentPlayer,
-        PlanetRepositoryInterface $planetRepository,
-        CommercialRouteManager    $commercialRouteManager,
-        EntityManagerInterface    $entityManager,
+		Request $request,
+		Player $currentPlayer,
+		PlanetRepositoryInterface $planetRepository,
+		CommercialRouteManager $commercialRouteManager,
+		EntityManagerInterface $entityManager,
 	): Response {
 		return $this->render('pages/zeus/profile.html.twig', [
 			'player_planets' => $planetRepository->getPlayerPlanets($currentPlayer),

@@ -6,5 +6,4 @@ namespace App\Shared\Domain\Message;
 
 interface AsyncHighPriorityMessage
 {
-
 }

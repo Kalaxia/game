@@ -11,7 +11,7 @@ use Twig\TwigFunction;
 class RankingExtension extends AbstractExtension
 {
 	#[\Override]
-    public function getFunctions(): array
+	public function getFunctions(): array
 	{
 		return [
 			new TwigFunction('get_player_ranking_data_by_type', fn (PlayerRanking $playerRanking, string $type) => match ($type) {
@@ -51,7 +51,7 @@ class RankingExtension extends AbstractExtension
 					'variation' => $playerRanking->traderVariation,
 				],
 				default => throw new \InvalidArgumentException(sprintf('%s is not a valid ranking type', $type)),
-			})
+			}),
 		];
 	}
 }

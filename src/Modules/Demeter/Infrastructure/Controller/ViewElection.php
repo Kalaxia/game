@@ -2,19 +2,15 @@
 
 namespace App\Modules\Demeter\Infrastructure\Controller;
 
-use App\Classes\Library\Utils;
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Repository\Election\CandidateRepositoryInterface;
-use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\VoteRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Forum\ForumMessageRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Forum\ForumTopicRepositoryInterface;
-use App\Modules\Demeter\Manager\Forum\ForumMessageManager;
-use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\Candidate;
 use App\Modules\Demeter\Model\Election\Vote;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
-use App\Modules\Zeus\Infrastructure\Validator\IsFromFaction;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,7 +23,7 @@ class ViewElection extends AbstractController
 	public function __invoke(
 		Request $request,
 		Player $currentPlayer,
-		ElectionRepositoryInterface $electionRepository,
+		PoliticalEventRepositoryInterface $electionRepository,
 		CandidateRepositoryInterface $candidateRepository,
 		VoteRepositoryInterface $voteRepository,
 		PlayerRepositoryInterface $playerRepository,
@@ -38,7 +34,7 @@ class ViewElection extends AbstractController
 	): Response {
 		$faction = $currentPlayer->faction;
 
-		$election = $electionRepository->getFactionLastElection($faction);
+		$election = $electionRepository->getFactionLastPoliticalEvent($faction);
 
 		$data = [
 			'faction' => $faction,
@@ -46,7 +42,7 @@ class ViewElection extends AbstractController
 		];
 
 		if (null !== $election) {
-			$candidates = $candidateRepository->getByElection($election);
+			$candidates = $candidateRepository->getByPoliticalEvent($election);
 
 			$data['candidates'] = $candidates;
 			$data['is_candidate'] = 1 <= count(array_filter(
@@ -55,7 +51,7 @@ class ViewElection extends AbstractController
 			));
 
 			if ($faction->hasOngoingElectionCampaign()) {
-				$votes = $voteRepository->getElectionVotes($election);
+				$votes = $voteRepository->getPoliticalEventVotes($election);
 
 				$data['player_vote'] = $voteRepository->getPlayerVote($currentPlayer, $election);
 				$data['votes'] = $votes;

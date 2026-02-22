@@ -13,11 +13,11 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class UpdatePlanetInvestments extends AbstractController
 {
 	public function __invoke(
-		Request                   $request,
-		Player                    $currentPlayer,
+		Request $request,
+		Player $currentPlayer,
 		PlanetRepositoryInterface $planetRepository,
-		Planet                    $currentPlanet,
-		string                    $category,
+		Planet $currentPlanet,
+		string $category,
 	): Response {
 		$credit = $request->request->getInt('credit');
 

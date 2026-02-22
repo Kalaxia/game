@@ -27,27 +27,26 @@ class SpyReport
 	public const STEP_DOCK = 99;
 
 	public function __construct(
-		public Uuid        $id,
-		public Player      $player,
-		public Planet      $place,
-		public int         $price,
-		public Color|null  $placeFaction,
-		public PlaceType   $placeType,
-		public int|null    $baseType,
-		public string|null $placeName,
-		public int         $points,
-		public Player|null $targetPlayer,
-		public int|null    $targetPlayerLevel,
-		public int         $resources,
-		public array       $shipStorage,
-		public int|null $antiSpyInvest,
-		public int|null $commercialRouteIncome,
+		public Uuid $id,
+		public Player $player,
+		public Planet $place,
+		public int $price,
+		public ?Color $placeFaction,
+		public PlaceType $placeType,
+		public ?int $baseType,
+		public ?string $placeName,
+		public int $points,
+		public ?Player $targetPlayer,
+		public ?int $targetPlayerLevel,
+		public int $resources,
+		public array $shipStorage,
+		public ?int $antiSpyInvest,
+		public ?int $commercialRouteIncome,
 		public int $successRate,
 		public int $type,
 		public \DateTimeImmutable $createdAt,
 		public array $commanders = [],
 	) {
-
 	}
 
 	public function getShipStorage(): array

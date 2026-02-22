@@ -16,39 +16,39 @@ class ResearchResource
 		[
 			'name' => 'Mathématiques',
 			'codeName' => 'mathematics',
-			],
+		],
 		[
 			'name' => 'Physique',
 			'codeName' => 'physics',
-			],
+		],
 		[
 			'name' => 'Chimie',
 			'codeName' => 'chemistry',
-			],
+		],
 		[
 			'name' => 'Droit',
 			'codeName' => 'biology',
-			],
+		],
 		[
 			'name' => 'Communication',
 			'codeName' => 'medicine',
-			],
+		],
 		[
 			'name' => 'Economie',
 			'codeName' => 'economy',
-			],
+		],
 		[
 			'name' => 'Psychologie',
 			'codeName' => 'psychology',
-			],
+		],
 		[
 			'name' => 'Réseaux',
 			'codeName' => 'networks',
-			],
+		],
 		[
 			'name' => 'Algorithmique',
 			'codeName' => 'algorithmic',
-			],
+		],
 		[
 			'name' => 'Statistiques',
 			'codeName' => 'statistics',

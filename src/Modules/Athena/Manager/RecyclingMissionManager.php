@@ -7,7 +7,6 @@ use App\Modules\Athena\Domain\Repository\RecyclingMissionRepositoryInterface;
 use App\Modules\Athena\Message\RecyclingMissionMessage;
 use App\Modules\Athena\Model\RecyclingMission;
 use App\Shared\Application\SchedulerInterface;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class RecyclingMissionManager implements SchedulerInterface

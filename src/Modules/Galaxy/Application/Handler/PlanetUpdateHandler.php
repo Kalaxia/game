@@ -27,19 +27,19 @@ use Symfony\Component\Messenger\MessageBusInterface;
 readonly class PlanetUpdateHandler
 {
 	private const int MAX_UPDATES = 10;
-	
+
 	public function __construct(
-		private ClockInterface            $clock,
-		private GameTimeConverter         $gameTimeConverter,
-		private BonusApplierInterface     $bonusApplier,
-		private EntityManagerInterface    $entityManager,
-		private PlayerBonusManager        $playerBonusManager,
+		private ClockInterface $clock,
+		private GameTimeConverter $gameTimeConverter,
+		private BonusApplierInterface $bonusApplier,
+		private EntityManagerInterface $entityManager,
+		private PlayerBonusManager $playerBonusManager,
 		private CountMissingSystemUpdates $countMissingSystemUpdates,
-		private PlanetManager             $planetManager,
+		private PlanetManager $planetManager,
 		private PlanetRepositoryInterface $planetRepository,
-		private PlanetHelper              $planetHelper,
-		private MessageBusInterface       $messageBus,
-		private LoggerInterface           $logger,
+		private PlanetHelper $planetHelper,
+		private MessageBusInterface $messageBus,
+		private LoggerInterface $logger,
 	) {
 	}
 
@@ -88,7 +88,7 @@ readonly class PlanetUpdateHandler
 			$launchNewMessage = false;
 
 			for ($i = 0; $i < $missingUpdatesCount; ++$i) {
-				if ($i === self::MAX_UPDATES) {
+				if (self::MAX_UPDATES === $i) {
 					$launchNewMessage = true;
 
 					break;
@@ -98,14 +98,14 @@ readonly class PlanetUpdateHandler
 
 				$planet->updatedAt = $planet->updatedAt->modify(sprintf('+%d seconds', $secondsPerGameCycle));
 			}
-	
+
 			$this->planetRepository->save($planet);
-	
+
 			$this->entityManager->commit();
-	
+
 			if (true === $launchNewMessage) {
 				$this->messageBus->dispatch(new PlanetUpdateMessage($planet->id));
-	
+
 				$this->logger->debug('Dispatched new planet update message for the next iterations for planet {baseName} of player {playerName}', [
 					'baseName' => $planet->name,
 					'planetId' => $planet->id,
@@ -115,7 +115,7 @@ readonly class PlanetUpdateHandler
 			}
 		} catch (\Throwable $e) {
 			$this->entityManager->rollback();
-			
+
 			throw $e;
 		}
 	}

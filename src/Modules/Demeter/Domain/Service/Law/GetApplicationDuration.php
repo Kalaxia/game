@@ -16,7 +16,7 @@ final readonly class GetApplicationDuration
 	) {
 	}
 
-	public function __invoke(int $type, int|null $cycles): \DateTimeImmutable
+	public function __invoke(int $type, ?int $cycles): \DateTimeImmutable
 	{
 		if (null === $cycles) {
 			return $this->clock->now();
@@ -24,6 +24,6 @@ final readonly class GetApplicationDuration
 
 		$seconds = $this->gameTimeConverter->convertGameCyclesToSeconds(max(1, $cycles));
 
-		return new DatePoint('+' . $seconds . ' seconds');
+		return new DatePoint('+'.$seconds.' seconds');
 	}
 }

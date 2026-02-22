@@ -33,19 +33,18 @@ class ViewData extends AbstractController
 		private readonly ColorRepositoryInterface $colorRepository,
 		private readonly SectorOwnershipCalculator $sectorOwnershipCalculator,
 	) {
-
 	}
 
 	public function __invoke(
-		Request                              $request,
-		Player                               $currentPlayer,
-		CommanderRepositoryInterface         $commanderRepository,
-		CommercialTaxRepositoryInterface     $commercialTaxRepository,
+		Request $request,
+		Player $currentPlayer,
+		CommanderRepositoryInterface $commanderRepository,
+		CommercialTaxRepositoryInterface $commercialTaxRepository,
 		CreditTransactionRepositoryInterface $creditTransactionRepository,
-		LiveReportRepositoryInterface        $reportRepository,
-		FactionRankingRepositoryInterface    $factionRankingRepository,
-		GalaxyConfiguration                  $galaxyConfiguration,
-		SectorRepositoryInterface            $sectorRepository,
+		LiveReportRepositoryInterface $reportRepository,
+		FactionRankingRepositoryInterface $factionRankingRepository,
+		GalaxyConfiguration $galaxyConfiguration,
+		SectorRepositoryInterface $sectorRepository,
 		SquadronRepositoryInterface $squadronRepository,
 		GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 	): Response {
@@ -55,7 +54,7 @@ class ViewData extends AbstractController
 		$rankings = $factionRankingRepository->getFactionRankings($faction);
 
 		$creditBase = 0;
-		
+
 		foreach ($rankings as $ranking) {
 			if ($creditBase < $ranking->wealth) {
 				$creditBase = $ranking->wealth;
@@ -78,7 +77,7 @@ class ViewData extends AbstractController
 
 		$totalPEV = 0;
 		for ($i = 0; $i < 12; ++$i) {
-			$totalPEV += ($fleetStats['nbs'.$i]) * $getShipCategoriesConfiguration($i, 'pev');
+			$totalPEV += $fleetStats['nbs'.$i] * $getShipCategoriesConfiguration($i, 'pev');
 		}
 
 		$factions = $this->colorRepository->getAll();
@@ -123,13 +122,15 @@ class ViewData extends AbstractController
 	}
 
 	/**
-	 * @param list<Color> $factions
+	 * @param list<Color>  $factions
 	 * @param list<Sector> $sectors
+	 *
 	 * @return array{
 	 *     types: array<string, list<Sector>>,
 	 *     scores: array<int, int>,
 	 *     percents: array<string, float>,
 	 * }
+	 *
 	 * @throws \RedisException
 	 */
 	private function getTacticalMapData(Color $faction, array $factions, array $sectors): array

@@ -6,7 +6,6 @@ use App\Modules\Demeter\Domain\Service\Law\GetApplicationDuration;
 use App\Modules\Demeter\Model\Law\Law;
 use App\Modules\Shared\Domain\Server\TimeMode;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Clock\Clock;
 use Symfony\Component\Clock\DatePoint;
@@ -15,8 +14,8 @@ use Symfony\Component\Clock\MockClock;
 class GetApplicationDurationTest extends KernelTestCase
 {
 	#[DataProvider('provideData')]
-    public function test(int $lawType, int|null $cycles, string $expectedEndDate, bool $expectedException = false, TimeMode $timeMode = TimeMode::Standard): void
-    {
+	public function test(int $lawType, ?int $cycles, string $expectedEndDate, bool $expectedException = false, TimeMode $timeMode = TimeMode::Standard): void
+	{
 		$_ENV['SERVER_TIME_MODE'] = $timeMode->value;
 		static::bootKernel();
 
@@ -32,7 +31,7 @@ class GetApplicationDurationTest extends KernelTestCase
 		$duration = $getApplicationDuration($lawType, $cycles);
 
 		static::assertEquals(new DatePoint($expectedEndDate), $duration);
-    }
+	}
 
 	public static function provideData(): \Generator
 	{

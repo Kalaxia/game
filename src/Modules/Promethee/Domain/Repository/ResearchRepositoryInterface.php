@@ -11,5 +11,5 @@ use App\Modules\Zeus\Model\Player;
  */
 interface ResearchRepositoryInterface extends EntityRepositoryInterface
 {
-	public function getPlayerResearch(Player $player): Research|null;
+	public function getPlayerResearch(Player $player): ?Research;
 }

@@ -3,19 +3,15 @@
 namespace App\Modules\Demeter\Domain\Repository;
 
 use App\Modules\Demeter\Model\Color;
+use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
 use Symfony\Component\Uid\Uuid;
 
 interface ColorRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): Color|null;
+	public function get(Uuid $id): ?Color;
 
-	public function getOneByIdentifier(int $identifier): Color|null;
-
-	/**
-	 * @return list<Color>
-	 */
-	public function getAll(): array;
+	public function getOneByIdentifier(int $identifier): ?Color;
 
 	/**
 	 * @return list<Color>
@@ -33,7 +29,10 @@ interface ColorRepositoryInterface extends EntityRepositoryInterface
 	public function getAllByActivePlayersNumber(): array;
 
 	/**
+	 * @param list<int>          $regimes
+	 * @param list<MandateState> $mandateStates
+	 *
 	 * @return list<Color>
 	 */
-	public function getByRegimeAndElectionStatement($regimes, $electionStatements): array;
+	public function getByRegimesAndMandateStates(array $regimes, array $mandateStates): array;
 }

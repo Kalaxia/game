@@ -6,86 +6,9 @@
 	</header>
 	<section>
 		{% if faction.hasElections %}
-			<div class="faction-flow" style="margin: 10px 0 40px 0;">
-				<div class="mandate" style="padding: 50px 20px 10px 20px;">
-					<div class="relative w-full">
-						<twig:ProgressBar :current="remaining_mandate|percent(total_mandate, false)" :faction="faction" />
-						<span class="absolute" style="left: 0%;">
-							<span class="label">Début du mandat courant</span>
-						</span>
-						<span class="absolute" style="left: 100%;">
-							<span class="label right">Fin du mandat courant</span>
-						</span>
-					</div>
-				</div>
-
-				<div class="election" style="padding: 10px 20px;">
-					<span class="relative" style="width: {{ (100 - total_before_campaign|percent(total_mandate, false)) }}%; margin-left: auto;">
-							<twig:ProgressBar :current="election_progress" :faction="faction" />
-							<span class="absolute" style="left: 0%;">
-								<span class="label bottom right">Campagne</span>
-							</span>
-
-							{% if faction.isDemocratic %}
-								<span class="absolute" style="left: {{ total_campaign|percent(total_campaign_election, false) }}%;">
-									<span class="label bottom right">Elections</span>
-								</span>
-								<span class="absolute" style="left: 100%;">
-									<span class="label bottom right">Résultats</span>
-								</span>
-							{% else %}
-								<span class="absolute" style="left: 100%;">
-									<span class="label bottom right">Décision divine</span>
-								</span>
-							{% endif %}
-						</span>
-					</div>
-				</div>
-
-			{% if faction.isInCampaign %}
-				<a class="centred-link" href="{{ path('view_faction_election') }}">
-					<twig:Button :faction="faction">
-						{{ faction.isDemocratic ? 'Présentez-vous aux élections' : 'Se proposer comme Guide' }}
-					</twig:Button>
-				</a>
-			{% elseif faction.isInElection %}
-				<a class="centred-link" href="{{ path('view_faction_election') }}">
-					<twig:Button :faction="faction">
-						Votez dès maintenant pour votre candidat favori
-					</twig:Button>
-				</a>
-			{% endif %}
-		{% else %}
-			<div class="faction-flow" style="margin: 20px 0 30px 0;">
-				{% if faction.isInElection %}
-					<div class="center-box">
-						<span class="label">La tentative de coup d'état se termine dans</span>
-						<span class="value">{{ remaining_coup_time|lite_seconds }}</span>
-						</div>
-					<a class="centred-link" href="{{ path('view_faction_election') }}">Prendre position sur le coup d'état</a>
-				{% else %}
-					{% if current_player.isParliamentMember %}
-						<twig:Button :faction="faction" onclick="document.getElementById('makeacoup').classList.toggle('hidden');">
-							Tenter un coup d'état
-						</twig:Button>
-
-						<form action="{{ path('initiate_faction_coup') }}" method="post" id="makeacoup" class="hidden">
-							<p><label for="program">Votre message politique</label></p>
-							<p class="input input-area">
-								<twig:Textarea id="program" name="program" required style="height: 200px;" />
-							</p>
-
-							<p class="button">
-								<twig:Button type="submit">
-									Lancer le coup d'état
-								</twig:Button>
-							</p>
-						</form>
-					{% else %}
-						<span class="centred-link">Vous ne pouvez pas tenter un coup d'état</span>
-					{% endif %}
-				{% endif %}
-			</div>
+			<twig:ElectionsDashboard :faction="faction" />
+		{% elseif faction.isInElection %}
+			<twig:PutschDashboard :faction="faction" />
 		{% endif %}
 
 		<twig:H2 class="mt-4">
@@ -98,7 +21,7 @@
 			<div class="player">
 				<a href="{{ path('embassy', {'player': minister.id}) }}">
 					<img src="{{ asset('build/media/avatar/small/' ~ minister.avatar ~ '.png') }}" alt="{{ minister.name }}" class="picto" />
-					</a>
+				</a>
 				<span class="title">{{ statuses[minister.status - 1] }}</span>
 				<strong class="name">{{ minister.name }}</strong>
 				<span class="experience">{{ minister.factionPoint|number }} points</span>

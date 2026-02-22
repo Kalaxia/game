@@ -27,17 +27,17 @@ use Symfony\Component\Uid\Uuid;
 class Accept extends AbstractController
 {
 	public function __invoke(
-        Request                            $request,
-        Player                             $currentPlayer,
-        Planet                             $currentBase,
-        GetDistanceBetweenPlaces           $getDistanceBetweenPlaces,
-        GetCommercialRoutePrice            $getCommercialRoutePrice,
-        CommercialRouteRepositoryInterface $commercialRouteRepository,
-        PlanetHelper                       $planetHelper,
-        PlayerManager                      $playerManager,
-        NotificationRepositoryInterface    $notificationRepository,
-        EntityManagerInterface             $entityManager,
-        Uuid                               $id,
+		Request $request,
+		Player $currentPlayer,
+		Planet $currentBase,
+		GetDistanceBetweenPlaces $getDistanceBetweenPlaces,
+		GetCommercialRoutePrice $getCommercialRoutePrice,
+		CommercialRouteRepositoryInterface $commercialRouteRepository,
+		PlanetHelper $planetHelper,
+		PlayerManager $playerManager,
+		NotificationRepositoryInterface $notificationRepository,
+		EntityManagerInterface $entityManager,
+		Uuid $id,
 	): Response {
 		$routeExperienceCoeff = $this->getParameter('athena.trade.experience_coeff');
 

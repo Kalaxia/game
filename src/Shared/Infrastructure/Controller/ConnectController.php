@@ -32,7 +32,7 @@ class ConnectController extends AbstractController
 		EntityManagerInterface $entityManager,
 		EventDispatcherInterface $eventDispatcher,
 		LoggerInterface $logger,
-		int $playerId
+		int $playerId,
 	): Response {
 		$this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
@@ -68,6 +68,7 @@ class ConnectController extends AbstractController
 		$entityManager->flush($player);
 
 		$eventDispatcher->dispatch(new PlayerConnectionEvent($player));
+
 		// redirection vers page de départ
 		return $this->redirectToRoute('profile', [
 			'mode' => ('splash' === $request->query->get('mode'))

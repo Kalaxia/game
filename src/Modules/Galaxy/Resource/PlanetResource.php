@@ -35,7 +35,7 @@ class PlanetResource
 	];
 
 	/**
-	 * @var list<array<string, mixed>> $building
+	 * @var list<array<string, mixed>>
 	 */
 	public static array $building = [
 		[

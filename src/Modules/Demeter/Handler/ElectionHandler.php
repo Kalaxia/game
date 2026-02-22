@@ -1,38 +1,51 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Demeter\Handler;
 
-use App\Classes\Library\DateTimeConverter;
-use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
-use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
-use App\Modules\Demeter\Message\BallotMessage;
+use App\Modules\Demeter\Domain\Repository\Election\CandidateRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Message\ElectionMessage;
-use App\Modules\Demeter\Model\Color;
+use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 #[AsMessageHandler]
 readonly class ElectionHandler
 {
 	public function __construct(
-		private ColorRepositoryInterface   $colorRepository,
-		private NextElectionDateCalculator $nextElectionDateCalculator,
-		private MessageBusInterface        $messageBus,
+		private ColorRepositoryInterface $colorRepository,
+		private CandidateRepositoryInterface $candidateRepository,
+		private EntityManagerInterface $entityManager,
+		private LoggerInterface $logger,
+		private PoliticalEventRepositoryInterface $electionRepository,
+		private WorkflowInterface $factionMandateStateMachine,
 	) {
 	}
 
 	public function __invoke(ElectionMessage $message): void
 	{
-		$faction = $this->colorRepository->get($message->getFactionId())
-			?? throw new \RuntimeException(sprintf('Faction %s not found', $message->getFactionId()));
-		$faction->electionStatement = Color::ELECTION;
+		$faction = $this->colorRepository->get($message->factionId)
+			?? throw new \RuntimeException(sprintf('Faction %s not found', $message->factionId));
 
-		$this->messageBus->dispatch(
-			new BallotMessage($faction->id),
-			[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getStartDate($faction))]
-		);
+		$election = $this->electionRepository->getFactionLastPoliticalEvent($faction);
+		$candidates = $this->candidateRepository->getByPoliticalEvent($election);
 
-		$this->colorRepository->save($faction);
+		$this->logger->debug('Applying election transition for faction {factionName} with regime {regime} and {candidatesCount} candidates', [
+			'factionName' => $faction->identifier,
+			'regime' => $faction->regime,
+			'candidatesCount' => count($candidates),
+		]);
+
+		$this->factionMandateStateMachine->apply($faction, match (count($candidates)) {
+			0 => 'missing_candidates',
+			1 => 'unique_candidate',
+			default => 'democratic_vote',
+		});
+
+		$this->entityManager->flush();
 	}
 }

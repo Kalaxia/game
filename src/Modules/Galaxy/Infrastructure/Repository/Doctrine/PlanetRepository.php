@@ -7,7 +7,6 @@ namespace App\Modules\Galaxy\Infrastructure\Repository\Doctrine;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Entity\Sector;
 use App\Modules\Galaxy\Domain\Entity\System;
-use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use App\Modules\Zeus\Model\Player;
@@ -36,7 +35,7 @@ class PlanetRepository extends DoctrineRepository implements PlanetRepositoryInt
 		);
 	}
 
-	public function get(Uuid $id): Planet|null
+	public function get(Uuid $id): ?Planet
 	{
 		return $this->find($id);
 	}

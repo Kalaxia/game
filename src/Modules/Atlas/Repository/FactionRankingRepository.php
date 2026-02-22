@@ -40,7 +40,7 @@ class FactionRankingRepository extends DoctrineRepository implements FactionRank
 		return $qb->getQuery()->getSingleResult();
 	}
 
-	public function getLastRanking(Color $faction): FactionRanking|null
+	public function getLastRanking(Color $faction): ?FactionRanking
 	{
 		$qb = $this->createQueryBuilder('fr');
 

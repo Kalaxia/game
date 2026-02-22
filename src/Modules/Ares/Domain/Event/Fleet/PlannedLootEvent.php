@@ -12,9 +12,9 @@ use App\Shared\Domain\Event\TutorialEvent;
 class PlannedLootEvent implements TutorialEvent, TrackingEvent
 {
 	public function __construct(
-		public readonly Planet    $place,
+		public readonly Planet $place,
 		public readonly Commander $commander,
-		public readonly Player    $attacker,
+		public readonly Player $attacker,
 	) {
 	}
 
@@ -23,7 +23,7 @@ class PlannedLootEvent implements TutorialEvent, TrackingEvent
 		return $this->attacker;
 	}
 
-	public function getTutorialStep(): int|null
+	public function getTutorialStep(): ?int
 	{
 		return TutorialResource::LOOT_PLANET;
 	}

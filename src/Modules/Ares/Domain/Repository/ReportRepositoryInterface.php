@@ -13,7 +13,7 @@ use Symfony\Component\Uid\Uuid;
  */
 interface ReportRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): Report|null;
+	public function get(Uuid $id): ?Report;
 
 	/**
 	 * @return list<Report>
@@ -22,6 +22,7 @@ interface ReportRepositoryInterface extends EntityRepositoryInterface
 
 	/**
 	 * @param Uuid[] $places
+	 *
 	 * @return Report[]
 	 */
 	public function getAttackReportsByPlaces(Player $attacker, array $places): array;

@@ -42,7 +42,7 @@ final readonly class SystemGenerationHandler
 
 		$placesCount = $this->getPlacesCount($system->typeOfSystem);
 
-		for ($position = 1; $position <= $placesCount; $position++) {
+		for ($position = 1; $position <= $placesCount; ++$position) {
 			$this->messageBus->dispatch(new PlaceGenerationMessage(
 				systemId: $system->id,
 				position: $position,
@@ -51,7 +51,7 @@ final readonly class SystemGenerationHandler
 		}
 	}
 
-	protected function getPlacesCount(SystemType $systemType): int
+	private function getPlacesCount(SystemType $systemType): int
 	{
 		$nbrPlaces = $systemType->getPlacesCountRange();
 

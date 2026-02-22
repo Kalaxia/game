@@ -11,7 +11,7 @@ class ViewTransfers extends AbstractController
 {
 	public function __invoke(
 		Player $currentPlayer,
-		CreditTransactionRepositoryInterface $creditTransactionRepository
+		CreditTransactionRepositoryInterface $creditTransactionRepository,
 	): Response {
 		return $this->render('pages/athena/financial/transfers.html.twig', [
 			'sendings' => $creditTransactionRepository->getAllBySender($currentPlayer),

@@ -14,7 +14,7 @@ use Symfony\Component\Uid\Uuid;
  */
 interface LiveReportRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): Report|null;
+	public function get(Uuid $id): ?Report;
 
 	/**
 	 * @return list<Report>

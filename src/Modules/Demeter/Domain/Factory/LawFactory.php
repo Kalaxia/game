@@ -14,7 +14,6 @@ use App\Modules\Demeter\Domain\Service\Law\GetVotationTime;
 use App\Modules\Demeter\Manager\ColorManager;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Law\Law;
-use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Demeter\Resource\LawResources;
 use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Shared\Domain\Server\TimeMode;
@@ -29,16 +28,16 @@ readonly class LawFactory
 {
 	public function __construct(
 		private ClockInterface $clock,
-		private ColorManager                     $colorManager,
+		private ColorManager $colorManager,
 		private ColorRepositoryInterface $colorRepository,
 		private CommercialTaxRepositoryInterface $commercialTaxRepository,
 		private GetApplicationDuration $getApplicationDuration,
 		private GetFactionsConfiguration $getFactionsConfiguration,
 		private GetVotationTime $getVotationTime,
-		private PlayerRepositoryInterface        $playerRepository,
-		private SectorRepositoryInterface        $sectorRepository,
-		private LawRepositoryInterface           $lawRepository,
-		private Parser                           $parser,
+		private PlayerRepositoryInterface $playerRepository,
+		private SectorRepositoryInterface $sectorRepository,
+		private LawRepositoryInterface $lawRepository,
+		private Parser $parser,
 		#[Autowire('%politics_law_max_duration%')]
 		private int $lawMaxDuration,
 		#[Autowire('%server_time_mode%')]
@@ -47,10 +46,10 @@ readonly class LawFactory
 	}
 
 	public function createFromPayload(
-		int      $type,
-		int|null $duration,
-		Player   $player,
-		array    $payload
+		int $type,
+		?int $duration,
+		Player $player,
+		array $payload,
 	): Law {
 		$faction = $player->faction;
 		$isRulerLaw = Player::CHIEF === LawResources::getInfo($type, 'department');
@@ -58,7 +57,7 @@ readonly class LawFactory
 
 		$voteEndedAt = $isRulerLaw
 			? $this->clock->now()
-			: new DatePoint('+' . ($this->getVotationTime)() . ' seconds');
+			: new DatePoint('+'.($this->getVotationTime)().' seconds');
 
 		$applicationMode = LawResources::getInfo($type, 'application_mode');
 		$lawName = LawResources::getInfo($type, 'name');
@@ -118,6 +117,7 @@ readonly class LawFactory
 
 	/**
 	 * @param array<string, mixed> $payload
+	 *
 	 * @return array<string, mixed>
 	 */
 	private function createSectorTaxLaw(Player $currentPlayer, array $payload): array
@@ -137,19 +137,21 @@ readonly class LawFactory
 			// TODO Replace with custom exception
 			throw new \UnexpectedValueException('Ce secteur n\'est pas sous votre contrôle.');
 		}
+
 		return [
 			'taxes' => $taxes,
 			'rSector' => $rSector,
 			'display' => [
 				'Secteur' => $sector->name,
-				'Taxe actuelle' => $sector->tax . ' %',
-				'Taxe proposée' => $taxes . ' %'
+				'Taxe actuelle' => $sector->tax.' %',
+				'Taxe proposée' => $taxes.' %',
 			],
 		];
 	}
 
 	/**
 	 * @param array<string, mixed> $payload
+	 *
 	 * @return array<string, mixed>
 	 */
 	public function createSectorNameLaw(Player $currentPlayer, array $payload): array
@@ -166,6 +168,7 @@ readonly class LawFactory
 		if (!$sector->faction->id->equals($currentPlayer->faction->id)) {
 			throw new \UnexpectedValueException('Ce secteur n\'est pas sous votre contrôle.');
 		}
+
 		return [
 			'name' => $name,
 			'rSector' => $rSector,
@@ -174,6 +177,7 @@ readonly class LawFactory
 
 	/**
 	 * @param array<string, mixed> $payload
+	 *
 	 * @return array<string, mixed>
 	 */
 	public function createCommercialExportTaxLaw(Player $currentPlayer, array $payload): array
@@ -198,14 +202,15 @@ readonly class LawFactory
 			'rColor' => $rColor,
 			'display' => [
 				'Faction' => ($this->getFactionsConfiguration)($relatedFaction, 'officialName'),
-				'Taxe actuelle' => $commercialTaxes->exportTax . ' %',
-				'Taxe proposée' => $taxes . ' %',
+				'Taxe actuelle' => $commercialTaxes->exportTax.' %',
+				'Taxe proposée' => $taxes.' %',
 			],
 		];
 	}
 
 	/**
 	 * @param array<string, mixed> $payload
+	 *
 	 * @return array<string, mixed>
 	 */
 	public function createCommercialImportTaxLaw(Player $currentPlayer, array $payload): array
@@ -224,22 +229,24 @@ readonly class LawFactory
 		} elseif ($taxes > 15 || $taxes < 2) {
 			throw new \DomainException('Entre 2 et 15.');
 		}
+
 		return [
 			'taxes' => $taxes,
 			'rColor' => $rColor,
 			'display' => [
 				'Faction' => ($this->getFactionsConfiguration)($relatedFaction, 'officialName'),
-				'Taxe actuelle' => $commercialTaxes->importTax . ' %',
-				'Taxe proposée' => $taxes . ' %',
+				'Taxe actuelle' => $commercialTaxes->importTax.' %',
+				'Taxe proposée' => $taxes.' %',
 			],
 		];
 	}
 
 	/**
 	 * @param array<string, mixed> $payload
+	 *
 	 * @return array<string, mixed>
 	 */
-	public function createNeutralPactLaw(Color|null $faction, array $payload): array
+	public function createNeutralPactLaw(?Color $faction, array $payload): array
 	{
 		$factionIdentifier = intval($payload['rcolor']
 			?? throw new \InvalidArgumentException('Informations manquantes.'));
@@ -265,9 +272,10 @@ readonly class LawFactory
 
 	/**
 	 * @param array<string, mixed> $payload
+	 *
 	 * @return array<string, mixed>
 	 */
-	public function createPeacePactLaw(Color|null $faction, array $payload): array
+	public function createPeacePactLaw(?Color $faction, array $payload): array
 	{
 		$factionIdentifier = intval($payload['rcolor']
 			?? throw new \InvalidArgumentException('Informations manquantes.'));
@@ -301,9 +309,10 @@ readonly class LawFactory
 
 	/**
 	 * @param array<string, mixed> $payload
+	 *
 	 * @return array<string, mixed>
 	 */
-	public function createTotalAllianceLaw(Color|null $faction, array $payload): array
+	public function createTotalAllianceLaw(?Color $faction, array $payload): array
 	{
 		$factionIdentifier = intval($payload['rcolor']
 			?? throw new \InvalidArgumentException('Informations manquantes.'));
@@ -337,9 +346,10 @@ readonly class LawFactory
 
 	/**
 	 * @param array<string, mixed> $payload
+	 *
 	 * @return array<string, mixed>
 	 */
-	public function createWarDeclarationLaw(Color|null $faction, array $payload): array
+	public function createWarDeclarationLaw(?Color $faction, array $payload): array
 	{
 		$factionIdentifier = intval($payload['rcolor']
 			?? throw new \InvalidArgumentException('Informations manquantes.'));
@@ -357,13 +367,14 @@ readonly class LawFactory
 		return [
 			'rColor' => $factionIdentifier,
 			'display' => [
-				'Faction' => ($this->getFactionsConfiguration)($relatedFaction, 'officialName')
+				'Faction' => ($this->getFactionsConfiguration)($relatedFaction, 'officialName'),
 			],
 		];
 	}
 
 	/**
 	 * @param array<string, mixed> $payload
+	 *
 	 * @return array<string, mixed>
 	 */
 	public function createPunitionLaw(Player $currentPlayer, array $payload): array

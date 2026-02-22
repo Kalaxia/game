@@ -17,16 +17,15 @@ class CommercialRoute
 	public const STANDBY = 2;
 
 	public function __construct(
-		public Uuid                    $id,
-		public Planet                  $originBase,
-		public Planet                  $destinationBase,
-		public string                  $imageLink,
-		public int                     $income,
-		public \DateTimeImmutable      $proposedAt,
-		public \DateTimeImmutable|null $acceptedAt = null,
-		public int                     $statement = self::PROPOSED,
+		public Uuid $id,
+		public Planet $originBase,
+		public Planet $destinationBase,
+		public string $imageLink,
+		public int $income,
+		public \DateTimeImmutable $proposedAt,
+		public ?\DateTimeImmutable $acceptedAt = null,
+		public int $statement = self::PROPOSED,
 	) {
-
 	}
 
 	public function isProposed(): bool

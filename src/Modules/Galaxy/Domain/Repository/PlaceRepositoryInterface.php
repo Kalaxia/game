@@ -12,10 +12,11 @@ use Symfony\Component\Uid\Uuid;
  */
 interface PlaceRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): Place|null;
+	public function get(Uuid $id): ?Place;
 
 	/**
 	 * @param list<Uuid> $ids
+	 *
 	 * @return list<Place>
 	 */
 	public function getByIds(array $ids): array;

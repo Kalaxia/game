@@ -21,12 +21,12 @@ class TransactionRepository extends DoctrineRepository implements TransactionRep
 		parent::__construct($registry, Transaction::class);
 	}
 
-	public function get(Uuid $id): Transaction|null
+	public function get(Uuid $id): ?Transaction
 	{
 		return $this->find($id);
 	}
 
-	public function getLastCompletedTransaction(int $type): Transaction|null
+	public function getLastCompletedTransaction(int $type): ?Transaction
 	{
 		return $this->findOneBy(
 			[

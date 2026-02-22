@@ -12,7 +12,6 @@ class CommanderArmyHandlerTest extends TestCase
 		static::markTestIncomplete('Not implemented');
 
 		$squadron = new Squadron(
-
 		);
 	}
 }

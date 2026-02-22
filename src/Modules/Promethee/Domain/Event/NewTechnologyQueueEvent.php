@@ -21,7 +21,7 @@ readonly class NewTechnologyQueueEvent implements TutorialEvent, TrackingEvent
 		return $this->technologyQueue->player;
 	}
 
-	public function getTutorialStep(): int|null
+	public function getTutorialStep(): ?int
 	{
 		return match ($this->technologyQueue->technology) {
 			TechnologyId::SHIP0_UNBLOCK => TutorialResource::SHIP0_UNBLOCK,

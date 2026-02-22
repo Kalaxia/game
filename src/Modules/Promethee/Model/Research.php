@@ -34,7 +34,6 @@ class Research
 		public int $socialTech = 0,
 		public int $informaticTech = 0,
 	) {
-			
 	}
 
 	public const MATH = 0;

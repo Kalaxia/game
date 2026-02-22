@@ -18,25 +18,25 @@ class Format
 			return ('' == $expression and '' == $return)
 				? 's'
 				: $return;
-		} else {
-			return ('' == $expression)
-				? ''
-				: $expression;
 		}
+
+		return ('' == $expression)
+			? ''
+			: $expression;
 	}
 
 	public static function ordinalNumber(int $nbr): string
 	{
 		return match ($nbr) {
-            1 => 'premier',
-            2 => 'deuxième',
-            3 => 'troisième',
-            4 => 'quatrième',
-            5 => 'cinquième',
-            6 => 'sixième',
-            7 => 'septième',
-            default => $nbr.'ème',
-        };
+			1 => 'premier',
+			2 => 'deuxième',
+			3 => 'troisième',
+			4 => 'quatrième',
+			5 => 'cinquième',
+			6 => 'sixième',
+			7 => 'septième',
+			default => $nbr.'ème',
+		};
 	}
 
 	public static function plural(int $number, string $return = '', string $expression = ''): string
@@ -64,9 +64,9 @@ class Format
 			return number_format(ceil($number / 1000000), $decimals, ',', ' ').' Mio';
 		} elseif ($decimals <= -1 and $number > 9999) {
 			return number_format(ceil($number / 1000), $decimals, ',', ' ').' k';
-		} else {
-			return number_format($number, $decimals, ',', ' ');
 		}
+
+		return number_format($number, $decimals, ',', ' ');
 	}
 
 	public static function percent(int|float $number, int|float $base, bool $ceil = true): float
@@ -84,9 +84,9 @@ class Format
 	{
 		if (1 == $number) {
 			return '1er';
-		} else {
-			return $number.'ème';
 		}
+
+		return $number.'ème';
 	}
 
 	public static function actionBuilder($action, $token, $params = [], $hasRoot = true)

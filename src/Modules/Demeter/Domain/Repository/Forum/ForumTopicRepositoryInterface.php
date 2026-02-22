@@ -14,9 +14,9 @@ use Symfony\Component\Uid\Uuid;
  */
 interface ForumTopicRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): ForumTopic|null;
+	public function get(Uuid $id): ?ForumTopic;
 
-	public function getByForumAndPlayer(int $forum, Player $player): ForumTopic|null;
+	public function getByForumAndPlayer(int $forum, Player $player): ?ForumTopic;
 
 	/**
 	 * @return list<ForumTopic>

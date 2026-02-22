@@ -9,7 +9,6 @@ use App\Modules\Athena\Model\BuildingQueue;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Entity\Sector;
 use App\Modules\Galaxy\Domain\Entity\System;
-use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use App\Modules\Galaxy\Domain\Enum\PlanetType;
 use App\Modules\Galaxy\Domain\Enum\SystemType;
 use App\Modules\Galaxy\Resource\PlanetResource;
@@ -97,9 +96,9 @@ class BuildingLevelHandlerTest extends TestCase
 	 */
 	public function testGetBuildingRealLevel(
 		Planet $planet,
-		array  $buildingQueues,
-		int    $buildingIdentifier,
-		int    $expectedRealLevel,
+		array $buildingQueues,
+		int $buildingIdentifier,
+		int $expectedRealLevel,
 	): void {
 		$realLevel = $this->buildingLevelHandler->getBuildingRealLevel(
 			$planet,
@@ -243,8 +242,8 @@ class BuildingLevelHandlerTest extends TestCase
 
 	private static function generateBuildingQueue(
 		Planet $planet,
-		int    $buildingIdentifier,
-		int    $targetLevel,
+		int $buildingIdentifier,
+		int $targetLevel,
 	): BuildingQueue {
 		return new BuildingQueue(
 			id: Uuid::v4(),

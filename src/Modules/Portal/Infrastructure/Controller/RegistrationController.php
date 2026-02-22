@@ -18,7 +18,7 @@ class RegistrationController extends AbstractController
 {
 	public function __construct(
 		private readonly EntityManagerInterface $entityManager,
-		private readonly UserPasswordHasherInterface $passwordHasher
+		private readonly UserPasswordHasherInterface $passwordHasher,
 	) {
 	}
 

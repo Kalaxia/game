@@ -11,7 +11,7 @@ class GalaxyConfigurationV1 extends GalaxyConfiguration
 		'diag' => 177,
 		'mask' => 15,
 		'systemProportion' => [3, 8, 9, 25, 55],
-//		'systemPosition'	=> [0, 1, 2, 4, 6, 8, 10, 15, 20, 30, 40, 60, 80, 40, 2, 20, 50, 90, 95, 100],
+		//		'systemPosition'	=> [0, 1, 2, 4, 6, 8, 10, 15, 20, 30, 40, 60, 80, 40, 2, 20, 50, 90, 95, 100],
 		'systemPosition' => [0, 0, 0, 0, 0, 5, 10, 60, 80, 60, 0, 0, 0, 0, 40, 50, 60, 70, 80, 80],
 		'lineSystemPosition' => [
 			[[177, 125], [213, 125], 6, 6],

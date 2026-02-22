@@ -18,7 +18,7 @@ interface PlayerFinancialReportRepositoryInterface extends EntityRepositoryInter
 	 */
 	public function getPlayerLastReports(Player $player, int $limit = 20, int $offset = 0): array;
 
-	public function getPlayerLastReport(Player $player): PlayerFinancialReport|null;
+	public function getPlayerLastReport(Player $player): ?PlayerFinancialReport;
 
 	public function cleanPlayerFinancialReports(int $timeout): int;
 }

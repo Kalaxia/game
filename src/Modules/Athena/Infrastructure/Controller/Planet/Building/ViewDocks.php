@@ -25,17 +25,17 @@ class ViewDocks extends AbstractController
 		methods: [Request::METHOD_GET],
 	)]
 	public function __invoke(
-        Request                       $request,
-        Planet                        $currentBase,
-        CurrentPlayerBonusRegistry    $currentPlayerBonusRegistry,
-        Player                        $currentPlayer,
-        CountMaxShipQueues            $countMaxShipQueues,
-        CountMaxStorableShipPoints    $countMaxStorableShipPoints,
-        CountQueuedShipPoints         $countQueuedShipPoints,
-        CountStoredShipPoints         $countStoredShipPoints,
-        ShipQueueRepositoryInterface  $shipQueueRepository,
-        TechnologyRepositoryInterface $technologyRepository,
-        DockType                      $dockType,
+		Request $request,
+		Planet $currentBase,
+		CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
+		Player $currentPlayer,
+		CountMaxShipQueues $countMaxShipQueues,
+		CountMaxStorableShipPoints $countMaxStorableShipPoints,
+		CountQueuedShipPoints $countQueuedShipPoints,
+		CountStoredShipPoints $countStoredShipPoints,
+		ShipQueueRepositoryInterface $shipQueueRepository,
+		TechnologyRepositoryInterface $technologyRepository,
+		DockType $dockType,
 	): Response {
 		if (0 === $dockType->getLevel($currentBase)) {
 			return $this->redirectToRoute('base_overview');

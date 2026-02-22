@@ -9,7 +9,6 @@ use App\Modules\Ares\Application\Handler\VirtualCommanderHandler;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Entity\Sector;
 use App\Modules\Galaxy\Domain\Entity\System;
-use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use App\Modules\Galaxy\Domain\Enum\PlanetType;
 use App\Modules\Galaxy\Domain\Enum\SystemType;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

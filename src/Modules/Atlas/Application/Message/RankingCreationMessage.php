@@ -6,5 +6,4 @@ namespace App\Modules\Atlas\Application\Message;
 
 readonly class RankingCreationMessage
 {
-
 }

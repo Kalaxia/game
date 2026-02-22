@@ -22,12 +22,12 @@ class ForumTopicRepository extends DoctrineRepository implements ForumTopicRepos
 		parent::__construct($registry, ForumTopic::class);
 	}
 
-	public function get(Uuid $id): ForumTopic|null
+	public function get(Uuid $id): ?ForumTopic
 	{
 		return $this->find($id);
 	}
 
-	public function getByForumAndPlayer(int $forum, Player $player): ForumTopic|null
+	public function getByForumAndPlayer(int $forum, Player $player): ?ForumTopic
 	{
 		return $this->findOneBy(
 			[

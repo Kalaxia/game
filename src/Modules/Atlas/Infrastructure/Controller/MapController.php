@@ -30,27 +30,27 @@ use Symfony\Component\Uid\Uuid;
 class MapController extends AbstractController
 {
 	public function __construct(
-		private readonly SystemRepositoryInterface    $systemRepository,
+		private readonly SystemRepositoryInterface $systemRepository,
 		private readonly PlaceRepositoryInterface $placeRepository,
 	) {
 	}
 
 	public function __invoke(
-		Request                             $request,
-		Planet                              $currentBase,
-		Player                              $currentPlayer,
-		ConquestManager                     $conquestManager,
-		CommanderManager                    $commanderManager,
-		CommanderRepositoryInterface        $commanderRepository,
-		CommercialRouteRepositoryInterface  $commercialRouteRepository,
-		SectorRepositoryInterface           $sectorRepository,
-		PlanetRepositoryInterface           $planetRepository,
-		PlanetManager                       $planetManager,
-		TechnologyRepositoryInterface       $technologyRepository,
+		Request $request,
+		Planet $currentBase,
+		Player $currentPlayer,
+		ConquestManager $conquestManager,
+		CommanderManager $commanderManager,
+		CommanderRepositoryInterface $commanderRepository,
+		CommercialRouteRepositoryInterface $commercialRouteRepository,
+		SectorRepositoryInterface $sectorRepository,
+		PlanetRepositoryInterface $planetRepository,
+		PlanetManager $planetManager,
+		TechnologyRepositoryInterface $technologyRepository,
 		RecyclingMissionRepositoryInterface $recyclingMissionRepository,
-		GalaxyConfiguration                 $galaxyConfiguration,
-		SpyReportRepositoryInterface        $spyReportRepository,
-		ReportRepositoryInterface           $reportRepository,
+		GalaxyConfiguration $galaxyConfiguration,
+		SpyReportRepositoryInterface $spyReportRepository,
+		ReportRepositoryInterface $reportRepository,
 	): Response {
 		$defaultPosition = $this->getDefaultPosition($request, $currentBase);
 		$selectedSystemData = [];
@@ -100,8 +100,8 @@ class MapController extends AbstractController
 	 * @return array{ x: int, y: int, system: System|null, place: Planet|null, system_id: Uuid|null }
 	 */
 	protected function getDefaultPosition(
-        Request $request,
-        Planet  $currentBase,
+		Request $request,
+		Planet $currentBase,
 	): array {
 		// map default position
 		$x = $currentBase->system->xPosition;

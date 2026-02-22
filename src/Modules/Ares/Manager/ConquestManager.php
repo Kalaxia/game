@@ -28,20 +28,20 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 readonly class ConquestManager
 {
 	public function __construct(
-		private CommanderManager             $commanderManager,
+		private CommanderManager $commanderManager,
 		private CommanderRepositoryInterface $commanderRepository,
-		private MoveFleet                    $moveFleet,
-		private PlaceManager                 $placeManager,
-		private UpdatePlanetPoints           $updatePlanetPoints,
-		private PlanetManager                $planetManager,
-		private PlanetRepositoryInterface    $planetRepository,
-		private PlayerBonusManager           $playerBonusManager,
-		private ReportRepositoryInterface    $reportRepository,
-		private EntityManagerInterface       $entityManager,
-		private EventDispatcherInterface     $eventDispatcher,
-		private NotificationManager          $notificationManager,
-		private int                          $colonizationCost,
-		private int                          $conquestCost,
+		private MoveFleet $moveFleet,
+		private PlaceManager $placeManager,
+		private UpdatePlanetPoints $updatePlanetPoints,
+		private PlanetManager $planetManager,
+		private PlanetRepositoryInterface $planetRepository,
+		private PlayerBonusManager $playerBonusManager,
+		private ReportRepositoryInterface $reportRepository,
+		private EntityManagerInterface $entityManager,
+		private EventDispatcherInterface $eventDispatcher,
+		private NotificationManager $notificationManager,
+		private int $colonizationCost,
+		private int $conquestCost,
 	) {
 	}
 

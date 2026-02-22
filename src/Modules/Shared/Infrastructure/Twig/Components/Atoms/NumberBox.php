@@ -15,9 +15,9 @@ final class NumberBox
 {
 	public string $label;
 	public string $size = 'big';
-	public float|null $bonus = null;
+	public ?float $bonus = null;
 	public float|int|null $percent = null;
-	public Color|null $faction = null;
+	public ?Color $faction = null;
 
 	public function getNumberSize(): string
 	{

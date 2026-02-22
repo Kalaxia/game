@@ -8,7 +8,6 @@ use App\Classes\Library\Utils;
 use App\Modules\Galaxy\Application\Message\PlaceGenerationMessage;
 use App\Modules\Galaxy\Domain\Entity\EmptyPlace;
 use App\Modules\Galaxy\Domain\Entity\Planet;
-use App\Modules\Galaxy\Domain\Entity\UninhabitedPlace;
 use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use App\Modules\Galaxy\Domain\Enum\PlanetType;
 use App\Modules\Galaxy\Domain\Enum\SystemType;
@@ -29,7 +28,6 @@ final readonly class PlaceGenerationHandler
 		private SystemRepositoryInterface $systemRepository,
 		private LoggerInterface $galaxyGenerationLogger,
 	) {
-
 	}
 
 	public function __invoke(PlaceGenerationMessage $message): void
@@ -147,7 +145,7 @@ final readonly class PlaceGenerationHandler
 		]);
 	}
 
-	protected function getPlaceType(SystemType $systemType): PlaceType
+	private function getPlaceType(SystemType $systemType): PlaceType
 	{
 		return PlaceType::from(($this->getProportion)(
 			$systemType->getPlacesProportions(),

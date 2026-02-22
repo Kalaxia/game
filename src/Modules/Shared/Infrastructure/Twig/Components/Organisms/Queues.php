@@ -19,14 +19,14 @@ final class Queues
 	public int $speedBonus;
 	public int $buildingIdentifier;
 	public int $queuesCount;
-	/** @var list<QueueableInterface>  */
+	/** @var list<QueueableInterface> */
 	public array $queues;
 	public int $availableQueuesCount;
 	public float $refund;
 
 	public function __construct(
 		private readonly CurrentPlayerPlanetsRegistry $currentPlayerBasesRegistry,
-		private readonly PlanetHelper                 $planetHelper,
+		private readonly PlanetHelper $planetHelper,
 	) {
 	}
 

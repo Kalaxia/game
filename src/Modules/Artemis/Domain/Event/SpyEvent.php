@@ -12,7 +12,7 @@ readonly class SpyEvent implements TutorialEvent, TrackingEvent
 {
 	public function __construct(
 		public SpyReport $spyReport,
-		public Player    $player
+		public Player $player,
 	) {
 	}
 
@@ -21,7 +21,7 @@ readonly class SpyEvent implements TutorialEvent, TrackingEvent
 		return $this->player;
 	}
 
-	public function getTutorialStep(): int|null
+	public function getTutorialStep(): ?int
 	{
 		return TutorialResource::SPY_PLANET;
 	}

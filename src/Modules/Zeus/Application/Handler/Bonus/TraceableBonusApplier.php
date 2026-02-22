@@ -10,7 +10,7 @@ class TraceableBonusApplier extends AbstractBonusApplier
 		int $modifierId,
 		float $modifierValue,
 		float|int $initialValue,
-		float $modifiedValue
+		float $modifiedValue,
 	): void {
 		$this->tracedBonuses[] = [
 			'modifier_id' => $modifierId,

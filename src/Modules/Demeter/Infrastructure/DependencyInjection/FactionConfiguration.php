@@ -25,7 +25,7 @@ class FactionConfiguration implements ConfigurationInterface
 					->enumNode('regime')->values([
 						Color::REGIME_DEMOCRATIC,
 						Color::REGIME_ROYALISTIC,
-						Color::REGIME_THEOCRATIC
+						Color::REGIME_THEOCRATIC,
 					])->end()
 					->arrayNode('bonus')
 						->enumPrototype()->values([

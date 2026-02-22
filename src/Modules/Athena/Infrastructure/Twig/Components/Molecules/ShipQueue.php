@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Athena\Infrastructure\Twig\Components\Molecules;
 
 use App\Modules\Athena\Infrastructure\Controller\Ship\CancelQueue;
+use App\Modules\Athena\Model\ShipQueue as ShipQueueModel;
 use App\Modules\Shared\Infrastructure\Twig\Components\Molecules\Queue;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
-use App\Modules\Athena\Model\ShipQueue as ShipQueueModel;
 
 #[AsTwigComponent(
 	name: 'ShipQueue',
@@ -15,8 +15,8 @@ use App\Modules\Athena\Model\ShipQueue as ShipQueueModel;
 )]
 class ShipQueue extends Queue
 {
-	public ShipQueueModel|null $queue = null;
-	public string|null $nameComponent = 'ShipQueueName';
+	public ?ShipQueueModel $queue = null;
+	public ?string $nameComponent = 'ShipQueueName';
 
 	public function getSubTitle(): string
 	{

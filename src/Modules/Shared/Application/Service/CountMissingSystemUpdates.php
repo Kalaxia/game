@@ -18,7 +18,6 @@ readonly class CountMissingSystemUpdates
 		#[Autowire('%server_time_mode%')]
 		private TimeMode $timeMode,
 	) {
-
 	}
 
 	public function __invoke(SystemUpdatable $updatable): int

@@ -9,14 +9,14 @@ use App\Modules\Hermes\Model\ConversationMessage;
 use App\Modules\Hermes\Model\ConversationUser;
 use App\Modules\Zeus\Model\Player;
 
-$database = $this->getContainer()->get(\App\Classes\Database\Database::class);
-$playerManager = $this->getContainer()->get(\App\Modules\Zeus\Manager\PlayerManager::class);
-$conversationManager = $this->getContainer()->get(\App\Modules\Hermes\Manager\ConversationManager::class);
-$conversationUserManager = $this->getContainer()->get(\App\Modules\Hermes\Manager\ConversationUserManager::class);
-$conversationMessageManager = $this->getContainer()->get(\App\Modules\Hermes\Manager\ConversationMessageManager::class);
+$database = $this->getContainer()->get(App\Classes\Database\Database::class);
+$playerManager = $this->getContainer()->get(App\Modules\Zeus\Manager\PlayerManager::class);
+$conversationManager = $this->getContainer()->get(App\Modules\Hermes\Manager\ConversationManager::class);
+$conversationUserManager = $this->getContainer()->get(App\Modules\Hermes\Manager\ConversationUserManager::class);
+$conversationMessageManager = $this->getContainer()->get(App\Modules\Hermes\Manager\ConversationMessageManager::class);
 $response = $this->getContainer()->get('app.response');
 $request = $this->getContainer()->get('app.request');
-$parser = $this->getContainer()->get(\App\Classes\Library\Parser::class);
+$parser = $this->getContainer()->get(App\Classes\Library\Parser::class);
 
 $recipients = $request->request->get('recipients');
 $content = $request->request->get('content');
@@ -28,7 +28,7 @@ if (!empty($recipients) && !empty($content)) {
 		// traitement des utilisateurs multiples
 		$recipients = explode(',', (string) $recipients);
 		$plId = $session->get('playerId');
-		$recipients = array_filter($recipients, fn($e) => $e == $plId ? false : true);
+		$recipients = array_filter($recipients, fn ($e) => $e == $plId ? false : true);
 		$recipients[] = 0;
 
 		if (count($recipients) <= ConversationUser::MAX_USERS) {
@@ -37,7 +37,7 @@ if (!empty($recipients) && !empty($content)) {
 
 			if (count($players) >= 1) {
 				// création de la date précédente
-				$readingDate = date('Y-m-d H:i:s', (strtotime(Utils::now()) - 20));
+				$readingDate = date('Y-m-d H:i:s', strtotime(Utils::now()) - 20);
 
 				// créer la conversation
 				$conv = new Conversation();

@@ -3,7 +3,6 @@
 namespace App\Modules\Demeter\Infrastructure\Controller\Government\Ruler;
 
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
-use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
@@ -64,7 +63,7 @@ class ChooseMinister extends AbstractController
 
 		$entityManager->flush();
 
-		$this->addFlash('success', $appointee->name . ' a rejoint votre gouvernement.');
+		$this->addFlash('success', $appointee->name.' a rejoint votre gouvernement.');
 
 		return $this->redirect($request->headers->get('referer'));
 	}

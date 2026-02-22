@@ -19,7 +19,7 @@ class SpyReportRepository extends DoctrineRepository implements SpyReportReposit
 		parent::__construct($registry, SpyReport::class);
 	}
 
-	public function get(Uuid $id): SpyReport|null
+	public function get(Uuid $id): ?SpyReport
 	{
 		return $this->find($id);
 	}
@@ -36,7 +36,7 @@ class SpyReportRepository extends DoctrineRepository implements SpyReportReposit
 			->setFirstResult(0)
 			->setParameter('player', $player)
 			->setParameter('places', array_map(
-				fn(Uuid $uuid) => $uuid->toBinary(),
+				fn (Uuid $uuid) => $uuid->toBinary(),
 				$places
 			), ArrayParameterType::BINARY);
 

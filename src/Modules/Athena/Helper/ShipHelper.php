@@ -18,18 +18,18 @@ use App\Modules\Zeus\Application\Registry\CurrentPlayerRegistry;
 readonly class ShipHelper
 {
 	public function __construct(
-		private CountMaxShipQueues                     $countMaxShipQueues,
+		private CountMaxShipQueues $countMaxShipQueues,
 		private CountHangarAvailableStorableShipPoints $countHangarAvailableStorableShipPoints,
-		private CurrentPlayerRegistry                  $currentPlayerRegistry,
-		private TechnologyHelper                       $technologyHelper,
-		private PlanetHelper                           $planetHelper,
-		private ShipQueueRepositoryInterface           $shipQueueRepository,
-		private GetShipCategoriesConfiguration         $getShipCategoriesConfiguration,
+		private CurrentPlayerRegistry $currentPlayerRegistry,
+		private TechnologyHelper $technologyHelper,
+		private PlanetHelper $planetHelper,
+		private ShipQueueRepositoryInterface $shipQueueRepository,
+		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 	) {
 	}
 
 	/**
-	 * TODO Refactor with Specification Pattern
+	 * TODO Refactor with Specification Pattern.
 	 */
 	public function haveRights(int $shipId, string $type, $sup, int $quantity = 1): bool|string
 	{
@@ -58,34 +58,35 @@ readonly class ShipHelper
 				// droit de construire le vaisseau ?
 				// $sup est un objet de type Planet
 			case 'shipTree':
-				if ($dockType === DockType::Manufacture) {
+				if (DockType::Manufacture === $dockType) {
 					$level = $sup->levelDock1;
 
 					return $shipId < $this->planetHelper->getBuildingInfo(2, 'level', $level, 'releasedShip');
-				} elseif ($dockType === DockType::Shipyard) {
+				} elseif (DockType::Shipyard === $dockType) {
 					$level = $sup->levelDock2;
 
 					return ($shipId - 6) < $this->planetHelper->getBuildingInfo(3, 'level', $level, 'releasedShip');
-				} else {
-					$level = $sup->levelDock3;
-
-					return ($shipId - 12) < $this->planetHelper->getBuildingInfo(4, 'level', $level, 'releasedShip');
 				}
-			// assez de pev dans le storage et dans la queue ?
-			// $sup est un objet de type Planet
+				$level = $sup->levelDock3;
+
+				return ($shipId - 12) < $this->planetHelper->getBuildingInfo(4, 'level', $level, 'releasedShip');
+
+				// assez de pev dans le storage et dans la queue ?
+				// $sup est un objet de type Planet
 			case 'pev':
 				$wanted = ($this->getShipCategoriesConfiguration)($shipId, 'pev') * $quantity;
 
 				$shipQueues = $this->shipQueueRepository->getByBaseAndDockType($sup, $dockType->getIdentifier());
 
 				return $wanted <= ($this->countHangarAvailableStorableShipPoints)($sup, $shipQueues, $dockType);
-			// a la technologie nécessaire pour constuire ce vaisseau ?
-			// $sup est un objet de type Technology
+				// a la technologie nécessaire pour constuire ce vaisseau ?
+				// $sup est un objet de type Technology
 			case 'techno':
 				if (1 == $sup->getTechnology(($this->getShipCategoriesConfiguration)($shipId, 'techno'))) {
 					return true;
 				}
-				return 'il vous faut développer la technologie ' . $this->technologyHelper->getInfo(($this->getShipCategoriesConfiguration)($shipId, 'techno'), 'name');
+
+				return 'il vous faut développer la technologie '.$this->technologyHelper->getInfo(($this->getShipCategoriesConfiguration)($shipId, 'techno'), 'name');
 			default:
 				throw new \ErrorException('type invalide dans haveRights de ShipResource');
 		}
@@ -96,11 +97,11 @@ readonly class ShipHelper
 		$shipCategory = ShipCategory::from($shipId);
 		$dockType = DockType::fromShipCategory($shipCategory);
 
-		if ($dockType === DockType::Manufacture) {
+		if (DockType::Manufacture === $dockType) {
 			$building = PlanetResource::DOCK1;
 			$size = 40;
 			++$shipId;
-		} elseif ($dockType === DockType::Shipyard) {
+		} elseif (DockType::Shipyard === $dockType) {
 			$building = PlanetResource::DOCK2;
 			$size = 20;
 			$shipId -= 5;

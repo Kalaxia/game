@@ -8,7 +8,6 @@ use App\Modules\Athena\Model\BuildingQueue;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Entity\Sector;
 use App\Modules\Galaxy\Domain\Entity\System;
-use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use App\Modules\Galaxy\Domain\Enum\PlanetType;
 use App\Modules\Galaxy\Domain\Enum\SystemType;
 use App\Modules\Galaxy\Resource\PlanetResource;
@@ -64,7 +63,7 @@ class DurationHandlerTest extends TestCase
 	/**
 	 * @return Generator<array<{0: \DateTimeImmutable, 1: int, 2: \DateTimeImmutable}>>
 	 */
-	public static function provideGetDurationEndData(): Generator
+	public static function provideGetDurationEndData(): \Generator
 	{
 		yield [
 			new \DateTimeImmutable(),
@@ -88,7 +87,7 @@ class DurationHandlerTest extends TestCase
 	/**
 	 * @return Generator<array<{0: DurationInterface, 1: int}>>
 	 */
-	public static function provideGetRemainingTimeData(): Generator
+	public static function provideGetRemainingTimeData(): \Generator
 	{
 		yield [
 			static::generateBuildingQueue(new \DateTimeImmutable('+1 hour')),
@@ -107,7 +106,7 @@ class DurationHandlerTest extends TestCase
 	/**
 	 * @return Generator<array<{0: \DateTimeImmutable, 1: \DateTimeImmutable, 2: int}>>
 	 */
-	public static function provideGetHoursDiffData(): Generator
+	public static function provideGetHoursDiffData(): \Generator
 	{
 		yield [
 			new \DateTimeImmutable('+2 hours'),

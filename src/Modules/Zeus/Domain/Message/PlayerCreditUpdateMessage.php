@@ -8,7 +8,6 @@ readonly class PlayerCreditUpdateMessage implements AsyncHighPriorityMessage
 {
 	public function __construct(private int $playerId)
 	{
-
 	}
 
 	public function getPlayerId(): int

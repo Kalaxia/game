@@ -1,19 +1,15 @@
 <?php
 
-/**
- * loi.
- *
- * @author Noé Zufferey
- * @copyright Expansion - le jeu
- *
- * @update 29.09.14
- */
+declare(strict_types=1);
 
 namespace App\Modules\Demeter\Model\Law;
 
 use App\Modules\Demeter\Model\Color;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
+#[ORM\Entity]
+#[ORM\Table(name: 'law')]
 class Law
 {
 	public const VOTATION = 0;
@@ -36,18 +32,28 @@ class Law
 	public const VOTEDURATION = 86400;
 
 	public function __construct(
+		#[ORM\Id]
+		#[ORM\Column(type: 'uuid')]
 		public Uuid $id,
+		#[ORM\ManyToOne]
 		public Color $faction,
+		#[ORM\Column(type: 'smallint')]
 		public int $type,
+		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $voteEndedAt,
+		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $endedAt,
+		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $createdAt,
+		#[ORM\Column(type: 'json')]
 		public array $options = [],
+		#[ORM\Column(type: 'smallint')]
 		public int $statement = 0,
+		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int $forVote = 0,
+		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int $againstVote = 0,
 	) {
-		
 	}
 
 	public function isBeingVoted(): bool

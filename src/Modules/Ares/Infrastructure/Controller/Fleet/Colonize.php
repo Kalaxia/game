@@ -31,21 +31,21 @@ use Symfony\Component\Uid\Uuid;
 class Colonize extends AbstractController
 {
 	public function __invoke(
-        Request                       $request,
-        Player                        $currentPlayer,
-        GetDistanceBetweenPlaces      $getDistanceBetweenPlaces,
-        GetFactionsConfiguration      $getFactionsConfiguration,
-        MoveFleet                     $moveFleet,
-        CurrentPlayerPlanetsRegistry  $currentPlayerBasesRegistry,
-        CurrentPlayerBonusRegistry    $currentPlayerBonusRegistry,
-        CommanderArmyHandler          $commanderArmyHandler,
-        ColorRepositoryInterface      $colorRepository,
-        CommanderRepositoryInterface  $commanderRepository,
-        TechnologyRepositoryInterface $technologyRepository,
-        PlaceRepositoryInterface      $placeRepository,
-        PlayerManager                 $playerManager,
-        EntityManagerInterface        $entityManager,
-        Uuid                          $id,
+		Request $request,
+		Player $currentPlayer,
+		GetDistanceBetweenPlaces $getDistanceBetweenPlaces,
+		GetFactionsConfiguration $getFactionsConfiguration,
+		MoveFleet $moveFleet,
+		CurrentPlayerPlanetsRegistry $currentPlayerBasesRegistry,
+		CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
+		CommanderArmyHandler $commanderArmyHandler,
+		ColorRepositoryInterface $colorRepository,
+		CommanderRepositoryInterface $commanderRepository,
+		TechnologyRepositoryInterface $technologyRepository,
+		PlaceRepositoryInterface $placeRepository,
+		PlayerManager $playerManager,
+		EntityManagerInterface $entityManager,
+		Uuid $id,
 	): Response {
 		// load the technologies
 		$technologies = $technologyRepository->getPlayerTechnology($currentPlayer);

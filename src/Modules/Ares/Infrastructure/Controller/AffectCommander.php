@@ -19,7 +19,6 @@ use Symfony\Component\Uid\Uuid;
 
 class AffectCommander extends AbstractController
 {
-
 	#[Route(
 		path: '/commanders/{id}/affect',
 		name: 'affect_commander',

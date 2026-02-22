@@ -57,7 +57,7 @@ class Create extends AbstractController
 			throw new BadRequestHttpException('Nombre maximum de joueur atteint.');
 		}
 		// chargement des utilisateurs
-		//$players = $playerRepository->getByIdsAndStatements($recipients, [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY]);
+		// $players = $playerRepository->getByIdsAndStatements($recipients, [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY]);
 		$players = $playerRepository->getByNamesAndStatements($recipients, [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY]);
 
 		if (count($players) < 1) {
@@ -115,7 +115,7 @@ class Create extends AbstractController
 		$this->addFlash('success', 'La conversation a été créée.');
 
 		return $this->redirectToRoute('communication_center', [
-			'conversationId' => $conv->id
+			'conversationId' => $conv->id,
 		]);
 	}
 }

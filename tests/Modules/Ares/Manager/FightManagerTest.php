@@ -61,7 +61,7 @@ class FightManagerTest extends KernelTestCase
 			updatedAt: new \DateTimeImmutable(),
 		);
 
-		for ($i = 0; $i < $squadronsCount; $i++) {
+		for ($i = 0; $i < $squadronsCount; ++$i) {
 			$commander->squadrons->add($this->getSquadronMock($commander));
 		}
 

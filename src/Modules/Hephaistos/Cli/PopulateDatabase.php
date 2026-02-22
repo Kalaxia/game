@@ -7,9 +7,13 @@ use App\Modules\Athena\Domain\Repository\CommercialTaxRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
 use App\Modules\Athena\Model\CommercialTax;
 use App\Modules\Athena\Model\Transaction;
+use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\MandateRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
+use App\Modules\Demeter\Model\Election\Mandate;
+use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Galaxy\Helper\GalaxyGenerator;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
@@ -38,10 +42,14 @@ class PopulateDatabase extends Command
 		private readonly ConversationRepositoryInterface $conversationRepository,
 		private readonly ConversationUserRepositoryInterface $conversationUserRepository,
 		private readonly GetFactionsConfiguration $getFactionsConfiguration,
+		private readonly MandateRepositoryInterface $mandateRepository,
+		private readonly NextElectionDateCalculator $nextElectionDateCalculator,
 		private readonly PlayerRepositoryInterface $playerRepository,
 		private readonly TransactionRepositoryInterface $transactionRepository,
 		#[Autowire('%game.available_factions%')]
 		private readonly array $availableFactions,
+		#[Autowire('%server_start_time%')]
+		private readonly string $serverStartTime,
 	) {
 		parent::__construct();
 	}
@@ -56,7 +64,6 @@ class PopulateDatabase extends Command
 			identifier: ColorResource::NO_FACTION,
 			isClosed: true,
 			isInGame: true,
-			lastElectionHeldAt: $date,
 		);
 
 		$this->colorRepository->save($rebelFaction);
@@ -72,7 +79,6 @@ class PopulateDatabase extends Command
 				Uuid::v4(),
 				identifier: $factionId,
 				alive: true,
-				electionStatement: Color::MANDATE,
 				regime: ($this->getFactionsConfiguration)($factionId, 'regime'),
 				isInGame: true,
 				relations: array_filter(
@@ -80,7 +86,6 @@ class PopulateDatabase extends Command
 					fn (int $identifier) => $identifier !== $factionId,
 					ARRAY_FILTER_USE_KEY,
 				),
-				lastElectionHeldAt: $date,
 			);
 
 			$this->colorRepository->save($faction);
@@ -235,10 +240,40 @@ class PopulateDatabase extends Command
 			$this->conversationUserRepository->save($user);
 		}
 
+		$this->createMandates();
+
 		$output->writeln('Génération de la galaxie');
 
 		$this->galaxyGenerator->generate();
 
 		return self::SUCCESS;
+	}
+
+	private function createMandates(): void
+	{
+		foreach ($this->availableFactions as $factionId) {
+			$faction = $this->colorRepository->getOneByIdentifier($factionId)
+				?? throw new \InvalidArgumentException('Faction not found');
+
+			if ($faction->isRoyalistic()) {
+				continue;
+			}
+
+			$mandateStartedAt = new \DateTimeImmutable($this->serverStartTime);
+			$mandate = new Mandate(
+				id: Uuid::v4(),
+				faction: $faction,
+				leader: $this->playerRepository->getFactionAccount($faction),
+				election: null,
+				startedAt: $mandateStartedAt,
+				expiredAt: $this->nextElectionDateCalculator->getDurationUntilMandateState(
+					$faction,
+					MandateState::Active,
+					$mandateStartedAt,
+				),
+			);
+
+			$this->mandateRepository->save($mandate);
+		}
 	}
 }

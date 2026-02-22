@@ -14,12 +14,11 @@ use App\Modules\Promethee\Model\Technology;
 readonly class Conquest implements HasCommander, HasPlace, HasBasesCount, HasTechnology
 {
 	public function __construct(
-		private Commander  $commander,
+		private Commander $commander,
 		private Technology $attackerTechnology,
-		private int        $attackerBasesCount,
-		private Planet     $targetedPlace,
+		private int $attackerBasesCount,
+		private Planet $targetedPlace,
 	) {
-
 	}
 
 	public function getCommander(): Commander

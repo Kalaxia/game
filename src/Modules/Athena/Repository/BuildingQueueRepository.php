@@ -18,7 +18,7 @@ class BuildingQueueRepository extends DoctrineRepository implements BuildingQueu
 		parent::__construct($registry, BuildingQueue::class);
 	}
 
-	public function get(Uuid $id): BuildingQueue|null
+	public function get(Uuid $id): ?BuildingQueue
 	{
 		return $this->find($id);
 	}

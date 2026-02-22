@@ -35,7 +35,6 @@ class VoteForLaw extends AbstractController
 		$law = $lawRepository->get($id)
 			?? throw $this->createNotFoundException('Cette loi n\'existe pas.');
 
-
 		if (Law::VOTATION !== $law->isBeingVoted()) {
 			throw new ConflictHttpException('Cette loi est déjà votée.');
 		}

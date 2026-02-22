@@ -16,6 +16,5 @@ class Notification
 		public bool $read = false,
 		public bool $archived = false,
 	) {
-
 	}
 }

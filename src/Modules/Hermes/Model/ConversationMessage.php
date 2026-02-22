@@ -19,8 +19,7 @@ class ConversationMessage
 		public string $content,
 		public \DateTimeImmutable $createdAt = new \DateTimeImmutable(),
 		public int $type = self::TY_STD,
-		public \DateTimeImmutable|null $updatedAt = null,
+		public ?\DateTimeImmutable $updatedAt = null,
 	) {
-
 	}
 }

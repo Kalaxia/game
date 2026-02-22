@@ -18,7 +18,6 @@ class IsInRangeValidator extends ConstraintValidator
 		private readonly GetDistanceBetweenPlaces $getDistanceBetweenPlaces,
 		private readonly IsAlliedFactionSector $isAlliedFactionSector,
 	) {
-
 	}
 
 	/**

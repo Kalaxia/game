@@ -6,7 +6,7 @@ interface TravellerInterface
 {
 	public function isMoving(): bool;
 
-	public function getDepartureDate(): \DateTimeImmutable|null;
+	public function getDepartureDate(): ?\DateTimeImmutable;
 
-	public function getArrivalDate(): \DateTimeImmutable|null;
+	public function getArrivalDate(): ?\DateTimeImmutable;
 }

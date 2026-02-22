@@ -14,9 +14,9 @@ use Symfony\Component\Uid\Uuid;
  */
 interface TechnologyQueueRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): TechnologyQueue|null;
+	public function get(Uuid $id): ?TechnologyQueue;
 
-	public function getPlayerTechnologyQueue(Player $player, int $technology): TechnologyQueue|null;
+	public function getPlayerTechnologyQueue(Player $player, int $technology): ?TechnologyQueue;
 
 	/**
 	 * @return list<TechnologyQueue>
@@ -24,7 +24,8 @@ interface TechnologyQueueRepositoryInterface extends EntityRepositoryInterface
 	public function getAll(): array;
 
 	/**
-	 * TODO Replace Place argument with OrbitalBase
+	 * TODO Replace Place argument with OrbitalBase.
+	 *
 	 * @return list<TechnologyQueue>
 	 */
 	public function getPlanetQueues(Planet $planet): array;

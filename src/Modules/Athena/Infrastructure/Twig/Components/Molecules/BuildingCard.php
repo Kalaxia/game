@@ -35,13 +35,12 @@ final class BuildingCard extends Card
 	public ConstraintViolationListInterface $requirements;
 
 	public function __construct(
-		private readonly BuildingDataHandler  $buildingDataHandler,
-		private readonly GetTimeCost          $getTimeCost,
+		private readonly BuildingDataHandler $buildingDataHandler,
+		private readonly GetTimeCost $getTimeCost,
 		private readonly BuildingLevelHandler $buildingLevelHandler,
-		private readonly PlanetHelper         $planetHelper,
-		private readonly ValidatorInterface   $validator,
+		private readonly PlanetHelper $planetHelper,
+		private readonly ValidatorInterface $validator,
 	) {
-
 	}
 
 	public function mount(Planet $planet, Technology $technology, int $buildingIdentifier, array $buildingQueues, int $buildingQueuesCount): void
@@ -69,7 +68,7 @@ final class BuildingCard extends Card
 	}
 
 	#[\Override]
-    public function isDisabled(): bool
+	public function isDisabled(): bool
 	{
 		// TODO investigate this condition. Previously `not realLevel` \_()_/ in `ViewGenerator` Controller
 		return false;
@@ -95,12 +94,12 @@ final class BuildingCard extends Card
 		return $this->planetHelper->getBuildingInfo($this->buildingIdentifier, 'frenchName');
 	}
 
-	public function getResourceCost(): int|null
+	public function getResourceCost(): ?int
 	{
 		return $this->buildingDataHandler->getBuildingResourceCost($this->buildingIdentifier, $this->realLevel + 1);
 	}
 
-	public function getTimeCost(): int|null
+	public function getTimeCost(): ?int
 	{
 		return ($this->getTimeCost)($this->buildingIdentifier, $this->realLevel + 1);
 	}

@@ -12,10 +12,11 @@ use Symfony\Component\Uid\Uuid;
  */
 interface SpyReportRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): SpyReport|null;
+	public function get(Uuid $id): ?SpyReport;
 
 	/**
 	 * @param Uuid[] $places
+	 *
 	 * @return SpyReport[]
 	 */
 	public function getSystemReports(Player $player, array $places): array;

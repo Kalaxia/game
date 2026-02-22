@@ -18,7 +18,7 @@ class ForumMessageRepository extends DoctrineRepository implements ForumMessageR
 		parent::__construct($registry, ForumMessage::class);
 	}
 
-	public function get(Uuid $id): ForumMessage|null
+	public function get(Uuid $id): ?ForumMessage
 	{
 		return $this->find($id);
 	}

@@ -32,19 +32,19 @@ use Symfony\Component\Uid\Uuid;
 readonly class RecyclingMissionHandler
 {
 	public function __construct(
-		private DurationHandler                     $durationHandler,
-		private EntityManagerInterface              $entityManager,
-		private PlanetManager                       $planetManager,
-		private PlaceManager                        $placeManager,
-		private PlayerManager                       $playerManager,
-		private GetMissionTime                      $getMissionTime,
-		private NotificationRepositoryInterface     $notificationRepository,
+		private DurationHandler $durationHandler,
+		private EntityManagerInterface $entityManager,
+		private PlanetManager $planetManager,
+		private PlaceManager $placeManager,
+		private PlayerManager $playerManager,
+		private GetMissionTime $getMissionTime,
+		private NotificationRepositoryInterface $notificationRepository,
 		private RecyclingMissionRepositoryInterface $recyclingMissionRepository,
-		private RecyclingLogRepositoryInterface     $recyclingLogRepository,
-		private MessageBusInterface                 $messageBus,
-		private ExtractPoints                       $extractPoints,
-		private RecycleResources                    $recycleResources,
-		private RecycleCredits                      $recycleCredits,
+		private RecyclingLogRepositoryInterface $recyclingLogRepository,
+		private MessageBusInterface $messageBus,
+		private ExtractPoints $extractPoints,
+		private RecycleResources $recycleResources,
+		private RecycleCredits $recycleCredits,
 		private RecycleShips $recycleShips,
 		private UrlGeneratorInterface $urlGenerator,
 		private LoggerInterface $logger,
@@ -73,7 +73,7 @@ readonly class RecyclingMissionHandler
 		}
 
 		if (PlaceType::Empty === $targetPlace->getType()) {
-			$this->logger->debug('Mission {missionId} target has become empty',[
+			$this->logger->debug('Mission {missionId} target has become empty', [
 				'missionId' => $mission->id->toRfc4122(),
 			]);
 			// stop the mission

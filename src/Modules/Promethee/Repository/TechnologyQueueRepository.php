@@ -21,12 +21,12 @@ class TechnologyQueueRepository extends DoctrineRepository implements Technology
 		parent::__construct($registry, TechnologyQueue::class);
 	}
 
-	public function get(Uuid $id): TechnologyQueue|null
+	public function get(Uuid $id): ?TechnologyQueue
 	{
 		return $this->find($id);
 	}
 
-	public function getPlayerTechnologyQueue(Player $player, int $technology): TechnologyQueue|null
+	public function getPlayerTechnologyQueue(Player $player, int $technology): ?TechnologyQueue
 	{
 		return $this->findOneBy([
 			'player' => $player,

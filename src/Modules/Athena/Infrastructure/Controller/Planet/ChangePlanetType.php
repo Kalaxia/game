@@ -44,17 +44,17 @@ class ChangePlanetType extends AbstractController
 		methods: [Request::METHOD_GET],
 	)]
 	public function __invoke(
-        Request                          $request,
-        Planet                           $currentPlanet,
-        Player                           $currentPlayer,
-        BuildingQueueRepositoryInterface $buildingQueueRepository,
-        PlanetManager                    $planetManager,
-        PlanetHelper                     $planetHelper,
-        PlanetRepositoryInterface        $planetRepository,
-        PlaceManager                     $placeManager,
-        PlayerManager                    $playerManager,
-        EventDispatcherInterface         $eventDispatcher,
-        EntityManagerInterface           $entityManager,
+		Request $request,
+		Planet $currentPlanet,
+		Player $currentPlayer,
+		BuildingQueueRepositoryInterface $buildingQueueRepository,
+		PlanetManager $planetManager,
+		PlanetHelper $planetHelper,
+		PlanetRepositoryInterface $planetRepository,
+		PlaceManager $placeManager,
+		PlayerManager $playerManager,
+		EventDispatcherInterface $eventDispatcher,
+		EntityManagerInterface $entityManager,
 	): Response {
 		$type = intval($request->query->get('type') ?? throw new BadRequestHttpException('Missing base type'));
 

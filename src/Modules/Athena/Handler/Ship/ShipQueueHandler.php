@@ -12,7 +12,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 readonly class ShipQueueHandler
 {
 	public function __construct(
-		private PlayerManager                $playerManager,
+		private PlayerManager $playerManager,
 		private ShipQueueRepositoryInterface $shipQueueRepository,
 		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 	) {

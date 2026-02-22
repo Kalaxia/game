@@ -180,6 +180,7 @@ class LawResources
 		if (!array_key_exists($index, self::$laws)) {
 			throw new \InvalidArgumentException('Invalid Law id');
 		}
+
 		return self::$laws[$index][$info] ?? throw new \InvalidArgumentException('Invalid law data key');
 	}
 

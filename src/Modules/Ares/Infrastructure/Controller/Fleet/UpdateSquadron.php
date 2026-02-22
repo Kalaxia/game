@@ -22,18 +22,18 @@ use Symfony\Component\Uid\Uuid;
 class UpdateSquadron extends AbstractController
 {
 	public function __invoke(
-        Request                        $request,
-        Player                         $currentPlayer,
-        GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
-        PlanetRepositoryInterface      $planetRepository,
-        CommanderManager               $commanderManager,
-        CommanderArmyHandler           $commanderArmyHandler,
-        CommanderRepositoryInterface   $commanderRepository,
-        SquadronRepositoryInterface    $squadronRepository,
-        EventDispatcherInterface       $eventDispatcher,
-        EntityManagerInterface         $entityManager,
-        Uuid                           $id,
-        int                            $squadronId,
+		Request $request,
+		Player $currentPlayer,
+		GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
+		PlanetRepositoryInterface $planetRepository,
+		CommanderManager $commanderManager,
+		CommanderArmyHandler $commanderArmyHandler,
+		CommanderRepositoryInterface $commanderRepository,
+		SquadronRepositoryInterface $squadronRepository,
+		EventDispatcherInterface $eventDispatcher,
+		EntityManagerInterface $entityManager,
+		Uuid $id,
+		int $squadronId,
 	): Response {
 		$payload = $request->toArray();
 

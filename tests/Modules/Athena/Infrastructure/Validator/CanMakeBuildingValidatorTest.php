@@ -21,9 +21,7 @@ class CanMakeBuildingValidatorTest extends KernelTestCase
 	use Factories;
 	use ResetDatabase;
 
-	/**
-	 */
-	public function testValidator(/** OrbitalBase $base, Technology $technology, int $buildingIdentifier, int $targetLevel, ConstraintViolationListInterface $violationList, int $buildingQueuesCount = 0 */): void
+	public function testValidator(/* OrbitalBase $base, Technology $technology, int $buildingIdentifier, int $targetLevel, ConstraintViolationListInterface $violationList, int $buildingQueuesCount = 0 */): void
 	{
 		static::markTestSkipped('Must fix usage of Foundry stories');
 
@@ -76,7 +74,6 @@ class CanMakeBuildingValidatorTest extends KernelTestCase
 		$buildingIdentifier = PlanetResource::SPATIOPORT;
 		$targetLevel = 1;
 		$violationList = [
-
 		];
 
 		$buildingConstructionOrder = new BuildingConstructionOrder(
@@ -106,8 +103,7 @@ class CanMakeBuildingValidatorTest extends KernelTestCase
 			PlanetResource::SPATIOPORT,
 			1,
 			[
-
-			]
+			],
 		];
 	}
 }

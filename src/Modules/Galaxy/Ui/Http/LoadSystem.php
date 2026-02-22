@@ -14,7 +14,6 @@ use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Galaxy\Domain\Repository\SystemRepositoryInterface;
 use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Galaxy\Manager\PlanetManager;
-use App\Modules\Galaxy\Manager\SystemManager;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,20 +24,20 @@ use Symfony\Component\Uid\Uuid;
 class LoadSystem extends AbstractController
 {
 	public function __invoke(
-		Request                       $request,
-		Planet                              $currentBase,
-		Player                              $currentPlayer,
-		CommanderRepositoryInterface        $commanderRepository,
-		SystemRepositoryInterface           $systemRepository,
-		PlaceManager                        $placeManager,
-		PlaceRepositoryInterface            $placeRepository,
-		TechnologyRepositoryInterface       $technologyRepository,
-		ConquestManager                     $conquestManager,
-		SpyReportRepositoryInterface        $spyReportRepository,
-		ReportRepositoryInterface           $reportRepository,
-		PlanetManager                       $planetManager,
+		Request $request,
+		Planet $currentBase,
+		Player $currentPlayer,
+		CommanderRepositoryInterface $commanderRepository,
+		SystemRepositoryInterface $systemRepository,
+		PlaceManager $placeManager,
+		PlaceRepositoryInterface $placeRepository,
+		TechnologyRepositoryInterface $technologyRepository,
+		ConquestManager $conquestManager,
+		SpyReportRepositoryInterface $spyReportRepository,
+		ReportRepositoryInterface $reportRepository,
+		PlanetManager $planetManager,
 		RecyclingMissionRepositoryInterface $recyclingMissionRepository,
-		Uuid                                $id
+		Uuid $id,
 	): Response {
 		$system = $systemRepository->get($id) ?? throw $this->createNotFoundException('System not found');
 

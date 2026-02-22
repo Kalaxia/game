@@ -19,16 +19,16 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 class CancelTechnologyQueue extends AbstractController
 {
 	public function __invoke(
-		DurationHandler                    $durationHandler,
-		Request                            $request,
-		Player                             $currentPlayer,
-		Planet                             $currentBase,
-		TechnologyHelper                   $technologyHelper,
-		TechnologyQueueManager             $technologyQueueManager,
+		DurationHandler $durationHandler,
+		Request $request,
+		Player $currentPlayer,
+		Planet $currentBase,
+		TechnologyHelper $technologyHelper,
+		TechnologyQueueManager $technologyQueueManager,
 		TechnologyQueueRepositoryInterface $technologyQueueRepository,
-		PlayerManager                      $playerManager,
-		PlanetManager                      $planetManager,
-		int                                $identifier,
+		PlayerManager $playerManager,
+		PlanetManager $planetManager,
+		int $identifier,
 	): Response {
 		if (!$technologyHelper->isATechnology($identifier)) {
 			throw new BadRequestHttpException('la technologie indiquée n\'est pas valide');

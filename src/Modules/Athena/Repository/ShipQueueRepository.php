@@ -18,7 +18,7 @@ class ShipQueueRepository extends DoctrineRepository implements ShipQueueReposit
 		parent::__construct($registry, ShipQueue::class);
 	}
 
-	public function get(Uuid $id): ShipQueue|null
+	public function get(Uuid $id): ?ShipQueue
 	{
 		return $this->find($id);
 	}

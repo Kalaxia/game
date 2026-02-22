@@ -23,7 +23,7 @@ class ScheduleActions extends Command
 	 */
 	public function __construct(
 		#[AutowireIterator('app.scheduler')]
-		private readonly iterable $schedulers
+		private readonly iterable $schedulers,
 	) {
 		parent::__construct();
 	}

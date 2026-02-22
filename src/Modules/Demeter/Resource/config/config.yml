@@ -3,6 +3,7 @@ parameters:
     politics_campaign_duration: 345600
     politics_election_duration: 172800
     politics_putsch_duration: 25200
+    politics_mandate_end_duration: 3600
 
     politics_law_max_duration: 2400 # 100 days in standard mode, 16 and a half in fast mode
 

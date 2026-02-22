@@ -8,7 +8,7 @@ use App\Modules\Ares\Domain\Model\ShipCategory;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
- * Calculates either a Commander or a Planet ships cost
+ * Calculates either a Commander or a Planet ships cost.
  */
 final readonly class CalculateFleetCost
 {

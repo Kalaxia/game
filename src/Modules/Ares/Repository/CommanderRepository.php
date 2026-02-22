@@ -25,7 +25,7 @@ class CommanderRepository extends DoctrineRepository implements CommanderReposit
 		parent::__construct($registry, Commander::class);
 	}
 
-	public function get(Uuid $id): Commander|null
+	public function get(Uuid $id): ?Commander
 	{
 		return $this->find($id);
 	}

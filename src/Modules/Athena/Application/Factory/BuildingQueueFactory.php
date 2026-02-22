@@ -28,10 +28,10 @@ readonly class BuildingQueueFactory
 	}
 
 	public function create(
-        Planet             $planet,
-        int                $identifier,
-        int                $targetLevel,
-        \DateTimeImmutable $startedAt,
+		Planet $planet,
+		int $identifier,
+		int $targetLevel,
+		\DateTimeImmutable $startedAt,
 	): BuildingQueue {
 		// build the new building
 		$buildingQueue = new BuildingQueue(

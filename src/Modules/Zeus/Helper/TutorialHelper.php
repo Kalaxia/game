@@ -13,12 +13,12 @@ use App\Modules\Zeus\Model\Player;
 readonly class TutorialHelper
 {
 	public function __construct(
-		private PlayerRepositoryInterface          $playerRepository,
-		private PlanetRepositoryInterface          $planetRepository,
-		private BuildingQueueRepositoryInterface   $buildingQueueRepository,
-		private TechnologyRepositoryInterface      $technologyRepository,
+		private PlayerRepositoryInterface $playerRepository,
+		private PlanetRepositoryInterface $planetRepository,
+		private BuildingQueueRepositoryInterface $buildingQueueRepository,
+		private TechnologyRepositoryInterface $technologyRepository,
 		private TechnologyQueueRepositoryInterface $technologyQueueRepository,
-		private BuildingLevelHandler               $buildingLevelHandler,
+		private BuildingLevelHandler $buildingLevelHandler,
 	) {
 	}
 
@@ -69,14 +69,13 @@ readonly class TutorialHelper
 			if ($this->buildingLevelHandler->getBuildingLevel($planet, $buildingId) >= $level) {
 				$nextStepAlreadyDone = true;
 				break;
-			} else {
-				// verify in the queue
-				$buildingQueues = $this->buildingQueueRepository->getPlanetQueues($planet);
-				foreach ($buildingQueues as $buildingQueue) {
-					if ($buildingQueue->buildingNumber == $buildingId and $buildingQueue->targetLevel >= $level) {
-						$nextStepAlreadyDone = true;
-						break;
-					}
+			}
+			// verify in the queue
+			$buildingQueues = $this->buildingQueueRepository->getPlanetQueues($planet);
+			foreach ($buildingQueues as $buildingQueue) {
+				if ($buildingQueue->buildingNumber == $buildingId and $buildingQueue->targetLevel >= $level) {
+					$nextStepAlreadyDone = true;
+					break;
 				}
 			}
 		}

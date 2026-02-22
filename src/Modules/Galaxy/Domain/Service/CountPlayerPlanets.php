@@ -12,9 +12,8 @@ readonly class CountPlayerPlanets
 {
 	public function __construct(
 		private CommanderRepositoryInterface $commanderRepository,
-		private PlanetRepositoryInterface    $planetRepository,
+		private PlanetRepositoryInterface $planetRepository,
 	) {
-
 	}
 
 	public function __invoke(Player $player): int
@@ -23,7 +22,7 @@ readonly class CountPlayerPlanets
 
 		$conquerringCommanders = count(array_filter(
 			$this->commanderRepository->getPlayerCommanders($player, [Commander::MOVING]),
-			fn(Commander $commander) => CommanderMission::Colo === $commander->travelType,
+			fn (Commander $commander) => CommanderMission::Colo === $commander->travelType,
 		));
 
 		return $playerBases + $conquerringCommanders;

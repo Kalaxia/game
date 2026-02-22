@@ -9,9 +9,9 @@ use App\Shared\Domain\Specification\SelectorSpecification;
 
 interface PlayerRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(int $id): Player|null;
+	public function get(int $id): ?Player;
 
-	public function getByName(string $name): Player|null;
+	public function getByName(string $name): ?Player;
 
 	/**
 	 * @return list<Player>
@@ -21,12 +21,15 @@ interface PlayerRepositoryInterface extends EntityRepositoryInterface
 	/**
 	 * @param list<int> $ids
 	 * @param list<int> $statements
+	 *
 	 * @return list<Player>
 	 */
 	public function getByIdsAndStatements(array $ids, array $statements): array;
+
 	/**
 	 * @param list<string> $names
-	 * @param list<int> $statements
+	 * @param list<int>    $statements
+	 *
 	 * @return list<Player>
 	 */
 	public function getByNamesAndStatements(array $names, array $statements): array;
@@ -44,7 +47,7 @@ interface PlayerRepositoryInterface extends EntityRepositoryInterface
 
 	public function countByFactionAndStatements(Color $faction, array $statements): int;
 
-	public function getFactionAccount(Color $faction): Player|null;
+	public function getFactionAccount(Color $faction): ?Player;
 
 	/**
 	 * @return list<Player>
@@ -66,9 +69,9 @@ interface PlayerRepositoryInterface extends EntityRepositoryInterface
 	 */
 	public function getLastFactionPlayers(Color $faction): array;
 
-	public function getGovernmentMember(Color $faction, int $status): Player|null;
+	public function getGovernmentMember(Color $faction, int $status): ?Player;
 
-	public function getFactionLeader(Color $faction): Player|null;
+	public function getFactionLeader(Color $faction): ?Player;
 
 	/**
 	 * @return list<Player>

@@ -3,7 +3,6 @@
 namespace App\Modules\Athena\Domain\Event;
 
 use App\Modules\Athena\Model\BuildingQueue;
-use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Event\TrackingEvent;
 
 class NewBuildingQueueEvent implements TrackingEvent

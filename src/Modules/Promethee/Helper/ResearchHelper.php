@@ -9,7 +9,7 @@ readonly class ResearchHelper
 {
 	public function __construct(
 		private float $researchCoeff,
-		private int $researchMaxDiff
+		private int $researchMaxDiff,
 	) {
 	}
 
@@ -46,20 +46,19 @@ readonly class ResearchHelper
 		if (-1 == $thirdLevel) {
 			if (abs($firstLevel - $secondLevel) > $this->researchMaxDiff) {
 				return false;
-			} else {
-				return true;
 			}
-		} else {
-			if (abs($firstLevel - $secondLevel) > $this->researchMaxDiff) {
-				return false;
-			} elseif (abs($firstLevel - $thirdLevel) > $this->researchMaxDiff) {
-				return false;
-			} elseif (abs($secondLevel - $thirdLevel) > $this->researchMaxDiff) {
-				return false;
-			} else {
-				return true;
-			}
+
+			return true;
 		}
+		if (abs($firstLevel - $secondLevel) > $this->researchMaxDiff) {
+			return false;
+		} elseif (abs($firstLevel - $thirdLevel) > $this->researchMaxDiff) {
+			return false;
+		} elseif (abs($secondLevel - $thirdLevel) > $this->researchMaxDiff) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public function researchPrice(int $research, int $level): int

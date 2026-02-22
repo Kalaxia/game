@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Galaxy\Repository;
 
-use App\Classes\Entity\AbstractRepository;
 use App\Modules\Galaxy\Domain\Entity\Sector;
 use App\Modules\Galaxy\Domain\Entity\System;
 use App\Modules\Galaxy\Domain\Repository\SystemRepositoryInterface;
@@ -19,7 +18,7 @@ class SystemRepository extends DoctrineRepository implements SystemRepositoryInt
 		parent::__construct($registry, System::class);
 	}
 
-	public function get(Uuid $id): System|null
+	public function get(Uuid $id): ?System
 	{
 		return $this->find($id);
 	}

@@ -10,9 +10,9 @@ use Symfony\Component\Uid\Uuid;
 
 interface CommercialShippingRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): CommercialShipping|null;
+	public function get(Uuid $id): ?CommercialShipping;
 
-	public function getByTransaction(Transaction $transaction): CommercialShipping|null;
+	public function getByTransaction(Transaction $transaction): ?CommercialShipping;
 
 	/**
 	 * @return list<CommercialShipping>

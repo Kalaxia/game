@@ -22,10 +22,10 @@ class ViewBuildingPanel extends AbstractController
 		methods: [Request::METHOD_GET],
 	)]
 	public function __invoke(
-        Planet               $currentPlanet,
-        BuildingLevelHandler $buildingLevelHandler,
-        PlanetHelper         $planetHelper,
-        int                  $identifier,
+		Planet $currentPlanet,
+		BuildingLevelHandler $buildingLevelHandler,
+		PlanetHelper $planetHelper,
+		int $identifier,
 	): Response {
 		if (!$planetHelper->isABuilding($identifier)) {
 			throw $this->createNotFoundException('This building does not exist');

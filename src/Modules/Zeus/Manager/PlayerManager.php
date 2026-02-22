@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Zeus\Manager;
 
-use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
@@ -21,28 +20,27 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Uid\Uuid;
 
 // @TODO Remove bounds to sessions
 // TODO reapply readonly when service has been simplified
 readonly class PlayerManager
 {
 	public function __construct(
-		private PlayerRepositoryInterface       $playerRepository,
-		private EventDispatcherInterface        $eventDispatcher,
-		private EntityManagerInterface          $entityManager,
-		private UpdatePlanetPoints              $updatePlanetPoints,
-		private PlanetRepositoryInterface       $planetRepository,
-		private PlaceManager                    $placeManager,
-		private PlaceRepositoryInterface        $placeRepository,
+		private PlayerRepositoryInterface $playerRepository,
+		private EventDispatcherInterface $eventDispatcher,
+		private EntityManagerInterface $entityManager,
+		private UpdatePlanetPoints $updatePlanetPoints,
+		private PlanetRepositoryInterface $planetRepository,
+		private PlaceManager $placeManager,
+		private PlaceRepositoryInterface $placeRepository,
 		private NotificationRepositoryInterface $notificationRepository,
-		private SectorRepositoryInterface       $sectorRepository,
-		private TechnologyRepositoryInterface   $technologyRepository,
-		private UrlGeneratorInterface           $urlGenerator,
+		private SectorRepositoryInterface $sectorRepository,
+		private TechnologyRepositoryInterface $technologyRepository,
+		private UrlGeneratorInterface $urlGenerator,
 		#[Autowire('%zeus.player.base_level%')]
-		private int                             $playerBaseLevel,
+		private int $playerBaseLevel,
 		#[Autowire('%server_id%')]
-		private int                             $serverId,
+		private int $serverId,
 	) {
 	}
 

@@ -20,13 +20,13 @@ use Symfony\Component\Uid\Uuid;
 class SendCreditsToPlayer extends AbstractController
 {
 	public function __invoke(
-		Request                              $request,
-		Player                               $currentPlayer,
+		Request $request,
+		Player $currentPlayer,
 		CreditTransactionRepositoryInterface $creditTransactionRepository,
-		PlayerRepositoryInterface            $playerRepository,
+		PlayerRepositoryInterface $playerRepository,
 		NotificationRepositoryInterface $notificationRepository,
-		Parser                               $parser,
-		PlayerManager                        $playerManager
+		Parser $parser,
+		PlayerManager $playerManager,
 	): Response {
 		$name = $request->request->get('name');
 		$credit = $request->request->getInt('quantity');

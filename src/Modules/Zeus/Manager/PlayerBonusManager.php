@@ -24,8 +24,8 @@ readonly class PlayerBonusManager
 		private CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
 		private GetFactionsConfiguration $getFactionsConfiguration,
 		private TechnologyRepositoryInterface $technologyRepository,
-		private TechnologyHelper              $technologyHelper,
-		private LawRepositoryInterface        $lawRepository,
+		private TechnologyHelper $technologyHelper,
+		private LawRepositoryInterface $lawRepository,
 	) {
 	}
 
@@ -38,7 +38,6 @@ readonly class PlayerBonusManager
 			}
 		} catch (NoCurrentPlayerSetException) {
 		}
-
 
 		$technology = $this->technologyRepository->getPlayerTechnology($player);
 		$playerBonus = new PlayerBonus($player, $technology);

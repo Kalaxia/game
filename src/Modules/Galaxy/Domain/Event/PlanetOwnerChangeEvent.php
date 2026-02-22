@@ -9,8 +9,7 @@ readonly class PlanetOwnerChangeEvent
 {
 	public function __construct(
 		public Planet $planet,
-		public Player|null $previousOwner = null,
+		public ?Player $previousOwner = null,
 	) {
-
 	}
 }

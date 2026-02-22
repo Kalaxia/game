@@ -29,17 +29,17 @@ use Symfony\Component\Uid\Uuid;
 class GiveResources extends AbstractController
 {
 	public function __invoke(
-        Request                               $request,
-        Player                                $currentPlayer,
-        GetTravelDuration                     $getTravelDuration,
-        MessageBusInterface                   $messageBus,
-        Planet                                $currentPlanet,
-        PlanetManager                         $planetManager,
-        PlanetRepositoryInterface             $planetRepository,
-        PlanetHelper                          $planetHelper,
-        CommercialShippingRepositoryInterface $commercialShippingRepository,
-        NotificationRepositoryInterface       $notificationRepository,
-        CountNeededCommercialShips            $countNeededCommercialShips,
+		Request $request,
+		Player $currentPlayer,
+		GetTravelDuration $getTravelDuration,
+		MessageBusInterface $messageBus,
+		Planet $currentPlanet,
+		PlanetManager $planetManager,
+		PlanetRepositoryInterface $planetRepository,
+		PlanetHelper $planetHelper,
+		CommercialShippingRepositoryInterface $commercialShippingRepository,
+		NotificationRepositoryInterface $notificationRepository,
+		CountNeededCommercialShips $countNeededCommercialShips,
 	): Response {
 		$planetId = $request->request->get('planetId') ?? throw new BadRequestHttpException('Missing base id');
 		$quantity = $request->request->get('quantity') ?? throw new BadRequestHttpException('Missing quantity');
@@ -53,7 +53,7 @@ class GiveResources extends AbstractController
 			throw new BadRequestHttpException('envoi de ressources impossible - action inutile, vos ressources sont déjà sur cette base orbitale');
 		}
 		$resource = intval($quantity);
-		if ($resource === 0) {
+		if (0 === $resource) {
 			throw new BadRequestHttpException('envoi de ressources impossible - il faut envoyer un nombre entier positif');
 		}
 		if ($currentPlanet->resourcesStorage < $resource) {

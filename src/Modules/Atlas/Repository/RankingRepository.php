@@ -16,7 +16,7 @@ class RankingRepository extends DoctrineRepository implements RankingRepositoryI
 		parent::__construct($registry, Ranking::class);
 	}
 
-	public function getLastRanking(): Ranking|null
+	public function getLastRanking(): ?Ranking
 	{
 		return $this->findOneBy([], ['createdAt' => 'DESC']);
 	}

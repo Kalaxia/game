@@ -8,11 +8,11 @@ use App\Modules\Hermes\Model\ConversationUser;
 use App\Modules\Zeus\Model\Player;
 
 $request = $this->getContainer()->get('app.request');
-$session = $this->getContainer()->get(\App\Classes\Library\Session\SessionWrapper::class);
-$conversationManager = $this->getContainer()->get(\App\Modules\Hermes\Manager\ConversationManager::class);
-$conversationMessageManager = $this->getContainer()->get(\App\Modules\Hermes\Manager\ConversationMessageManager::class);
-$conversationUserManager = $this->getContainer()->get(\App\Modules\Hermes\Manager\ConversationUserManager::class);
-$playerManager = $this->getContainer()->get(\App\Modules\Zeus\Manager\PlayerManager::class);
+$session = $this->getContainer()->get(App\Classes\Library\Session\SessionWrapper::class);
+$conversationManager = $this->getContainer()->get(App\Modules\Hermes\Manager\ConversationManager::class);
+$conversationMessageManager = $this->getContainer()->get(App\Modules\Hermes\Manager\ConversationMessageManager::class);
+$conversationUserManager = $this->getContainer()->get(App\Modules\Hermes\Manager\ConversationUserManager::class);
+$playerManager = $this->getContainer()->get(App\Modules\Zeus\Manager\PlayerManager::class);
 
 $conversation = $request->query->get('conversation');
 $recipients = $request->request->get('recipients');
@@ -37,7 +37,7 @@ if (false !== $recipients and false !== $conversation) {
 
 		// traitement des utilisateurs multiples
 		$recipients = explode(',', (string) $recipients);
-		$recipients = array_filter($recipients, fn($e) => $e == $session->get('playerId') ? false : true);
+		$recipients = array_filter($recipients, fn ($e) => $e == $session->get('playerId') ? false : true);
 		$recipients[] = 0;
 
 		if ((count($recipients) + count($players)) <= ConversationUser::MAX_USERS) {
@@ -45,7 +45,7 @@ if (false !== $recipients and false !== $conversation) {
 			$newPlayers = $playerManager->getByIdsAndStatements($recipients, [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY]);
 			if (count($newPlayers) >= 1) {
 				// création de la date précédente
-				$readingDate = date('Y-m-d H:i:s', (strtotime(Utils::now()) - 20));
+				$readingDate = date('Y-m-d H:i:s', strtotime(Utils::now()) - 20);
 
 				// créer la liste des users
 				foreach ($newPlayers as $newPlayer) {
