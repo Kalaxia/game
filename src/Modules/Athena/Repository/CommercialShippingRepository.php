@@ -20,12 +20,12 @@ class CommercialShippingRepository extends DoctrineRepository implements Commerc
 		parent::__construct($registry, CommercialShipping::class);
 	}
 
-	public function get(Uuid $id): CommercialShipping|null
+	public function get(Uuid $id): ?CommercialShipping
 	{
 		return $this->find($id);
 	}
 
-	public function getByTransaction(Transaction $transaction): CommercialShipping|null
+	public function getByTransaction(Transaction $transaction): ?CommercialShipping
 	{
 		return $this->findOneBy([
 			'transaction' => $transaction,

@@ -11,6 +11,5 @@ readonly class CommanderSchoolExperienceMessage implements AsyncMessage
 {
 	public function __construct(public Uuid $commanderId)
 	{
-
 	}
 }

@@ -16,7 +16,6 @@ readonly class SpyingNotificationEventListener
 		private NotificationRepositoryInterface $notificationRepository,
 		private UrlGeneratorInterface $urlGenerator,
 	) {
-
 	}
 
 	public function __invoke(SpyEvent $event): void

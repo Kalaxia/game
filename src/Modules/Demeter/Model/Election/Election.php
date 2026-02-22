@@ -12,6 +12,5 @@ class Election
 		public Color $faction,
 		public \DateTimeImmutable $dElection,
 	) {
-
 	}
 }

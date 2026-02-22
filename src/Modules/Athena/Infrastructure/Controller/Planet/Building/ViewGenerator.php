@@ -22,12 +22,12 @@ class ViewGenerator extends AbstractController
 		methods: [Request::METHOD_GET],
 	)]
 	public function __invoke(
-        BuildingQueueRepositoryInterface $buildingQueueRepository,
-        CurrentPlayerBonusRegistry       $currentPlayerBonusRegistry,
-        Player                           $currentPlayer,
-        Planet                           $currentBase,
-        TechnologyManager                $technologyManager,
-        TechnologyRepositoryInterface    $technologyRepository,
+		BuildingQueueRepositoryInterface $buildingQueueRepository,
+		CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
+		Player $currentPlayer,
+		Planet $currentBase,
+		TechnologyManager $technologyManager,
+		TechnologyRepositoryInterface $technologyRepository,
 	): Response {
 		$technology = $technologyRepository->getPlayerTechnology($currentPlayer);
 		$buildingQueues = $buildingQueueRepository->getPlanetQueues($currentBase);

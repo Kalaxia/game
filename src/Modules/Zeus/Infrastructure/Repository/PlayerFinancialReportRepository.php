@@ -31,7 +31,7 @@ class PlayerFinancialReportRepository extends DoctrineRepository implements Play
 		);
 	}
 
-	public function getPlayerLastReport(Player $player): PlayerFinancialReport|null
+	public function getPlayerLastReport(Player $player): ?PlayerFinancialReport
 	{
 		return $this->findOneBy(
 			[

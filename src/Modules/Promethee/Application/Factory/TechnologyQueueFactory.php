@@ -30,10 +30,10 @@ readonly class TechnologyQueueFactory
 	}
 
 	public function create(
-        Planet             $planet,
-        int                $identifier,
-        int                $targetLevel,
-        \DateTimeImmutable $createdAt,
+		Planet $planet,
+		int $identifier,
+		int $targetLevel,
+		\DateTimeImmutable $createdAt,
 	): TechnologyQueue {
 		$technologyQueue = new TechnologyQueue(
 			id: Uuid::v4(),

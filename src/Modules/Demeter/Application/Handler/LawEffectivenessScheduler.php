@@ -31,7 +31,6 @@ readonly class LawEffectivenessScheduler implements SchedulerInterface
 		private LawRepositoryInterface $lawRepository,
 		private MessageBusInterface $messageBus,
 	) {
-
 	}
 
 	public function schedule(): void
@@ -66,7 +65,7 @@ readonly class LawEffectivenessScheduler implements SchedulerInterface
 						Law::TOTALALLIANCE => AllianceDeclarationResultMessage::class,
 						Law::NEUTRALPACT => NonAgressionPactDeclarationResultMessage::class,
 						Law::PUNITION => SanctionResultMessage::class,
-					}
+					},
 				};
 				$this->messageBus->dispatch(
 					new $messageClass($law->id),

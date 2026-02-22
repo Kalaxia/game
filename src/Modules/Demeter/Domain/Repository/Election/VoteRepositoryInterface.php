@@ -12,7 +12,7 @@ use App\Modules\Zeus\Model\Player;
  */
 interface VoteRepositoryInterface extends EntityRepositoryInterface
 {
-	public function getPlayerVote(Player $player, Election $election): Vote|null;
+	public function getPlayerVote(Player $player, Election $election): ?Vote;
 
 	/**
 	 * @return list<Vote>

@@ -14,15 +14,15 @@ use Twig\TwigFunction;
 class TradeRouteExtension extends AbstractExtension
 {
 	public function __construct(
-		private readonly CurrentPlayerRegistry    $currentPlayerRegistry,
+		private readonly CurrentPlayerRegistry $currentPlayerRegistry,
 		private readonly GetDistanceBetweenPlaces $getDistanceBetweenPlaces,
-		private readonly GetCommercialRoutePrice  $getCommercialRoutePrice,
+		private readonly GetCommercialRoutePrice $getCommercialRoutePrice,
 		private readonly GetCommercialRouteIncome $getCommercialRouteIncome,
 	) {
 	}
 
 	#[\Override]
-    public function getFunctions(): array
+	public function getFunctions(): array
 	{
 		return [
 			new TwigFunction('get_route_price', fn (float $distance) => ($this->getCommercialRoutePrice)($distance, $this->currentPlayerRegistry->get())),

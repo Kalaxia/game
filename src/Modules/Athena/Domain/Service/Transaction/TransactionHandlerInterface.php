@@ -6,5 +6,4 @@ namespace App\Modules\Athena\Domain\Service\Transaction;
 
 interface TransactionHandlerInterface
 {
-
 }

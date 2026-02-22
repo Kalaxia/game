@@ -23,8 +23,7 @@ class ForumTopic
 		public \DateTimeImmutable $createdAt = new \DateTimeImmutable(),
 		public \DateTimeImmutable $lastContributedAt = new \DateTimeImmutable(),
 		// si joueur renseigné lors du chargement
-		public Player|null $lastView = null,
+		public ?Player $lastView = null,
 	) {
-
 	}
 }

@@ -10,7 +10,7 @@ class LootEvent implements TrackingEvent
 {
 	public function __construct(
 		public readonly Commander $commander,
-		public readonly Player|null $defender,
+		public readonly ?Player $defender,
 	) {
 	}
 

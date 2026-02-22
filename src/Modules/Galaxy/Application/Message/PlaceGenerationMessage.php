@@ -14,6 +14,5 @@ class PlaceGenerationMessage implements AsyncMessage
 		public int $position,
 		public int $sectorDanger,
 	) {
-
 	}
 }

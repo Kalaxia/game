@@ -58,7 +58,7 @@ readonly class CommanderSchoolExperienceHandler
 			$launchNewMessage = false;
 
 			for ($i = 0; $i < $missingUpdatesCount; ++$i) {
-				if ($i === self::MAX_UPDATES) {
+				if (self::MAX_UPDATES === $i) {
 					$launchNewMessage = true;
 
 					break;

@@ -27,22 +27,22 @@ use Twig\TwigFunction;
 class PlanetExtension extends AbstractExtension
 {
 	public function __construct(
-		private readonly BuildingDataHandler            $buildingDataHandler,
-		private readonly CalculateFleetCost             $calculateFleetCost,
-		private readonly GetTimeCost                    $getTimeCost,
+		private readonly BuildingDataHandler $buildingDataHandler,
+		private readonly CalculateFleetCost $calculateFleetCost,
+		private readonly GetTimeCost $getTimeCost,
 		private readonly GetCoolDownBeforeLeavingPlanet $getCoolDownBeforeLeavingPlanet,
-		private readonly DurationHandler                $durationHandler,
-		private readonly PlanetHelper                   $planetHelper,
-		private readonly PopulationTaxHandler           $populationTaxHandler,
-		private readonly GetMaxResourceStorage          $getMaxStorage,
+		private readonly DurationHandler $durationHandler,
+		private readonly PlanetHelper $planetHelper,
+		private readonly PopulationTaxHandler $populationTaxHandler,
+		private readonly GetMaxResourceStorage $getMaxStorage,
 		private readonly GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 		#[Autowire('%game.ship_cost_reduction%')]
-		private readonly float                          $shipCostReduction,
+		private readonly float $shipCostReduction,
 	) {
 	}
 
 	#[\Override]
-    public function getFilters(): array
+	public function getFilters(): array
 	{
 		return [
 			new TwigFilter('base_demography', fn (Planet $planet) => Game::getSizeOfPlanet($planet->population)),
@@ -61,7 +61,7 @@ class PlanetExtension extends AbstractExtension
 	}
 
 	#[\Override]
-    public function getFunctions(): array
+	public function getFunctions(): array
 	{
 		return [
 			new TwigFunction('get_planet_size', fn (int|float $population) => Game::getSizeOfPlanet($population)),

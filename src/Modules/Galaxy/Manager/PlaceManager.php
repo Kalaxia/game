@@ -9,12 +9,10 @@ use App\Modules\Ares\Model\Report;
 use App\Modules\Galaxy\Domain\Entity\EmptyPlace;
 use App\Modules\Galaxy\Domain\Entity\Place;
 use App\Modules\Galaxy\Domain\Entity\Planet;
-use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
-use App\Modules\Zeus\Model\Player;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -22,9 +20,9 @@ readonly class PlaceManager
 {
 	public function __construct(
 		private NotificationRepositoryInterface $notificationRepository,
-		private PlanetRepositoryInterface        $planetRepository,
-		private PlaceRepositoryInterface        $placeRepository,
-		private UrlGeneratorInterface           $urlGenerator,
+		private PlanetRepositoryInterface $planetRepository,
+		private PlaceRepositoryInterface $placeRepository,
+		private UrlGeneratorInterface $urlGenerator,
 	) {
 	}
 
@@ -50,7 +48,7 @@ readonly class PlaceManager
 		$this->planetRepository->save($planet);
 	}
 
-	public function sendNotif(Planet $place, int $case, Commander $commander, Report|null $report = null): void
+	public function sendNotif(Planet $place, int $case, Commander $commander, ?Report $report = null): void
 	{
 		$notifications = match ($case) {
 			Planet::CHANGESUCCESS => [
@@ -135,7 +133,7 @@ readonly class PlaceManager
 						),
 						NotificationBuilder::resourceBox(
 							NotificationBuilder::RESOURCE_TYPE_XP,
-							'+ ' . Format::number($commander->earnedExperience),
+							'+ '.Format::number($commander->earnedExperience),
 							'expérience de l\'officier',
 						),
 						NotificationBuilder::divider(),
@@ -174,7 +172,7 @@ readonly class PlaceManager
 							'voir le rapport',
 						),
 					))
-					->for($commander->player)
+					->for($commander->player),
 			],
 			Planet::LOOTPLAYERWHITBATTLESUCCESS => [
 				NotificationBuilder::new()
@@ -204,7 +202,7 @@ readonly class PlaceManager
 						),
 						NotificationBuilder::resourceBox(
 							NotificationBuilder::RESOURCE_TYPE_XP,
-							'+ ' . Format::number($commander->earnedExperience),
+							'+ '.Format::number($commander->earnedExperience),
 							'expérience de l\'officier',
 						),
 						NotificationBuilder::divider(),
@@ -242,7 +240,7 @@ readonly class PlaceManager
 							'voir le rapport',
 						),
 					))
-					->for($place->player)
+					->for($place->player),
 			],
 			Planet::LOOTPLAYERWHITBATTLEFAIL => [
 				NotificationBuilder::new()
@@ -327,7 +325,7 @@ readonly class PlaceManager
 						),
 						NotificationBuilder::resourceBox(
 							NotificationBuilder::RESOURCE_TYPE_XP,
-							'+ ' . Format::number($commander->earnedExperience),
+							'+ '.Format::number($commander->earnedExperience),
 							'expérience de l\'officier',
 						),
 					))
@@ -355,7 +353,7 @@ readonly class PlaceManager
 							'ressources pillées',
 						),
 					)
-					->for($place->player)
+					->for($place->player),
 			],
 			Planet::LOOTLOST => [
 				NotificationBuilder::new()
@@ -373,7 +371,7 @@ readonly class PlaceManager
 						),
 						' car son joueur est de votre faction, sous la protection débutant ou un allié.',
 					))
-					->for($commander->player)
+					->for($commander->player),
 			],
 			Planet::CONQUEREMPTYSSUCCESS => [
 				NotificationBuilder::new()
@@ -396,7 +394,7 @@ readonly class PlaceManager
 						),
 						NotificationBuilder::resourceBox(
 							'xp',
-							'+ ' . Format::number($commander->earnedExperience),
+							'+ '.Format::number($commander->earnedExperience),
 							'expérience de l\'officier',
 						),
 						'Votre empire s\'étend, administrez votre ',
@@ -411,7 +409,7 @@ readonly class PlaceManager
 							'voir le rapport',
 						),
 					))
-					->for($commander->player)
+					->for($commander->player),
 			],
 			Planet::CONQUEREMPTYFAIL => [
 				NotificationBuilder::new()
@@ -466,7 +464,7 @@ readonly class PlaceManager
 						NotificationBuilder::divider(),
 						NotificationBuilder::resourceBox(
 							NotificationBuilder::RESOURCE_TYPE_XP,
-							'+ ' . Format::number($commander->earnedExperience),
+							'+ '.Format::number($commander->earnedExperience),
 							'expérience de l\'officier',
 						),
 						'Elle est désormais votre, vous pouvez l\'administrer ',
@@ -514,7 +512,7 @@ readonly class PlaceManager
 						),
 						' car le joueur est dans votre faction, sous la protection débutant ou votre allié.',
 					))
-					->for($commander->player)
+					->for($commander->player),
 			],
 			Planet::COMEBACK => [
 				NotificationBuilder::new()
@@ -534,7 +532,7 @@ readonly class PlaceManager
 						NotificationBuilder::bold(Format::number($commander->resources)),
 						' ressources à vos entrepôts.'
 					))
-					->for($commander->player)
+					->for($commander->player),
 			],
 			default => throw new \RuntimeException(sprintf('Unknown notification type %s', $case)),
 		};
@@ -573,11 +571,11 @@ readonly class PlaceManager
 						),
 						'.',
 						NotificationBuilder::divider(),
-						$nbrBattle . Format::addPlural($nbrBattle, ' combats ont eu lieu.', ' seul combat a eu lieu'),
+						$nbrBattle.Format::addPlural($nbrBattle, ' combats ont eu lieu.', ' seul combat a eu lieu'),
 						NotificationBuilder::divider(),
 						NotificationBuilder::resourceBox(
 							NotificationBuilder::RESOURCE_TYPE_XP,
-							'+ ' . Format::number($commander->earnedExperience),
+							'+ '.Format::number($commander->earnedExperience),
 							'expérience de l\'officier',
 						),
 						NotificationBuilder::divider(),
@@ -594,7 +592,7 @@ readonly class PlaceManager
 								NotificationBuilder::divider(),
 								NotificationBuilder::link(
 									$this->urlGenerator->generate('fleet_archives', ['id' => $reports[$i]]),
-									'voir le ' . Format::ordinalNumber($i + 1) . ' rapport',
+									'voir le '.Format::ordinalNumber($i + 1).' rapport',
 								),
 							),
 							array_keys($reports),
@@ -618,7 +616,7 @@ readonly class PlaceManager
 						),
 						'.',
 						NotificationBuilder::divider(),
-						$nbrBattle . Format::addPlural($nbrBattle, ' combats ont eu lieu.', ' seul combat a eu lieu'),
+						$nbrBattle.Format::addPlural($nbrBattle, ' combats ont eu lieu.', ' seul combat a eu lieu'),
 						NotificationBuilder::divider(),
 						'Impliquez votre faction dans une action punitive envers votre assaillant.',
 						NotificationBuilder::divider(),
@@ -628,13 +626,13 @@ readonly class PlaceManager
 								NotificationBuilder::divider(),
 								NotificationBuilder::link(
 									$this->urlGenerator->generate('fleet_archives', ['id' => $reports[$i]]),
-									'voir le ' . Format::ordinalNumber($i + 1) . ' rapport',
+									'voir le '.Format::ordinalNumber($i + 1).' rapport',
 								),
 							),
 							array_keys($reports),
 						),
 					))
-					->for($place->player)
+					->for($place->player),
 			],
 			Planet::CONQUERPLAYERWHITBATTLEFAIL => [
 				NotificationBuilder::new()
@@ -657,7 +655,7 @@ readonly class PlaceManager
 						),
 						'.',
 						NotificationBuilder::divider(),
-						$nbrBattle . Format::addPlural($nbrBattle, ' combats ont eu lieu.', ' seul combat a eu lieu'),
+						$nbrBattle.Format::addPlural($nbrBattle, ' combats ont eu lieu.', ' seul combat a eu lieu'),
 						NotificationBuilder::divider(),
 						'Il a désormais rejoint de Mémorial. Que son âme traverse l\'Univers dans la paix.',
 						NotificationBuilder::divider(),
@@ -667,7 +665,7 @@ readonly class PlaceManager
 								NotificationBuilder::divider(),
 								NotificationBuilder::link(
 									$this->urlGenerator->generate('fleet_archives', ['id' => $reports[$i]]),
-									'voir le ' . Format::ordinalNumber($i + 1) . ' rapport',
+									'voir le '.Format::ordinalNumber($i + 1).' rapport',
 								),
 							),
 							array_keys($reports),
@@ -691,7 +689,7 @@ readonly class PlaceManager
 						),
 						'.',
 						NotificationBuilder::divider(),
-						$nbrBattle . Format::addPlural($nbrBattle, ' combats ont eu lieu.', ' seul combat a eu lieu'),
+						$nbrBattle.Format::addPlural($nbrBattle, ' combats ont eu lieu.', ' seul combat a eu lieu'),
 						NotificationBuilder::divider(),
 						'Vous avez repoussé l\'ennemi avec succès. Bravo !',
 						NotificationBuilder::divider(),
@@ -701,13 +699,13 @@ readonly class PlaceManager
 								NotificationBuilder::divider(),
 								NotificationBuilder::link(
 									$this->urlGenerator->generate('fleet_archives', ['id' => $reports[$i]]),
-									'voir le ' . Format::ordinalNumber($i + 1) . ' rapport',
+									'voir le '.Format::ordinalNumber($i + 1).' rapport',
 								),
 							),
 							array_keys($reports),
 						),
 					))
-					->for($place->player)
+					->for($place->player),
 			],
 			default => throw new \RuntimeException(sprintf('Unknown notification type %s', $case)),
 		};

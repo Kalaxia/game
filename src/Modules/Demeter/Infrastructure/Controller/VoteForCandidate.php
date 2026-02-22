@@ -21,7 +21,6 @@ class VoteForCandidate extends AbstractController
 	public function __construct(
 		private readonly CandidateRepositoryInterface $candidateRepository,
 	) {
-
 	}
 
 	public function __invoke(

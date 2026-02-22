@@ -19,12 +19,12 @@ class CandidateRepository extends DoctrineRepository implements CandidateReposit
 		parent::__construct($registry, Candidate::class);
 	}
 
-	public function get(Uuid $id): Candidate|null
+	public function get(Uuid $id): ?Candidate
 	{
 		return $this->find($id);
 	}
 
-	public function getByElectionAndPlayer(Election $election, Player $player): Candidate|null
+	public function getByElectionAndPlayer(Election $election, Player $player): ?Candidate
 	{
 		return $this->findOneBy([
 			'player' => $player,

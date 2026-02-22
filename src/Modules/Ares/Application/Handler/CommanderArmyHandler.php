@@ -73,9 +73,9 @@ readonly class CommanderArmyHandler
 
 		if (0 !== $pev) {
 			return $pev;
-		} else {
-			return $this->getPev($commander);
 		}
+
+		return $this->getPev($commander);
 	}
 
 	public function setArmyAtEnd(Commander $commander): void

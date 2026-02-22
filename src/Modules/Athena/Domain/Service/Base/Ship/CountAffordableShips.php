@@ -35,10 +35,10 @@ readonly class CountAffordableShips
 	 * @param list<ShipQueue> $shipQueues
 	 */
 	private function countAffordableShipsFromHangarStorage(
-        int      $shipIdentifier,
-        Planet   $planet,
-        DockType $dockType,
-        array    $shipQueues,
+		int $shipIdentifier,
+		Planet $planet,
+		DockType $dockType,
+		array $shipQueues,
 	): int {
 		$affordableShipPoints = ($this->countHangarAvailableStorableShipPoints)($planet, $shipQueues, $dockType);
 

@@ -1733,15 +1733,15 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  */
 final class App
 {
-    /**
-     * @param ConfigType $config
-     *
-     * @psalm-return ConfigType
-     */
-    public static function config(array $config): array
-    {
-        return AppReference::config($config);
-    }
+	/**
+	 * @param ConfigType $config
+	 *
+	 * @psalm-return ConfigType
+	 */
+	public static function config(array $config): array
+	{
+		return AppReference::config($config);
+	}
 }
 
 namespace Symfony\Component\Routing\Loader\Configurator;
@@ -1810,13 +1810,13 @@ namespace Symfony\Component\Routing\Loader\Configurator;
  */
 final class Routes
 {
-    /**
-     * @param RoutesConfig $config
-     *
-     * @psalm-return RoutesConfig
-     */
-    public static function config(array $config): array
-    {
-        return $config;
-    }
+	/**
+	 * @param RoutesConfig $config
+	 *
+	 * @psalm-return RoutesConfig
+	 */
+	public static function config(array $config): array
+	{
+		return $config;
+	}
 }

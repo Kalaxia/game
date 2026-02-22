@@ -26,7 +26,6 @@ class Technology
 		public int $dock3Unblock = 0,
 		public int $recyclingUnblock = 0,
 		public int $spatioportUnblock = 0,
-
 		public int $ship0Unblock = 0,
 		public int $ship1Unblock = 0,
 		public int $ship2Unblock = 0,
@@ -39,7 +38,6 @@ class Technology
 		public int $ship9Unblock = 0,
 		public int $ship10Unblock = 0,
 		public int $ship11Unblock = 0,
-
 		public int $colonization = 0,
 		public int $conquest = 0,
 
@@ -53,17 +51,14 @@ class Technology
 		public int $commercialIncomeUp = 0,
 		public int $gravitModuleUp = 0,
 		public int $dock3Speed = 0,
-
 		public int $populationTaxUp = 0,
 		public int $commanderInvestUp = 0,
 		public int $uniInvestUp = 0,
 		public int $antiSpyInvestUp = 0,
-
 		public int $spaceShipsSpeed = 0,
 		public int $spaceShipsContainer = 0, // soute
 
 		public int $baseQuantity = 0,
-
 		public int $fighterSpeed = 0,
 		public int $fighterAttack = 0,
 		public int $fighterDefense = 0,
@@ -77,7 +72,6 @@ class Technology
 		public int $destroyerAttack = 0,
 		public int $destroyerDefense = 0,
 	) {
-		
 	}
 
 	public const COEF_POINTS = 1;

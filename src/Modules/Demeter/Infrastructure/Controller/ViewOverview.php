@@ -27,7 +27,6 @@ class ViewOverview extends AbstractController
 		private readonly NextElectionDateCalculator $nextElectionDateCalculator,
 		private readonly DurationHandler $durationHandler,
 	) {
-
 	}
 
 	public function __invoke(

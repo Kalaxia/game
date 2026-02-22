@@ -104,6 +104,7 @@ class Save extends AbstractController
 			// @TODO handle this
 			throw $t;
 			dd($t);
+
 			// tentative de réparation de l'erreur
 			return $this->redirectToRoute('registration_choose_place');
 		}

@@ -47,7 +47,6 @@ class Law
 		public int $forVote = 0,
 		public int $againstVote = 0,
 	) {
-		
 	}
 
 	public function isBeingVoted(): bool

@@ -24,11 +24,11 @@ class AddToMission extends AbstractController
 		methods: [Request::METHOD_POST],
 	)]
 	public function __invoke(
-        Request                             $request,
-        Planet                              $currentPlanet,
-        PlanetHelper                        $planetHelper,
-        RecyclingMissionRepositoryInterface $recyclingMissionRepository,
-        Uuid                                $id,
+		Request $request,
+		Planet $currentPlanet,
+		PlanetHelper $planetHelper,
+		RecyclingMissionRepositoryInterface $recyclingMissionRepository,
+		Uuid $id,
 	): Response {
 		$quantity = $request->request->getInt('quantity');
 

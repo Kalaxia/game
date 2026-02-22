@@ -20,22 +20,21 @@ use Symfony\Component\Uid\Uuid;
 readonly class ShipQueueFactory
 {
 	public function __construct(
-		private DurationHandler              $durationHandler,
-		private EventDispatcherInterface     $eventDispatcher,
-		private CountShipTimeCost            $countShipTimeCost,
-		private MessageBusInterface          $messageBus,
+		private DurationHandler $durationHandler,
+		private EventDispatcherInterface $eventDispatcher,
+		private CountShipTimeCost $countShipTimeCost,
+		private MessageBusInterface $messageBus,
 		private ShipQueueRepositoryInterface $shipQueueRepository,
 	) {
 	}
 
 	public function create(
-        Planet             $planet,
-        int                $shipIdentifier,
-        DockType           $dockType,
-        int                $quantity,
-        \DateTimeImmutable $startedAt,
+		Planet $planet,
+		int $shipIdentifier,
+		DockType $dockType,
+		int $quantity,
+		\DateTimeImmutable $startedAt,
 	): ShipQueue {
-
 		$shipQueue = new ShipQueue(
 			id: Uuid::v4(),
 			base: $planet,

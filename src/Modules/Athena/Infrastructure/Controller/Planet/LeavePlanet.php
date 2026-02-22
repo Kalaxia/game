@@ -33,18 +33,18 @@ class LeavePlanet extends AbstractController
 		methods: [Request::METHOD_GET],
 	)]
 	public function __invoke(
-		Request                          $request,
-		Planet                           $currentPlanet,
-		CurrentPlayerPlanetsRegistry     $currentPlayerPlanetsRegistry,
+		Request $request,
+		Planet $currentPlanet,
+		CurrentPlayerPlanetsRegistry $currentPlayerPlanetsRegistry,
 		BuildingQueueRepositoryInterface $buildingQueueRepository,
-		GetCoolDownBeforeLeavingPlanet   $getCoolDownBeforeLeavingBase,
-		CommanderManager                 $commanderManager,
-		CommanderRepositoryInterface     $commanderRepository,
-		PlanetManager                    $planetManager,
-		PlanetHelper                     $planetHelper,
-		PlaceManager                     $placeManager,
-		EntityManagerInterface           $entityManager,
-		EventDispatcherInterface         $eventDispatcher,
+		GetCoolDownBeforeLeavingPlanet $getCoolDownBeforeLeavingBase,
+		CommanderManager $commanderManager,
+		CommanderRepositoryInterface $commanderRepository,
+		PlanetManager $planetManager,
+		PlanetHelper $planetHelper,
+		PlaceManager $placeManager,
+		EntityManagerInterface $entityManager,
+		EventDispatcherInterface $eventDispatcher,
 	): Response {
 		if (1 === $currentPlayerPlanetsRegistry->count()) {
 			throw new ConflictHttpException('vous ne pouvez pas abandonner votre unique planète');
@@ -64,7 +64,7 @@ class LeavePlanet extends AbstractController
 		$coolDownInHours = $getCoolDownBeforeLeavingBase();
 		$canLeavePlanet = new CanLeavePlanet($coolDownInHours);
 		if (!$canLeavePlanet->isSatisfiedBy($currentPlanet)) {
-			throw new ConflictHttpException('Vous ne pouvez pas abandonner de base dans les ' . $coolDownInHours . ' premières relèves.');
+			throw new ConflictHttpException('Vous ne pouvez pas abandonner de base dans les '.$coolDownInHours.' premières relèves.');
 		}
 
 		// delete buildings in queue

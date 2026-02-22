@@ -10,7 +10,7 @@ use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
 use App\Modules\Athena\Model\Transaction;
 
 /**
- * Calculates the new rate when a transaction is accepted
+ * Calculates the new rate when a transaction is accepted.
  */
 readonly class CalculateNewRate
 {
@@ -23,7 +23,7 @@ readonly class CalculateNewRate
 	public function __invoke(Transaction $transaction): float
 	{
 		$currentRate = $this->transactionRepository->getExchangeRate($transaction->type);
-		
+
 		return match ($transaction->type) {
 			Transaction::TYP_RESOURCE => $this->calculateNewResourceRate($transaction, $currentRate),
 			Transaction::TYP_SHIP => $this->calculateNewShipRate($transaction, $currentRate),

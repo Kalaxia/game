@@ -15,16 +15,16 @@ class ViewForum extends AbstractController
 		Request $request,
 		Player $currentPlayer,
 		ForumTopicRepositoryInterface $forumTopicRepository,
-		int|null $forumId,
+		?int $forumId,
 	): Response {
 		$topicsByForum = [];
 
 		if (null === $forumId) {
 			$showHome = true;
-			$isStandard_topics = FALSE;
-			# page d'accueil des forums
-			# charge les x premiers sujets de chaque forum
-			for ($i = 1; $i <= ForumResources::size(); $i++) {
+			$isStandard_topics = false;
+			// page d'accueil des forums
+			// charge les x premiers sujets de chaque forum
+			for ($i = 1; $i <= ForumResources::size(); ++$i) {
 				$forumId = ForumResources::getInfo($i, 'id');
 				// TODO move this to a Voter
 				if ($this->canViewForum($currentPlayer, $forumId)) {
@@ -36,19 +36,19 @@ class ViewForum extends AbstractController
 		} else {
 			$showHome = false;
 			$selectedForumId = $forumId;
-			$archivedMode = $request->query->get('mode') === 'archived' && $currentPlayer->isGovernmentMember();
+			$archivedMode = 'archived' === $request->query->get('mode') && $currentPlayer->isGovernmentMember();
 			// TODO move this to a Voter
 			if ($this->canViewForum($currentPlayer, $forumId)) {
 				$topicsByForum[$forumId] = ($forumId < 20)
 					? $forumTopicRepository->getByForumAndFactionWithLastViews($forumId, $currentPlayer->faction, $currentPlayer, archived: $archivedMode)
 					: $forumTopicRepository->getByForumWithLastViews($forumId, $currentPlayer, archived: $archivedMode);
 
-				$isStandard_topics = TRUE;
+				$isStandard_topics = true;
 			} else {
 				throw $this->createAccessDeniedException('You cannot access this forum');
 			}
 		}
-		
+
 		return $this->render('pages/demeter/faction/forum.html.twig', [
 			'faction' => $currentPlayer->faction,
 			'topics_by_forum' => $topicsByForum,

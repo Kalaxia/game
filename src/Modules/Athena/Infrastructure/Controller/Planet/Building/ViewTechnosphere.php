@@ -44,17 +44,17 @@ class ViewTechnosphere extends AbstractController
 		methods: [Request::METHOD_GET],
 	)]
 	public function __invoke(
-        Request                            $request,
-        Planet                             $currentPlanet,
-        CurrentPlayerBonusRegistry         $currentPlayerBonusRegistry,
-        Player                             $currentPlayer,
-        TechnologyManager                  $technologyManager,
-        TechnologyQueueManager             $technologyQueueManager,
-        TechnologyQueueRepositoryInterface $technologyQueueRepository,
-        TechnologyRepositoryInterface      $technologyRepository,
-        PlanetHelper                       $planetHelper,
+		Request $request,
+		Planet $currentPlanet,
+		CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
+		Player $currentPlayer,
+		TechnologyManager $technologyManager,
+		TechnologyQueueManager $technologyQueueManager,
+		TechnologyQueueRepositoryInterface $technologyQueueRepository,
+		TechnologyRepositoryInterface $technologyRepository,
+		PlanetHelper $planetHelper,
 	): Response {
-		if ($currentPlanet->levelTechnosphere === 0) {
+		if (0 === $currentPlanet->levelTechnosphere) {
 			return $this->redirectToRoute('base_overview');
 		}
 
@@ -100,12 +100,12 @@ class ViewTechnosphere extends AbstractController
 	 * @param list<TechnologyQueue> $playerTechnologyQueues
 	 */
 	private function getTechnologiesData(
-        Player     $currentPlayer,
-        Planet     $currentBase,
-        Technology $technology,
-        array      $baseTechnologyQueues,
-        array      $playerTechnologyQueues,
-        int        $totalBonus,
+		Player $currentPlayer,
+		Planet $currentBase,
+		Technology $technology,
+		array $baseTechnologyQueues,
+		array $playerTechnologyQueues,
+		int $totalBonus,
 	): array {
 		$data = [];
 

@@ -54,7 +54,7 @@ class WriteMessage extends AbstractController
 
 		$forumMessageRepository->save($message);
 
-		$topic->messagesCount++;
+		++$topic->messagesCount;
 		$topic->lastContributedAt = new \DateTimeImmutable();
 
 		$forumTopicRepository->save($topic);

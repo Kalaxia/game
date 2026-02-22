@@ -19,7 +19,7 @@ class JavascriptExtension extends AbstractExtension
 	}
 
 	#[\Override]
-    public function getFunctions(): array
+	public function getFunctions(): array
 	{
 		return [
 			new TwigFunction('get_api_endpoint', fn () => $this->requestStack->getCurrentRequest()->getSchemeAndHttpHost()),

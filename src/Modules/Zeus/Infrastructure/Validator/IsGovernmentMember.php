@@ -19,6 +19,7 @@ class IsGovernmentMember extends SelectorCompositeSpecification
 
 	/**
 	 * @param array<string, mixed> $options
+	 *
 	 * @return Constraint[]
 	 */
 	public function getConstraints(array $options): array
@@ -31,7 +32,7 @@ class IsGovernmentMember extends SelectorCompositeSpecification
 	}
 
 	#[\Override]
-    public function addMatchingCriteria(QueryBuilder $queryBuilder): void
+	public function addMatchingCriteria(QueryBuilder $queryBuilder): void
 	{
 		parent::addMatchingCriteria($queryBuilder);
 

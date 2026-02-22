@@ -20,15 +20,15 @@ use Twig\TwigFunction;
 class QueueableExtension extends AbstractExtension
 {
 	public function __construct(
-		private readonly PlanetHelper                   $planetHelper,
-		private readonly TechnologyHelper               $technologyHelper,
-		private readonly DurationHandler                $durationHandler,
+		private readonly PlanetHelper $planetHelper,
+		private readonly TechnologyHelper $technologyHelper,
+		private readonly DurationHandler $durationHandler,
 		private readonly GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 	) {
 	}
 
 	#[\Override]
-    public function getFunctions(): array
+	public function getFunctions(): array
 	{
 		return [
 			new TwigFunction('get_technology_info', fn (int $technology, string $info, int $level = 0) => $this->technologyHelper->getInfo($technology, $info, $level)),
@@ -36,7 +36,7 @@ class QueueableExtension extends AbstractExtension
 	}
 
 	#[\Override]
-    public function getFilters(): array
+	public function getFilters(): array
 	{
 		return [
 			// @TODO migrate to a technology twig extension

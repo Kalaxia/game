@@ -35,10 +35,10 @@ class ViewRecycling extends AbstractController
 		methods: [Request::METHOD_GET],
 	)]
 	public function __invoke(
-        Planet                              $currentPlanet,
-        PlanetHelper                        $planetHelper,
-        RecyclingMissionRepositoryInterface $recyclingMissionRepository,
-        RecyclingLogRepositoryInterface     $recyclingLogRepository,
+		Planet $currentPlanet,
+		PlanetHelper $planetHelper,
+		RecyclingMissionRepositoryInterface $recyclingMissionRepository,
+		RecyclingLogRepositoryInterface $recyclingLogRepository,
 	): Response {
 		if (0 === $currentPlanet->levelRecycling) {
 			return $this->redirectToRoute('base_overview');

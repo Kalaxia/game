@@ -12,20 +12,21 @@ use Symfony\Component\Uid\Uuid;
 
 interface CommercialRouteRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(int $id): CommercialRoute|null;
+	public function get(int $id): ?CommercialRoute;
 
 	/**
 	 * @param list<int> $factions
+	 *
 	 * @return list<array<string, mixed>>
 	 *
 	 * @throws Exception
 	 */
 	public function searchCandidates(
-        Player $player,
-        Planet $planet,
-        array  $factions,
-        int    $minDistance,
-        int    $maxDistance,
+		Player $player,
+		Planet $planet,
+		array $factions,
+		int $minDistance,
+		int $maxDistance,
 	): array;
 
 	/**
@@ -39,9 +40,9 @@ interface CommercialRouteRepositoryInterface extends EntityRepositoryInterface
 
 	public function getInternalCommercialRouteFactionData(Color $faction): array;
 
-	public function getByIdAndPlanet(Uuid $id, Planet $planet): CommercialRoute|null;
+	public function getByIdAndPlanet(Uuid $id, Planet $planet): ?CommercialRoute;
 
-	public function getByIdAndDistantPlanet(Uuid $id, Planet $planet): CommercialRoute|null;
+	public function getByIdAndDistantPlanet(Uuid $id, Planet $planet): ?CommercialRoute;
 
 	/**
 	 * @return list<CommercialRoute>
@@ -53,7 +54,7 @@ interface CommercialRouteRepositoryInterface extends EntityRepositoryInterface
 	 */
 	public function getByDistantPlanet(Planet $planet): array;
 
-	public function getExistingRoute(Planet $planet, Planet $distantPlanet): CommercialRoute|null;
+	public function getExistingRoute(Planet $planet, Planet $distantPlanet): ?CommercialRoute;
 
 	/**
 	 * @return list<CommercialRoute>

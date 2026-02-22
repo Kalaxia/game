@@ -26,10 +26,10 @@ class ViewPlayerRankings extends AbstractController
 		$p = $playerRankingRepository->getPlayerLastRanking($currentPlayer);
 
 		// TDO refactor with property accessor
-		$positionGetter = fn (PlayerRanking|null $p, callable $positionFieldGetter) => (
-			null === $p ||
-			'top' === $request->query->get('mode') ||
-			$positionFieldGetter($p) - PlayerRanking::PREV < 0
+		$positionGetter = fn (?PlayerRanking $p, callable $positionFieldGetter) => (
+			null === $p
+			|| 'top' === $request->query->get('mode')
+			|| $positionFieldGetter($p) - PlayerRanking::PREV < 0
 		) ? 0 : $positionFieldGetter($p) - PlayerRanking::PREV;
 
 		$generalPosition = $positionGetter($p, fn (PlayerRanking $p) => $p->generalPosition);
@@ -41,8 +41,6 @@ class ViewPlayerRankings extends AbstractController
 		$traderPosition = $positionGetter($p, fn (PlayerRanking $p) => $p->traderPosition);
 
 		$ranking = $rankingRepository->getLastRanking();
-
-
 
 		return $this->render(
 			'pages/atlas/player_rankings.html.twig',

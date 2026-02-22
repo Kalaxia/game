@@ -19,7 +19,7 @@ class PutCommanderInSchool extends AbstractController
 		Request $request,
 		Player $currentPlayer,
 		CommanderRepositoryInterface $commanderRepository,
-		Uuid $id
+		Uuid $id,
 	): Response {
 		// TODO Replace with Voter
 		if (null === ($commander = $commanderRepository->get($id)) || $commander->player->id !== $currentPlayer->id) {

@@ -12,7 +12,7 @@ use Symfony\Component\Uid\Uuid;
  */
 interface SystemRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): System|null;
+	public function get(Uuid $id): ?System;
 
 	/**
 	 * @return list<System>

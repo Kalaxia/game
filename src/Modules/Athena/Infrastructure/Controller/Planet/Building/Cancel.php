@@ -29,16 +29,16 @@ class Cancel extends AbstractController
 		methods: [Request::METHOD_GET],
 	)]
 	public function __invoke(
-        Request                          $request,
-        Player                           $currentPlayer,
-        Planet                           $currentPlanet,
-        PlanetHelper                     $planetHelper,
-        PlanetManager                    $planetManager,
-        BuildingQueueManager             $buildingQueueManager,
-        BuildingQueueRepositoryInterface $buildingQueueRepository,
-        DurationHandler                  $durationHandler,
-        EntityManagerInterface           $entityManager,
-        int                              $identifier,
+		Request $request,
+		Player $currentPlayer,
+		Planet $currentPlanet,
+		PlanetHelper $planetHelper,
+		PlanetManager $planetManager,
+		BuildingQueueManager $buildingQueueManager,
+		BuildingQueueRepositoryInterface $buildingQueueRepository,
+		DurationHandler $durationHandler,
+		EntityManagerInterface $entityManager,
+		int $identifier,
 	): Response {
 		if (!$planetHelper->isABuilding($identifier)) {
 			throw new BadRequestHttpException('le bâtiment indiqué n\'est pas valide');

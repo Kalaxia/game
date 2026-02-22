@@ -11,7 +11,6 @@ readonly class BuildingDataHandler
 	public function __construct(
 		private PlanetHelper $planetHelper,
 	) {
-
 	}
 
 	public function getBuildingName(int $identifier): string
@@ -39,12 +38,12 @@ readonly class BuildingDataHandler
 		return $this->planetHelper->getBuildingInfo($identifier, 'description');
 	}
 
-	public function getBuildingTimeCost(int $identifier, int $targetLevel): int|null
+	public function getBuildingTimeCost(int $identifier, int $targetLevel): ?int
 	{
 		return $this->planetHelper->getBuildingInfo($identifier, 'level', $targetLevel, 'time');
 	}
 
-	public function getBuildingResourceCost(int $identifier, int $targetLevel): int|null
+	public function getBuildingResourceCost(int $identifier, int $targetLevel): ?int
 	{
 		return $this->planetHelper->getBuildingInfo($identifier, 'level', $targetLevel, 'resourcePrice');
 	}

@@ -27,17 +27,17 @@ use Symfony\Component\Uid\Uuid;
 class Propose extends AbstractController
 {
 	public function __invoke(
-        Request                            $request,
-        Planet                             $currentBase,
-        Player                             $currentPlayer,
-        GetDistanceBetweenPlaces           $getDistanceBetweenPlaces,
-        GetCommercialRoutePrice            $getCommercialRoutePrice,
-        GetCommercialRouteIncome           $getCommercialRouteIncome,
-        PlanetHelper                       $planetHelper,
-        PlanetRepositoryInterface          $planetRepository,
-        CommercialRouteRepositoryInterface $commercialRouteRepository,
-        NotificationRepositoryInterface    $notificationRepository,
-        PlayerManager                      $playerManager,
+		Request $request,
+		Planet $currentBase,
+		Player $currentPlayer,
+		GetDistanceBetweenPlaces $getDistanceBetweenPlaces,
+		GetCommercialRoutePrice $getCommercialRoutePrice,
+		GetCommercialRouteIncome $getCommercialRouteIncome,
+		PlanetHelper $planetHelper,
+		PlanetRepositoryInterface $planetRepository,
+		CommercialRouteRepositoryInterface $commercialRouteRepository,
+		NotificationRepositoryInterface $notificationRepository,
+		PlayerManager $playerManager,
 	): Response {
 		if (0 === $currentBase->levelSpatioport) {
 			throw $this->createAccessDeniedException('You cannot propose a trading route without a spatioport');
@@ -59,7 +59,7 @@ class Propose extends AbstractController
 		$alreadyARoute = null !== $commercialRouteRepository->getExistingRoute($currentBase, $otherBase);
 
 		// TODO transform into validation constraint
-		if (($commercialRouteRepository->countPlanetRoutes($currentBase) >= $nbrMaxCommercialRoute) || $alreadyARoute || $otherBase->levelSpatioport === 0) {
+		if (($commercialRouteRepository->countPlanetRoutes($currentBase) >= $nbrMaxCommercialRoute) || $alreadyARoute || 0 === $otherBase->levelSpatioport) {
 			throw new ConflictHttpException('Impossible de proposer une route commerciale');
 		}
 		$player = $otherBase->player;

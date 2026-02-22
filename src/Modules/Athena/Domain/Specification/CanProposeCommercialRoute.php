@@ -15,11 +15,11 @@ class CanProposeCommercialRoute extends Constraint implements SelectorSpecificat
 	public function __construct(
 		private readonly Player $player,
 		private readonly Planet $planet,
-		private readonly array  $factions,
-		private readonly int    $minDistance,
-		private readonly int    $maxDistance,
-		array|null              $groups = null,
-		mixed                   $payload = null,
+		private readonly array $factions,
+		private readonly int $minDistance,
+		private readonly int $maxDistance,
+		?array $groups = null,
+		mixed $payload = null,
 	) {
 		parent::__construct([], $groups, $payload);
 	}

@@ -14,7 +14,7 @@ use Symfony\Component\Uid\Uuid;
  */
 interface ForumMessageRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): ForumMessage|null;
+	public function get(Uuid $id): ?ForumMessage;
 
 	/**
 	 * @return list<ForumMessage>

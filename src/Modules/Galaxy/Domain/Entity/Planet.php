@@ -32,19 +32,19 @@ class Planet extends Place implements SystemUpdatable, \JsonSerializable
 
 	public function __construct(
 		public Uuid $id,
-		public System      $system,
-		public int         $position,
+		public System $system,
+		public int $position,
 		#[ORM\Column(type: 'string', enumType: PlanetType::class, length: 32)]
 		public PlanetType $planetType,
 		#[ORM\ManyToOne(targetEntity: Player::class)]
 		#[ORM\JoinColumn(nullable: true)]
-		public Player|null $player = null,
+		public ?Player $player = null,
 		#[ORM\Column(type: 'string', length: 45, nullable: true)]
-		public string|null $name = null,
+		public ?string $name = null,
 		#[ORM\Column(type: 'float', options: ['unsigned' => true])]
-		public float       $population = 0.0,
+		public float $population = 0.0,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
-		public int         $coefResources = 0,
+		public int $coefResources = 0,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true])]
 		public int $coefHistory = 0,
 		#[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]

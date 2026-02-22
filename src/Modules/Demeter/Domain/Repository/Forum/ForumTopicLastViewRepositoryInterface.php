@@ -14,5 +14,5 @@ use App\Modules\Zeus\Model\Player;
  */
 interface ForumTopicLastViewRepositoryInterface extends EntityRepositoryInterface
 {
-	public function getByTopicAndPlayer(ForumTopic $forumTopic, Player $player): ForumTopicLastView|null;
+	public function getByTopicAndPlayer(ForumTopic $forumTopic, Player $player): ?ForumTopicLastView;
 }

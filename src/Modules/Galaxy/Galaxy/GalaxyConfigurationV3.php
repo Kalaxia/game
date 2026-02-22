@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace App\Modules\Galaxy\Galaxy;
 
@@ -13,10 +13,10 @@ class GalaxyConfigurationV3 extends GalaxyConfiguration
 		'systemProportion' => [3, 8, 9, 25, 55],
 		'systemPosition' => null,
 		'lineSystemPosition' => [
-		//	[[pA], [pB], EPAISSEUR, INTENSITE],
+			//	[[pA], [pB], EPAISSEUR, INTENSITE],
 		],
 		'circleSystemPosition' => [
-		//	[[X1], RAYON, EPAISSEUR, INTENSITE],
+			//	[[X1], RAYON, EPAISSEUR, INTENSITE],
 			[[-200, 450], 460, 95, 4],
 		],
 		'population' => [700, 25000],

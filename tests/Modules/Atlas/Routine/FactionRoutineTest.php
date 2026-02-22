@@ -43,7 +43,8 @@ class FactionRoutineTest extends KernelTestCase
 			$faction,
 			$this->getPlayerRankingsMock(1),
 			$this->getRoutesIncomeMock(1),
-			$this->getSectorsMock());
+			$this->getSectorsMock()
+		);
 
 		$results = $this->routine->getResults();
 

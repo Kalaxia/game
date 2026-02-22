@@ -17,7 +17,6 @@ class IsValidTargetLevelValidator extends ConstraintValidator
 		private readonly BuildingLevelHandler $buildingLevelHandler,
 		private readonly BuildingQueueRepositoryInterface $buildingQueueRepository,
 	) {
-
 	}
 
 	/**
@@ -43,6 +42,7 @@ class IsValidTargetLevelValidator extends ConstraintValidator
 					->buildViolation('niveau maximum atteint')
 					->addViolation();
 			}
+
 			return;
 		}
 		$realGeneratorLevel = $this->buildingLevelHandler->getBuildingRealLevel(

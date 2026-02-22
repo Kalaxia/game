@@ -23,6 +23,5 @@ class CommercialTax
 		public int $exportTax,
 		public int $importTax,
 	) {
-		
 	}
 }

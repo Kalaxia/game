@@ -10,7 +10,6 @@ use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Shared\Domain\Server\TimeMode;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Generator;
 use Symfony\Component\Clock\Clock;
 use Symfony\Component\Clock\DatePoint;
 use Symfony\Component\Clock\MockClock;
@@ -23,13 +22,13 @@ class NextElectionDateCalculatorTest extends KernelTestCase
 	}
 
 	public function testGetNextElectionDate(): void
-    {
+	{
 		self::markTestIncomplete('Not Implemented');
-    }
+	}
 
 	#[DataProvider('provideData')]
-    public function testGetCampaignStartDate(array $data, array $expected, TimeMode $timeMode): void
-    {
+	public function testGetCampaignStartDate(array $data, array $expected, TimeMode $timeMode): void
+	{
 		$_ENV['SERVER_TIME_MODE'] = $timeMode->value;
 		$nextElectionDateCalculator = static::getContainer()->get(NextElectionDateCalculator::class);
 
@@ -47,11 +46,11 @@ class NextElectionDateCalculatorTest extends KernelTestCase
 		$startDate = $nextElectionDateCalculator->getCampaignStartDate($faction);
 
 		static::assertEquals($expected['campaign_start_date'], $startDate);
-    }
+	}
 
 	#[DataProvider('provideData')]
-    public function testGetPutschEndDate(array $data, array $expected, TimeMode $timeMode): void
-    {
+	public function testGetPutschEndDate(array $data, array $expected, TimeMode $timeMode): void
+	{
 		$_ENV['SERVER_TIME_MODE'] = $timeMode->value;
 		$nextElectionDateCalculator = static::getContainer()->get(NextElectionDateCalculator::class);
 
@@ -69,37 +68,37 @@ class NextElectionDateCalculatorTest extends KernelTestCase
 		$campaignEndDate = $nextElectionDateCalculator->getCampaignEndDate($faction);
 
 		static::assertEquals($expected['putsch_end_date'], $campaignEndDate);
-    }
+	}
 
-    public function testGetEndDate(): void
-    {
+	public function testGetEndDate(): void
+	{
 		self::markTestIncomplete('Not Implemented');
-    }
+	}
 
-    public function testGetStartDate(): void
-    {
+	public function testGetStartDate(): void
+	{
 		self::markTestIncomplete('Not Implemented');
-    }
+	}
 
-    public function testGetBallotDate(): void
-    {
+	public function testGetBallotDate(): void
+	{
 		self::markTestIncomplete('Not Implemented');
-    }
+	}
 
-    public function testGetSenateUpdateMessage(): void
-    {
+	public function testGetSenateUpdateMessage(): void
+	{
 		self::markTestIncomplete('Not Implemented');
-    }
+	}
 
-    public function testGetCampaignEndDate(): void
-    {
+	public function testGetCampaignEndDate(): void
+	{
 		self::markTestIncomplete('Not Implemented');
-    }
+	}
 
 	/**
-	 * @return Generator<list<array<string, mixed>>>
+	 * @return \Generator<list<array<string, mixed>>>
 	 */
-	public static function provideData(): Generator
+	public static function provideData(): \Generator
 	{
 		Clock::set(new MockClock('2023-06-05 10:00:00'));
 

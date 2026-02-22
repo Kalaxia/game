@@ -20,7 +20,7 @@ class AffectationEvent implements TutorialEvent
 		return $this->player;
 	}
 
-	public function getTutorialStep(): int|null
+	public function getTutorialStep(): ?int
 	{
 		return TutorialResource::AFFECT_COMMANDER;
 	}

@@ -24,11 +24,11 @@ class ViewOverview extends AbstractController
 		methods: [Request::METHOD_GET],
 	)]
 	public function __invoke(
-        Request                      $request,
-        Planet                       $currentPlanet,
-        CurrentPlayerPlanetsRegistry $currentPlayerPlanetsRegistry,
-        CommercialRouteManager       $commercialRouteManager,
-        CommanderRepositoryInterface $commanderRepository,
+		Request $request,
+		Planet $currentPlanet,
+		CurrentPlayerPlanetsRegistry $currentPlayerPlanetsRegistry,
+		CommercialRouteManager $commercialRouteManager,
+		CommanderRepositoryInterface $commanderRepository,
 	): Response {
 		return $this->render('pages/athena/overview.html.twig', [
 			'commercial_routes_data' => $commercialRouteManager->getBaseCommercialData($currentPlanet),

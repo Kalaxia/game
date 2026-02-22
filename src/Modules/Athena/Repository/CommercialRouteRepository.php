@@ -26,14 +26,14 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 		parent::__construct($registry, CommercialRoute::class);
 	}
 
-	public function get($id): CommercialRoute|null
+	public function get($id): ?CommercialRoute
 	{
 		return $this->find($id);
 	}
 
 	public function searchCandidates(Player $player, Planet $planet, array $factions, int $minDistance, int $maxDistance): array
 	{
-		$factionIdentifiers = sprintf("(%s)", implode(',', $factions));
+		$factionIdentifiers = sprintf('(%s)', implode(',', $factions));
 
 		return array_map(
 			fn (array $data) => array_merge($data, ['placeId' => Uuid::fromBinary($data['placeId'])]),
@@ -168,7 +168,7 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 		return $qb->getQuery()->getSingleResult();
 	}
 
-	public function getByIdAndPlanet(Uuid $id, Planet $planet): CommercialRoute|null
+	public function getByIdAndPlanet(Uuid $id, Planet $planet): ?CommercialRoute
 	{
 		return $this->findOneBy([
 			'id' => $id,
@@ -176,7 +176,7 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 		]);
 	}
 
-	public function getByIdAndDistantPlanet(Uuid $id, Planet $planet): CommercialRoute|null
+	public function getByIdAndDistantPlanet(Uuid $id, Planet $planet): ?CommercialRoute
 	{
 		return $this->findOneBy([
 			'id' => $id,
@@ -215,7 +215,7 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 			->getResult();
 	}
 
-	public function getExistingRoute(Planet $planet, Planet $distantPlanet): CommercialRoute|null
+	public function getExistingRoute(Planet $planet, Planet $distantPlanet): ?CommercialRoute
 	{
 		$qb = $this->createQueryBuilder('cr');
 
@@ -313,7 +313,6 @@ class CommercialRouteRepository extends DoctrineRepository implements Commercial
 
 	public function getPlayerConstructedRoutesSince(Player $player, \DateTimeImmutable $since): array
 	{
-
 		$qb = $this->createQueryBuilder('cr');
 
 		$qb

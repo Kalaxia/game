@@ -47,7 +47,7 @@ class WriteToFaction extends AbstractController
 		$conversation = $conversationRepository->getOneByPlayer($factionAccount)
 			?? throw $this->createNotFoundException('Faction conversation not found');
 
-		$conversation->messagesCount++;
+		++$conversation->messagesCount;
 		$conversation->lastMessageAt = new \DateTimeImmutable();
 
 		// désarchiver tout les users

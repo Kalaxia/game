@@ -23,10 +23,10 @@ class Recycle extends AbstractController
 		methods: [Request::METHOD_POST],
 	)]
 	public function __invoke(
-		Request                        $request,
-		Player                         $currentPlayer,
-		Planet                         $currentBase,
-		PlanetManager                  $planetManager,
+		Request $request,
+		Player $currentPlayer,
+		Planet $currentBase,
+		PlanetManager $planetManager,
 		GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 	): Response {
 		$typeOfShip = $request->query->get('ship_identifier');
@@ -39,9 +39,8 @@ class Recycle extends AbstractController
 				$planetManager->increaseResources($currentBase, $resources);
 
 				return $this->redirect($request->headers->get('referer'));
-			} else {
-				throw new ConflictHttpException('cette quantité ne correspond pas à votre stock');
 			}
+			throw new ConflictHttpException('cette quantité ne correspond pas à votre stock');
 		} else {
 			throw new BadRequestHttpException('pas assez d\'informations');
 		}

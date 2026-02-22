@@ -20,14 +20,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class ViewEmbassy extends AbstractController
 {
 	public function __invoke(
-		Request                   $request,
-		Player                    $currentPlayer,
-		ColorManager              $colorManager,
-		ColorRepositoryInterface  $colorRepository,
+		Request $request,
+		Player $currentPlayer,
+		ColorManager $colorManager,
+		ColorRepositoryInterface $colorRepository,
 		PlayerRepositoryInterface $playerRepository,
-		PlanetManager             $planetManager,
+		PlanetManager $planetManager,
 		PlanetRepositoryInterface $planetRepository,
-		PlayerManager             $playerManager,
+		PlayerManager $playerManager,
 		SectorRepositoryInterface $sectorRepository,
 	): Response {
 		$data = [];

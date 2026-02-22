@@ -27,17 +27,17 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ValidateStep extends AbstractController
 {
 	public function __invoke(
-		Request                      $request,
-		Player                       $currentPlayer,
-		Planet                       $currentPlanet,
-		PlanetManager                $planetManager,
-		PlanetRepositoryInterface    $planetRepository,
-		PlayerManager                $playerManager,
-		TutorialHelper               $tutorialHelper,
-		ShipQueueManager             $shipQueueManager,
+		Request $request,
+		Player $currentPlayer,
+		Planet $currentPlanet,
+		PlanetManager $planetManager,
+		PlanetRepositoryInterface $planetRepository,
+		PlayerManager $playerManager,
+		TutorialHelper $tutorialHelper,
+		ShipQueueManager $shipQueueManager,
 		ShipQueueRepositoryInterface $shipQueueRepository,
-		PlayerRepositoryInterface    $playerRepository,
-		TranslatorInterface          $translator,
+		PlayerRepositoryInterface $playerRepository,
+		TranslatorInterface $translator,
 	): Response {
 		$stepTutorial = $currentPlayer->stepTutorial;
 		$session = $request->getSession();
@@ -88,7 +88,7 @@ class ValidateStep extends AbstractController
 						if (0 != $value) {
 							$ships[$qty] = [];
 							$ships[$qty]['quantity'] = $value;
-							$ships[$qty]['name'] = $translator->trans('ship_categories.' . $key . '.name');
+							$ships[$qty]['name'] = $translator->trans('ship_categories.'.$key.'.name');
 							++$qty;
 
 							// add ship to dock
@@ -240,8 +240,7 @@ class ValidateStep extends AbstractController
 			}
 
 			return $this->redirect($request->headers->get('referer'));
-		} else {
-			throw new BadRequestHttpException('Impossible de valider l\'étape avant de l\'avoir effectuée.');
 		}
+		throw new BadRequestHttpException('Impossible de valider l\'étape avant de l\'avoir effectuée.');
 	}
 }

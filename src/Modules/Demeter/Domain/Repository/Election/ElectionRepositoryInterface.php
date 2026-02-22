@@ -12,7 +12,7 @@ use Symfony\Component\Uid\Uuid;
  */
 interface ElectionRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): Election|null;
+	public function get(Uuid $id): ?Election;
 
-	public function getFactionLastElection(Color $faction): Election|null;
+	public function getFactionLastElection(Color $faction): ?Election;
 }

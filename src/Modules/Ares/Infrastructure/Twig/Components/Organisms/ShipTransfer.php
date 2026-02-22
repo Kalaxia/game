@@ -21,7 +21,6 @@ final class ShipTransfer
 
 	public function __construct(private readonly CountMaxStorableShipPoints $countMaxStorableShipPoints)
 	{
-
 	}
 
 	public function mount(Commander $commander): void

@@ -9,7 +9,6 @@ use App\Modules\Galaxy\Infrastructure\DataFixtures\Factory\SystemFactory;
 use App\Modules\Galaxy\Message\PlanetUpdateMessage;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Generator;
 use Symfony\Component\Clock\Clock;
 use Symfony\Component\Clock\MockClock;
 use Zenstruck\Foundry\Test\Factories;
@@ -49,7 +48,7 @@ class PlaceUpdateHandlerTest extends KernelTestCase
 	}
 
 	/**
-	 * @return Generator<array{
+	 * @return \Generator<array{
 	 *     0: string,
 	 * 	   1: string,
 	 *     2: array<string, mixed>,
@@ -57,7 +56,7 @@ class PlaceUpdateHandlerTest extends KernelTestCase
 	 *     4: int
 	 * }>
 	 */
-	public static function provideData(): Generator
+	public static function provideData(): \Generator
 	{
 		yield 'Update once' => [
 			'2024-05-01 10:10:00',

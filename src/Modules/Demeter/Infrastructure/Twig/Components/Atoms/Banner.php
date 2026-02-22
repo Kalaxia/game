@@ -33,6 +33,6 @@ class Banner
 
 	public function getName(): string
 	{
-		return $this->translator->trans('factions.' . $this->faction->identifier . '.name.official');
+		return $this->translator->trans('factions.'.$this->faction->identifier.'.name.official');
 	}
 }

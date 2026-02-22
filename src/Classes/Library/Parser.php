@@ -3,9 +3,8 @@
 namespace App\Classes\Library;
 
 use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
-use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Galaxy\Manager\PlaceManager;
-use App\Modules\Zeus\Manager\PlayerManager;
+use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Service\Attribute\Required;
 
@@ -138,8 +137,8 @@ class Parser
 	{
 		return preg_replace_callback(
 			'#\[\@(.+)\]#isU',
-			fn($m) => (($player = $this->playerRepository->getByName($m[1])) !== null)
-					? '<a href="' . $this->urlGenerator->generate('embassy', ['player' => $player->id]) . '" class="color' . $player->faction->identifier . ' hb lt" title="voir le profil">' . $player->name . '</a>'
+			fn ($m) => (($player = $this->playerRepository->getByName($m[1])) !== null)
+					? '<a href="'.$this->urlGenerator->generate('embassy', ['player' => $player->id]).'" class="color'.$player->faction->identifier.' hb lt" title="voir le profil">'.$player->name.'</a>'
 					: $m[0],
 			$string
 		);
@@ -150,12 +149,12 @@ class Parser
 		return \preg_replace_callback(
 			'#\[\#(.+)\]#isU',
 			function ($m) {
-				if (($place = $this->placeRepository->get($m[1]))) {
-					if ($place->player !== null) {
+				if ($place = $this->placeRepository->get($m[1])) {
+					if (null !== $place->player) {
 						return '<a href="'.$this->urlGenerator->generate('map', ['place' => $place->id]).'" class="color'.$place->player->faction->identifier.' hb lt" title="voir la planète">'.$place->name.'</a>';
-					} else {
-						return '<a href="'.$this->urlGenerator->generate('map', ['place' => $place->id]).'" class="hb lt" title="voir la planète">planète rebelle</a>';
 					}
+
+					return '<a href="'.$this->urlGenerator->generate('map', ['place' => $place->id]).'" class="hb lt" title="voir la planète">planète rebelle</a>';
 				}
 
 				return $m[0];

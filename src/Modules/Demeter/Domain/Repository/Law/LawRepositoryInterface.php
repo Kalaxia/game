@@ -12,10 +12,11 @@ use Symfony\Component\Uid\Uuid;
  */
 interface LawRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): Law|null;
+	public function get(Uuid $id): ?Law;
 
 	/**
 	 * @param list<int> $statements
+	 *
 	 * @return list<Law>
 	 */
 	public function getByFactionAndStatements(Color $faction, array $statements = []): array;

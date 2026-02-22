@@ -17,7 +17,7 @@ class ResearchRepository extends DoctrineRepository implements ResearchRepositor
 		parent::__construct($registry, Research::class);
 	}
 
-	public function getPlayerResearch(Player $player): Research|null
+	public function getPlayerResearch(Player $player): ?Research
 	{
 		return $this->findOneBy([
 			'player' => $player,

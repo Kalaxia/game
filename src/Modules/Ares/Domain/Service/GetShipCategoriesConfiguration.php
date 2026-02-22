@@ -23,11 +23,7 @@ class GetShipCategoriesConfiguration
 
 		return $this->shipCategoriesConfiguration[$identifier][$info]
 			?? $this->tryToTranslate($identifier, $info)
-			?? throw new \InvalidArgumentException(sprintf(
-				'Statistic %s not found for ShipCategory %d',
-				$info,
-				$identifier,
-			));
+			?? throw new \InvalidArgumentException(sprintf('Statistic %s not found for ShipCategory %d', $info, $identifier));
 	}
 
 	#[\Deprecated(message: 'Use the translator directly instead of this method')]

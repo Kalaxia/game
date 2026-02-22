@@ -26,7 +26,6 @@ class ChooseFaction extends AbstractController
 		ColorRepositoryInterface $colorRepository,
 		bool $highMode,
 	): Response {
-
 		$session = $request->getSession();
 		// mode de création de joueur
 		$session->set('high-mode', $this->getParameter('highmode') && $highMode);

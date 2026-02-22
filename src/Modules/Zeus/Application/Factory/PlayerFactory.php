@@ -33,34 +33,34 @@ use Symfony\Component\Uid\Uuid;
 readonly class PlayerFactory
 {
 	public function __construct(
-		private EntityManagerInterface              $entityManager,
-		private ConversationRepositoryInterface     $conversationRepository,
+		private EntityManagerInterface $entityManager,
+		private ConversationRepositoryInterface $conversationRepository,
 		private ConversationUserRepositoryInterface $conversationUserRepository,
-		private EventDispatcherInterface            $eventDispatcher,
-		private PlayerManager                       $playerManager,
-		private PlayerRepositoryInterface           $playerRepository,
-		private NotificationRepositoryInterface     $notificationRepository,
-		private PlanetRepository                    $planetRepository,
-		private UpdatePlanetPoints                  $updatePlanetPoints,
-		private ResearchHelper                      $researchHelper,
-		private ResearchRepositoryInterface         $researchRepository,
-		private PlaceRepositoryInterface            $placeRepository,
-		private PlaceManager                        $placeManager,
-		private TechnologyRepositoryInterface       $technologyRepository,
-		private UrlGeneratorInterface               $urlGenerator,
+		private EventDispatcherInterface $eventDispatcher,
+		private PlayerManager $playerManager,
+		private PlayerRepositoryInterface $playerRepository,
+		private NotificationRepositoryInterface $notificationRepository,
+		private PlanetRepository $planetRepository,
+		private UpdatePlanetPoints $updatePlanetPoints,
+		private ResearchHelper $researchHelper,
+		private ResearchRepositoryInterface $researchRepository,
+		private PlaceRepositoryInterface $placeRepository,
+		private PlaceManager $placeManager,
+		private TechnologyRepositoryInterface $technologyRepository,
+		private UrlGeneratorInterface $urlGenerator,
 		#[Autowire('%id_jeanmi%')]
-		private int                                 $jeanMiId,
+		private int $jeanMiId,
 	) {
 	}
 
 	public function create(
 		Color $faction,
-		User|null $user,
+		?User $user,
 		string $name,
 		string $avatar,
 		Sector $sector,
 		string $baseName,
-		Player|null $godFather = null,
+		?Player $godFather = null,
 		bool $highMode = false,
 	): Player {
 		$this->entityManager->beginTransaction();
@@ -170,12 +170,8 @@ readonly class PlayerFactory
 		$candidatePlaces = $this->planetRepository->getCandidatePlanetsForNewPlayers($sector);
 
 		$candidatePlaceCount = count($candidatePlaces);
-		if ($candidatePlaceCount === 0) {
-			throw new \RuntimeException(sprintf(
-				'No candidate planet found for new player %d in sector %d',
-				$player->id,
-				$sector->identifier,
-			));
+		if (0 === $candidatePlaceCount) {
+			throw new \RuntimeException(sprintf('No candidate planet found for new player %d in sector %d', $player->id, $sector->identifier));
 		}
 		$placeId = $candidatePlaces[random_int(0, $candidatePlaceCount - 1)];
 		$planet = $this->planetRepository->get($placeId);

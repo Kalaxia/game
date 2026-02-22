@@ -13,6 +13,5 @@ class ForumTopicLastView
 		public ForumTopic $forumTopic,
 		public \DateTimeImmutable $viewedAt,
 	) {
-
 	}
 }

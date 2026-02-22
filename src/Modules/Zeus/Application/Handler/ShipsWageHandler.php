@@ -25,7 +25,7 @@ readonly class ShipsWageHandler
 		private CommanderArmyHandler $commanderArmyHandler,
 		private CommanderRepositoryInterface $commanderRepository,
 		private NotificationRepositoryInterface $notificationRepository,
-		private TransactionRepositoryInterface  $transactionRepository,
+		private TransactionRepositoryInterface $transactionRepository,
 		private TranslatorInterface $translator,
 		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 		#[Autowire('%game.ship_cost_reduction%')]
@@ -34,8 +34,8 @@ readonly class ShipsWageHandler
 	}
 
 	/**
-	 * @param list<Commander>   $commanders
-	 * @param list<Planet> $playerBases
+	 * @param list<Commander> $commanders
+	 * @param list<Planet>    $playerBases
 	 */
 	public function payWages(
 		PlayerFinancialReport $playerFinancialReport,

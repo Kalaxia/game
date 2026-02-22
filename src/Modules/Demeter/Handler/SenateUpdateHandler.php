@@ -16,8 +16,8 @@ readonly class SenateUpdateHandler
 {
 	public function __construct(
 		private ColorRepositoryInterface $colorRepository,
-		private ColorManager             $colorManager,
-		private MessageBusInterface      $messageBus,
+		private ColorManager $colorManager,
+		private MessageBusInterface $messageBus,
 		private NextElectionDateCalculator $nextElectionDateCalculator,
 	) {
 	}

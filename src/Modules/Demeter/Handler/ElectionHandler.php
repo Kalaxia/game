@@ -5,7 +5,6 @@ namespace App\Modules\Demeter\Handler;
 use App\Classes\Library\DateTimeConverter;
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
-use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
 use App\Modules\Demeter\Message\BallotMessage;
 use App\Modules\Demeter\Message\ElectionMessage;
 use App\Modules\Demeter\Model\Color;
@@ -16,9 +15,9 @@ use Symfony\Component\Messenger\MessageBusInterface;
 readonly class ElectionHandler
 {
 	public function __construct(
-		private ColorRepositoryInterface   $colorRepository,
+		private ColorRepositoryInterface $colorRepository,
 		private NextElectionDateCalculator $nextElectionDateCalculator,
-		private MessageBusInterface        $messageBus,
+		private MessageBusInterface $messageBus,
 	) {
 	}
 

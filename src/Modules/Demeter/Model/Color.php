@@ -2,7 +2,6 @@
 
 namespace App\Modules\Demeter\Model;
 
-use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Zeus\Model\CreditHolderInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -82,13 +81,13 @@ class Color implements CreditHolderInterface
 		public int $electionStatement = 0,
 		public int $regime = self::REGIME_DEMOCRATIC,
 		public bool $isClosed = false,
-		public string|null $description = null,
+		public ?string $description = null,
 		public bool $isInGame = false,
 		public array $relations = [],
 		// @TODO move that field to the future Server entity
-		public \DateTimeImmutable|null $victoryClaimedAt = null,
+		public ?\DateTimeImmutable $victoryClaimedAt = null,
 		// @TODO get that field from the Election table
-		public \DateTimeImmutable|null $lastElectionHeldAt = null,
+		public ?\DateTimeImmutable $lastElectionHeldAt = null,
 	) {
 	}
 

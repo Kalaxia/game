@@ -23,18 +23,18 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 readonly class PlanetManager
 {
 	public function __construct(
-		private GetMaxResourceStorage                 $getMaxStorage,
-		private CurrentPlayerPlanetsRegistry          $currentPlayerPlanetsRegistry,
-		private TechnologyQueueRepositoryInterface    $technologyQueueRepository,
-		private CommercialRouteManager                $commercialRouteManager,
+		private GetMaxResourceStorage $getMaxStorage,
+		private CurrentPlayerPlanetsRegistry $currentPlayerPlanetsRegistry,
+		private TechnologyQueueRepositoryInterface $technologyQueueRepository,
+		private CommercialRouteManager $commercialRouteManager,
 		private CommercialShippingRepositoryInterface $commercialShippingRepository,
-		private CommanderRepositoryInterface          $commanderRepository,
-		private TransactionRepositoryInterface        $transactionRepository,
-		private RecyclingMissionRepositoryInterface   $recyclingMissionRepository,
-		private PlanetRepositoryInterface             $planetRepository,
-		private EntityManagerInterface                $entityManager,
-		private EventDispatcherInterface              $eventDispatcher,
-		private CommanderManager                      $commanderManager,
+		private CommanderRepositoryInterface $commanderRepository,
+		private TransactionRepositoryInterface $transactionRepository,
+		private RecyclingMissionRepositoryInterface $recyclingMissionRepository,
+		private PlanetRepositoryInterface $planetRepository,
+		private EntityManagerInterface $entityManager,
+		private EventDispatcherInterface $eventDispatcher,
+		private CommanderManager $commanderManager,
 	) {
 	}
 
@@ -51,7 +51,7 @@ readonly class PlanetManager
 		return $coloQuantity + $this->currentPlayerPlanetsRegistry->count();
 	}
 
-	public function changeOwner(Planet $base, Player|null $newOwner): void
+	public function changeOwner(Planet $base, ?Player $newOwner): void
 	{
 		$baseCommanders = $this->commanderRepository->getPlanetCommanders($base);
 		// changement de possesseur des offres du marché
@@ -94,8 +94,8 @@ readonly class PlanetManager
 			} elseif ($commander->isMoving()) {
 				// TODO replace "prise en vol"
 				$this->commanderManager->endTravel($commander, Commander::RETIRED);
-			// @TODO handle cancellation
-			// $this->realtimeActionScheduler->cancel($commander, $commander->getArrivalDate());
+				// @TODO handle cancellation
+				// $this->realtimeActionScheduler->cancel($commander, $commander->getArrivalDate());
 			} else {
 				$commander->statement = Commander::DEAD;
 			}
@@ -107,9 +107,9 @@ readonly class PlanetManager
 	}
 
 	public function increaseResources(
-        Planet $planet,
-        int    $resources,
-        bool   $persist = true
+		Planet $planet,
+		int $resources,
+		bool $persist = true,
 	): void {
 		$planet->resourcesStorage = min(
 			$planet->resourcesStorage + $resources,

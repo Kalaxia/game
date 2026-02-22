@@ -14,7 +14,7 @@ readonly class RecycledCreditsReportHandler
 	) {
 	}
 
-	public function __invoke(PlayerFinancialReport $playerFinancialReport, PlayerFinancialReport|null $lastPlayerFinancialReport): void
+	public function __invoke(PlayerFinancialReport $playerFinancialReport, ?PlayerFinancialReport $lastPlayerFinancialReport): void
 	{
 		$playerFinancialReport->recycledCredits += $this->recyclingLogRepository->getPlayerRecycledCreditsSince(
 			$playerFinancialReport->player,

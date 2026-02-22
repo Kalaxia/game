@@ -10,7 +10,7 @@ class TechnologyResource
 	public static $technologiesNotDisplayed = [2, 26, 27];
 
 	public static $technology = [
-	// UNBLOCK technologies
+		// UNBLOCK technologies
 		// unblock buildings
 		[
 			'name' => 'Long courrier',
@@ -280,7 +280,7 @@ class TechnologyResource
 			'description' => 'La technologie « Conquête » va permettre à vos commandants de coloniser des planètes ennemies. Vous pourrez désormais commencer votre guerre de conquête dans la galaxie de l’Œil pour le salut de votre faction.',
 		],
 
-	// LEVEL technologies
+		// LEVEL technologies
 
 		[
 			'name' => 'Ingénierie du bâtiment',

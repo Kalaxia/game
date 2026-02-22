@@ -7,7 +7,9 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @template T of object
+ *
  * @extends ServiceEntityRepository<T>
+ *
  * @implements EntityRepositoryInterface<T>
  */
 abstract class DoctrineRepository extends ServiceEntityRepository implements EntityRepositoryInterface

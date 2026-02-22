@@ -12,5 +12,4 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 )]
 class Input
 {
-
 }

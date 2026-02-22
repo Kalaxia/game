@@ -31,17 +31,17 @@ class BuildShips extends AbstractController
 		methods: [Request::METHOD_POST],
 	)]
 	public function __invoke(
-        Request                       $request,
-        Player                        $currentPlayer,
-        Planet                        $currentPlanet,
-        PlanetManager                 $planetManager,
-        PlanetHelper                  $planetHelper,
-        CountShipResourceCost         $countShipResourceCost,
-        ShipHelper                    $shipHelper,
-        ShipQueueRepositoryInterface  $shipQueueRepository,
-        ShipQueueFactory              $shipQueueFactory,
-        TechnologyRepositoryInterface $technologyRepository,
-        TranslatorInterface           $translator,
+		Request $request,
+		Player $currentPlayer,
+		Planet $currentPlanet,
+		PlanetManager $planetManager,
+		PlanetHelper $planetHelper,
+		CountShipResourceCost $countShipResourceCost,
+		ShipHelper $shipHelper,
+		ShipQueueRepositoryInterface $shipQueueRepository,
+		ShipQueueFactory $shipQueueFactory,
+		TechnologyRepositoryInterface $technologyRepository,
+		TranslatorInterface $translator,
 	): Response {
 		$shipIdentifier = $request->query->getInt('ship')
 			?? throw new BadRequestHttpException('Missing ship identifier');
@@ -91,9 +91,9 @@ class BuildShips extends AbstractController
 
 		// TODO Improve translations to put this in one line
 		if (1 == $quantity) {
-			$this->addFlash('success', 'Construction d\'' . $translator->trans('ship_categories.' . $shipIdentifier . '.designation', ['quantity' => $quantity]) . ' commandée');
+			$this->addFlash('success', 'Construction d\''.$translator->trans('ship_categories.'.$shipIdentifier.'.designation', ['quantity' => $quantity]).' commandée');
 		} else {
-			$this->addFlash('success', 'Construction de ' . $translator->trans('ship_categories.' . $shipIdentifier . '.designation', ['quantity' => $quantity]) . ' commandée');
+			$this->addFlash('success', 'Construction de '.$translator->trans('ship_categories.'.$shipIdentifier.'.designation', ['quantity' => $quantity]).' commandée');
 		}
 
 		return $this->redirect($request->headers->get('referer'));

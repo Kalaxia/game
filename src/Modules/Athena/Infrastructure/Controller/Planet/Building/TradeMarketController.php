@@ -24,13 +24,13 @@ class TradeMarketController extends AbstractController
 		methods: [Request::METHOD_GET],
 	)]
 	public function __invoke(
-		GetBaseCommercialShippingData  $getBaseCommercialShippingsData,
-		Planet                         $currentBase,
-		PlanetHelper                   $planetHelper,
+		GetBaseCommercialShippingData $getBaseCommercialShippingsData,
+		Planet $currentBase,
+		PlanetHelper $planetHelper,
 		TransactionRepositoryInterface $transactionRepository,
-		string                         $mode,
+		string $mode,
 	): Response {
-		if ($currentBase->levelCommercialPlateforme === 0) {
+		if (0 === $currentBase->levelCommercialPlateforme) {
 			return $this->redirectToRoute('base_overview');
 		}
 

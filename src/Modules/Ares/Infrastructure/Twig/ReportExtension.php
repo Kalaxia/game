@@ -13,17 +13,16 @@ class ReportExtension extends AbstractExtension
 	public function __construct(
 		private readonly CurrentPlayerRegistry $currentPlayerRegistry,
 	) {
-
 	}
 
 	#[\Override]
-    public function getFunctions(): array
+	public function getFunctions(): array
 	{
 		return [
 			new TwigFunction('get_report_data', function (Report $report) {
 				if ($report->attacker->faction->identifier === $this->currentPlayerRegistry->get()->faction->identifier) {
 					if ($report->winner?->id === $report->attacker->id) {
-						if ($report->type === Commander::LOOT) {
+						if (Commander::LOOT === $report->type) {
 							$title = 'Pillage';
 							$img = 'loot.png';
 						} else {
@@ -33,7 +32,7 @@ class ReportExtension extends AbstractExtension
 							$img = 'colo.png';
 						}
 					} else {
-						if ($report->type === Commander::LOOT) {
+						if (Commander::LOOT === $report->type) {
 							$title = 'Pillage raté';
 							$img = 'loot.png';
 						} else {
@@ -45,12 +44,12 @@ class ReportExtension extends AbstractExtension
 					}
 				} else {
 					if ($report->winner?->id === $report->defender?->id) {
-						$title = $report->type === Commander::LOOT
+						$title = Commander::LOOT === $report->type
 							? 'Pillage repoussé'
 							: 'Conquête repoussée';
 						$img = 'shield.png';
 					} else {
-						$title = $report->type === Commander::LOOT
+						$title = Commander::LOOT === $report->type
 							? 'Défense ratée lors d\'un pillage'
 							: 'Défense ratée lors d\'une conquête';
 						$img = 'shield.png';

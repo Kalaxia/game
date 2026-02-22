@@ -15,7 +15,7 @@ class ViewOverview extends AbstractController
 	public function __construct(
 		private readonly CurrentPlayerPlanetsRegistry $currentPlayerPlanetsRegistry,
 		private readonly CommanderRepositoryInterface $commanderRepository,
-		private readonly PlanetRepositoryInterface    $planetRepository,
+		private readonly PlanetRepositoryInterface $planetRepository,
 	) {
 	}
 

@@ -19,7 +19,7 @@ class FormatterExtension extends AbstractExtension
 	}
 
 	#[\Override]
-    public function getFilters(): array
+	public function getFilters(): array
 	{
 		return [
 			new TwigFilter('parse', fn (string $content) => $this->parser->parse($content)),
@@ -37,7 +37,7 @@ class FormatterExtension extends AbstractExtension
 	}
 
 	#[\Override]
-    public function getFunctions(): array
+	public function getFunctions(): array
 	{
 		return [
 			new TwigFunction('get_parser_toolbar', fn () => $this->parser->getToolbar()),

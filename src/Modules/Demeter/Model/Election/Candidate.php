@@ -12,10 +12,10 @@ class Candidate
 		public Election $election,
 		public Player $player,
 		public string $program,
-		public Player|null $chiefChoice = null,
-		public Player|null $treasurerChoice = null,
-		public Player|null $warlordChoice = null,
-		public Player|null $ministerChoice = null,
+		public ?Player $chiefChoice = null,
+		public ?Player $treasurerChoice = null,
+		public ?Player $warlordChoice = null,
+		public ?Player $ministerChoice = null,
 		public \DateTimeImmutable $createdAt = new \DateTimeImmutable(),
 	) {
 	}

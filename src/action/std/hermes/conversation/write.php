@@ -7,11 +7,11 @@ use App\Modules\Hermes\Model\ConversationMessage;
 use App\Modules\Hermes\Model\ConversationUser;
 
 $request = $this->getContainer()->get('app.request');
-$session = $this->getContainer()->get(\App\Classes\Library\Session\SessionWrapper::class);
-$database = $this->getContainer()->get(\App\Classes\Database\Database::class);
-$parser = $this->getContainer()->get(\App\Classes\Library\Parser::class);
-$conversationManager = $this->getContainer()->get(\App\Modules\Hermes\Manager\ConversationManager::class);
-$conversationMessageManager = $this->getContainer()->get(\App\Modules\Hermes\Manager\ConversationMessageManager::class);
+$session = $this->getContainer()->get(App\Classes\Library\Session\SessionWrapper::class);
+$database = $this->getContainer()->get(App\Classes\Database\Database::class);
+$parser = $this->getContainer()->get(App\Classes\Library\Parser::class);
+$conversationManager = $this->getContainer()->get(App\Modules\Hermes\Manager\ConversationManager::class);
+$conversationMessageManager = $this->getContainer()->get(App\Modules\Hermes\Manager\ConversationMessageManager::class);
 
 $conversation = $request->query->get('conversation');
 $content = $request->request->get('content');

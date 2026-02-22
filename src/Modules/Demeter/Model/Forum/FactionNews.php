@@ -17,6 +17,5 @@ class FactionNews
 		public int $statement,
 		public \DateTimeImmutable $createdAt,
 	) {
-
 	}
 }

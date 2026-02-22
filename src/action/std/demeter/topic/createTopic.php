@@ -13,11 +13,11 @@ use App\Modules\Demeter\Model\Forum\ForumTopic;
 use App\Modules\Zeus\Resource\TutorialResource;
 
 $request = $this->getContainer()->get('app.request');
-$session = $this->getContainer()->get(\App\Classes\Library\Session\SessionWrapper::class);
-$database = $this->getContainer()->get(\App\Classes\Database\Database::class);
-$tutorialHelper = $this->getContainer()->get(\App\Modules\Zeus\Helper\TutorialHelper::class);
-$topicManager = $this->getContainer()->get(\App\Modules\Demeter\Manager\Forum\ForumTopicManager::class);
-$forumMessageManager = $this->getContainer()->get(\App\Modules\Demeter\Manager\Forum\ForumMessageManager::class);
+$session = $this->getContainer()->get(App\Classes\Library\Session\SessionWrapper::class);
+$database = $this->getContainer()->get(App\Classes\Database\Database::class);
+$tutorialHelper = $this->getContainer()->get(App\Modules\Zeus\Helper\TutorialHelper::class);
+$topicManager = $this->getContainer()->get(App\Modules\Demeter\Manager\Forum\ForumTopicManager::class);
+$forumMessageManager = $this->getContainer()->get(App\Modules\Demeter\Manager\Forum\ForumMessageManager::class);
 
 $title = $request->request->get('title');
 $content = $request->request->get('content');
@@ -44,8 +44,8 @@ if (false !== $title and false !== $content and false !== $rForum) {
 	$forumMessageManager->add($message);
 
 	// tutorial
-	if (false == $session->get('playerInfo')->get('stepDone') &&
-		TutorialResource::FACTION_FORUM === $session->get('playerInfo')->get('stepTutorial')) {
+	if (false == $session->get('playerInfo')->get('stepDone')
+		&& TutorialResource::FACTION_FORUM === $session->get('playerInfo')->get('stepTutorial')) {
 		$tutorialHelper->setStepDone();
 	}
 

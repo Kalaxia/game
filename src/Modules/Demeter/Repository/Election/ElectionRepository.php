@@ -18,12 +18,12 @@ class ElectionRepository extends DoctrineRepository implements ElectionRepositor
 		parent::__construct($registry, Election::class);
 	}
 
-	public function get(Uuid $id): Election|null
+	public function get(Uuid $id): ?Election
 	{
 		return $this->find($id);
 	}
 
-	public function getFactionLastElection(Color $faction): Election|null
+	public function getFactionLastElection(Color $faction): ?Election
 	{
 		return $this->findOneBy([
 			'faction' => $faction,

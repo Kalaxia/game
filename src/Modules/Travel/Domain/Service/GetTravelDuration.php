@@ -19,15 +19,15 @@ readonly class GetTravelDuration
 	}
 
 	public function __invoke(
-		Place             $origin,
-		Place             $destination,
+		Place $origin,
+		Place $destination,
 		\DateTimeImmutable $departureDate,
-		TravelType         $travelType = TravelType::Fleet,
-		Player|null        $player = null,
+		TravelType $travelType = TravelType::Fleet,
+		?Player $player = null,
 	): \DateTimeImmutable {
 		$time = ($this->calculateTravelTime)($origin, $destination, $travelType, $player);
 
-		if ($travelType === TravelType::CommercialShipping) {
+		if (TravelType::CommercialShipping === $travelType) {
 			$time = intval(round($time * Game::COMMERCIAL_TIME_TRAVEL));
 		}
 

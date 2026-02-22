@@ -11,12 +11,12 @@ class LiveReport
 	public static int $halfRound = 0;
 	public static int $littleRound = 0;
 
-	public static Player|null $rPlayerAttacker = null;
-	public static Player|null $rPlayerDefender = null;
-	public static Player|null $rPlayerWinner = null;
-	public static Commander|null $attackerCommander = null;
-	public static Commander|null $defenderCommander = null;
-	public static Planet|null $rPlace = null;
+	public static ?Player $rPlayerAttacker = null;
+	public static ?Player $rPlayerDefender = null;
+	public static ?Player $rPlayerWinner = null;
+	public static ?Commander $attackerCommander = null;
+	public static ?Commander $defenderCommander = null;
+	public static ?Planet $rPlace = null;
 	public static int $levelA = 0;
 	public static int $levelD = 0;
 	public static int $experienceA = 0;
@@ -34,7 +34,7 @@ class LiveReport
 	public static int $defenderImportance = 0;
 	public static int $statementAttacker = 0;
 	public static int $statementDefender = 0;
-	public static \DateTimeImmutable|null $dFight = null;
+	public static ?\DateTimeImmutable $dFight = null;
 
 	public static function clear(): void
 	{

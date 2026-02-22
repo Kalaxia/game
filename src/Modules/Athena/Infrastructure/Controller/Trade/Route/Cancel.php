@@ -19,15 +19,15 @@ use Symfony\Component\Uid\Uuid;
 class Cancel extends AbstractController
 {
 	public function __invoke(
-        Request                            $request,
-        Player                             $currentPlayer,
-        CommercialRouteRepositoryInterface $commercialRouteRepository,
-        GetDistanceBetweenPlaces           $getDistanceBetweenPlaces,
-        GetCommercialRoutePrice            $getCommercialRoutePrice,
-        PlayerManager                      $playerManager,
-        NotificationRepositoryInterface    $notificationRepository,
-        Planet                             $currentBase,
-        Uuid                               $id,
+		Request $request,
+		Player $currentPlayer,
+		CommercialRouteRepositoryInterface $commercialRouteRepository,
+		GetDistanceBetweenPlaces $getDistanceBetweenPlaces,
+		GetCommercialRoutePrice $getCommercialRoutePrice,
+		PlayerManager $playerManager,
+		NotificationRepositoryInterface $notificationRepository,
+		Planet $currentBase,
+		Uuid $id,
 	): Response {
 		$cr = $commercialRouteRepository->getByIdAndPlanet($id, $currentBase);
 		if (null === $cr) {

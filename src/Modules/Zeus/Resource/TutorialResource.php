@@ -60,12 +60,12 @@ class TutorialResource
 		if ($id <= count(self::$steps)) {
 			if (in_array($info, ['id', 'title', 'description', 'experienceReward', 'creditReward', 'resourceReward', 'shipReward'])) {
 				return self::$steps[$id - 1][$info];
-			} else {
-				return false;
 			}
-		} else {
+
 			return false;
 		}
+
+		return false;
 	}
 
 	private static array $steps = [

@@ -33,18 +33,18 @@ class Build extends AbstractController
 		methods: [Request::METHOD_GET],
 	)]
 	public function __invoke(
-        Request                          $request,
-        Player                           $currentPlayer,
-        Planet                           $currentPlanet,
-        PlanetHelper                     $planetHelper,
-        PlanetManager                    $planetManager,
-        TechnologyRepositoryInterface    $technologyRepository,
-        BuildingDataHandler              $buildingDataHandler,
-        BuildingQueueRepositoryInterface $buildingQueueRepository,
-        BuildingLevelHandler             $buildingLevelHandler,
-        BuildingQueueFactory             $buildingQueueFactory,
-        ValidatorInterface               $validator,
-        int                              $identifier,
+		Request $request,
+		Player $currentPlayer,
+		Planet $currentPlanet,
+		PlanetHelper $planetHelper,
+		PlanetManager $planetManager,
+		TechnologyRepositoryInterface $technologyRepository,
+		BuildingDataHandler $buildingDataHandler,
+		BuildingQueueRepositoryInterface $buildingQueueRepository,
+		BuildingLevelHandler $buildingLevelHandler,
+		BuildingQueueFactory $buildingQueueFactory,
+		ValidatorInterface $validator,
+		int $identifier,
 	): Response {
 		if (!$planetHelper->isABuilding($identifier)) {
 			throw new BadRequestHttpException('le bâtiment indiqué n\'est pas valide');

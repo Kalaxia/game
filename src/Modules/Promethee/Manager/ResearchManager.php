@@ -14,10 +14,10 @@ use App\Modules\Zeus\Model\Player;
 readonly class ResearchManager
 {
 	public function __construct(
-		private ResearchRepositoryInterface     $researchRepository,
+		private ResearchRepositoryInterface $researchRepository,
 		private NotificationRepositoryInterface $notificationRepository,
-		private ResearchHelper                  $researchHelper,
-		private int                             $researchQuantity
+		private ResearchHelper $researchHelper,
+		private int $researchQuantity,
 	) {
 	}
 
@@ -80,11 +80,11 @@ readonly class ResearchManager
 					$tech2 = $research->physLevel;
 					$tech3 = $research->chemLevel;
 					match ($research->naturalTech) {
-                        0 => $tech1++,
-                        1 => $tech2++,
-                        2 => $tech3++,
-                        default => throw new \LogicException('une erreur est survenue lors de la mise à jour des technologies'),
-                    };
+						0 => $tech1++,
+						1 => $tech2++,
+						2 => $tech3++,
+						default => throw new \LogicException('une erreur est survenue lors de la mise à jour des technologies'),
+					};
 				} while (!$this->researchHelper->isResearchPermit($tech1, $tech2, $tech3));
 
 				$research->naturalToPay = $this->researchHelper->getInfo(
@@ -139,10 +139,10 @@ readonly class ResearchManager
 					$tech1 = $research->bioLevel;
 					$tech2 = $research->mediLevel;
 					match ($research->lifeTech) {
-                        3 => $tech1++,
-                        4 => $tech2++,
-                        default => throw new \LogicException('une erreur est survenue lors de la mise à jour des technologies'),
-                    };
+						3 => $tech1++,
+						4 => $tech2++,
+						default => throw new \LogicException('une erreur est survenue lors de la mise à jour des technologies'),
+					};
 				} while (!$this->researchHelper->isResearchPermit($tech1, $tech2));
 				$research->lifeToPay = $this->researchHelper->getInfo(
 					$research->lifeTech,
@@ -194,10 +194,10 @@ readonly class ResearchManager
 					$tech1 = $research->econoLevel;
 					$tech2 = $research->psychoLevel;
 					match ($research->socialTech) {
-                        5 => $tech1++,
-                        6 => $tech2++,
-                        default => throw new \LogicException('une erreur est survenue lors de la mise à jour des technologies'),
-                    };
+						5 => $tech1++,
+						6 => $tech2++,
+						default => throw new \LogicException('une erreur est survenue lors de la mise à jour des technologies'),
+					};
 				} while (!$this->researchHelper->isResearchPermit($tech1, $tech2));
 				$research->socialToPay = $this->researchHelper->getInfo(
 					$research->socialTech,
@@ -256,11 +256,11 @@ readonly class ResearchManager
 					$tech2 = $research->algoLevel;
 					$tech3 = $research->statLevel;
 					match ($research->informaticTech) {
-                        7 => $tech1++,
-                        8 => $tech2++,
-                        9 => $tech3++,
-                        default => throw new \LogicException('une erreur est survenue lors de la mise à jour des technologies'),
-                    };
+						7 => $tech1++,
+						8 => $tech2++,
+						9 => $tech3++,
+						default => throw new \LogicException('une erreur est survenue lors de la mise à jour des technologies'),
+					};
 				} while (!$this->researchHelper->isResearchPermit($tech1, $tech2, $tech3));
 				$research->informaticToPay = $this->researchHelper->getInfo(
 					$research->informaticTech,

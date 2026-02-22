@@ -11,17 +11,17 @@ use App\Modules\Hermes\Model\ConversationUser;
 use App\Modules\Zeus\Model\Player;
 
 $request = $this->getContainer()->get('app.request');
-$session = $this->getContainer()->get(\App\Classes\Library\Session\SessionWrapper::class);
-$parser = $this->getContainer()->get(\App\Classes\Library\Parser::class);
-$playerManager = $this->getContainer()->get(\App\Modules\Zeus\Manager\PlayerManager::class);
-$conversationManager = $this->getContainer()->get(\App\Modules\Hermes\Manager\ConversationManager::class);
-$conversationMessageManager = $this->getContainer()->get(\App\Modules\Hermes\Manager\ConversationMessageManager::class);
+$session = $this->getContainer()->get(App\Classes\Library\Session\SessionWrapper::class);
+$parser = $this->getContainer()->get(App\Classes\Library\Parser::class);
+$playerManager = $this->getContainer()->get(App\Modules\Zeus\Manager\PlayerManager::class);
+$conversationManager = $this->getContainer()->get(App\Modules\Hermes\Manager\ConversationManager::class);
+$conversationMessageManager = $this->getContainer()->get(App\Modules\Hermes\Manager\ConversationMessageManager::class);
 
 // protection des inputs
 $content = $parser->parse($request->request->get('message'));
 
 if (false !== $content) {
-	if (($player = $playerManager->get($session->get('playerId')))) {
+	if ($player = $playerManager->get($session->get('playerId'))) {
 		if ($player->status > Player::PARLIAMENT) {
 			if ('' !== $content && strlen((string) $content) < 25000) {
 				if (($factionAccount = $playerManager->getFactionAccount($player->rColor)) !== null) {

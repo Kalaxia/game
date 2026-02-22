@@ -19,15 +19,15 @@ final class ResourceSalesForm
 	use DefaultActionTrait;
 
 	#[LiveProp(writable: true)]
-	public int|null $quantity = null;
+	public ?int $quantity = null;
 	public bool $previousSuccess = false;
 
-	public function getMinPrice(): int|null
+	public function getMinPrice(): ?int
 	{
 		return $this->quantity > 0 ? intval(ceil($this->quantity * Transaction::MIN_RATE_RESOURCE)) : null;
 	}
 
-	public function getRequiredShipsCount(): int|null
+	public function getRequiredShipsCount(): ?int
 	{
 		return $this->quantity > 0 ? intval(ceil($this->quantity / CommercialShipping::WEDGE)) : null;
 	}

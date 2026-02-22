@@ -63,27 +63,26 @@ class TechnologyHelper
 				return round(TechnologyResource::$technology[$techno][$info] * $level * Technology::COEF_POINTS);
 			} elseif ('time' == $info) {
 				return round(TechnologyResource::$technology[$techno][$info] * $level * Technology::COEF_TIME);
-			} else {
-				switch (TechnologyResource::$technology[$techno]['category']) {
-					case 1:
-						$value = round(TechnologyResource::$technology[$techno][$info] * 1.5 ** ($level - 1));
-						break;
-					case 2:
-						$value = round(TechnologyResource::$technology[$techno][$info] * 1.3 ** ($level - 1));
-						break;
-					case 3:
-						$value = round(TechnologyResource::$technology[$techno][$info] * 1.2 ** ($level - 1));
-						break;
-					default:
-						return false;
-				}
-
-				//	$value = round($this->technology[$techno][$info] * pow(1.75, $level-1));
-				//	$value = round($this->technology[$techno][$info] * pow(1.5, $level-1));
-				//	$value = round($this->technology[$techno][$info] * pow(1.3, $level-1));
-
-				return $value;
 			}
+			switch (TechnologyResource::$technology[$techno]['category']) {
+				case 1:
+					$value = round(TechnologyResource::$technology[$techno][$info] * 1.5 ** ($level - 1));
+					break;
+				case 2:
+					$value = round(TechnologyResource::$technology[$techno][$info] * 1.3 ** ($level - 1));
+					break;
+				case 3:
+					$value = round(TechnologyResource::$technology[$techno][$info] * 1.2 ** ($level - 1));
+					break;
+				default:
+					return false;
+			}
+
+			//	$value = round($this->technology[$techno][$info] * pow(1.75, $level-1));
+			//	$value = round($this->technology[$techno][$info] * pow(1.5, $level-1));
+			//	$value = round($this->technology[$techno][$info] * pow(1.3, $level-1));
+
+			return $value;
 		}
 		throw new \InvalidArgumentException('2e argument faux pour getInof() de TechnologyResource');
 	}
@@ -97,30 +96,29 @@ class TechnologyHelper
 				// $arg2 est ce que le joueur possède (ressource ou crédit)
 				case 'resource': return $arg2 >= $this->getInfo($techno, 'resource', $arg1);
 					break;
-				// assez de crédits pour construire ?
+					// assez de crédits pour construire ?
 				case 'credit': return $arg2 >= $this->getInfo($techno, 'credit', $arg1);
 					break;
-				// encore de la place dans la queue ?
-				// $arg1 est un objet de type OrbitalBase
-				// $arg2 est le nombre de technologies dans la queue
+					// encore de la place dans la queue ?
+					// $arg1 est un objet de type OrbitalBase
+					// $arg2 est le nombre de technologies dans la queue
 				case 'queue':
 					$maxQueue = $this->planetHelper->getBuildingInfo(PlanetResource::TECHNOSPHERE, 'level', $arg1->levelTechnosphere, 'nbQueues');
 
 					return $arg2 < $maxQueue;
-				// a-t-on le droit de construire ce niveau ?
-				// $arg1 est le niveau cible
+					// a-t-on le droit de construire ce niveau ?
+					// $arg1 est le niveau cible
 				case 'levelPermit':
 					return $this->isAnUnblockingTechnology($techno)
 						? 1 == $arg1
 						: $arg1 > 0;
-				// est-ce que le niveau de la technosphère est assez élevé ?
-				// arg1 est le niveau de la technosphere
-				// no break
+					// est-ce que le niveau de la technosphère est assez élevé ?
+					// arg1 est le niveau de la technosphere
 				case 'technosphereLevel':
 					return $this->getInfo($techno, 'requiredTechnosphere') <= $arg1;
-				// est-ce que les recherches de l'université sont acquises ?
-				// arg1 est le niveau de la technologie
-				// arg2 est une stacklist avec les niveaux de recherche
+					// est-ce que les recherches de l'université sont acquises ?
+					// arg1 est le niveau de la technologie
+					// arg2 est une stacklist avec les niveaux de recherche
 				case 'research':
 					$neededResearch = $this->getInfo($techno, 'requiredResearch');
 					$researchList = new StackList();
@@ -137,6 +135,7 @@ class TechnologyHelper
 					if ($researchList->size() > 0) {
 						return $researchList;
 					}
+
 					return true;
 					// est-ce qu'on peut construire la techno ? Pas dépassé le niveau max
 					// arg1 est le niveau de la technologie voulue
@@ -144,6 +143,7 @@ class TechnologyHelper
 					if ($this->isAnUnblockingTechnology($techno)) {
 						return true;
 					}
+
 					return $arg1 <= $this->getInfo($techno, 'maxLevel');
 					// est-ce qu'on peut construire la techno en fonction du type de la base ?
 					// arg1 est le type de la base
@@ -169,6 +169,7 @@ class TechnologyHelper
 			return 0;
 		}
 		$baseBonus = $this->getInfo($techno, 'bonus');
+
 		// TODO explain this calculation and its result
 		return match ($level) {
 			0 => 0,

@@ -13,5 +13,5 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 final readonly class Headline
 {
 	public string $title;
-	public string|null $subTitle;
+	public ?string $subTitle;
 }

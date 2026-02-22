@@ -20,7 +20,6 @@ class ViewHeadquarters extends AbstractController
 		private readonly CurrentPlayerPlanetsRegistry $currentPlayerBasesRegistry,
 		private readonly CommanderRepositoryInterface $commanderRepository,
 	) {
-
 	}
 
 	public function __invoke(

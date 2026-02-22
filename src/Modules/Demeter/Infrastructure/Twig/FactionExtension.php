@@ -7,7 +7,6 @@ use App\Modules\Demeter\Domain\Service\Configuration\GetFactionBonusesConfigurat
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Law\Law;
-use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Demeter\Resource\LawResources;
 use App\Modules\Shared\Domain\Service\GameTimeConverter;
 use App\Modules\Zeus\Model\Player;
@@ -27,7 +26,7 @@ class FactionExtension extends AbstractExtension
 	}
 
 	#[\Override]
-    public function getFunctions(): array
+	public function getFunctions(): array
 	{
 		return [
 			// @TODO move get_faction_info here and replace these methods

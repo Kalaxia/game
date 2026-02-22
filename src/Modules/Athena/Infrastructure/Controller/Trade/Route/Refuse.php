@@ -21,17 +21,17 @@ use Symfony\Component\Uid\Uuid;
 class Refuse extends AbstractController
 {
 	public function __invoke(
-        Request                            $request,
-        Player                             $currentPlayer,
-        Planet                             $currentBase,
-        CommercialRouteRepositoryInterface $commercialRouteRepository,
-        GetCommercialRoutePrice            $getCommercialRoutePrice,
-        GetDistanceBetweenPlaces           $getDistanceBetweenPlaces,
-        PlayerRepositoryInterface          $playerRepository,
-        PlayerManager                      $playerManager,
-        NotificationRepositoryInterface    $notificationRepository,
-        Uuid                               $planetId,
-        Uuid                               $id,
+		Request $request,
+		Player $currentPlayer,
+		Planet $currentBase,
+		CommercialRouteRepositoryInterface $commercialRouteRepository,
+		GetCommercialRoutePrice $getCommercialRoutePrice,
+		GetDistanceBetweenPlaces $getDistanceBetweenPlaces,
+		PlayerRepositoryInterface $playerRepository,
+		PlayerManager $playerManager,
+		NotificationRepositoryInterface $notificationRepository,
+		Uuid $planetId,
+		Uuid $id,
 	): Response {
 		$cr = $commercialRouteRepository->getByIdAndDistantPlanet($id, $currentBase)
 			?? throw $this->createNotFoundException('Commercial route not found');

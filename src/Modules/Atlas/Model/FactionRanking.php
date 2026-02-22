@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Atlas\Model;
 
-use App\Classes\Container\StackList;
-use App\Classes\Library\Format;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Demeter\Resource\ColorResource;
 use Symfony\Component\Uid\Uuid;
 
 class FactionRanking

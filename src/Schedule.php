@@ -10,19 +10,19 @@ use Symfony\Contracts\Cache\CacheInterface;
 #[AsSchedule]
 class Schedule implements ScheduleProviderInterface
 {
-    public function __construct(
-        private CacheInterface $cache,
-    ) {
-    }
+	public function __construct(
+		private CacheInterface $cache,
+	) {
+	}
 
-    public function getSchedule(): SymfonySchedule
-    {
-        return (new SymfonySchedule())
-            ->stateful($this->cache) // ensure missed tasks are executed
-            ->processOnlyLastMissedRun(true) // ensure only last missed task is run
+	public function getSchedule(): SymfonySchedule
+	{
+		return (new SymfonySchedule())
+			->stateful($this->cache) // ensure missed tasks are executed
+			->processOnlyLastMissedRun(true) // ensure only last missed task is run
 
-            // add your own tasks here
-            // see https://symfony.com/doc/current/scheduler.html#attaching-recurring-messages-to-a-schedule
-        ;
-    }
+			// add your own tasks here
+			// see https://symfony.com/doc/current/scheduler.html#attaching-recurring-messages-to-a-schedule
+		;
+	}
 }

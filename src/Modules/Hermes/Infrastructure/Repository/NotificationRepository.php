@@ -18,12 +18,12 @@ class NotificationRepository extends DoctrineRepository implements NotificationR
 		parent::__construct($registry, Notification::class);
 	}
 
-	public function get(Uuid $id): Notification|null
+	public function get(Uuid $id): ?Notification
 	{
 		return $this->find($id);
 	}
 
-	public function getUnreadNotifications(Player $player, int|null $limit = null): array
+	public function getUnreadNotifications(Player $player, ?int $limit = null): array
 	{
 		$qb = $this->createQueryBuilder('n');
 
@@ -77,7 +77,7 @@ class NotificationRepository extends DoctrineRepository implements NotificationR
 
 		$qb
 			->where($qb->expr()->orX(
-				$qb->expr()->eq('n.player',':commander_player'),
+				$qb->expr()->eq('n.player', ':commander_player'),
 				$qb->expr()->eq('n.player', ':place_player'),
 			))
 			->andWhere('n.sentAt = :arrived_at')

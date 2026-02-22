@@ -14,6 +14,5 @@ class VoteLaw
 		public int $vote,
 		public \DateTimeImmutable $votedAt,
 	) {
-
 	}
 }

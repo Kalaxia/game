@@ -12,11 +12,11 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 readonly class SystemListener
 {
 	public function __construct(
-		private ColorRepositoryInterface  $colorRepository,
+		private ColorRepositoryInterface $colorRepository,
 		private PlanetRepositoryInterface $planetRepository,
 		private SystemRepositoryInterface $systemRepository,
 		#[Autowire('%galaxy.scores%')]
-		private array                     $scores,
+		private array $scores,
 	) {
 	}
 

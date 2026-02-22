@@ -7,7 +7,6 @@ namespace App\Modules\Demeter\Application\Election;
 use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Shared\Domain\Server\TimeMode;
 use App\Shared\Application\Handler\DurationHandler;
 use Psr\Clock\ClockInterface;

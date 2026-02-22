@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Shared\Infrastructure\Twig\Components\Molecules;
 
-use App\Shared\Domain\Model\QueueableInterface;
-
 abstract class Queue
 {
 	public int $refund;
-	public string|null $nameComponent = null;
+	public ?string $nameComponent = null;
 
 	abstract public function getName(): string;
 

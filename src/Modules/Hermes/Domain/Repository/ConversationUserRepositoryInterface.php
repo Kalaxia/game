@@ -10,5 +10,4 @@ use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
  */
 interface ConversationUserRepositoryInterface extends EntityRepositoryInterface
 {
-
 }

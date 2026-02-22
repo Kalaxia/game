@@ -6,7 +6,6 @@ namespace App\Modules\Hermes\Infrastructure\Command;
 
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
-use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Hermes\Domain\Repository\ConversationUserRepositoryInterface;
 use App\Modules\Hermes\Model\Conversation;
@@ -83,7 +82,7 @@ class SynchronizePlayerConversations extends Command
 			if ($includedPlayersIds->contains($player->id)) {
 				continue;
 			}
-			$missingPlayersCount++;
+			++$missingPlayersCount;
 
 			$conversationUser = new ConversationUser(
 				id: Uuid::v4(),

@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Galaxy\Manager;
 
-use App\Classes\Redis\RedisManager;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Galaxy\Domain\Entity\Sector;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Galaxy\Domain\Repository\SystemRepositoryInterface;
-use Psr\Cache\CacheItemInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
@@ -22,16 +19,16 @@ readonly class SectorOwnershipCalculator
 	private const int CONTROLLED_SYSTEM_POINTS = 2;
 
 	public function __construct(
-		private ColorRepositoryInterface  $colorRepository,
+		private ColorRepositoryInterface $colorRepository,
 		private TagAwareCacheInterface $cache,
 		private SystemRepositoryInterface $systemRepository,
 		private SectorRepositoryInterface $sectorRepository,
 		private PlanetRepositoryInterface $planetRepository,
 		private LoggerInterface $logger,
 		#[Autowire('%galaxy.sector_minimal_score%')]
-		private int                       $sectorMinimalScore,
+		private int $sectorMinimalScore,
 		#[Autowire('%galaxy.scores%')]
-		private array                     $scores = [],
+		private array $scores = [],
 	) {
 	}
 
@@ -66,7 +63,7 @@ readonly class SectorOwnershipCalculator
 
 	/**
 	 * Returns a sorted array with faction identifiers as keys and their ownership score as values
-	 * The highest score is first
+	 * The highest score is first.
 	 *
 	 * @return array<int, int>
 	 */

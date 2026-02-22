@@ -14,7 +14,7 @@ readonly class GetMinPriceRelativeToRate
 	) {
 	}
 
-	public function __invoke(int $transactionType, int $quantity, int|null $identifier = null): int
+	public function __invoke(int $transactionType, int $quantity, ?int $identifier = null): int
 	{
 		switch ($transactionType) {
 			case Transaction::TYP_RESOURCE:

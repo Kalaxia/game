@@ -30,16 +30,16 @@ class CreateMission extends AbstractController
 		methods: [Request::METHOD_POST],
 	)]
 	public function __invoke(
-        Request                             $request,
-        Player                              $currentPlayer,
-        CurrentPlayerBonusRegistry          $currentPlayerBonusRegistry,
-        GetMissionTime                      $getMissionTime,
-        Planet                              $currentPlanet,
-        PlanetHelper                        $planetHelper,
-        PlaceRepositoryInterface            $placeRepository,
-        RecyclingMissionRepositoryInterface $recyclingMissionRepository,
-        RecyclingMissionManager             $recyclingMissionManager,
-        Uuid                                $targetId,
+		Request $request,
+		Player $currentPlayer,
+		CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
+		GetMissionTime $getMissionTime,
+		Planet $currentPlanet,
+		PlanetHelper $planetHelper,
+		PlaceRepositoryInterface $placeRepository,
+		RecyclingMissionRepositoryInterface $recyclingMissionRepository,
+		RecyclingMissionManager $recyclingMissionManager,
+		Uuid $targetId,
 	): Response {
 		$quantity = $request->request->getInt('quantity', 0);
 

@@ -17,7 +17,6 @@ use App\Modules\Demeter\Message\CampaignMessage;
 use App\Modules\Demeter\Message\SenateUpdateMessage;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\Candidate;
-use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\ConversationMessageRepositoryInterface;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
@@ -77,7 +76,7 @@ readonly class BallotHandler
 			++$ballot[$candidateId]['votes_count'];
 		}
 
-		uasort($ballot, fn($a, $b) => $b['votes_count'] <=> $a['votes_count']);
+		uasort($ballot, fn ($a, $b) => $b['votes_count'] <=> $a['votes_count']);
 
 		$convPlayer = $this->playerRepository->getFactionAccount($faction);
 
@@ -141,24 +140,25 @@ readonly class BallotHandler
 	}
 
 	/**
-	 * @param list<Player> $governmentMembers
-	 * @param ($hadVoted is true ? Player : Player|null) $newChief
+	 * @param list<Player>                                                 $governmentMembers
+	 * @param ($hadVoted is true ? Player : Player|null)                   $newChief
 	 * @param array<string, array{candidate: Candidate, votes_count: int}> $candidates
+	 *
 	 * @throws \Exception
 	 */
 	private function mandate(
-		Color        $color,
-		array        $governmentMembers,
-		Player|null  $newChief,
-		Player|null	 $currentLeader,
-		bool         $hadVoted,
+		Color $color,
+		array $governmentMembers,
+		?Player $newChief,
+		?Player $currentLeader,
+		bool $hadVoted,
 		Conversation $conv,
-		Player       $convPlayer,
-		array        $candidates,
+		Player $convPlayer,
+		array $candidates,
 	): void {
 		// préparation de la conversation
 		$conv->lastMessageAt = new \DateTimeImmutable();
-		$conv->messagesCount++;
+		++$conv->messagesCount;
 
 		// désarchiver tous les users
 		$users = $conv->players;
@@ -226,7 +226,8 @@ readonly class BallotHandler
 					new SenateUpdateMessage($color->id),
 					[DateTimeConverter::to_delay_stamp(new \DateTimeImmutable(sprintf('+%d seconds', $mandateDuration)))],
 				);
-				$this->notificationRepository->save(NotificationBuilder::new()
+				$this->notificationRepository->save(
+					NotificationBuilder::new()
 					->setTitle('Votre coup d\'état a réussi')
 					->setContent(NotificationBuilder::paragraph(
 						'Le peuple vous a soutenu, vous avez renversé le ',
@@ -299,7 +300,7 @@ readonly class BallotHandler
 			}
 		} else {
 			$noChief = false;
-			if ($currentLeader === null) {
+			if (null === $currentLeader) {
 				$noChief = true;
 				$currentLeader = $this->playerRepository->getByName(($this->getFactionsConfiguration)($color, 'officialName'))
 					?? throw new \RuntimeException(sprintf('Missing faction account for %d faction', $color->identifier));
@@ -375,7 +376,6 @@ readonly class BallotHandler
 							$currentLeader->name.
 							' demeure le dirigeant de '.
 							($this->getFactionsConfiguration)($color, 'popularName'),
-
 					);
 					$this->conversationMessageRepository->save($message);
 					break;

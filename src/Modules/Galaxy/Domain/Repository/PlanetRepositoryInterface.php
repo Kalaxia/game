@@ -21,7 +21,7 @@ interface PlanetRepositoryInterface extends EntityRepositoryInterface
 	 */
 	public function getAll(): Collection;
 
-	public function get(Uuid $id): Planet|null;
+	public function get(Uuid $id): ?Planet;
 
 	/**
 	 * @return list<Planet>

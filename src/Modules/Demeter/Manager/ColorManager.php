@@ -11,7 +11,6 @@ use App\Modules\Demeter\Message\CampaignMessage;
 use App\Modules\Demeter\Message\ElectionMessage;
 use App\Modules\Demeter\Message\SenateUpdateMessage;
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
@@ -25,14 +24,14 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 readonly class ColorManager implements SchedulerInterface
 {
 	public function __construct(
-		private ColorRepositoryInterface        $colorRepository,
-		private GetFactionsConfiguration 		$getFactionsConfiguration,
-		private PlayerRepositoryInterface       $playerRepository,
+		private ColorRepositoryInterface $colorRepository,
+		private GetFactionsConfiguration $getFactionsConfiguration,
+		private PlayerRepositoryInterface $playerRepository,
 		private NotificationRepositoryInterface $notificationRepository,
-		private MessageBusInterface             $messageBus,
-		private UrlGeneratorInterface           $urlGenerator,
-		private EntityManagerInterface          $entityManager,
-		private NextElectionDateCalculator      $nextElectionDateCalculator,
+		private MessageBusInterface $messageBus,
+		private UrlGeneratorInterface $urlGenerator,
+		private EntityManagerInterface $entityManager,
+		private NextElectionDateCalculator $nextElectionDateCalculator,
 	) {
 	}
 
@@ -125,7 +124,7 @@ readonly class ColorManager implements SchedulerInterface
 				$isFromChief
 					? sprintf(
 						'Votre %s a appliqué une loi.',
-					($this->getFactionsConfiguration)($faction, 'status')[5]
+						($this->getFactionsConfiguration)($faction, 'status')[5]
 					)
 					: 'Votre gouvernement a proposé un projet de loi, en tant que membre du sénat,
 					il est de votre devoir de voter pour l\'acceptation ou non de ladite loi.',

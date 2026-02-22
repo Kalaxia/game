@@ -20,7 +20,7 @@ class ReportRepository extends DoctrineRepository implements ReportRepositoryInt
 		parent::__construct($registry, Report::class);
 	}
 
-	public function get(Uuid $id): Report|null
+	public function get(Uuid $id): ?Report
 	{
 		return $this->find($id);
 	}
@@ -42,7 +42,7 @@ class ReportRepository extends DoctrineRepository implements ReportRepositoryInt
 			->andWhere($qb->expr()->in('r.place', ':places'))
 			->setParameter('attacker', $attacker)
 			->setParameter('places', array_map(
-				fn(Uuid $uuid) => $uuid->toBinary(),
+				fn (Uuid $uuid) => $uuid->toBinary(),
 				$places
 			), ArrayParameterType::BINARY);
 

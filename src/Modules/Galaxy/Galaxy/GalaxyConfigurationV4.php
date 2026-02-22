@@ -13,12 +13,12 @@ class GalaxyConfigurationV4 extends GalaxyConfiguration
 		'systemProportion' => [3, 8, 9, 25, 55],
 		'systemPosition' => null,
 		'lineSystemPosition' => [
-		//	[[pA], [pB], EPAISSEUR, INTENSITE],
+			//	[[pA], [pB], EPAISSEUR, INTENSITE],
 			[[20, 170], [40, 118], 12, 8],
 			[[80, 230], [137, 210], 12, 8],
 		],
 		'circleSystemPosition' => [
-		//	[[X1], RAYON, EPAISSEUR, INTENSITE],
+			//	[[X1], RAYON, EPAISSEUR, INTENSITE],
 			[[-50, 300], 70, 20, 9],
 			[[-50, 300], 90, 20, 9],
 			[[-50, 300], 110, 20, 9],

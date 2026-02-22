@@ -19,7 +19,7 @@ class UniversityInvestmentsUpdateEvent implements TutorialEvent
 		return $this->player;
 	}
 
-	public function getTutorialStep(): int|null
+	public function getTutorialStep(): ?int
 	{
 		return TutorialResource::MODIFY_UNI_INVEST;
 	}

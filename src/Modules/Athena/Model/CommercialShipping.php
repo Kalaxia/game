@@ -18,19 +18,18 @@ class CommercialShipping implements TravellerInterface
 
 	// attributes
 	public function __construct(
-		public Uuid                    $id,
-		public Player|null             $player,
-		public Planet                  $originBase,
-		public Planet|null             $destinationBase = null,
-		public Transaction|null        $transaction = null,
+		public Uuid $id,
+		public ?Player $player,
+		public Planet $originBase,
+		public ?Planet $destinationBase = null,
+		public ?Transaction $transaction = null,
 		// @TODO rather have a shipment type and then a quantity field
-		public int|null                $resourceTransported = null, // soit l'un
-		public int                     $shipQuantity = 0, // soit l'autre
-		public int                     $statement = 0,
-		public \DateTimeImmutable|null $departureDate = null,
-		public \DateTimeImmutable|null $arrivalDate = null,
+		public ?int $resourceTransported = null, // soit l'un
+		public int $shipQuantity = 0, // soit l'autre
+		public int $statement = 0,
+		public ?\DateTimeImmutable $departureDate = null,
+		public ?\DateTimeImmutable $arrivalDate = null,
 	) {
-
 	}
 
 	public function hasResources(): bool
@@ -71,12 +70,12 @@ class CommercialShipping implements TravellerInterface
 		return self::ST_WAITING === $this->statement;
 	}
 
-	public function getDepartureDate(): \DateTimeImmutable|null
+	public function getDepartureDate(): ?\DateTimeImmutable
 	{
 		return $this->departureDate;
 	}
 
-	public function getArrivalDate(): \DateTimeImmutable|null
+	public function getArrivalDate(): ?\DateTimeImmutable
 	{
 		return $this->arrivalDate;
 	}

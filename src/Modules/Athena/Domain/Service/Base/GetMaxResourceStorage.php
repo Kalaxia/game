@@ -15,8 +15,8 @@ readonly class GetMaxResourceStorage
 {
 	public function __construct(
 		private BonusApplierInterface $bonusApplier,
-		private PlanetHelper          $planetHelper,
-		private PlayerBonusManager    $playerBonusManager,
+		private PlanetHelper $planetHelper,
+		private PlayerBonusManager $playerBonusManager,
 	) {
 	}
 

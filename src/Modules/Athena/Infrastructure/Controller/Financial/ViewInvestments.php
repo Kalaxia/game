@@ -38,9 +38,9 @@ class ViewInvestments extends AbstractController
 	}
 
 	public function __invoke(
-		Player                         $currentPlayer,
-		CommanderRepositoryInterface   $commanderRepository,
-		PlanetRepositoryInterface      $planetRepository,
+		Player $currentPlayer,
+		CommanderRepositoryInterface $commanderRepository,
+		PlanetRepositoryInterface $planetRepository,
 		TransactionRepositoryInterface $transactionRepository,
 	): Response {
 		$taxCoeff = $this->getParameter('zeus.player.tax_coeff');
@@ -86,6 +86,7 @@ class ViewInvestments extends AbstractController
 
 	/**
 	 * @param list<Planet> $bases
+	 *
 	 * @return array<string, array{
 	 *     tax_income: int,
 	 *     tax_income_bonus: int,
@@ -117,8 +118,8 @@ class ViewInvestments extends AbstractController
 
 	/**
 	 * @param Planet[]      $playerBases
-	 * @param Commander[]        $commanders
-	 * @param Transaction[]      $transactions
+	 * @param Commander[]   $commanders
+	 * @param Transaction[] $transactions
 	 * @param array<string, array{
 	 *      tax_income: int,
 	 *      tax_income_bonus: int,

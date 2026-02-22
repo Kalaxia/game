@@ -17,14 +17,14 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 class Delete extends AbstractController
 {
 	public function __invoke(
-		Request                            $request,
-		Player                             $currentPlayer,
-		Planet                             $currentBase,
-		CommercialRouteManager             $commercialRouteManager,
+		Request $request,
+		Player $currentPlayer,
+		Planet $currentBase,
+		CommercialRouteManager $commercialRouteManager,
 		CommercialRouteRepositoryInterface $commercialRouteRepository,
-		NotificationManager                $notificationManager,
-		NotificationRepositoryInterface    $notificationRepository,
-		int                                $id,
+		NotificationManager $notificationManager,
+		NotificationRepositoryInterface $notificationRepository,
+		int $id,
 	): Response {
 		$cr = $commercialRouteRepository->get($id)
 			?? throw $this->createNotFoundException('Commercial route not found');
@@ -61,7 +61,7 @@ class Delete extends AbstractController
 		//				$playerManager->newSession();
 		//				$playerManager->load(array('id' => array($cr->playerId1, $cr->playerId2)));
 		//				$exp = round($cr->getIncome() * $routeExperienceCoeff);
-//
+		//
 		//				$playerManager->changeSession($S_PAM1);
 
 		$n = NotificationBuilder::new()

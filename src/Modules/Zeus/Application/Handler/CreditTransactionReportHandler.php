@@ -14,7 +14,7 @@ readonly class CreditTransactionReportHandler
 	) {
 	}
 
-	public function __invoke(PlayerFinancialReport $playerFinancialReport, PlayerFinancialReport|null $lastPlayerFinancialReport): void
+	public function __invoke(PlayerFinancialReport $playerFinancialReport, ?PlayerFinancialReport $lastPlayerFinancialReport): void
 	{
 		$creditTransactions = $this->creditTransactionRepository->matchAllByPlayerSince(
 			$playerFinancialReport->player,

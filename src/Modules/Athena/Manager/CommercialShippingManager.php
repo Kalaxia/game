@@ -20,11 +20,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 readonly class CommercialShippingManager implements SchedulerInterface
 {
 	public function __construct(
-		private PlanetManager                         $planetManager,
-		private NotificationRepositoryInterface       $notificationRepository,
-		private MessageBusInterface                   $messageBus,
+		private PlanetManager $planetManager,
+		private NotificationRepositoryInterface $notificationRepository,
+		private MessageBusInterface $messageBus,
 		private CommercialShippingRepositoryInterface $commercialShippingRepository,
-		private TranslatorInterface                   $translator,
+		private TranslatorInterface $translator,
 	) {
 	}
 
@@ -44,10 +44,10 @@ readonly class CommercialShippingManager implements SchedulerInterface
 	 * TODO: add more data and links in notifications.
 	 */
 	public function deliver(
-        CommercialShipping $commercialShipping,
-        Transaction|null   $transaction,
-        Planet             $destOB,
-        Commander|null     $commander
+		CommercialShipping $commercialShipping,
+		?Transaction $transaction,
+		Planet $destOB,
+		?Commander $commander,
 	): void {
 		if (null !== $transaction && $transaction->isCompleted()) {
 			switch ($transaction->type) {

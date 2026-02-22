@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Galaxy\Domain\Entity;
 
-use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 

@@ -25,19 +25,18 @@ use Symfony\UX\Turbo\TurboBundle;
 class Cancel extends AbstractController
 {
 	public function __invoke(
-        Request                               $request,
-        Player                                $currentPlayer,
-        GetMaxResourceStorage                 $getMaxStorage,
-        GetBaseCommercialShippingData         $getBaseCommercialShippingData,
-        PlanetHelper                          $planetHelper,
-        PlanetManager                         $planetManager,
-        PlayerManager                         $playerManager,
-        HubInterface                          $mercure,
-        CommercialShippingRepositoryInterface $commercialShippingRepository,
-        TransactionRepositoryInterface        $transactionRepository,
-        Uuid                                  $id,
+		Request $request,
+		Player $currentPlayer,
+		GetMaxResourceStorage $getMaxStorage,
+		GetBaseCommercialShippingData $getBaseCommercialShippingData,
+		PlanetHelper $planetHelper,
+		PlanetManager $planetManager,
+		PlayerManager $playerManager,
+		HubInterface $mercure,
+		CommercialShippingRepositoryInterface $commercialShippingRepository,
+		TransactionRepositoryInterface $transactionRepository,
+		Uuid $id,
 	): Response {
-
 		$transaction = $transactionRepository->get($id)
 			?? throw $this->createNotFoundException('Transaction not found');
 

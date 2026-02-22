@@ -46,9 +46,9 @@ readonly class PlanetHelper
 			} elseif ('techno' == $info) {
 				if (\in_array($buildingNumber, [3, 4, 6, 8, 9])) {
 					return PlanetResource::$building[$buildingNumber][$info];
-				} else {
-					return -1;
 				}
+
+				return -1;
 			} elseif ('maxLevel' == $info) {
 				// $level is the type of the base
 				return PlanetResource::$building[$buildingNumber][$info][$level];
@@ -62,32 +62,31 @@ readonly class PlanetHelper
 					return PlanetResource::$building[$buildingNumber][$info][$level - 1][1];
 				} elseif ('points' == $sup) {
 					return PlanetResource::$building[$buildingNumber][$info][$level - 1][2];
-				} else {
-					if ('nbQueues' == $sup) {
-						if (0 == $buildingNumber or 2 == $buildingNumber or 3 == $buildingNumber or 5 == $buildingNumber) {
-							return PlanetResource::$building[$buildingNumber][$info][$level - 1][3];
-						}
-					} elseif ('storageSpace' == $sup) {
-						if (7 == $buildingNumber) {
-							return PlanetResource::$building[$buildingNumber][$info][$level - 1][3];
-						} elseif (2 == $buildingNumber or 3 == $buildingNumber) {
-							return PlanetResource::$building[$buildingNumber][$info][$level - 1][4];
-						}
-					} elseif ('refiningCoefficient' == $sup and 1 == $buildingNumber) {
+				}
+				if ('nbQueues' == $sup) {
+					if (0 == $buildingNumber or 2 == $buildingNumber or 3 == $buildingNumber or 5 == $buildingNumber) {
 						return PlanetResource::$building[$buildingNumber][$info][$level - 1][3];
-					} elseif ('releasedShip' == $sup and (2 == $buildingNumber or 3 == $buildingNumber)) {
-						return PlanetResource::$building[$buildingNumber][$info][$level - 1][5];
-					} elseif ('releasedShip' == $sup and 4 == $buildingNumber) {
-						return PlanetResource::$building[$buildingNumber][$info][$level - 1][4];
-					} elseif ('nbCommercialShip' == $sup and 6 == $buildingNumber) {
-						return PlanetResource::$building[$buildingNumber][$info][$level - 1][3];
-					} elseif ('nbRecyclers' == $sup and 8 == $buildingNumber) {
-						return PlanetResource::$building[$buildingNumber][$info][$level - 1][3];
-					} elseif ('nbRoutesMax' == $sup and 9 == $buildingNumber) {
-						return PlanetResource::$building[$buildingNumber][$info][$level - 1][3];
-					} else {
-						throw new \ErrorException('4e argument invalide dans getBuildingInfo de PlanetResource');
 					}
+				} elseif ('storageSpace' == $sup) {
+					if (7 == $buildingNumber) {
+						return PlanetResource::$building[$buildingNumber][$info][$level - 1][3];
+					} elseif (2 == $buildingNumber or 3 == $buildingNumber) {
+						return PlanetResource::$building[$buildingNumber][$info][$level - 1][4];
+					}
+				} elseif ('refiningCoefficient' == $sup and 1 == $buildingNumber) {
+					return PlanetResource::$building[$buildingNumber][$info][$level - 1][3];
+				} elseif ('releasedShip' == $sup and (2 == $buildingNumber or 3 == $buildingNumber)) {
+					return PlanetResource::$building[$buildingNumber][$info][$level - 1][5];
+				} elseif ('releasedShip' == $sup and 4 == $buildingNumber) {
+					return PlanetResource::$building[$buildingNumber][$info][$level - 1][4];
+				} elseif ('nbCommercialShip' == $sup and 6 == $buildingNumber) {
+					return PlanetResource::$building[$buildingNumber][$info][$level - 1][3];
+				} elseif ('nbRecyclers' == $sup and 8 == $buildingNumber) {
+					return PlanetResource::$building[$buildingNumber][$info][$level - 1][3];
+				} elseif ('nbRoutesMax' == $sup and 9 == $buildingNumber) {
+					return PlanetResource::$building[$buildingNumber][$info][$level - 1][3];
+				} else {
+					throw new \ErrorException('4e argument invalide dans getBuildingInfo de PlanetResource');
 				}
 			} else {
 				throw new \ErrorException('2e argument invalide dans getBuildingInfo de PlanetResource');
@@ -106,13 +105,13 @@ readonly class PlanetHelper
 				// assez de ressources pour contruire ?
 				case 'resource':
 					return $sup >= $this->getBuildingInfo($buildingId, 'level', $level, 'resourcePrice');
-				// encore de la place dans la queue ?
-				// $sup est le nombre de batiments dans la queue
+					// encore de la place dans la queue ?
+					// $sup est le nombre de batiments dans la queue
 				case 'queue':
 					// $buildingId n'est pas utilisé
 					return $sup < $this->getBuildingInfo($buildingId, 'level', $level, 'nbQueues');
-				// droit de construire le batiment ?
-				// $sup est un objet de type OrbitalBase
+					// droit de construire le batiment ?
+					// $sup est un objet de type OrbitalBase
 				case 'buildingTree':
 					$diminution = match ($buildingId) {
 						PlanetResource::GENERATOR,
@@ -126,41 +125,42 @@ readonly class PlanetHelper
 						// no break
 						default => throw new \LogicException('buildingId invalide (entre 0 et 9) dans haveRights de PlanetResource'),
 					};
-                    if (PlanetResource::GENERATOR == $buildingId) {
-                        if ($level > PlanetResource::$building[$buildingId]['maxLevel'][$sup->typeOfBase]) {
-                            return 'niveau maximum atteint';
-                        } else {
-                            return true;
-                        }
-                    } else {
-                        $realGeneratorLevel = $this->buildingLevelHandler->getBuildingRealLevel(
-                            $sup,
-                            PlanetResource::GENERATOR,
-                            $this->buildingQueueRepository->getPlanetQueues($sup),
-                        );
+					if (PlanetResource::GENERATOR == $buildingId) {
+						if ($level > PlanetResource::$building[$buildingId]['maxLevel'][$sup->typeOfBase]) {
+							return 'niveau maximum atteint';
+						}
 
-                        if (1 == $level and Planet::BASE_TYPE_COLONY == $sup->typeOfBase and in_array($buildingId, [PlanetResource::SPATIOPORT, PlanetResource::DOCK2])) {
-                            return 'vous devez évoluer votre colonie pour débloquer ce bâtiment';
-                        }
-                        if ($level > PlanetResource::$building[$buildingId]['maxLevel'][$sup->typeOfBase]) {
-                            return 'niveau maximum atteint';
-                        } elseif ($level > ($realGeneratorLevel - $diminution)) {
-                            return 'le niveau du générateur n\'est pas assez élevé';
-                        } else {
-                            return true;
-                        }
-                    }
-				// a la technologie pour construire ce bâtiment ?
-				// $sup est un objet de type Technology
+						return true;
+					}
+					$realGeneratorLevel = $this->buildingLevelHandler->getBuildingRealLevel(
+						$sup,
+						PlanetResource::GENERATOR,
+						$this->buildingQueueRepository->getPlanetQueues($sup),
+					);
+
+					if (1 == $level and Planet::BASE_TYPE_COLONY == $sup->typeOfBase and in_array($buildingId, [PlanetResource::SPATIOPORT, PlanetResource::DOCK2])) {
+						return 'vous devez évoluer votre colonie pour débloquer ce bâtiment';
+					}
+					if ($level > PlanetResource::$building[$buildingId]['maxLevel'][$sup->typeOfBase]) {
+						return 'niveau maximum atteint';
+					} elseif ($level > ($realGeneratorLevel - $diminution)) {
+						return 'le niveau du générateur n\'est pas assez élevé';
+					}
+
+					return true;
+
+					// a la technologie pour construire ce bâtiment ?
+					// $sup est un objet de type Technology
 				case 'techno':
 					if (-1 == $this->getBuildingInfo($buildingId, 'techno')) {
 						return true;
 					}
 					if (1 == $sup->getTechnology($this->getBuildingInfo($buildingId, 'techno'))) {
 						return true;
-					} else {
-						return 'il vous faut développer la technologie '.$this->technologyHelper->getInfo($this->getBuildingInfo($buildingId, 'techno'), 'name');
 					}
+
+					return 'il vous faut développer la technologie '.$this->technologyHelper->getInfo($this->getBuildingInfo($buildingId, 'techno'), 'name');
+
 				default:
 					throw new \LogicException('$type invalide (entre 1 et 4) dans haveRights de PlanetResource');
 			}

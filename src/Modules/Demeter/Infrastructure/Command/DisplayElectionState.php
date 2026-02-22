@@ -8,7 +8,6 @@ use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
-use App\Modules\Demeter\Resource\ColorResource;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

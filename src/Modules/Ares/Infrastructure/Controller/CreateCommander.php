@@ -25,13 +25,13 @@ use Symfony\Component\Uid\Uuid;
 class CreateCommander extends AbstractController
 {
 	public function __invoke(
-        Request                      $request,
-        Player                       $currentPlayer,
-        Planet                       $currentBase,
-        CommanderExperienceHandler   $commanderExperienceHandler,
-        CommanderRepositoryInterface $commanderRepository,
-        PlayerManager                $playerManager,
-        EventDispatcherInterface     $eventDispatcher,
+		Request $request,
+		Player $currentPlayer,
+		Planet $currentBase,
+		CommanderExperienceHandler $commanderExperienceHandler,
+		CommanderRepositoryInterface $commanderRepository,
+		PlayerManager $playerManager,
+		EventDispatcherInterface $eventDispatcher,
 	): Response {
 		$school = 0;
 		$name = $request->request->get('name') ?? throw new BadRequestHttpException('Missing name');

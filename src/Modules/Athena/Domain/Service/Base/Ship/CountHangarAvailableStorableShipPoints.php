@@ -10,8 +10,8 @@ use App\Modules\Galaxy\Domain\Entity\Planet;
 class CountHangarAvailableStorableShipPoints
 {
 	public function __construct(
-		private readonly CountQueuedShipPoints      $countQueuedShipPoints,
-		private readonly CountStoredShipPoints      $countStoredShipPoints,
+		private readonly CountQueuedShipPoints $countQueuedShipPoints,
+		private readonly CountStoredShipPoints $countStoredShipPoints,
 		private readonly CountMaxStorableShipPoints $countMaxStorableShipPoints,
 	) {
 	}

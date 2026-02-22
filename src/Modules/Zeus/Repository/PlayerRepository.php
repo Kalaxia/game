@@ -19,12 +19,12 @@ class PlayerRepository extends DoctrineRepository implements PlayerRepositoryInt
 		parent::__construct($registry, Player::class);
 	}
 
-	public function get(int $id): Player|null
+	public function get(int $id): ?Player
 	{
 		return $this->find($id);
 	}
 
-	public function getByName(string $name): Player|null
+	public function getByName(string $name): ?Player
 	{
 		return $this->findOneBy(['name' => $name]);
 	}
@@ -102,7 +102,7 @@ class PlayerRepository extends DoctrineRepository implements PlayerRepositoryInt
 		return $qb->getQuery()->getSingleScalarResult();
 	}
 
-	public function getFactionAccount(Color $faction): Player|null
+	public function getFactionAccount(Color $faction): ?Player
 	{
 		return $this->findOneBy([
 			'faction' => $faction,
@@ -128,7 +128,7 @@ class PlayerRepository extends DoctrineRepository implements PlayerRepositoryInt
 			->where('p.faction = :faction')
 			->andWhere('p.statement != :statement')
 			->setParameter('faction', $faction->id, UuidType::NAME)
-			->setParameter('statement',  Player::DEAD)
+			->setParameter('statement', Player::DEAD)
 			->orderBy('p.factionPoint', 'DESC')
 			->getQuery()
 			->getResult();
@@ -166,7 +166,7 @@ class PlayerRepository extends DoctrineRepository implements PlayerRepositoryInt
 			->getResult();
 	}
 
-	public function getGovernmentMember(Color $faction, int $status): Player|null
+	public function getGovernmentMember(Color $faction, int $status): ?Player
 	{
 		return $this->createQueryBuilder('p')
 			->where('p.faction = :faction')
@@ -179,7 +179,7 @@ class PlayerRepository extends DoctrineRepository implements PlayerRepositoryInt
 			->getOneOrNullResult();
 	}
 
-	public function getFactionLeader(Color $faction): Player|null
+	public function getFactionLeader(Color $faction): ?Player
 	{
 		return $this->getGovernmentMember($faction, Player::CHIEF);
 	}

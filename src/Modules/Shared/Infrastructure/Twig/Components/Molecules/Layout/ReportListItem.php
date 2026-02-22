@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Shared\Infrastructure\Twig\Components\Molecules\Layout;
 
-use App\Modules\Artemis\Model\SpyReport;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent(

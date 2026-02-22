@@ -3,7 +3,6 @@
 namespace App\Modules\Demeter\Handler\Law;
 
 use App\Classes\Library\DateTimeConverter;
-use App\Classes\Library\Utils;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Law\LawRepositoryInterface;
 use App\Modules\Demeter\Manager\Law\LawManager;
@@ -49,7 +48,7 @@ readonly class VoteHandler
 		if ($ballot) {
 			// accepter la loi
 			$law->statement = Law::EFFECTIVE;
-		// envoyer un message
+			// envoyer un message
 		} else {
 			// refuser la loi
 			$law->statement = Law::REFUSED;
@@ -76,7 +75,7 @@ readonly class VoteHandler
 				Law::TOTALALLIANCE => AllianceDeclarationResultMessage::class,
 				Law::NEUTRALPACT => NonAgressionPactDeclarationResultMessage::class,
 				Law::PUNITION => SanctionResultMessage::class,
-			}
+			},
 		};
 		$this->messageBus->dispatch(
 			new $messageClass($law->id),

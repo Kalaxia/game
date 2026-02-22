@@ -18,6 +18,7 @@ class IsParliamentMember extends SelectorCompositeSpecification
 
 	/**
 	 * @param array<string, mixed> $options
+	 *
 	 * @return Constraint[]
 	 */
 	public function getConstraints(array $options): array

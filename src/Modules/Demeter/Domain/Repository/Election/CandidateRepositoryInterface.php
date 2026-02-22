@@ -13,9 +13,9 @@ use Symfony\Component\Uid\Uuid;
  */
 interface CandidateRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): Candidate|null;
+	public function get(Uuid $id): ?Candidate;
 
-	public function getByElectionAndPlayer(Election $election, Player $player): Candidate|null;
+	public function getByElectionAndPlayer(Election $election, Player $player): ?Candidate;
 
 	/**
 	 * @return list<Candidate>

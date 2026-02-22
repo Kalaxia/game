@@ -77,33 +77,32 @@ abstract readonly class SpyingHandler
 				return SpyReport::TYP_NOT_CAUGHT;			// 5%
 			} elseif ($percent < 50) {
 				return SpyReport::TYP_ANONYMOUSLY_CAUGHT;	// 45%
-			} else {
-				return SpyReport::TYP_CAUGHT;				// 50%
 			}
+
+			return SpyReport::TYP_CAUGHT;				// 50%
 		} elseif ($success < 80) {
 			if ($percent < 30) {
 				return SpyReport::TYP_NOT_CAUGHT;			// 30%
 			} elseif ($percent < 60) {
 				return SpyReport::TYP_ANONYMOUSLY_CAUGHT;	// 30%
-			} else {
-				return SpyReport::TYP_CAUGHT;				// 40%
 			}
+
+			return SpyReport::TYP_CAUGHT;				// 40%
 		} elseif ($success < 100) {
 			if ($percent < 50) {
 				return SpyReport::TYP_NOT_CAUGHT;			// 50%
 			} elseif ($percent < 80) {
 				return SpyReport::TYP_ANONYMOUSLY_CAUGHT;	// 30%
-			} else {
-				return SpyReport::TYP_CAUGHT;				// 20%
 			}
-		} else { // success == 100
-			if ($percent < 70) {
-				return SpyReport::TYP_NOT_CAUGHT;			// 70%
-			} elseif ($percent < 90) {
-				return SpyReport::TYP_ANONYMOUSLY_CAUGHT;	// 20%
-			} else {
-				return SpyReport::TYP_CAUGHT;				// 10%
-			}
+
+			return SpyReport::TYP_CAUGHT;				// 20%
+		}   // success == 100
+		if ($percent < 70) {
+			return SpyReport::TYP_NOT_CAUGHT;			// 70%
+		} elseif ($percent < 90) {
+			return SpyReport::TYP_ANONYMOUSLY_CAUGHT;	// 20%
 		}
+
+		return SpyReport::TYP_CAUGHT;				// 10%
 	}
 }

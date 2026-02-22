@@ -17,6 +17,6 @@ class InsetLabelInput
 	public string $label;
 	public string $type = 'text';
 	public Color $faction;
-	public string|null $placeholder = null;
+	public ?string $placeholder = null;
 	public mixed $value = null;
 }

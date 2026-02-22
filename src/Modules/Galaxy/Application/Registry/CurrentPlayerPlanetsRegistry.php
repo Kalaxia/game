@@ -15,7 +15,7 @@ class CurrentPlayerPlanetsRegistry
 	 */
 	private array $planets = [];
 
-	private Uuid|null $currentPlanetId = null;
+	private ?Uuid $currentPlanetId = null;
 
 	/**
 	 * @param list<Planet> $planets
@@ -29,7 +29,7 @@ class CurrentPlayerPlanetsRegistry
 		}, []);
 	}
 
-	public function get(Uuid $planetId): Planet|null
+	public function get(Uuid $planetId): ?Planet
 	{
 		return $this->planets[$planetId->toBase32()] ?? null;
 	}
@@ -48,7 +48,7 @@ class CurrentPlayerPlanetsRegistry
 		return array_values($this->planets)[0];
 	}
 
-	public function next(): Planet|null
+	public function next(): ?Planet
 	{
 		$currentIndex = array_search($this->currentPlanetId->toBase32(), array_keys($this->planets));
 

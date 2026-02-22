@@ -4,7 +4,6 @@ namespace App\Tests\Modules\Athena\Domain\Service\Base\Building;
 
 use App\Modules\Athena\Domain\Service\Base\Building\BuildingDataHandler;
 use App\Modules\Galaxy\Resource\PlanetResource;
-use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -31,9 +30,9 @@ class BuildingDataHandlerTest extends KernelTestCase
 	}
 
 	/**
-	 * @return Generator<array{0: int, 1: int, 2: array{time: int, resources: int}}>
+	 * @return \Generator<array{0: int, 1: int, 2: array{time: int, resources: int}}>
 	 */
-	public static function provideTestDataForBuildingCost(): Generator
+	public static function provideTestDataForBuildingCost(): \Generator
 	{
 		yield [
 			PlanetResource::GENERATOR,

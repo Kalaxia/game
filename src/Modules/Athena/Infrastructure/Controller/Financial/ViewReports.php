@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Athena\Infrastructure\Controller\Financial;
 
-use App\Classes\Library\Chronos;
 use App\Modules\Shared\Domain\Service\GameTimeConverter;
 use App\Modules\Zeus\Domain\Repository\PlayerFinancialReportRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
@@ -80,7 +79,7 @@ class ViewReports extends AbstractController
 					'shipsCost' => [],
 					'diff' => [],
 				]
-			)
+			),
 		]);
 	}
 }

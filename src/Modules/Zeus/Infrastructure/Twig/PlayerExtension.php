@@ -15,19 +15,19 @@ use Twig\TwigFunction;
 class PlayerExtension extends AbstractExtension
 {
 	public function __construct(
-		private readonly BonusApplierInterface      $bonusApplier,
+		private readonly BonusApplierInterface $bonusApplier,
 		private readonly CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
-		private readonly DurationHandler            $durationHandler,
-		private readonly GetFactionsConfiguration   $getFactionsConfiguration,
-		private readonly PlanetManager              $planetManager,
-		private readonly ResearchHelper             $researchHelper,
-		private readonly int                        $timeEventUpdate,
-		private readonly int                        $allyInactiveTime,
+		private readonly DurationHandler $durationHandler,
+		private readonly GetFactionsConfiguration $getFactionsConfiguration,
+		private readonly PlanetManager $planetManager,
+		private readonly ResearchHelper $researchHelper,
+		private readonly int $timeEventUpdate,
+		private readonly int $allyInactiveTime,
 	) {
 	}
 
 	#[\Override]
-    public function getFunctions(): array
+	public function getFunctions(): array
 	{
 		return [
 			new TwigFunction('apply_player_bonus', fn (int|float $initialValue, int $playerBonusId) => $this->bonusApplier->apply($initialValue, $playerBonusId)),

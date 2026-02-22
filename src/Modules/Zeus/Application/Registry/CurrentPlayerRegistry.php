@@ -8,7 +8,7 @@ use Symfony\Contracts\Service\ResetInterface;
 
 class CurrentPlayerRegistry implements ResetInterface
 {
-	private Player|null $currentPlayer = null;
+	private ?Player $currentPlayer = null;
 
 	public function set(Player $currentPlayer): void
 	{

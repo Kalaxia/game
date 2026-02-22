@@ -31,8 +31,7 @@ class ForumMessage
 		public string $pContent,
 		public int $statement,
 		public \DateTimeImmutable $createdAt,
-		public \DateTimeImmutable|null $updatedAt = null,
+		public ?\DateTimeImmutable $updatedAt = null,
 	) {
-
 	}
 }

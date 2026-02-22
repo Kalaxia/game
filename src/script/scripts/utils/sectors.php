@@ -12,5 +12,5 @@ for ($i = 0; $i < $bridge; ++$i) {
 	$xB = (cos($i * $angle) * ((65 / 125) * 100)) + 125;
 	$yB = (sin($i * $angle) * ((65 / 125) * 100)) + 125;
 
-	echo '[['.round($xB).',  '.round($yB).'], ['.round($xA).',  '.round($yA).'], 8],'.'<br />';
+	echo '[['.round($xB).',  '.round($yB).'], ['.round($xA).',  '.round($yA).'], 8],<br />';
 }

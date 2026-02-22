@@ -8,9 +8,9 @@ use Symfony\Component\Uid\Uuid;
 
 interface ColorRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): Color|null;
+	public function get(Uuid $id): ?Color;
 
-	public function getOneByIdentifier(int $identifier): Color|null;
+	public function getOneByIdentifier(int $identifier): ?Color;
 
 	/**
 	 * @return list<Color>

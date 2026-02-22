@@ -12,9 +12,9 @@ use Symfony\Component\Uid\Uuid;
  */
 interface FactionNewsRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): FactionNews|null;
+	public function get(Uuid $id): ?FactionNews;
 
-	public function getPinnedNew(Color $faction): FactionNews|null;
+	public function getPinnedNew(Color $faction): ?FactionNews;
 
 	/**
 	 * @return list<FactionNews>

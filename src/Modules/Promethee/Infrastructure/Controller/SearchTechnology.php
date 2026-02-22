@@ -25,24 +25,23 @@ class SearchTechnology extends AbstractController
 		private readonly ResearchManager $researchManager,
 		private readonly ResearchRepositoryInterface $researchRepository,
 	) {
-
 	}
 
 	public function __invoke(
-		Request                            $request,
-		Player                             $currentPlayer,
-		Planet                             $currentPlanet,
+		Request $request,
+		Player $currentPlayer,
+		Planet $currentPlanet,
 		TechnologyQueueRepositoryInterface $technologyQueueRepository,
-		TechnologyRepositoryInterface      $technologyRepository,
-		PlanetManager                      $planetManager,
-		PlayerManager                      $playerManager,
-		TechnologyQueueFactory             $technologyQueueFactory,
-		string                             $identifier,
+		TechnologyRepositoryInterface $technologyRepository,
+		PlanetManager $planetManager,
+		PlayerManager $playerManager,
+		TechnologyQueueFactory $technologyQueueFactory,
+		string $identifier,
 	): Response {
 		if (!$this->technologyHelper->isATechnology($identifier) || $this->technologyHelper->isATechnologyNotDisplayed($identifier)) {
 			throw new BadRequestHttpException('la technologie indiquée n\'est pas valide');
 		}
-		if ($technologyQueueRepository->getPlayerTechnologyQueue($currentPlayer, $identifier) !== null) {
+		if (null !== $technologyQueueRepository->getPlayerTechnologyQueue($currentPlayer, $identifier)) {
 			throw new ConflictHttpException('Cette technologie est déjà en construction');
 		}
 		$technos = $technologyRepository->getPlayerTechnology($currentPlayer);
@@ -56,11 +55,8 @@ class SearchTechnology extends AbstractController
 			}
 		}
 
-
 		if (!$this->haveRights($currentPlanet, $currentPlayer, $nbTechnologyQueues, $identifier, $targetLevel)) {
-			throw $this->createAccessDeniedException(
-				'les conditions ne sont pas remplies pour développer une technologie',
-			);
+			throw $this->createAccessDeniedException('les conditions ne sont pas remplies pour développer une technologie');
 		}
 		$createdAt =
 			(0 === $nbTechnologyQueues)
@@ -85,11 +81,11 @@ class SearchTechnology extends AbstractController
 	}
 
 	private function haveRights(
-        Planet $currentPlanet,
-        Player $currentPlayer,
-        int    $technologyQueuesCount,
-        int    $identifier,
-        int    $targetLevel,
+		Planet $currentPlanet,
+		Player $currentPlayer,
+		int $technologyQueuesCount,
+		int $identifier,
+		int $targetLevel,
 	): bool {
 		$research = $this->researchRepository->getPlayerResearch($currentPlayer);
 
