@@ -21,12 +21,24 @@ class PoliticalEventRepository extends DoctrineRepository implements PoliticalEv
 		parent::__construct($registry, PoliticalEvent::class);
 	}
 
-	public function get(Uuid $id): PoliticalEvent|null
+	public function get(Uuid $id): ?PoliticalEvent
 	{
 		return $this->find($id);
 	}
 
-	public function getFactionLastPoliticalEvent(Color $faction): PoliticalEvent|null
+	public function getFactionCurrentPoliticalEvent(Color $faction): ?PoliticalEvent
+	{
+		$qb = $this->createQueryBuilder('e');
+
+		$qb->andWhere('e.faction = :faction')
+			->andWhere($qb->expr()->lt('e.endedAt', ':endedAt'))
+			->setParameter('faction', $faction)
+			->setParameter('endedAt', new \DateTimeImmutable());
+
+		return $qb->getQuery()->getOneOrNullResult();
+	}
+
+	public function getFactionLastPoliticalEvent(Color $faction): ?PoliticalEvent
 	{
 		return $this->findOneBy([
 			'faction' => $faction,

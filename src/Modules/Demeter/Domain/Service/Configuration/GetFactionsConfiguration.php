@@ -54,12 +54,12 @@ final readonly class GetFactionsConfiguration
 			'demonym' => 'name.demonym',
 			'devise' => 'devise',
 			'factionPoints' => 'faction_points',
-            'desc1' => 'descriptions.general',
-            'desc2' => 'descriptions.morals',
-            'desc3' => 'descriptions.war',
-            'desc4' => 'descriptions.culture',
-            'senate' => 'descriptions.senate',
-            'campaign' => 'descriptions.campaign',
+			'desc1' => 'descriptions.general',
+			'desc2' => 'descriptions.morals',
+			'desc3' => 'descriptions.war',
+			'desc4' => 'descriptions.culture',
+			'senate' => 'descriptions.senate',
+			'campaign' => 'descriptions.campaign',
 			default => null,
 		};
 

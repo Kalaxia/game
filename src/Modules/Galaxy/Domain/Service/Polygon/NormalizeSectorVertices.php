@@ -24,10 +24,7 @@ readonly class NormalizeSectorVertices
 		$vertices = array_chunk($this->galaxyConfiguration->getSectorVertices($sector->identifier), 2);
 
 		if (count($vertices) < 3) {
-			throw new \InvalidArgumentException(sprintf(
-				'Sector %d must have at least 3 vertices to be a valid polygon',
-				$sector->identifier,
-			));
+			throw new \InvalidArgumentException(sprintf('Sector %d must have at least 3 vertices to be a valid polygon', $sector->identifier));
 		}
 
 		return $vertices;

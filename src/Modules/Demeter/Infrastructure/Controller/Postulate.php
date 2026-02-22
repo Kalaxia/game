@@ -21,14 +21,14 @@ use Symfony\Component\Uid\Uuid;
 class Postulate extends AbstractController
 {
 	public function __invoke(
-		Request                           $request,
-		Player                            $currentPlayer,
-		PlayerManager                     $playerManager,
-		CandidateRepositoryInterface      $candidateRepository,
+		Request $request,
+		Player $currentPlayer,
+		PlayerManager $playerManager,
+		CandidateRepositoryInterface $candidateRepository,
 		PoliticalEventRepositoryInterface $electionRepository,
-		ForumTopicRepositoryInterface     $forumTopicRepository,
-		VoteRepositoryInterface           $voteRepository,
-		Uuid                              $id,
+		ForumTopicRepositoryInterface $forumTopicRepository,
+		VoteRepositoryInterface $voteRepository,
+		Uuid $id,
 	): Response {
 		$program = $request->request->get('program')
 			?? throw new BadRequestHttpException('Missing program');
@@ -62,7 +62,7 @@ class Postulate extends AbstractController
 		}
 		$candidate = new Candidate(
 			id: Uuid::v4(),
-            politicalEvent: $election,
+			politicalEvent: $election,
 			player: $currentPlayer,
 			program: $program,
 		);

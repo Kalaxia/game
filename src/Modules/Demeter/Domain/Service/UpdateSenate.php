@@ -10,11 +10,13 @@ use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 
 readonly class UpdateSenate
 {
 	public function __construct(
 		private EntityManagerInterface $entityManager,
+		private LoggerInterface $logger,
 		private NotificationRepositoryInterface $notificationRepository,
 		private PlayerRepositoryInterface $playerRepository,
 	) {
@@ -38,17 +40,24 @@ readonly class UpdateSenate
 				'Vous n\'avez plus assez de prestige pour rester dans le sénat.'
 			));
 
+		$lostSeatsCount = 0;
+		$newSeatsCount = 0;
+
 		foreach ($factionPlayers as $key => $factionPlayer) {
 			if ($factionPlayer->isGovernmentMember()) {
 				continue;
 			}
 			if ($key < $seatsCount) {
 				if (!$factionPlayer->isParliamentMember()) {
+					++$newSeatsCount;
+
 					$this->notificationRepository->save($senatePromoteNotificationBuilder->for($factionPlayer));
 				}
 				$factionPlayer->status = Player::PARLIAMENT;
 			} else {
 				if ($factionPlayer->isParliamentMember()) {
+					++$lostSeatsCount;
+
 					$this->notificationRepository->save($senateDemoteNotificationBuilder->for($factionPlayer));
 				}
 				// TODO handle ministers
@@ -56,6 +65,13 @@ readonly class UpdateSenate
 			}
 		}
 		$this->entityManager->flush();
+
+		$this->logger->info('Faction {factionIdentifier} had a senate update', [
+			'factionIdentifier' => $faction->identifier,
+			'seatsCount' => $seatsCount,
+			'lostSeatsCount' => $lostSeatsCount,
+			'newSeatsCount' => $newSeatsCount,
+		]);
 	}
 
 	private function countAvailableSeats(int $membersCount): int

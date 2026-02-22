@@ -12,12 +12,12 @@ use Symfony\Component\Uid\Uuid;
 class DemocraticElection extends PoliticalEvent
 {
 	public function __construct(
-		public Uuid               $id,
-		public Color              $faction,
+		public Uuid $id,
+		public Color $faction,
 		public \DateTimeImmutable $startedAt,
 		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $campaignEndedAt,
-		public \DateTimeImmutable|null $endedAt,
+		public ?\DateTimeImmutable $endedAt,
 	) {
 		parent::__construct($id, $faction, $startedAt, $endedAt);
 	}

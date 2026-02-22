@@ -14,9 +14,11 @@ use Symfony\Component\Uid\Uuid;
  */
 interface PoliticalEventRepositoryInterface extends EntityRepositoryInterface
 {
-	public function get(Uuid $id): PoliticalEvent|null;
+	public function get(Uuid $id): ?PoliticalEvent;
 
-	public function getFactionLastPoliticalEvent(Color $faction): PoliticalEvent|null;
+	public function getFactionCurrentPoliticalEvent(Color $faction): ?PoliticalEvent;
+
+	public function getFactionLastPoliticalEvent(Color $faction): ?PoliticalEvent;
 
 	/**
 	 * @return list<PoliticalEvent>
