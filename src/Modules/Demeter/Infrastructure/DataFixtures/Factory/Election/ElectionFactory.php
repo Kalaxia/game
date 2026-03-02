@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Modules\Demeter\Infrastructure\DataFixtures\Factory\Election;
 
 use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\FactionFactory;
-use App\Modules\Demeter\Model\Election\Election;
+use App\Modules\Demeter\Model\Election\PoliticalEvent;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentObjectFactory<Election>
+ * @extends PersistentObjectFactory<PoliticalEvent>
  */
 class ElectionFactory extends PersistentObjectFactory
 {
@@ -25,6 +25,6 @@ class ElectionFactory extends PersistentObjectFactory
 
 	public static function class(): string
 	{
-		return Election::class;
+		return PoliticalEvent::class;
 	}
 }

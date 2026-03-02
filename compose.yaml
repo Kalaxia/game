@@ -92,7 +92,7 @@ services:
                 max-size: "50m"
         volumes:
             - "./:/srv/app"
-            - "./var/logs/supervisord/:/var/log/supervisord/"
+            - "./var/log/supervisord/:/var/log/supervisord/"
             - "./supervisord.conf:/etc/supervisor/supervisord.conf"
         networks:
             - kalaxia
