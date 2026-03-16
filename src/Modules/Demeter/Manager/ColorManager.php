@@ -4,40 +4,41 @@ declare(strict_types=1);
 
 namespace App\Modules\Demeter\Manager;
 
-use App\Classes\Library\DateTimeConverter;
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\MandateRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Message\BallotMessage;
 use App\Modules\Demeter\Message\CampaignMessage;
 use App\Modules\Demeter\Message\ElectionMessage;
+use App\Modules\Demeter\Message\MandateExpirationMessage;
 use App\Modules\Demeter\Message\SenateUpdateMessage;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
+use App\Modules\Shared\Infrastructure\Messenger\ScheduleTask;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Infrastructure\Validator\IsParliamentMember;
 use App\Shared\Application\Handler\DurationHandler;
 use App\Shared\Application\SchedulerInterface;
-use Psr\Clock\ClockInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 readonly class ColorManager implements SchedulerInterface
 {
 	public function __construct(
 		private DurationHandler $durationHandler,
-		private ColorRepositoryInterface        $colorRepository,
-		private GetFactionsConfiguration 		$getFactionsConfiguration,
-		private PlayerRepositoryInterface       $playerRepository,
+		private ColorRepositoryInterface $colorRepository,
+		private GetFactionsConfiguration $getFactionsConfiguration,
+		private PlayerRepositoryInterface $playerRepository,
+		private MandateRepositoryInterface $mandateRepository,
 		private PoliticalEventRepositoryInterface $politicalEventRepository,
 		private NotificationRepositoryInterface $notificationRepository,
-		private MessageBusInterface             $messageBus,
-		private UrlGeneratorInterface           $urlGenerator,
-		private NextElectionDateCalculator      $nextElectionDateCalculator,
+		private UrlGeneratorInterface $urlGenerator,
+		private NextElectionDateCalculator $nextElectionDateCalculator,
+		private ScheduleTask $scheduleTask,
 		#[Autowire('%server_start_time%')]
 		private string $serverStartTime,
 	) {
@@ -45,9 +46,10 @@ readonly class ColorManager implements SchedulerInterface
 
 	public function schedule(): void
 	{
-		foreach ($this->colorRepository->getAll() as $faction) {
+		foreach ($this->colorRepository->getInGameFactions() as $faction) {
 			$this->scheduleFactionPoliticalEvents($faction);
 			$this->scheduleSenateUpdate($faction);
+			$this->scheduleMandateExpiration($faction);
 		}
 	}
 
@@ -62,27 +64,27 @@ readonly class ColorManager implements SchedulerInterface
 		}
 
 		if (MandateState::Active === $faction->mandateState && !$faction->isRoyalistic()) {
-			$this->messageBus->dispatch(
-				new CampaignMessage($faction->id),
-				[DateTimeConverter::to_delay_stamp($this->durationHandler->getDurationEnd(
+			($this->scheduleTask)(
+				message: new CampaignMessage($faction->id),
+				datetime: $this->durationHandler->getDurationEnd(
 					$lastEvent->endedAt,
 					$this->nextElectionDateCalculator->getMandateDuration($faction),
-				))],
+				)
 			);
 
 			return;
 		}
 
 		match ($faction->mandateState) {
-			MandateState::DemocraticCampaign => $this->messageBus->dispatch(
-				new ElectionMessage($faction->id),
-				[DateTimeConverter::to_delay_stamp($lastEvent->campaignEndedAt)],
+			MandateState::DemocraticCampaign => ($this->scheduleTask)(
+				message: new ElectionMessage($faction->id),
+				datetime: $lastEvent->campaignEndedAt,
 			),
 			MandateState::DemocraticVote,
 			MandateState::TheocraticCampaign,
-			MandateState::Putsch => $this->messageBus->dispatch(
-				new BallotMessage($faction->id),
-				[DateTimeConverter::to_delay_stamp($lastEvent->endedAt)],
+			MandateState::Putsch => ($this->scheduleTask)(
+				message: new BallotMessage($faction->id),
+				datetime: $lastEvent->endedAt,
 			),
 		};
 	}
@@ -98,9 +100,9 @@ readonly class ColorManager implements SchedulerInterface
 			$this->nextElectionDateCalculator->getCampaignDuration(),
 		);
 
-		$this->messageBus->dispatch(
-			new CampaignMessage($faction->id),
-			[DateTimeConverter::to_delay_stamp($campaignStartedAt)],
+		($this->scheduleTask)(
+			message: new CampaignMessage($faction->id),
+			datetime: $campaignStartedAt,
 		);
 	}
 
@@ -110,9 +112,25 @@ readonly class ColorManager implements SchedulerInterface
 			return;
 		}
 
-		$this->messageBus->dispatch(
-			new SenateUpdateMessage($faction->id),
-			[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getSenateUpdateMessage($faction))],
+		($this->scheduleTask)(
+			message: new SenateUpdateMessage($faction->id),
+			datetime: $this->nextElectionDateCalculator->getSenateUpdateMessage($faction),
+		);
+	}
+
+	private function scheduleMandateExpiration(Color $faction): void
+	{
+		if ($faction->isRoyalistic()) {
+			return;
+		}
+
+		$currentMandate = $this->mandateRepository->getCurrentMandate($faction)
+			?? $this->mandateRepository->getLastMandate($faction)
+			?? throw new \RuntimeException(sprintf('No mandate found for faction %s.', $faction->identifier));
+
+		($this->scheduleTask)(
+			message: new MandateExpirationMessage($faction->id),
+			datetime: $currentMandate->expiredAt,
 		);
 	}
 

@@ -32,8 +32,7 @@ readonly class ConversationMessageListener
 
 		// TODO Move all this logic to a dedicated service
 		$conversation->lastMessageAt = new \DateTimeImmutable();
-		$conversation->messagesCount++;
-
+		++$conversation->messagesCount;
 
 		// désarchiver tous les users
 		$users = $conversation->players;

@@ -10,6 +10,7 @@ readonly class GetPolygonBounds
 	 * Calculate the bbox [minX, minY, maxX, maxY].
 	 *
 	 * @param list<array{0: float, 1: float}> $vertices
+	 *
 	 * @return array{0: float, 1: float, 2: float, 3: float}
 	 */
 	public function __invoke(array $vertices): array
@@ -31,6 +32,7 @@ readonly class GetPolygonBounds
 				$maxY = $y;
 			}
 		}
+
 		return [$minX, $minY, $maxX, $maxY];
 	}
 }

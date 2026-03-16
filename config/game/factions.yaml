@@ -35,7 +35,7 @@ factions:
       mandateDuration: 1209600
 
     - id: !php/const App\Modules\Demeter\Resource\ColorResource::MALGAR
-      regime: !php/const App\Modules\Demeter\Model\Color::REGIME_DEMOCRATIC
+      regime: !php/const App\Modules\Demeter\Model\Color::REGIME_THEOCRATIC
       bonus:
         - !php/const App\Modules\Demeter\Resource\ColorResource::DEFENSELITTLESHIPBONUS
         - !php/const App\Modules\Demeter\Resource\ColorResource::COMMANDERSCHOOLBONUS

@@ -22,13 +22,13 @@ abstract class PoliticalEvent
 	public function __construct(
 		#[ORM\Id]
 		#[ORM\Column(type: 'uuid')]
-		public Uuid               $id,
+		public Uuid $id,
 		#[ORM\ManyToOne]
-		public Color              $faction,
+		public Color $faction,
 		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $startedAt,
 		#[ORM\Column(type: 'datetime_immutable', nullable: true)]
-		public \DateTimeImmutable|null $endedAt,
+		public ?\DateTimeImmutable $endedAt,
 	) {
 	}
 

@@ -34,14 +34,6 @@ class ColorRepository extends DoctrineRepository implements ColorRepositoryInter
 	/**
 	 * @return list<Color>
 	 */
-	public function getAll(): array
-	{
-		return $this->findAll();
-	}
-
-	/**
-	 * @return list<Color>
-	 */
 	public function getInGameFactions(): array
 	{
 		return $this->findBy(['isInGame' => 1, 'alive' => 1]);

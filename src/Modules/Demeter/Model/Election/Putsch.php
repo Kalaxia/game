@@ -12,10 +12,10 @@ use Symfony\Component\Uid\Uuid;
 class Putsch extends PoliticalEvent
 {
 	public function __construct(
-		public Uuid               $id,
-		public Color              $faction,
+		public Uuid $id,
+		public Color $faction,
 		public \DateTimeImmutable $startedAt,
-		public \DateTimeImmutable|null $endedAt,
+		public ?\DateTimeImmutable $endedAt,
 		#[ORM\Column(type: 'boolean', nullable: true)]
 		public ?bool $hasSucceeded = null,
 	) {

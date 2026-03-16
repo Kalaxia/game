@@ -8,8 +8,8 @@ use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
+use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Demeter\Model\Election\PoliticalEvent;
-use App\Modules\Demeter\Resource\ColorResource;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -24,10 +24,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class DisplayElectionState extends Command
 {
 	public function __construct(
-		private readonly ColorRepositoryInterface          $factionRepository,
+		private readonly ColorRepositoryInterface $factionRepository,
 		private readonly PoliticalEventRepositoryInterface $electionRepository,
-		private readonly GetFactionsConfiguration          $getFactionsConfiguration,
-		private readonly NextElectionDateCalculator        $nextElectionDateCalculator,
+		private readonly GetFactionsConfiguration $getFactionsConfiguration,
+		private readonly NextElectionDateCalculator $nextElectionDateCalculator,
 	) {
 		parent::__construct();
 	}
@@ -49,25 +49,44 @@ class DisplayElectionState extends Command
 
 		$lastElection = $this->electionRepository->getFactionLastPoliticalEvent($faction);
 
+		$headers = [
+			'Last election date',
+			'Election statement',
+			'Next campaign start',
+			'Next campaign end',
+			'Next Ballot',
+		];
+
+		$row = [
+			$lastElection->endedAt->format('Y-m-d H:i:s'),
+			$faction->mandateState,
+			$this->nextElectionDateCalculator->getDateUntil(
+				$faction,
+				$faction->isDemocratic()
+					? MandateState::DemocraticCampaign
+					: MandateState::TheocraticCampaign
+			)->format('Y-m-d H:i:s'),
+			$this->nextElectionDateCalculator->getDateUntil(
+				$faction,
+				MandateState::DemocraticVote
+			)->format('Y-m-d H:i:s'),
+			$this->nextElectionDateCalculator->getDateUntil(
+				$faction,
+				MandateState::Active,
+			)->format('Y-m-d H:i:s'),
+		];
+
+		if ($faction->isDemocratic()) {
+			$headers[] = 'Next election';
+			$row[] = $this->nextElectionDateCalculator->getDateUntil(
+				$faction,
+				MandateState::DemocraticVote,
+			)->format('Y-m-d H:i:s');
+		}
+
 		$style->horizontalTable(
-			headers: [
-				'Last election date',
-				'Election statement',
-				'Next campaign start',
-				'Next campaign end',
-				'Next election',
-				'Next Ballot',
-			],
-			rows: [
-				[
-					$faction->lastElectionHeldAt->format('Y-m-d H:i:s'),
-					$faction->mandateState,
-					$this->nextElectionDateCalculator->getCampaignStartDate($faction)->format('Y-m-d H:i:s'),
-					$this->nextElectionDateCalculator->getCampaignEndDate($faction)->format('Y-m-d H:i:s'),
-					$this->nextElectionDateCalculator->getNextElectionDate($faction)->format('Y-m-d H:i:s'),
-					$this->nextElectionDateCalculator->getBallotDate($faction)->format('Y-m-d H:i:s'),
-				],
-			],
+			headers: $headers,
+			rows: [$row],
 		);
 
 		$style->title('Last elections');

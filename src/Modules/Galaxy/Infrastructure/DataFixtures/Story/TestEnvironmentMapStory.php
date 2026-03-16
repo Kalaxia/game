@@ -45,7 +45,7 @@ class TestEnvironmentMapStory extends Story
 			]);
 			$this->addState(sprintf('sector_%d', $sector->identifier), $sector);
 
-			if ($faction !== null) {
+			if (null !== $faction) {
 				$this->addState(sprintf('faction_%d_sector', $faction->identifier), $sector);
 			}
 

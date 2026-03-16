@@ -19,7 +19,6 @@ class ElectionFactory extends PersistentObjectFactory
 		return [
 			'id' => Uuid::v4(),
 			'faction' => FactionFactory::random(),
-			'dElection' => new \DateTimeImmutable(),
 		];
 	}
 

@@ -27,7 +27,7 @@ class CandidateRepository extends DoctrineRepository implements CandidateReposit
 		return $this->find($id);
 	}
 
-	public function getByPoliticalEventAndPlayer(PoliticalEvent $politicalEvent, Player $player): Candidate|null
+	public function getByPoliticalEventAndPlayer(PoliticalEvent $politicalEvent, Player $player): ?Candidate
 	{
 		return $this->findOneBy([
 			'player' => $player,

@@ -13,5 +13,5 @@ interface NotificationEvent
 
 	public function getNotificationRecipients(): array;
 
-	public function getNotificationRecipientsSpecification(): SelectorSpecification|null;
+	public function getNotificationRecipientsSpecification(): ?SelectorSpecification;
 }

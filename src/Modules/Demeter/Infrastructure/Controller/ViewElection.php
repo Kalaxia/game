@@ -21,16 +21,16 @@ use Symfony\Component\Uid\Uuid;
 class ViewElection extends AbstractController
 {
 	public function __invoke(
-        Request                           $request,
-        Player                            $currentPlayer,
-        PoliticalEventRepositoryInterface $electionRepository,
-        CandidateRepositoryInterface      $candidateRepository,
-        VoteRepositoryInterface           $voteRepository,
-        PlayerRepositoryInterface         $playerRepository,
-        ForumTopicRepositoryInterface     $forumTopicRepository,
-        ForumMessageRepositoryInterface   $forumMessageRepository,
-        DurationHandler                   $durationHandler,
-        NextElectionDateCalculator        $nextElectionDateCalculator,
+		Request $request,
+		Player $currentPlayer,
+		PoliticalEventRepositoryInterface $electionRepository,
+		CandidateRepositoryInterface $candidateRepository,
+		VoteRepositoryInterface $voteRepository,
+		PlayerRepositoryInterface $playerRepository,
+		ForumTopicRepositoryInterface $forumTopicRepository,
+		ForumMessageRepositoryInterface $forumMessageRepository,
+		DurationHandler $durationHandler,
+		NextElectionDateCalculator $nextElectionDateCalculator,
 	): Response {
 		$faction = $currentPlayer->faction;
 

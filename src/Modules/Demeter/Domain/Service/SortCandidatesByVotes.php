@@ -32,7 +32,7 @@ readonly class SortCandidatesByVotes
 			++$ballot[$candidateId]['votes_count'];
 		}
 
-		uasort($ballot, fn($a, $b) => $b['votes_count'] <=> $a['votes_count']);
+		uasort($ballot, fn ($a, $b) => $b['votes_count'] <=> $a['votes_count']);
 
 		arsort($ballot);
 

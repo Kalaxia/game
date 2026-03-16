@@ -98,7 +98,7 @@ class Color implements CreditHolderInterface
 		#[ORM\Column(type: 'boolean')]
 		public bool $isClosed = false,
 		#[ORM\Column(type: 'string', length: 255, nullable: true)]
-		public string|null $description = null,
+		public ?string $description = null,
 		#[ORM\Column(type: 'boolean')]
 		public bool $isInGame = false,
 		#[ORM\Column(type: 'json')]
@@ -107,10 +107,7 @@ class Color implements CreditHolderInterface
 		public MandateState $mandateState = MandateState::Active,
 		#[ORM\Column(type: 'datetime_immutable', nullable: true)]
 		// @TODO move that field to the future Server entity
-		public \DateTimeImmutable|null $victoryClaimedAt = null,
-		#[ORM\Column(type: 'datetime_immutable', nullable: true)]
-		// @TODO get that field from the Election table
-		public \DateTimeImmutable|null $lastElectionHeldAt = null,
+		public ?\DateTimeImmutable $victoryClaimedAt = null,
 	) {
 	}
 

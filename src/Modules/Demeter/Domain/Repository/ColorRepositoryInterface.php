@@ -16,11 +16,6 @@ interface ColorRepositoryInterface extends EntityRepositoryInterface
 	/**
 	 * @return list<Color>
 	 */
-	public function getAll(): array;
-
-	/**
-	 * @return list<Color>
-	 */
 	public function getInGameFactions(): array;
 
 	/**
@@ -34,7 +29,7 @@ interface ColorRepositoryInterface extends EntityRepositoryInterface
 	public function getAllByActivePlayersNumber(): array;
 
 	/**
-	 * @param list<int> $regimes
+	 * @param list<int>          $regimes
 	 * @param list<MandateState> $mandateStates
 	 *
 	 * @return list<Color>

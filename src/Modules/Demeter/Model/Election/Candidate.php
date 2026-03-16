@@ -15,25 +15,25 @@ class Candidate
 	public function __construct(
 		#[ORM\Id]
 		#[ORM\Column(type: 'uuid')]
-		public Uuid           $id,
+		public Uuid $id,
 		#[ORM\ManyToOne]
 		public PoliticalEvent $politicalEvent,
 		#[ORM\ManyToOne]
-		public Player         $player,
+		public Player $player,
 		#[ORM\Column(type: 'text')]
-		public string         $program,
+		public string $program,
 		#[ORM\ManyToOne]
 		#[ORM\JoinColumn(nullable: true)]
-		public Player|null    $chiefChoice = null,
+		public ?Player $chiefChoice = null,
 		#[ORM\ManyToOne]
 		#[ORM\JoinColumn(nullable: true)]
-		public Player|null    $treasurerChoice = null,
+		public ?Player $treasurerChoice = null,
 		#[ORM\ManyToOne]
 		#[ORM\JoinColumn(nullable: true)]
-		public Player|null $warlordChoice = null,
+		public ?Player $warlordChoice = null,
 		#[ORM\ManyToOne]
 		#[ORM\JoinColumn(nullable: true)]
-		public Player|null $ministerChoice = null,
+		public ?Player $ministerChoice = null,
 		#[ORM\Column(type: 'datetime_immutable')]
 		public \DateTimeImmutable $createdAt = new \DateTimeImmutable(),
 	) {

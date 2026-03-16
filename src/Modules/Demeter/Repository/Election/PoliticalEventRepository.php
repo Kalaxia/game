@@ -9,6 +9,7 @@ use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\PoliticalEvent;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -21,12 +22,25 @@ class PoliticalEventRepository extends DoctrineRepository implements PoliticalEv
 		parent::__construct($registry, PoliticalEvent::class);
 	}
 
-	public function get(Uuid $id): PoliticalEvent|null
+	public function get(Uuid $id): ?PoliticalEvent
 	{
 		return $this->find($id);
 	}
 
-	public function getFactionLastPoliticalEvent(Color $faction): PoliticalEvent|null
+	public function getFactionCurrentPoliticalEvent(Color $faction): ?PoliticalEvent
+	{
+		$qb = $this->createQueryBuilder('e');
+
+		$qb->andWhere('e.faction = :faction')
+			->andWhere($qb->expr()->lte('e.startedAt', ':now'))
+			->andWhere($qb->expr()->gte('e.endedAt', ':now'))
+			->setParameter('faction', $faction->id, UuidType::NAME)
+			->setParameter('now', new \DateTimeImmutable());
+
+		return $qb->getQuery()->getOneOrNullResult();
+	}
+
+	public function getFactionLastPoliticalEvent(Color $faction): ?PoliticalEvent
 	{
 		return $this->findOneBy([
 			'faction' => $faction,

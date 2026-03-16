@@ -43,7 +43,7 @@ class ForumTopic
 		// si joueur renseigné lors du chargement
 		#[ORM\ManyToOne]
 		#[ORM\JoinColumn(nullable: true)]
-		public Player|null $lastView = null,
+		public ?Player $lastView = null,
 	) {
 	}
 }

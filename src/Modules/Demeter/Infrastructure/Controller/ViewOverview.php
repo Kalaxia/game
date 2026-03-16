@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace App\Modules\Demeter\Infrastructure\Controller;
 
-use App\Classes\Library\Format;
 use App\Modules\Atlas\Domain\Repository\FactionRankingRepositoryInterface;
-use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
+use App\Modules\Demeter\Domain\Repository\Election\MandateRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Forum\FactionNewsRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Law\LawRepositoryInterface;
 use App\Modules\Demeter\Manager\Forum\FactionNewsManager;
 use App\Modules\Demeter\Manager\Law\LawManager;
-use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Law\Law;
 use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Infrastructure\Validator\IsGovernmentMember;
 use App\Modules\Zeus\Model\Player;
-use App\Shared\Application\Handler\DurationHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,10 +25,12 @@ class ViewOverview extends AbstractController
 	public function __invoke(
 		Request $request,
 		Player $currentPlayer,
+		MandateRepositoryInterface $mandateRepository,
 		FactionNewsManager $factionNewsManager,
 		FactionRankingRepositoryInterface $factionRankingRepository,
 		FactionNewsRepositoryInterface $factionNewsRepository,
 		PlayerRepositoryInterface $playerRepository,
+		PoliticalEventRepositoryInterface $politicalEventRepository,
 		LawManager $lawManager,
 		LawRepositoryInterface $lawRepository,
 		SectorRepositoryInterface $sectorRepository,
@@ -49,6 +49,8 @@ class ViewOverview extends AbstractController
 			'faction' => $faction,
 			'news' => $factionNews,
 			'news_mode' => $mode,
+			'current_political_event' => $politicalEventRepository->getFactionCurrentPoliticalEvent($faction),
+			'current_mandate' => $mandateRepository->getCurrentMandate($faction),
 			'government_members' => $playerRepository->getBySpecification(new IsGovernmentMember($faction)),
 			'effective_laws' => $lawRepository->getByFactionAndStatements($faction, [Law::EFFECTIVE]),
 			'voting_laws' => $lawRepository->getByFactionAndStatements($faction, [Law::VOTATION]),

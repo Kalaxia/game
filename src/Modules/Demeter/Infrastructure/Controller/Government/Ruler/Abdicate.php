@@ -38,7 +38,6 @@ class Abdicate extends AbstractController
 			if (!$faction->isInMandate()) {
 				throw new ConflictHttpException('Des élections sont déjà en cours.');
 			}
-			$faction->lastElectionHeldAt = new \DateTimeImmutable(sprintf('-%d seconds', $mandateDuration));
 			$this->addFlash('success', 'Des élections anticipées vont être lancées.');
 
 			return $this->redirect($request->headers->get('referer'));

@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Demeter\Application\Workflow\FactionMandate;
 
-use App\Classes\Library\DateTimeConverter;
 use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Message\BallotMessage;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\MandateState;
-use Symfony\Component\Messenger\MessageBusInterface;
+use App\Modules\Shared\Infrastructure\Messenger\ScheduleTask;
 use Symfony\Component\Workflow\Attribute\AsEnteredListener;
 use Symfony\Component\Workflow\Attribute\AsGuardListener;
 use Symfony\Component\Workflow\Event\EnterEvent;
@@ -19,7 +18,7 @@ readonly class DemocraticVoteWorkflowEventListener
 {
 	public function __construct(
 		private PoliticalEventRepositoryInterface $politicalEventRepository,
-		private MessageBusInterface $messageBus,
+		private ScheduleTask $scheduleTask,
 	) {
 	}
 
@@ -45,9 +44,9 @@ readonly class DemocraticVoteWorkflowEventListener
 		$faction = $event->getSubject();
 		$election = $this->politicalEventRepository->getFactionLastPoliticalEvent($faction);
 
-		$this->messageBus->dispatch(
-			new BallotMessage($faction->id),
-			[DateTimeConverter::to_delay_stamp($election->endedAt)]
+		($this->scheduleTask)(
+			message: new BallotMessage($faction->id),
+			datetime: $election->endedAt,
 		);
 	}
 }

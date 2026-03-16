@@ -5,9 +5,18 @@ declare(strict_types=1);
 namespace App\Modules\Demeter\Domain\Event;
 
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use Psr\Log\LoggerInterface;
 
 class NewTheocraticLeaderEvent extends NewLeaderEvent
 {
+	public function log(LoggerInterface $logger): void
+	{
+		$logger->info('Faction {factionName} has a new theocratic leader: {newLeaderName}.', [
+			'factionName' => $this->factionName,
+			'newLeaderName' => $this->newLeader->name,
+		]);
+	}
+
 	public function getConversationMessageContent(): string
 	{
 		return 'Les Oracles ont parlé, un nouveau dirigeant va faire valoir la force de '.

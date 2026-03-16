@@ -16,20 +16,19 @@ readonly class GetPutschSupportPercentage
 {
 	public function __construct(
 		private PoliticalEventRepositoryInterface $electionRepository,
-		private VoteRepositoryInterface           $voteRepository,
-		private PlayerRepositoryInterface         $playerRepository,
+		private VoteRepositoryInterface $voteRepository,
+		private PlayerRepositoryInterface $playerRepository,
 	) {
 	}
 
 	public function __invoke(Color $faction): float
 	{
-
 		$election = $this->electionRepository->getFactionLastPoliticalEvent($faction);
 		$votes = $this->voteRepository->getPoliticalEventVotes($election);
 
 		$positiveVotesCount = array_reduce(
 			$votes,
-			static fn(int $carry, Vote $vote) => $carry + ($vote->hasApproved > 0 ? 1 : 0),
+			static fn (int $carry, Vote $vote) => $carry + ($vote->hasApproved > 0 ? 1 : 0),
 			initial: 0,
 		);
 

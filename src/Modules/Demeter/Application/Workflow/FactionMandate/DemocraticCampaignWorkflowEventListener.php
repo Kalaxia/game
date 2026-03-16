@@ -8,9 +8,11 @@ use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Event\NewDemocraticCampaignEvent;
 use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\UpdateSenate;
+use App\Modules\Demeter\Message\CampaignMessage;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\DemocraticElection;
 use App\Modules\Demeter\Model\Election\MandateState;
+use App\Modules\Shared\Infrastructure\Messenger\ScheduleTask;
 use App\Shared\Application\Handler\DurationHandler;
 use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -28,13 +30,14 @@ readonly class DemocraticCampaignWorkflowEventListener
 		private ClockInterface $clock,
 		private DurationHandler $durationHandler,
 		private EventDispatcherInterface $eventDispatcher,
+		private NextElectionDateCalculator $nextElectionDateCalculator,
 		private PoliticalEventRepositoryInterface $electionRepository,
-		private NextElectionDateCalculator        $nextElectionDateCalculator,
-		private UpdateSenate                      $updateSenate,
+		private UpdateSenate $updateSenate,
+		private ScheduleTask $scheduleTask,
 	) {
 	}
 
-	#[AsGuardListener(workflow: 'faction_mandate', transition: 'to_campaign')]
+	#[AsGuardListener(workflow: 'faction_mandate', transition: 'democratic_campaign')]
 	public function guard(GuardEvent $event): void
 	{
 		/** @var Color $faction */
@@ -42,6 +45,10 @@ readonly class DemocraticCampaignWorkflowEventListener
 
 		if (!$faction->isDemocratic()) {
 			$event->setBlocked(true, sprintf('Faction %s is not democratic', $faction->identifier));
+		}
+
+		if (MandateState::Active !== $faction->mandateState) {
+			$event->setBlocked(true, sprintf('Faction %s is not in mandate', $faction->identifier));
 		}
 	}
 
@@ -59,6 +66,7 @@ readonly class DemocraticCampaignWorkflowEventListener
 	{
 		/** @var Color $faction */
 		$faction = $event->getSubject();
+
 		$now = $this->clock->now();
 		$campaignEndedAt = $this->durationHandler->getDurationEnd(
 			$now,
@@ -80,5 +88,15 @@ readonly class DemocraticCampaignWorkflowEventListener
 		$this->electionRepository->save($election);
 
 		$this->eventDispatcher->dispatch(new NewDemocraticCampaignEvent($election));
+
+		$nextCampaignStartedAt = $this->durationHandler->getDurationEnd(
+			$this->clock->now(),
+			$this->nextElectionDateCalculator->getMandateDuration($faction),
+		);
+
+		($this->scheduleTask)(
+			message: new CampaignMessage($faction->id),
+			datetime: $nextCampaignStartedAt,
+		);
 	}
 }
