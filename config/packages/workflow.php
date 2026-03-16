@@ -11,8 +11,9 @@ return App::config([
 	'framework' => [
 		'workflows' => [
 			'faction_mandate' => [
-				'type' => 'workflow',
+				'type' => 'state_machine',
 				'marking_store' => [
+					'type' => 'method',
 					'property' => 'mandateState',
 				],
 				'supports' => [Color::class],
@@ -58,7 +59,7 @@ return App::config([
 					'royalistic_crowning' => [
 						'from' => MandateState::Putsch,
 						'to' => MandateState::Active,
-					]
+					],
 				],
 			],
 		],
