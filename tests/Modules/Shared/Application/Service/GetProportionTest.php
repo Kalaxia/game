@@ -21,7 +21,7 @@ class GetProportionTest extends TestCase
 		static::assertSame($expectedResult, $result);
 	}
 
-	public function provideData(): \Generator
+	public static function provideData(): \Generator
 	{
 		yield [
 			[0, 60, 0, 10, 30, 0],
