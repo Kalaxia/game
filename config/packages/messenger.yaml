@@ -1,5 +1,10 @@
 framework:
     messenger:
+        serializer:
+            default_serializer: messenger.transport.symfony_serializer
+            symfony_serializer:
+                format: json
+                context: { }
         # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
         # failure_transport: failed
 
@@ -21,3 +26,10 @@ framework:
             # Route your messages to the transports
             App\Shared\Domain\Message\AsyncMessage: async
             App\Shared\Domain\Message\AsyncHighPriorityMessage: async_high_priority
+
+when@test:
+    framework:
+        messenger:
+            transports:
+                async_high_priority: 'in-memory://'
+                async: 'in-memory://'
