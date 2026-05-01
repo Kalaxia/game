@@ -45,11 +45,12 @@ readonly class NextElectionDateCalculator
 		}
 
 		$currentMandate = $this->mandateRepository->getCurrentMandate($faction)
-			?? throw new \RuntimeException(sprintf('Faction %s does not have a current mandate', $faction->identifier));
+			?? $this->mandateRepository->getLastMandate($faction)
+			?? throw new \RuntimeException(sprintf('Mandates not yet initialized for Faction %d', $faction->identifier));
 		$lastEvent = $this->politicalEventRepository->getFactionLastPoliticalEvent($faction);
 		$now = $this->clock->now();
 
-		$date = $this->getDurationUntilMandateState($faction, $mandateState, $currentMandate->startedAt, $lastEvent);
+		$date = $this->getDurationUntilMandateState($faction, $mandateState, $currentMandate?->startedAt, $lastEvent);
 
 		return ($mustBePresent) ? max($date, $now) : $date;
 	}
@@ -94,24 +95,9 @@ readonly class NextElectionDateCalculator
 		}]);
 	}
 
-	public function getBallotDate(Color $faction): \DateTimeImmutable
-	{
-		return $this->calculate($faction, $this->getElectionDuration() + $this->getCampaignDuration());
-	}
-
 	public function getSenateUpdateMessage(Color $faction): \DateTimeImmutable
 	{
 		return $this->calculate($faction);
-	}
-
-	public function getNextElectionDate(Color $faction): \DateTimeImmutable
-	{
-		return $this->calculate($faction, addMandateDuration: false);
-	}
-
-	public function getStartDate(Color $faction): \DateTimeImmutable
-	{
-		return $this->calculate($faction, $this->getElectionDuration(), false);
 	}
 
 	public function getEndDate(Color $faction): \DateTimeImmutable
@@ -122,16 +108,6 @@ readonly class NextElectionDateCalculator
 	public function getPutschEndDate(Color $faction): \DateTimeImmutable
 	{
 		return $this->calculate($faction, $this->getPutschDuration(), false);
-	}
-
-	public function getCampaignStartDate(Color $faction): \DateTimeImmutable
-	{
-		return $this->calculate($faction);
-	}
-
-	public function getCampaignEndDate(Color $faction): \DateTimeImmutable
-	{
-		return $this->calculate($faction, $this->getCampaignDuration());
 	}
 
 	/**

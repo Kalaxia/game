@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Modules\Demeter\Application\Election;
 
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
+use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\Election\DemocraticElectionFactory;
 use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\Election\ElectionFactory;
+use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\Election\MandateFactory;
 use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\FactionFactory;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\MandateState;
@@ -45,11 +49,11 @@ class NextElectionDateCalculatorTest extends KernelTestCase
 			'identifier' => $data['identifier'],
 			'regime' => $data['regime'],
 			'mandateState' => $data['mandateState'],
-			'lastElectionHeldAt' => $data['lastElectionHeldAt'],
 		]);
-		ElectionFactory::createOne([
+		MandateFactory::createOne([
 			'faction' => $faction,
-			'dElection' => $data['lastElectionHeldAt'],
+			'startedAt' => $data['mandateStartedAt'],
+			'expiredAt' => $data['mandateExpiredAt'],
 		]);
 
 		static::assertEquals(
@@ -63,9 +67,9 @@ class NextElectionDateCalculatorTest extends KernelTestCase
 			'Wrong campaign end date',
 		);
 		static::assertEquals(
-			$expected['election_end_date'],
+			$expected['mandate_change_date'],
 			$nextElectionDateCalculator->getDateUntil($faction, MandateState::Active),
-			'Wrong election end date',
+			'Wrong mandate change date',
 		);
 		static::assertEquals(
 			$expected['mandate_duration'],
@@ -129,12 +133,13 @@ class NextElectionDateCalculatorTest extends KernelTestCase
 				'identifier' => ColorResource::KALANKAR,
 				'regime' => Color::REGIME_DEMOCRATIC,
 				'mandateState' => MandateState::Active,
-				'lastElectionHeldAt' => new DatePoint('2023-06-01 17:00:00'),
+				'mandateStartedAt' => new DatePoint('2023-06-01 17:00:00'),
+				'mandateExpiredAt' => new DatePoint('2023-06-15 17:00:00'),
 			],
 			[
 				'campaign_start_date' => new DatePoint('2023-06-08 17:00:00'),
 				'campaign_end_date' => new DatePoint('2023-06-12 17:00:00'),
-				'election_end_date' => new DatePoint('2023-06-14 17:00:00'),
+				'mandate_change_date' => new DatePoint('2023-06-14 18:00:00'),
 				'mandate_duration' => 604800,
 			],
 			TimeMode::Standard,
@@ -145,12 +150,13 @@ class NextElectionDateCalculatorTest extends KernelTestCase
 				'identifier' => ColorResource::KALANKAR,
 				'regime' => Color::REGIME_DEMOCRATIC,
 				'mandateState' => MandateState::Active,
-				'lastElectionHeldAt' => new DatePoint('2023-06-01 17:00:00'),
+				'mandateStartedAt' => new DatePoint('2023-06-01 17:00:00'),
+				'mandateExpiredAt' => new DatePoint('2023-06-15 17:00:00'),
 			],
 			[
 				'campaign_start_date' => new DatePoint('2023-06-08 17:00:00'),
 				'campaign_end_date' => new DatePoint('2023-06-12 17:00:00'),
-				'election_end_date' => new DatePoint('2023-06-14 17:00:00'),
+				'mandate_change_date' => new DatePoint('2023-06-14 18:00:00'),
 				'mandate_duration' => 604800,
 			],
 			TimeMode::Standard,
@@ -161,12 +167,13 @@ class NextElectionDateCalculatorTest extends KernelTestCase
 				'identifier' => ColorResource::KALANKAR,
 				'regime' => Color::REGIME_DEMOCRATIC,
 				'mandateState' => MandateState::Active,
-				'lastElectionHeldAt' => new DatePoint('2023-03-28 17:00:00'),
+				'mandateStartedAt' => new DatePoint('2023-03-28 17:00:00'),
+				'mandateExpiredAt' => new DatePoint('2023-03-12 17:00:00'),
 			],
 			[
-				'campaign_start_date' => new DatePoint('2023-06-06 17:00:00'),
-				'campaign_end_date' => new DatePoint('2023-06-12 17:00:00'),
-				'election_end_date' => new DatePoint('2023-06-14 17:00:00'),
+				'campaign_start_date' => new DatePoint('2023-06-05 10:00:00'),
+				'campaign_end_date' => new DatePoint('2023-06-11 10:00:00'),
+				'mandate_change_date' => new DatePoint('2023-06-13 11:00:00'),
 				'mandate_duration' => 604800,
 			],
 			TimeMode::Standard,
@@ -177,12 +184,13 @@ class NextElectionDateCalculatorTest extends KernelTestCase
 				'identifier' => ColorResource::KALANKAR,
 				'regime' => Color::REGIME_DEMOCRATIC,
 				'mandateState' => MandateState::Active,
-				'lastElectionHeldAt' => new DatePoint('2023-06-04 17:00:00'),
+				'mandateStartedAt' => new DatePoint('2023-06-04 17:00:00'),
+				'mandateExpiredAt' => new DatePoint('2023-06-04 17:07:00'),
 			],
 			[
-				'campaign_start_date' => new DatePoint('2023-06-05 10:20:00'),
-				'campaign_end_date' => new DatePoint('2023-06-08 17:00:00'),
-				'election_end_date' => new DatePoint('2023-06-12 17:00:00'),
+				'campaign_start_date' => new DatePoint('2023-06-05 10:00:00'),
+				'campaign_end_date' => new DatePoint('2023-06-05 10:02:00'),
+				'mandate_change_date' => new DatePoint('2023-06-12 10:02:30'),
 				'mandate_duration' => 2400,
 			],
 			TimeMode::Fast,

@@ -11,6 +11,7 @@ use App\Modules\Demeter\Model\Election\PoliticalEvent;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Clock\DatePoint;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -36,7 +37,7 @@ class MandateRepository extends DoctrineRepository implements MandateRepositoryI
 			->andWhere('m.startedAt <= :now')
 			->andWhere('m.expiredAt > :now')
 			->setParameter('faction', $faction->id, UuidType::NAME)
-			->setParameter('now', new \DateTimeImmutable());
+			->setParameter('now', new DatePoint());
 
 		return $qb->getQuery()->getOneOrNullResult();
 	}

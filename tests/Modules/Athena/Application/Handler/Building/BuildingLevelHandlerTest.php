@@ -13,6 +13,7 @@ use App\Modules\Galaxy\Domain\Enum\PlanetType;
 use App\Modules\Galaxy\Domain\Enum\SystemType;
 use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Zeus\Model\Player;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 
@@ -91,9 +92,8 @@ class BuildingLevelHandlerTest extends TestCase
 
 	/**
 	 * @param list<BuildingQueue> $buildingQueues
-	 *
-	 * @dataProvider provideData
 	 */
+	#[DataProvider('provideData')]
 	public function testGetBuildingRealLevel(
 		Planet $planet,
 		array $buildingQueues,
