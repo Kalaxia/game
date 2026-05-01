@@ -52,7 +52,7 @@ readonly class DailyRoutineHandler
 			$player = $players[$i];
 			$hoursSinceLastConnection = $this->durationHandler->getHoursDiff($player->dLastConnection, $this->clock->now());
 			if ($hoursSinceLastConnection >= $this->playerInactiveTimeLimit) {
-				$this->playerManager->kill($player);
+				// $this->playerManager->kill($player);
 			} elseif ($hoursSinceLastConnection >= $this->playerGlobalInactiveTime && Player::ACTIVE === $player->statement) {
 				$player->statement = Player::INACTIVE;
 				$this->playerRepository->save($player);
