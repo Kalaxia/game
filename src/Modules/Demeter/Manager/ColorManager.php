@@ -124,8 +124,11 @@ readonly class ColorManager implements SchedulerInterface
 		}
 
 		$currentMandate = $this->mandateRepository->getCurrentMandate($faction)
-			?? $this->mandateRepository->getLastMandate($faction)
-			?? throw new \RuntimeException(sprintf('No mandate found for faction %s.', $faction->identifier));
+			?? $this->mandateRepository->getLastMandate($faction);
+
+		if (null === $currentMandate) {
+			return;
+		}
 
 		($this->scheduleTask)(
 			message: new MandateExpirationMessage($currentMandate->id),
