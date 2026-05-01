@@ -17,9 +17,8 @@ use App\Modules\Demeter\Message\SenateUpdateMessage;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Shared\Infrastructure\Messenger\ScheduleTask;
-use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Infrastructure\Validator\IsParliamentMember;
 use App\Shared\Application\Handler\DurationHandler;
 use App\Shared\Application\SchedulerInterface;
@@ -32,10 +31,9 @@ readonly class ColorManager implements SchedulerInterface
 		private DurationHandler $durationHandler,
 		private ColorRepositoryInterface $colorRepository,
 		private GetFactionsConfiguration $getFactionsConfiguration,
-		private PlayerRepositoryInterface $playerRepository,
 		private MandateRepositoryInterface $mandateRepository,
 		private PoliticalEventRepositoryInterface $politicalEventRepository,
-		private NotificationRepositoryInterface $notificationRepository,
+		private NotificationPersister $notificationPersister,
 		private UrlGeneratorInterface $urlGenerator,
 		private NextElectionDateCalculator $nextElectionDateCalculator,
 		private ScheduleTask $scheduleTask,
@@ -64,12 +62,13 @@ readonly class ColorManager implements SchedulerInterface
 		}
 
 		if (MandateState::Active === $faction->mandateState && !$faction->isRoyalistic()) {
+			$nextCampaignStartedAt = $this->durationHandler->getDurationEnd(
+				$lastEvent->endedAt,
+				$this->nextElectionDateCalculator->getMandateDuration($faction),
+			);
 			($this->scheduleTask)(
-				message: new CampaignMessage($faction->id),
-				datetime: $this->durationHandler->getDurationEnd(
-					$lastEvent->endedAt,
-					$this->nextElectionDateCalculator->getMandateDuration($faction),
-				)
+				message: new CampaignMessage($faction->id, $nextCampaignStartedAt),
+				datetime: $nextCampaignStartedAt,
 			);
 
 			return;
@@ -101,7 +100,7 @@ readonly class ColorManager implements SchedulerInterface
 		);
 
 		($this->scheduleTask)(
-			message: new CampaignMessage($faction->id),
+			message: new CampaignMessage($faction->id, $campaignStartedAt),
 			datetime: $campaignStartedAt,
 		);
 	}
@@ -129,34 +128,31 @@ readonly class ColorManager implements SchedulerInterface
 			?? throw new \RuntimeException(sprintf('No mandate found for faction %s.', $faction->identifier));
 
 		($this->scheduleTask)(
-			message: new MandateExpirationMessage($faction->id),
+			message: new MandateExpirationMessage($currentMandate->id),
 			datetime: $currentMandate->expiredAt,
 		);
 	}
 
 	public function sendSenateNotif(Color $faction, bool $isFromChief = false): void
 	{
-		$parliamentMembers = $this->playerRepository->getBySpecification(new IsParliamentMember($faction));
-
-		$notificationBuilder = NotificationBuilder::new()
-			->setTitle($isFromChief ? 'Loi appliquée' : 'Loi proposée')
-			->setContent(NotificationBuilder::paragraph(
-				$isFromChief
-					? sprintf(
+		$this->notificationPersister->saveFromBuilder(
+			NotificationBuilder::new()
+				->setTitle($isFromChief ? 'Loi appliquée' : 'Loi proposée')
+				->setContent(NotificationBuilder::paragraph(
+					$isFromChief
+						? sprintf(
 						'Votre %s a appliqué une loi.',
 						($this->getFactionsConfiguration)($faction, 'status')[5],
 					)
-					: 'Votre gouvernement a proposé un projet de loi, en tant que membre du sénat,
-					il est de votre devoir de voter pour l\'acceptation ou non de ladite loi.',
-				NotificationBuilder::divider(),
-				NotificationBuilder::link(
-					$this->urlGenerator->generate('faction_senate'),
-					$isFromChief ? 'voir les lois appliquées' : 'voir les lois en cours de vote',
-				),
-			));
-
-		foreach ($parliamentMembers as $parliamentMember) {
-			$this->notificationRepository->save($notificationBuilder->for($parliamentMember));
-		}
+						: 'Votre gouvernement a proposé un projet de loi, en tant que membre du sénat,
+						il est de votre devoir de voter pour l\'acceptation ou non de ladite loi.',
+					NotificationBuilder::divider(),
+					NotificationBuilder::link(
+						$this->urlGenerator->generate('faction_senate'),
+						$isFromChief ? 'voir les lois appliquées' : 'voir les lois en cours de vote',
+					),
+				))
+				->withRecipientSpecification(new IsParliamentMember($faction))
+		);
 	}
 }

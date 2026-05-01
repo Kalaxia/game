@@ -6,10 +6,12 @@ use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Demeter\Message\CampaignMessage;
 use App\Modules\Demeter\Model\Color;
 use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Workflow\WorkflowInterface;
 
+#[WithMonologChannel('political_events')]
 #[AsMessageHandler]
 readonly class CampaignHandler
 {

@@ -10,12 +10,18 @@ use Symfony\Component\Uid\Uuid;
 
 readonly class CampaignMessage implements AsyncMessage, UniqueMessage
 {
-	public function __construct(public Uuid $factionId)
-	{
+	public function __construct(
+		public Uuid $factionId,
+		public \DateTimeImmutable $nextCampaignStartedAt,
+	) {
 	}
 
 	public function getUniqueId(): string
 	{
-		return sprintf('campaign.%s', $this->factionId->toRfc4122());
+		return sprintf(
+			'campaign.%s.%s',
+			$this->factionId->toRfc4122(),
+			md5($this->nextCampaignStartedAt->format('c')),
+		);
 	}
 }

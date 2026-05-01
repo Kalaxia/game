@@ -67,7 +67,7 @@ class DemocraticRegimeWorkflowTest extends KernelTestCase
 		/** @var CampaignHandler $campaignHandler */
 		$campaignHandler = static::getContainer()->get(CampaignHandler::class);
 
-		$campaignHandler(new CampaignMessage($faction->id));
+		$campaignHandler(new CampaignMessage($faction->id, new DatePoint()));
 
 		/**************** VALIDATE MANDATE STATE CHANGE ****************/
 
@@ -154,7 +154,7 @@ class DemocraticRegimeWorkflowTest extends KernelTestCase
 		/** @var CampaignHandler $campaignHandler */
 		$campaignHandler = static::getContainer()->get(CampaignHandler::class);
 
-		$campaignHandler(new CampaignMessage($faction->id));
+		$campaignHandler(new CampaignMessage($faction->id, new DatePoint()));
 
 		/**************** VALIDATE MANDATE STATE CHANGE ****************/
 

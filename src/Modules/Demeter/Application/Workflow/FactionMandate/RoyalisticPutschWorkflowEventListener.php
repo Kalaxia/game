@@ -10,6 +10,7 @@ use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Demeter\Model\Election\Putsch;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Infrastructure\Validator\IsFromFaction;
@@ -25,7 +26,7 @@ readonly class RoyalisticPutschWorkflowEventListener
 {
 	public function __construct(
 		private EventDispatcherInterface $eventDispatcher,
-		private NotificationRepositoryInterface $notificationRepository,
+		private NotificationPersister $notificationPersister,
 		private PoliticalEventRepositoryInterface $politicalEventRepository,
 		private PlayerRepositoryInterface $playerRepository,
 		private UrlGeneratorInterface $urlGenerator,
@@ -70,7 +71,7 @@ readonly class RoyalisticPutschWorkflowEventListener
 			if (Player::ACTIVE !== $factionPlayer->statement) {
 				continue;
 			}
-			$this->notificationRepository->save($notificationBuilder->for($factionPlayer));
+			$this->notificationPersister->saveFromBuilder($notificationBuilder->forPlayer($factionPlayer));
 		}
 
 		/** @var Putsch $putsch */

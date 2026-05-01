@@ -10,6 +10,7 @@ use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
@@ -27,7 +28,7 @@ readonly class MissingCandidatesWorkflowEventListener
 		private ConversationRepositoryInterface $factionConversationRepository,
 		private EventDispatcherInterface $eventDispatcher,
 		private LoggerInterface $logger,
-		private NotificationRepositoryInterface $notificationRepository,
+		private NotificationPersister $notificationPersister,
 		private PlayerRepositoryInterface $playerRepository,
 		private PoliticalEventRepositoryInterface $politicalEventRepository,
 		private GetFactionsConfiguration $getFactionsConfiguration,
@@ -47,22 +48,22 @@ readonly class MissingCandidatesWorkflowEventListener
 		$previousLeader = $this->playerRepository->getFactionLeader($faction);
 
 		if (null !== $previousLeader && Color::REGIME_DEMOCRATIC === $faction->regime) {
-			$this->notificationRepository->save(NotificationBuilder::new()
+			$this->notificationPersister->saveFromBuilder(NotificationBuilder::new()
 				->setTitle('Vous demeurez '.($this->getFactionsConfiguration)($faction, 'status')[Player::CHIEF - 1])
 				->setContent(NotificationBuilder::paragraph(
 					'Aucun candidat ne s\'est présenté oour vous remplacer lors des dernières élections.',
 					'Par conséquent, vous êtes toujours à la tête de ',
 					($this->getFactionsConfiguration)($faction, 'popularName'),
 				))
-				->for($previousLeader));
+				->forPlayer($previousLeader));
 		} elseif (null !== $previousLeader && Color::REGIME_THEOCRATIC === $faction->regime) {
-			$this->notificationRepository->save(NotificationBuilder::new()
+			$this->notificationPersister->saveFromBuilder(NotificationBuilder::new()
 				->setTitle('Vous avez été nommé Guide')
 				->setContent(NotificationBuilder::paragraph(
 					'Les Oracles ont parlé,',
 					' vous êtes toujours désigné par la Grande Lumière pour guider Cardan vers la Gloire.',
 				))
-				->for($previousLeader));
+				->forPlayer($previousLeader));
 		}
 
 		$factionAccount = $this->playerRepository->getFactionAccount($faction)

@@ -78,7 +78,7 @@ factions:
                     female {Gardienne}
                     male {Gardien}
                     other {Gardien-ne}
-                }du Domaine
+                } du Domaine
             leader: >-
                 {gender, select,
                     female {Première Conseillère}
@@ -478,3 +478,10 @@ galaxy:
                 name: "ceinture d'astéroïdes"
             !php/enum App\Modules\Galaxy\Domain\Enum\PlaceType::Empty->value:
                 name: 'zone vide'
+language:
+    new:  >-
+        {gender, select,
+            female {nouvelle}
+            male {nouveau}
+            other {nouveau}
+        }

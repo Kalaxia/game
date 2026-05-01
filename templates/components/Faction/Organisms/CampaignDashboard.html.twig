@@ -1,0 +1,28 @@
+<div>
+	<header>
+		<h3 class="text-lg">
+			Campagne
+		</h3>
+	</header>
+	<section class="mt-4">
+		<div aria-hidden="true">
+			<twig:ProgressBar :faction="campaign.faction" :current="this.getPercent()" />
+
+			<div class="mt-2 flex justify-between text-sm font-medium text-gray-200 sm:grid">
+				<div class="">
+					Démarre le {{ campaign.startedAt.format('c') }}
+				</div>
+				<div class="text-right">
+					Termine le {{ (campaign.faction.isDemocratic ? campaign.campaignEndedAt.format('c') : campaign.endedAt.format('c')) }}
+				</div>
+			</div>
+		</div>
+	</section>
+	<footer class="mt-4">
+		<a href="{{ path('view_faction_election') }}">
+			<twig:Button :faction="campaign.faction">
+				{{ campaign.faction.isDemocratic ? 'Présentez-vous aux élections' : 'Se proposer comme Guide' }}
+			</twig:Button>
+		</a>
+	</footer>
+</div>

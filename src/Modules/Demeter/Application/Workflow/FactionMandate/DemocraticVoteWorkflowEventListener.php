@@ -11,7 +11,7 @@ use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Shared\Infrastructure\Messenger\ScheduleTask;
 use Symfony\Component\Workflow\Attribute\AsEnteredListener;
 use Symfony\Component\Workflow\Attribute\AsGuardListener;
-use Symfony\Component\Workflow\Event\EnterEvent;
+use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;
 
 readonly class DemocraticVoteWorkflowEventListener
@@ -38,7 +38,7 @@ readonly class DemocraticVoteWorkflowEventListener
 	}
 
 	#[AsEnteredListener(workflow: 'faction_mandate', place: MandateState::DemocraticVote->value)]
-	public function onVoteStarted(EnterEvent $event): void
+	public function onVoteStarted(EnteredEvent $event): void
 	{
 		/** @var Color $faction */
 		$faction = $event->getSubject();

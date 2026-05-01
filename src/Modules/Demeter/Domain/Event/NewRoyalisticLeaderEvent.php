@@ -7,6 +7,7 @@ namespace App\Modules\Demeter\Domain\Event;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Zeus\Model\Player;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NewRoyalisticLeaderEvent extends NewLeaderEvent
 {
@@ -18,13 +19,13 @@ class NewRoyalisticLeaderEvent extends NewLeaderEvent
 		]);
 	}
 
-	public function getConversationMessageContent(): string
+	public function getConversationMessageContent(TranslatorInterface $translator): string
 	{
 		return sprintf(
 			'Un putsch a réussi, un nouveau dirigeant va faire valoir la force de %s
 			à travers la galaxie. Longue vie à <strong>%s</strong>.<br /><br />
 			De nombreux membres de la faction ont soutenu le mouvement révolutionnaire :<br /><br />
-			%s a reçu le soutien de %f% de la population.<br />',
+			%s a reçu le soutien de %f%% de la population.<br />',
 			$this->factionName,
 			$this->newLeader->name,
 			$this->newLeader->name,
@@ -32,14 +33,16 @@ class NewRoyalisticLeaderEvent extends NewLeaderEvent
 		);
 	}
 
-	public function getNotificationBuilder(): NotificationBuilder
+	public function getNotificationBuilders(): \Generator
 	{
-		return NotificationBuilder::new()
+		yield NotificationBuilder::new()
 			->setTitle('Votre coup d\'état a réussi')
 			->setContent(NotificationBuilder::paragraph(
 				'Le peuple vous a soutenu, vous avez renversé le ',
 				$this->factionStatuses[Player::CHIEF - 1],
 				' de votre faction et avez pris sa place.',
-			));
+			))
+			->forPlayer($this->newLeader)
+		;
 	}
 }

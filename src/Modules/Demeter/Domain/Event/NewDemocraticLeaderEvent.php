@@ -9,6 +9,7 @@ use App\Modules\Demeter\Model\Election\Candidate;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Zeus\Model\Player;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NewDemocraticLeaderEvent extends NewLeaderEvent
 {
@@ -20,7 +21,7 @@ class NewDemocraticLeaderEvent extends NewLeaderEvent
 		]);
 	}
 
-	public function getConversationMessageContent(): string
+	public function getConversationMessageContent(TranslatorInterface $translator): string
 	{
 		return sprintf(
 			'La période électorale est terminée.
@@ -42,13 +43,15 @@ class NewDemocraticLeaderEvent extends NewLeaderEvent
 		);
 	}
 
-	public function getNotificationBuilder(): NotificationBuilder
+	public function getNotificationBuilders(): \Generator
 	{
-		return NotificationBuilder::new()
+		yield NotificationBuilder::new()
 			->setTitle('Votre avez été élu')
 			->setContent(NotificationBuilder::paragraph(sprintf(
 				'Le peuple vous a soutenu, vous avez été élu %s de votre faction.',
 				$this->factionStatuses[Player::CHIEF - 1],
-			)));
+			)))
+			->forPlayer($this->newLeader)
+		;
 	}
 }

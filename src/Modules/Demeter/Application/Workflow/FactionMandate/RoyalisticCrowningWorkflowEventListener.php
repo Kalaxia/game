@@ -16,6 +16,7 @@ use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Demeter\Model\Election\Putsch;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Shared\Infrastructure\Messenger\ScheduleTask;
@@ -37,7 +38,7 @@ readonly class RoyalisticCrowningWorkflowEventListener
 		private ConversationRepositoryInterface $conversationRepository,
 		private GetFactionsConfiguration $getFactionsConfiguration,
 		private ScheduleTask $scheduleTask,
-		private NotificationRepositoryInterface $notificationRepository,
+		private NotificationPersister $notificationPersister,
 		private UrlGeneratorInterface $urlGenerator,
 		private NextElectionDateCalculator $nextElectionDateCalculator,
 	) {
@@ -86,7 +87,7 @@ readonly class RoyalisticCrowningWorkflowEventListener
 		);
 
 		if (null !== $previousLeader) {
-			$this->notificationRepository->save(NotificationBuilder::new()
+			$this->notificationPersister->saveFromBuilder(NotificationBuilder::new()
 				->setTitle('Un coup d\'état a réussi')
 				->setContent(NotificationBuilder::paragraph(
 					'Le joueur ',
@@ -96,7 +97,7 @@ readonly class RoyalisticCrowningWorkflowEventListener
 					),
 					' a fait un coup d\'état, vous êtes évincé du pouvoir.',
 				))
-				->for($previousLeader));
+				->forPlayer($previousLeader));
 		}
 
 		$factionPlayer = $this->playerRepository->getFactionAccount($faction);
@@ -117,7 +118,7 @@ readonly class RoyalisticCrowningWorkflowEventListener
 	private function reinstatePreviousLeader(Color $faction, ?Player $leader, Player $putschist): void
 	{
 		if (null !== $leader) {
-			$this->notificationRepository->save(NotificationBuilder::new()
+			$this->notificationPersister->saveFromBuilder(NotificationBuilder::new()
 				->setTitle('Un coup d\'état a échoué')
 				->setContent(NotificationBuilder::paragraph(
 					// TODO replace "player"'s notion with a proper IG status
@@ -128,7 +129,7 @@ readonly class RoyalisticCrowningWorkflowEventListener
 					),
 					' a tenté un coup d\'état, celui-ci a échoué.',
 				))
-				->for($leader));
+				->forPlayer($leader));
 		}
 
 		$factionAccount = $this->playerRepository->getFactionAccount($faction);

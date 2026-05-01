@@ -4,18 +4,33 @@ declare(strict_types=1);
 
 namespace App\Modules\Hermes\Application\EventListener;
 
-use App\Modules\Demeter\Domain\Event\NewLeaderEvent;
+use App\Modules\Demeter\Domain\Event\MandateStartEvent;
+use App\Modules\Demeter\Domain\Event\MissingCandidatesEvent;
+use App\Modules\Demeter\Domain\Event\NewDemocraticLeaderEvent;
+use App\Modules\Demeter\Domain\Event\NewRoyalisticLeaderEvent;
+use App\Modules\Demeter\Domain\Event\NewTheocraticLeaderEvent;
+use App\Modules\Demeter\Domain\Event\PutschFailedEvent;
+use App\Modules\Demeter\Domain\Event\UniqueCandidateEvent;
 use App\Modules\Hermes\Domain\Event\ConversationMessageEvent;
 use App\Modules\Hermes\Domain\Repository\ConversationMessageRepositoryInterface;
 use App\Modules\Hermes\Model\ConversationMessage;
 use App\Modules\Hermes\Model\ConversationUser;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-#[AsEventListener(NewLeaderEvent::class, priority: -100)]
+#[AsEventListener(PutschFailedEvent::class)]
+#[AsEventListener(UniqueCandidateEvent::class)]
+#[AsEventListener(MandateStartEvent::class)]
+#[AsEventListener(MissingCandidatesEvent::class)]
+#[AsEventListener(NewDemocraticLeaderEvent::class)]
+#[AsEventListener(NewTheocraticLeaderEvent::class)]
+#[AsEventListener(NewRoyalisticLeaderEvent::class)]
 readonly class ConversationMessageListener
 {
 	public function __construct(
+		private TranslatorInterface $translator,
 		private ConversationMessageRepositoryInterface $conversationMessageRepository,
 	) {
 	}
@@ -27,7 +42,7 @@ readonly class ConversationMessageListener
 			id: Uuid::v4(),
 			conversation: $conversation,
 			player: $event->getConversationMessageAuthor(),
-			content: $event->getConversationMessageContent(),
+			content: $event->getConversationMessageContent($this->translator),
 		);
 
 		// TODO Move all this logic to a dedicated service

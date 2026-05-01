@@ -88,7 +88,7 @@ readonly class TheocraticCampaignWorkflowEventListener
 		);
 
 		($this->scheduleTask)(
-			message: new CampaignMessage($faction->id),
+			message: new CampaignMessage($faction->id, $nextCampaignStartedAt),
 			datetime: $nextCampaignStartedAt,
 		);
 	}

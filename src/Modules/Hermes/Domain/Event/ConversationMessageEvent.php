@@ -6,12 +6,13 @@ namespace App\Modules\Hermes\Domain\Event;
 
 use App\Modules\Hermes\Model\Conversation;
 use App\Modules\Zeus\Model\Player;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 interface ConversationMessageEvent
 {
 	public function getConversation(): Conversation;
 
-	public function getConversationMessageContent(): string;
+	public function getConversationMessageContent(TranslatorInterface $translator): string;
 
 	public function getConversationMessageAuthor(): Player;
 }

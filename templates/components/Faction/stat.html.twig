@@ -5,9 +5,22 @@
 		</twig:H2>
 	</header>
 	<section>
+		{% if current_mandate is not null %}
+			<twig:MandateDashboard :currentMandate="current_mandate" />
+		{% endif %}
+
+		{% if faction.isInCampaign %}
+			<twig:CampaignDashboard :campaign="current_political_event" />
+		{% endif %}
+
+
+		{#
 		{% if faction.hasElections %}
 			<twig:ElectionsDashboard :faction="faction" />
-		{% elseif faction.isInElection %}
+		{% endif %}
+		#}
+
+		{% if faction.isRoyalistic and faction.isInElection %}
 			<twig:PutschDashboard :faction="faction" />
 		{% endif %}
 

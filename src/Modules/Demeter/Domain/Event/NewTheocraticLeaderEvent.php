@@ -6,6 +6,7 @@ namespace App\Modules\Demeter\Domain\Event;
 
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NewTheocraticLeaderEvent extends NewLeaderEvent
 {
@@ -17,7 +18,7 @@ class NewTheocraticLeaderEvent extends NewLeaderEvent
 		]);
 	}
 
-	public function getConversationMessageContent(): string
+	public function getConversationMessageContent(TranslatorInterface $translator): string
 	{
 		return 'Les Oracles ont parlé, un nouveau dirigeant va faire valoir la force de '.
 			$this->factionName.
@@ -26,12 +27,14 @@ class NewTheocraticLeaderEvent extends NewLeaderEvent
 			'</strong>.<br /><br /><br /><br />';
 	}
 
-	public function getNotificationBuilder(): NotificationBuilder
+	public function getNotificationBuilders(): \Generator
 	{
-		return NotificationBuilder::new()
+		yield NotificationBuilder::new()
 			->setTitle('Vous avez été nommé Guide')
 			->setContent(NotificationBuilder::paragraph(
 				'Les Oracles ont parlé, vous êtes désigné par la Grande Lumière pour guider Cardan vers la Gloire.'
-			));
+			))
+			->forPlayer($this->newLeader)
+		;
 	}
 }

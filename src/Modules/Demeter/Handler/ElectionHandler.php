@@ -9,10 +9,12 @@ use App\Modules\Demeter\Domain\Repository\Election\CandidateRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Message\ElectionMessage;
 use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Workflow\WorkflowInterface;
 
+#[WithMonologChannel('political_events')]
 #[AsMessageHandler]
 readonly class ElectionHandler
 {

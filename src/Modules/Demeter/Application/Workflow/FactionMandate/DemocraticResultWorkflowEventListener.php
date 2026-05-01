@@ -7,26 +7,30 @@ namespace App\Modules\Demeter\Application\Workflow\FactionMandate;
 use App\Modules\Demeter\Domain\Event\NewDemocraticLeaderEvent;
 use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
-use App\Modules\Demeter\Domain\Service\SortCandidatesByVotes;
+use App\Modules\Demeter\Domain\Service\Election\SelectNewLeaderFromBallot;
+use App\Modules\Demeter\Domain\Service\Election\SortCandidatesByVotes;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\Attribute\AsEnterListener;
 use Symfony\Component\Workflow\Event\EnterEvent;
 
+#[WithMonologChannel('political_events')]
 readonly class DemocraticResultWorkflowEventListener
 {
 	public function __construct(
-		private ConversationRepositoryInterface $conversationRepository,
-		private GetFactionsConfiguration $getFactionsConfiguration,
+		private ConversationRepositoryInterface   $conversationRepository,
+		private GetFactionsConfiguration          $getFactionsConfiguration,
 		private PoliticalEventRepositoryInterface $electionRepository,
-		private EventDispatcherInterface $eventDispatcher,
-		private PlayerRepositoryInterface $playerRepository,
-		private SortCandidatesByVotes $sortCandidatesByVotes,
-		private LoggerInterface $logger,
+		private EventDispatcherInterface          $eventDispatcher,
+		private PlayerRepositoryInterface         $playerRepository,
+		private SortCandidatesByVotes             $sortCandidatesByVotes,
+		private SelectNewLeaderFromBallot         $selectNewLeaderFromBallot,
+		private LoggerInterface                   $logger,
 	) {
 	}
 
@@ -51,7 +55,7 @@ readonly class DemocraticResultWorkflowEventListener
 			),
 		]);
 
-		$newLeader = current($ballot)['candidate']->player;
+		$newLeader = ($this->selectNewLeaderFromBallot)($ballot);
 
 		$this->logger->debug('Democratic election for faction {identifier}: {playerName} won the election', [
 			'identifier' => $faction->identifier,
@@ -60,7 +64,7 @@ readonly class DemocraticResultWorkflowEventListener
 
 		$factionPlayer = $this->playerRepository->getFactionAccount($faction);
 
-		$this->eventDispatcher->dispatch(new NewDemocraticLeaderEvent(
+		$newDemocraticLeaderEvent = new NewDemocraticLeaderEvent(
 			faction: $faction,
 			newLeader: $newLeader,
 			politicalEvent: $election,
@@ -69,6 +73,8 @@ readonly class DemocraticResultWorkflowEventListener
 			factionPlayer: $factionPlayer,
 			factionConversation: $this->conversationRepository->getOneByPlayer($factionPlayer),
 			candidatesData: $ballot,
-		));
+		);
+
+		$this->eventDispatcher->dispatch($newDemocraticLeaderEvent);
 	}
 }

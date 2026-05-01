@@ -18,10 +18,13 @@ use App\Modules\Demeter\Model\Election\PoliticalEvent;
 use App\Modules\Shared\Infrastructure\Messenger\ScheduleTask;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Clock\ClockInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Uid\Uuid;
 
+#[WithMonologChannel('political_events')]
 readonly class NewMandateEventSubscriber implements EventSubscriberInterface
 {
 	public function __construct(
@@ -29,6 +32,7 @@ readonly class NewMandateEventSubscriber implements EventSubscriberInterface
 		private DurationHandler $durationHandler,
 		private MandateRepositoryInterface $mandateRepository,
 		private NextElectionDateCalculator $nextElectionDateCalculator,
+		private LoggerInterface $logger,
 		private ScheduleTask $scheduleTask,
 	) {
 	}
@@ -77,6 +81,15 @@ readonly class NewMandateEventSubscriber implements EventSubscriberInterface
 			$previousMandateExpirationDate,
 			$this->nextElectionDateCalculator->getMandateDuration($faction),
 		);
+
+		if ($this->mandateRepository->getMandateByElection($politicalEvent) !== null) {
+			$this->logger->info('An existing mandate is already stored for election {electionId}', [
+				'electionId' => $politicalEvent->id->toRfc4122(),
+			]);
+
+			return;
+		}
+
 		$mandate = new Mandate(
 			id: Uuid::v4(),
 			faction: $faction,
@@ -89,7 +102,7 @@ readonly class NewMandateEventSubscriber implements EventSubscriberInterface
 		$this->mandateRepository->save($mandate);
 
 		($this->scheduleTask)(
-			message: new MandateExpirationMessage($faction->id),
+			message: new MandateExpirationMessage($mandate->id),
 			datetime: $expiredAt,
 		);
 	}

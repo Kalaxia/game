@@ -60,6 +60,8 @@ readonly class NextElectionDateCalculator
 		\DateTimeImmutable $from,
 		?PoliticalEvent $lastEvent = null,
 	): \DateTimeImmutable {
+		$now = $this->clock->now();
+		
 		return $this->durationHandler->getDurationEnd(
 			$from,
 			match ($mandateState) {
@@ -139,7 +141,7 @@ readonly class NextElectionDateCalculator
 	{
 		return $this->timeMode->isStandard() ?
 			($this->getFactionsConfiguration)($faction, 'mandateDuration')
-			: 60 * 2;
+			: 60 * 7;
 	}
 
 	private function calculate(Color $faction, int $duration = 0, bool $addMandateDuration = true): \DateTimeImmutable

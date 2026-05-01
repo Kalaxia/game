@@ -13,6 +13,7 @@ use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Event\LoggerEvent;
 use App\Shared\Domain\Specification\SelectorSpecification;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 readonly class UniqueCandidateEvent implements ConversationMessageEvent, LoggerEvent, NotificationEvent
 {
@@ -38,7 +39,7 @@ readonly class UniqueCandidateEvent implements ConversationMessageEvent, LoggerE
 		return $this->factionConversation;
 	}
 
-	public function getConversationMessageContent(): string
+	public function getConversationMessageContent(TranslatorInterface $translator): string
 	{
 		return sprintf(
 			'La période de candidature est terminée. Personne d\'autre que %s n\'a présenté sa candidature.
@@ -56,20 +57,11 @@ readonly class UniqueCandidateEvent implements ConversationMessageEvent, LoggerE
 		return $this->newLeader;
 	}
 
-	public function getNotificationBuilder(): NotificationBuilder
+	public function getNotificationBuilders(): \Generator
 	{
-		return NotificationBuilder::new()
+		yield NotificationBuilder::new()
 			->setTitle('Vous avez remporté l\'élection par défaut')
-			->setContent('Personne n\'a présenté de candidature contre vous, vous êtes donc automatiquement élu.');
-	}
-
-	public function getNotificationRecipients(): array
-	{
-		return [$this->newLeader];
-	}
-
-	public function getNotificationRecipientsSpecification(): ?SelectorSpecification
-	{
-		return null;
+			->setContent('Personne n\'a présenté de candidature contre vous, vous êtes donc automatiquement élu.')
+			->forPlayer($this->newLeader);
 	}
 }

@@ -80,7 +80,7 @@ class ViewData extends AbstractController
 			$totalPEV += $fleetStats['nbs'.$i] * $getShipCategoriesConfiguration($i, 'pev');
 		}
 
-		$factions = $this->colorRepository->getAll();
+		$factions = $this->colorRepository->getInGameFactions();
 		$sectors = $sectorRepository->getAll();
 		$mapData = $this->getTacticalMapData($faction, $factions, $sectors);
 

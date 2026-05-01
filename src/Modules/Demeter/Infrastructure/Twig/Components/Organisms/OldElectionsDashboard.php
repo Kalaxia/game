@@ -21,7 +21,7 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 	name: 'ElectionsDashboard',
 	template: 'components/Faction/Organisms/ElectionsDashboard.html.twig'
 )]
-class ElectionsDashboard
+class OldElectionsDashboard
 {
 	public Color $faction;
 	public ?Mandate $currentMandate = null;

@@ -11,6 +11,7 @@ use App\Modules\Hermes\Model\Conversation;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Event\LoggerEvent;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 readonly class MissingCandidatesEvent implements ConversationMessageEvent, LoggerEvent
 {
@@ -37,22 +38,22 @@ readonly class MissingCandidatesEvent implements ConversationMessageEvent, Logge
 		return $this->factionConversation;
 	}
 
-	public function getConversationMessageContent(): string
+	public function getConversationMessageContent(TranslatorInterface $translator): string
 	{
 		// TODO put the translations in translations file and transform the interface to give the translation key and the parameters separately
 		if (Color::REGIME_THEOCRATIC === $this->regime) {
 			return 'Nul ne s\'est soumis au regard des dieux pour conduire '.
 				$this->factionName.' vers sa gloire.'.
-				(null !== $this->currentLeader)
+				((null !== $this->currentLeader)
 					? $this->currentLeader->name.' demeure l\'élu des dieux pour accomplir leurs desseins dans la galaxie.'
-					: 'Par conséquent, le siège du pouvoir demeure vacant.';
+					: 'Par conséquent, le siège du pouvoir demeure vacant.');
 		}
 
 		return 'La période électorale est terminée. Aucun candidat ne s\'est présenté pour prendre la tête de '.
 			$this->factionName.'.'.
-			(null !== $this->currentLeader)
+			((null !== $this->currentLeader)
 				? '<br>Par conséquent, '.$this->currentLeader->name.' est toujours au pouvoir.'
-				: '<br>Par conséquent, le siège du pouvoir demeure vacant.';
+				: '<br>Par conséquent, le siège du pouvoir demeure vacant.');
 	}
 
 	public function getConversationMessageAuthor(): Player

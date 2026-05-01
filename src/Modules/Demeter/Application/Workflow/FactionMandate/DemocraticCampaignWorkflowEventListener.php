@@ -50,6 +50,10 @@ readonly class DemocraticCampaignWorkflowEventListener
 		if (MandateState::Active !== $faction->mandateState) {
 			$event->setBlocked(true, sprintf('Faction %s is not in mandate', $faction->identifier));
 		}
+
+		if ($this->electionRepository->getFactionCurrentPoliticalEvent($faction) !== null) {
+			$event->setBlocked(true, sprintf('Faction %s has already an ongoing election', $faction->identifier));
+		}
 	}
 
 	#[AsEnterListener(workflow: 'faction_mandate', place: MandateState::DemocraticCampaign->value)]
@@ -95,7 +99,7 @@ readonly class DemocraticCampaignWorkflowEventListener
 		);
 
 		($this->scheduleTask)(
-			message: new CampaignMessage($faction->id),
+			message: new CampaignMessage($faction->id, $nextCampaignStartedAt),
 			datetime: $nextCampaignStartedAt,
 		);
 	}

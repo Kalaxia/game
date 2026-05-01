@@ -7,9 +7,11 @@ namespace App\Modules\Demeter\Repository\Election;
 use App\Modules\Demeter\Domain\Repository\Election\MandateRepositoryInterface;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\Mandate;
+use App\Modules\Demeter\Model\Election\PoliticalEvent;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends DoctrineRepository<Mandate>
@@ -19,6 +21,11 @@ class MandateRepository extends DoctrineRepository implements MandateRepositoryI
 	public function __construct(ManagerRegistry $registry)
 	{
 		parent::__construct($registry, Mandate::class);
+	}
+
+	public function get(Uuid $id): ?Mandate
+	{
+		return $this->find($id);
 	}
 
 	public function getCurrentMandate(Color $faction): ?Mandate
@@ -40,6 +47,7 @@ class MandateRepository extends DoctrineRepository implements MandateRepositoryI
 
 		$qb->where('m.faction = :faction')
 			->orderBy('m.expiredAt', 'DESC')
+			->setMaxResults(1)
 			->setParameter('faction', $faction->id, UuidType::NAME);
 
 		return $qb->getQuery()->getOneOrNullResult();
@@ -53,5 +61,12 @@ class MandateRepository extends DoctrineRepository implements MandateRepositoryI
 			],
 			orderBy: ['startedAt' => 'DESC'],
 		);
+	}
+
+	public function getMandateByElection(PoliticalEvent $politicalEvent): ?Mandate
+	{
+		return $this->findOneBy([
+			'election' => $politicalEvent,
+		]);
 	}
 }

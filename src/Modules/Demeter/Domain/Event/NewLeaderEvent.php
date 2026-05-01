@@ -13,6 +13,7 @@ use App\Modules\Hermes\Model\Conversation;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Event\LoggerEvent;
 use App\Shared\Domain\Specification\SelectorSpecification;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class NewLeaderEvent implements LoggerEvent, NotificationEvent, ConversationMessageEvent
 {
@@ -36,19 +37,5 @@ abstract class NewLeaderEvent implements LoggerEvent, NotificationEvent, Convers
 	public function getConversationMessageAuthor(): Player
 	{
 		return $this->factionPlayer;
-	}
-
-	abstract public function getConversationMessageContent(): string;
-
-	abstract public function getNotificationBuilder(): NotificationBuilder;
-
-	public function getNotificationRecipients(): array
-	{
-		return [$this->newLeader];
-	}
-
-	public function getNotificationRecipientsSpecification(): ?SelectorSpecification
-	{
-		return null;
 	}
 }

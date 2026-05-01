@@ -12,6 +12,7 @@ use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Event\LoggerEvent;
 use App\Shared\Domain\Specification\SelectorSpecification;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 readonly class PutschFailedEvent implements LoggerEvent, NotificationEvent, ConversationMessageEvent
 {
@@ -36,7 +37,7 @@ readonly class PutschFailedEvent implements LoggerEvent, NotificationEvent, Conv
 		return $this->factionConversation;
 	}
 
-	public function getConversationMessageContent(): string
+	public function getConversationMessageContent(TranslatorInterface $translator): string
 	{
 		return sprintf(
 			'Un coup d\'état a échoué. %s demeure le dirigeant de %s',
@@ -50,22 +51,14 @@ readonly class PutschFailedEvent implements LoggerEvent, NotificationEvent, Conv
 		return $this->factionAccount;
 	}
 
-	public function getNotificationBuilder(): NotificationBuilder
+	public function getNotificationBuilders(): \Generator
 	{
-		return NotificationBuilder::new()
+		yield NotificationBuilder::new()
 			->setTitle('Votre coup d\'état a échoué')
 			->setContent(NotificationBuilder::paragraph(
 				'Le peuple ne vous a pas soutenu, l\'ancien gouvernement reste en place.'
-			));
-	}
-
-	public function getNotificationRecipients(): array
-	{
-		return [$this->putchist];
-	}
-
-	public function getNotificationRecipientsSpecification(): ?SelectorSpecification
-	{
-		return null;
+			))
+			->forPlayer($this->putchist)
+		;
 	}
 }
