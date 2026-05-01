@@ -12,14 +12,14 @@ use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 
 readonly class PlaceManager
 {
 	public function __construct(
-		private NotificationRepositoryInterface $notificationRepository,
+		private NotificationPersister $notificationPersister,
 		private PlanetRepositoryInterface $planetRepository,
 		private PlaceRepositoryInterface $placeRepository,
 		private UrlGeneratorInterface $urlGenerator,
@@ -67,7 +67,7 @@ readonly class PlaceManager
 						),
 						'.',
 					))
-					->for($commander->player),
+					->forPlayer($commander->player),
 			],
 			Planet::CHANGEFAIL => [
 				NotificationBuilder::new()
@@ -85,7 +85,7 @@ readonly class PlaceManager
 						),
 						'. Il est en garnison car il n\'y avait pas assez de place en orbite.',
 					))
-					->for($commander->player),
+					->forPlayer($commander->player),
 			],
 			Planet::CHANGELOST => [
 				NotificationBuilder::new()
@@ -103,7 +103,7 @@ readonly class PlaceManager
 						),
 						'. Cette base ne vous appartient pas. Elle a pu être conquise entre temps.',
 					))
-					->for($commander->player),
+					->forPlayer($commander->player),
 			],
 			Planet::LOOTEMPTYSSUCCESS => [
 				NotificationBuilder::new()
@@ -142,7 +142,7 @@ readonly class PlaceManager
 							'voir le rapport',
 						),
 					))
-					->for($commander->player),
+					->forPlayer($commander->player),
 			],
 			Planet::LOOTEMPTYFAIL => [
 				NotificationBuilder::new()
@@ -172,7 +172,7 @@ readonly class PlaceManager
 							'voir le rapport',
 						),
 					))
-					->for($commander->player),
+					->forPlayer($commander->player),
 			],
 			Planet::LOOTPLAYERWHITBATTLESUCCESS => [
 				NotificationBuilder::new()
@@ -211,7 +211,7 @@ readonly class PlaceManager
 							'voir le rapport',
 						),
 					))
-					->for($commander->player),
+					->forPlayer($commander->player),
 				NotificationBuilder::new()
 					->setTitle('Rapport de pillage')
 					->setContent(NotificationBuilder::paragraph(
@@ -240,7 +240,7 @@ readonly class PlaceManager
 							'voir le rapport',
 						),
 					))
-					->for($place->player),
+					->forPlayer($place->player),
 			],
 			Planet::LOOTPLAYERWHITBATTLEFAIL => [
 				NotificationBuilder::new()
@@ -270,7 +270,7 @@ readonly class PlaceManager
 							'voir le rapport',
 						),
 					))
-					->for($commander->player),
+					->forPlayer($commander->player),
 				NotificationBuilder::new()
 					->setTitle('Rapport de combat')
 					->setContent(NotificationBuilder::paragraph(
@@ -295,7 +295,7 @@ readonly class PlaceManager
 							'voir le rapport',
 						),
 					))
-					->for($place->player),
+					->forPlayer($place->player),
 			],
 			Planet::LOOTPLAYERWHITOUTBATTLESUCCESS => [
 				NotificationBuilder::new()
@@ -329,7 +329,7 @@ readonly class PlaceManager
 							'expérience de l\'officier',
 						),
 					))
-					->for($commander->player),
+					->forPlayer($commander->player),
 				NotificationBuilder::new()
 					->setTitle('Rapport de pillage')
 					->setContent(
@@ -353,7 +353,7 @@ readonly class PlaceManager
 							'ressources pillées',
 						),
 					)
-					->for($place->player),
+					->forPlayer($place->player),
 			],
 			Planet::LOOTLOST => [
 				NotificationBuilder::new()
@@ -371,7 +371,7 @@ readonly class PlaceManager
 						),
 						' car son joueur est de votre faction, sous la protection débutant ou un allié.',
 					))
-					->for($commander->player),
+					->forPlayer($commander->player),
 			],
 			Planet::CONQUEREMPTYSSUCCESS => [
 				NotificationBuilder::new()
@@ -409,7 +409,7 @@ readonly class PlaceManager
 							'voir le rapport',
 						),
 					))
-					->for($commander->player),
+					->forPlayer($commander->player),
 			],
 			Planet::CONQUEREMPTYFAIL => [
 				NotificationBuilder::new()
@@ -439,7 +439,7 @@ readonly class PlaceManager
 							'voir le rapport',
 						),
 					))
-					->for($commander->player),
+					->forPlayer($commander->player),
 			],
 			Planet::CONQUERPLAYERWHITOUTBATTLESUCCESS => [
 				NotificationBuilder::new()
@@ -474,7 +474,7 @@ readonly class PlaceManager
 						),
 						'.',
 					)
-					->for($commander->player),
+					->forPlayer($commander->player),
 				NotificationBuilder::new()
 					->setTitle('Planète conquise')
 					->setContent(NotificationBuilder::paragraph(
@@ -494,7 +494,7 @@ readonly class PlaceManager
 						NotificationBuilder::divider(),
 						'Impliquez votre faction dans une action punitive envers votre assaillant.',
 					))
-					->for($place->player),
+					->forPlayer($place->player),
 			],
 			Planet::CONQUERLOST => [
 				NotificationBuilder::new()
@@ -512,7 +512,7 @@ readonly class PlaceManager
 						),
 						' car le joueur est dans votre faction, sous la protection débutant ou votre allié.',
 					))
-					->for($commander->player),
+					->forPlayer($commander->player),
 			],
 			Planet::COMEBACK => [
 				NotificationBuilder::new()
@@ -532,13 +532,13 @@ readonly class PlaceManager
 						NotificationBuilder::bold(Format::number($commander->resources)),
 						' ressources à vos entrepôts.'
 					))
-					->for($commander->player),
+					->forPlayer($commander->player),
 			],
 			default => throw new \RuntimeException(sprintf('Unknown notification type %s', $case)),
 		};
 
 		foreach ($notifications as $notification) {
-			$this->notificationRepository->save($notification);
+			$this->notificationPersister->saveFromBuilder($notification);
 		}
 	}
 
@@ -598,7 +598,7 @@ readonly class PlaceManager
 							array_keys($reports),
 						),
 					))
-					->for($commander->player),
+					->forPlayer($commander->player),
 				NotificationBuilder::new()
 					->setTitle('Planète conquise')
 					->setContent(NotificationBuilder::paragraph(
@@ -632,7 +632,7 @@ readonly class PlaceManager
 							array_keys($reports),
 						),
 					))
-					->for($place->player),
+					->forPlayer($place->player),
 			],
 			Planet::CONQUERPLAYERWHITBATTLEFAIL => [
 				NotificationBuilder::new()
@@ -671,7 +671,7 @@ readonly class PlaceManager
 							array_keys($reports),
 						),
 					))
-					->for($commander->player),
+					->forPlayer($commander->player),
 				NotificationBuilder::new()
 					->setTitle('Rapport de combat')
 					->setContent(NotificationBuilder::paragraph(
@@ -705,13 +705,13 @@ readonly class PlaceManager
 							array_keys($reports),
 						),
 					))
-					->for($place->player),
+					->forPlayer($place->player),
 			],
 			default => throw new \RuntimeException(sprintf('Unknown notification type %s', $case)),
 		};
 
 		foreach ($notifications as $notification) {
-			$this->notificationRepository->save($notification);
+			$this->notificationPersister->saveFromBuilder($notification);
 		}
 	}
 }

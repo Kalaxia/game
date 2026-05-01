@@ -5,6 +5,7 @@ namespace App\Modules\Promethee\Manager;
 use App\Classes\Container\StackList;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\ResearchRepositoryInterface;
 use App\Modules\Promethee\Helper\ResearchHelper;
@@ -15,7 +16,7 @@ readonly class ResearchManager
 {
 	public function __construct(
 		private ResearchRepositoryInterface $researchRepository,
-		private NotificationRepositoryInterface $notificationRepository,
+		private NotificationPersister $notificationPersister,
 		private ResearchHelper $researchHelper,
 		private int $researchQuantity,
 	) {
@@ -72,8 +73,8 @@ readonly class ResearchManager
 						$this->researchHelper->getInfo($research->naturalTech, 'name'),
 						$levelReached,
 					))
-					->for($player);
-				$this->notificationRepository->save($n);
+					->forPlayer($player);
+				$this->notificationPersister->saveFromBuilder($n);
 				do {
 					$research->naturalTech = random_int(0, 2); // 0, 1 ou 2
 					$tech1 = $research->mathLevel;
@@ -130,9 +131,9 @@ readonly class ResearchManager
 						$this->researchHelper->getInfo($research->lifeTech, 'name'),
 						$levelReached,
 					))
-					->for($player);
+					->forPlayer($player);
 
-				$this->notificationRepository->save($n);
+				$this->notificationPersister->saveFromBuilder($n);
 
 				do {
 					$research->lifeTech = random_int(3, 4);
@@ -187,8 +188,8 @@ readonly class ResearchManager
 						$this->researchHelper->getInfo($research->socialTech, 'name'),
 						$levelReached,
 					))
-					->for($player);
-				$this->notificationRepository->save($n);
+					->forPlayer($player);
+				$this->notificationPersister->saveFromBuilder($n);
 				do {
 					$research->socialTech = random_int(5, 6);
 					$tech1 = $research->econoLevel;
@@ -246,9 +247,9 @@ readonly class ResearchManager
 						$this->researchHelper->getInfo($research->informaticTech, 'name'),
 						$levelReached,
 					))
-					->for($player);
+					->forPlayer($player);
 
-				$this->notificationRepository->save($n);
+				$this->notificationPersister->saveFromBuilder($n);
 
 				do {
 					$research->informaticTech = random_int(7, 9);

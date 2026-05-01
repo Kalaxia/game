@@ -14,6 +14,7 @@ use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Travel\Domain\Model\TravelType;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;
@@ -38,7 +39,7 @@ class GiveResources extends AbstractController
 		PlanetRepositoryInterface $planetRepository,
 		PlanetHelper $planetHelper,
 		CommercialShippingRepositoryInterface $commercialShippingRepository,
-		NotificationRepositoryInterface $notificationRepository,
+		NotificationPersister $notificationPersister,
 		CountNeededCommercialShips $countNeededCommercialShips,
 	): Response {
 		$planetId = $request->request->get('planetId') ?? throw new BadRequestHttpException('Missing base id');
@@ -139,8 +140,8 @@ class GiveResources extends AbstractController
 						),
 					),
 				)
-				->for($otherPlanet->player);
-			$notificationRepository->save($notification);
+				->forPlayer($otherPlanet->player);
+			$notificationPersister->saveFromBuilder($notification);
 		}
 
 		$this->addFlash('success', 'Ressources envoyées');

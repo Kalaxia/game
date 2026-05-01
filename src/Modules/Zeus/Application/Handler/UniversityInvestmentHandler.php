@@ -4,6 +4,7 @@ namespace App\Modules\Zeus\Application\Handler;
 
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\ResearchRepositoryInterface;
 use App\Modules\Promethee\Manager\ResearchManager;
@@ -18,7 +19,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 readonly class UniversityInvestmentHandler
 {
 	public function __construct(
-		private NotificationRepositoryInterface $notificationRepository,
+		private NotificationPersister $notificationPersister,
 		private BonusApplierInterface $bonusApplier,
 		private UrlGeneratorInterface $urlGenerator,
 		private ResearchManager $researchManager,
@@ -78,7 +79,7 @@ readonly class UniversityInvestmentHandler
 			NotificationBuilder::link($this->urlGenerator->generate('financial_investments'), 'vers les finances →'),
 		);
 
-		$this->notificationRepository->save($notificationBuilder->for($player));
+		$this->notificationPersister->saveFromBuilder($notificationBuilder->forPlayer($player));
 
 		$this->spendUniversityInvestments($player);
 	}

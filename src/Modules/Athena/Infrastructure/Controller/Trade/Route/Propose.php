@@ -14,6 +14,7 @@ use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Manager\PlayerManager;
 use App\Modules\Zeus\Model\Player;
@@ -36,7 +37,7 @@ class Propose extends AbstractController
 		PlanetHelper $planetHelper,
 		PlanetRepositoryInterface $planetRepository,
 		CommercialRouteRepositoryInterface $commercialRouteRepository,
-		NotificationRepositoryInterface $notificationRepository,
+		NotificationPersister $notificationPersister,
 		PlayerManager $playerManager,
 	): Response {
 		if (0 === $currentBase->levelSpatioport) {
@@ -139,8 +140,8 @@ class Propose extends AbstractController
 					'En savoir plus ?',
 				),
 			))
-			->for($player);
-		$notificationRepository->save($notification);
+			->forPlayer($player);
+		$notificationPersister->saveFromBuilder($notification);
 
 		$this->addFlash('success', 'Route commerciale proposée');
 

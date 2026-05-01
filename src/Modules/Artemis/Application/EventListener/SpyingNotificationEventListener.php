@@ -5,6 +5,7 @@ namespace App\Modules\Artemis\Application\EventListener;
 use App\Modules\Artemis\Domain\Event\SpyEvent;
 use App\Modules\Artemis\Model\SpyReport;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -13,7 +14,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 readonly class SpyingNotificationEventListener
 {
 	public function __construct(
-		private NotificationRepositoryInterface $notificationRepository,
+		private NotificationPersister $notificationPersister,
 		private UrlGeneratorInterface $urlGenerator,
 	) {
 	}
@@ -56,6 +57,6 @@ readonly class SpyingNotificationEventListener
 			return;
 		}
 
-		$this->notificationRepository->save($notificationBuilder->for($event->spyReport->targetPlayer));
+		$this->notificationPersister->saveFromBuilder($notificationBuilder->forPlayer($event->spyReport->targetPlayer));
 	}
 }

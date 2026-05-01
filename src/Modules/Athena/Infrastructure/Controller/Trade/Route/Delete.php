@@ -6,6 +6,7 @@ use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
 use App\Modules\Athena\Manager\CommercialRouteManager;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Hermes\Manager\NotificationManager;
 use App\Modules\Zeus\Model\Player;
@@ -22,8 +23,7 @@ class Delete extends AbstractController
 		Planet $currentBase,
 		CommercialRouteManager $commercialRouteManager,
 		CommercialRouteRepositoryInterface $commercialRouteRepository,
-		NotificationManager $notificationManager,
-		NotificationRepositoryInterface $notificationRepository,
+		NotificationPersister $notificationPersister,
 		int $id,
 	): Response {
 		$cr = $commercialRouteRepository->get($id)
@@ -78,9 +78,9 @@ class Delete extends AbstractController
 					'La route commerciale qui liait les deux bases orbitales est détruite, elle ne vous rapporte donc plus rien !',
 				)
 			)
-			->for($notifReceiver);
+			->forPlayer($notifReceiver);
 
-		$notificationRepository->save($n);
+		$notificationPersister->saveFromBuilder($n);
 
 		// destruction de la route
 		$commercialRouteRepository->remove($cr);

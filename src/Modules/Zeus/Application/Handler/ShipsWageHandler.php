@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Zeus\Application\Handler;
 
 use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
@@ -12,7 +14,7 @@ use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
 use App\Modules\Athena\Model\Transaction;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Model\PlayerFinancialReport;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -24,7 +26,7 @@ readonly class ShipsWageHandler
 		private CalculateFleetCost $calculateFleetCost,
 		private CommanderArmyHandler $commanderArmyHandler,
 		private CommanderRepositoryInterface $commanderRepository,
-		private NotificationRepositoryInterface $notificationRepository,
+		private NotificationPersister $notificationPersister,
 		private TransactionRepositoryInterface $transactionRepository,
 		private TranslatorInterface $translator,
 		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
@@ -81,8 +83,8 @@ readonly class ShipsWageHandler
 					$commander->name,
 					'Celui-ci a donc déserté ! ... avec la flotte, désolé.',
 				))
-				->for($player);
-			$this->notificationRepository->save($notification);
+				->forPlayer($player);
+			$this->notificationPersister->saveFromBuilder($notification);
 			$this->commanderRepository->save($commander);
 		}
 		// vaisseaux sur la planète
@@ -136,8 +138,8 @@ readonly class ShipsWageHandler
 								$base->name,
 							)
 					))
-					->for($player);
-				$this->notificationRepository->save($notification);
+					->forPlayer($player);
+				$this->notificationPersister->saveFromBuilder($notification);
 			}
 		}
 	}

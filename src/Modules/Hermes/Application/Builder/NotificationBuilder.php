@@ -4,13 +4,19 @@ namespace App\Modules\Hermes\Application\Builder;
 
 use App\Modules\Hermes\Model\Notification;
 use App\Modules\Zeus\Model\Player;
+use App\Shared\Domain\Specification\SelectorSpecification;
 use Symfony\Component\Uid\Uuid;
 
-class NotificationBuilder
+final class NotificationBuilder
 {
 	private string $title;
 
 	private string $content = '';
+
+	/** @var array<int, Player> */
+	private array $recipients = [];
+
+	private ?SelectorSpecification $recipientSpecification = null;
 
 	public const RESOURCE_TYPE_CREDIT = 'credit.png';
 	public const RESOURCE_TYPE_RESOURCE = 'resource.png';
@@ -77,15 +83,46 @@ class NotificationBuilder
 		);
 	}
 
-	public function for(Player $player): Notification
+	public function withRecipientSpecification(?SelectorSpecification $specification): self
 	{
-		return new Notification(
-			id: Uuid::v4(),
-			player: $player,
-			title: $this->title,
-			content: $this->content,
-			read: false,
-			archived: false,
+		$this->recipientSpecification = $specification;
+
+		return $this;
+	}
+
+	public function getRecipientSpecification(): ?SelectorSpecification
+	{
+		return $this->recipientSpecification;
+	}
+
+	public function forPlayer(Player $player): self
+	{
+		$this->recipients[$player->id] = $player;
+
+		return $this;
+	}
+
+	public function forPlayers(array $players): self
+	{
+		foreach ($players as $player) {
+			$this->forPlayer($player);
+		}
+
+		return $this;
+	}
+
+	public function build(): array
+	{
+		return array_map(
+			fn (Player $player) => new Notification(
+				id: Uuid::v4(),
+				player: $player,
+				title: $this->title,
+				content: $this->content,
+				read: false,
+				archived: false,
+			),
+			$this->recipients,
 		);
 	}
 }

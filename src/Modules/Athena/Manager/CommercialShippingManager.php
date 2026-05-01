@@ -12,6 +12,7 @@ use App\Modules\Athena\Model\Transaction;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Shared\Application\SchedulerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -21,7 +22,7 @@ readonly class CommercialShippingManager implements SchedulerInterface
 {
 	public function __construct(
 		private PlanetManager $planetManager,
-		private NotificationRepositoryInterface $notificationRepository,
+		private NotificationPersister $notificationPersister,
 		private MessageBusInterface $messageBus,
 		private CommercialShippingRepositoryInterface $commercialShippingRepository,
 		private TranslatorInterface $translator,
@@ -62,8 +63,8 @@ readonly class CommercialShippingManager implements SchedulerInterface
 							$transaction->quantity,
 							' ressources que vous avez achetées au marché.',
 						))
-						->for($destOB->player);
-					$this->notificationRepository->save($notification);
+						->forPlayer($destOB->player);
+					$this->notificationPersister->saveFromBuilder($notification);
 
 					break;
 				case Transaction::TYP_SHIP:
@@ -89,8 +90,8 @@ readonly class CommercialShippingManager implements SchedulerInterface
 								? 'Il a été ajouté à votre hangar.'
 								: 'Ils ont été ajoutés à votre hangar.',
 						))
-						->for($destOB->player);
-					$this->notificationRepository->save($notification);
+						->forPlayer($destOB->player);
+					$this->notificationPersister->saveFromBuilder($notification);
 					break;
 				case Transaction::TYP_COMMANDER:
 					$commander->statement = Commander::RESERVE;
@@ -107,8 +108,8 @@ readonly class CommercialShippingManager implements SchedulerInterface
 							NotificationBuilder::divider(),
 							'Il se trouve pour le moment dans votre école de commandement',
 						))
-						->for($destOB->player);
-					$this->notificationRepository->save($notification);
+						->forPlayer($destOB->player);
+					$this->notificationPersister->saveFromBuilder($notification);
 					break;
 				default:
 					throw new \LogicException('type de transaction inconnue dans deliver()');
@@ -130,8 +131,8 @@ readonly class CommercialShippingManager implements SchedulerInterface
 					$destOB->name,
 					'.',
 				))
-				->for($destOB->player);
-			$this->notificationRepository->save($notification);
+				->forPlayer($destOB->player);
+			$this->notificationPersister->saveFromBuilder($notification);
 
 			$commercialShipping->statement = CommercialShipping::ST_MOVING_BACK;
 		} else {

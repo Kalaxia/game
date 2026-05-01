@@ -5,6 +5,7 @@ namespace App\Modules\Athena\Infrastructure\Controller\Financial;
 use App\Classes\Library\Format;
 use App\Classes\Library\Parser;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\CreditTransactionRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
@@ -24,7 +25,7 @@ class SendCreditsToPlayer extends AbstractController
 		Player $currentPlayer,
 		CreditTransactionRepositoryInterface $creditTransactionRepository,
 		PlayerRepositoryInterface $playerRepository,
-		NotificationRepositoryInterface $notificationRepository,
+		NotificationPersister $notificationPersister,
 		Parser $parser,
 		PlayerManager $playerManager,
 	): Response {
@@ -88,9 +89,9 @@ class SendCreditsToPlayer extends AbstractController
 					NotificationBuilder::resourceBox('credit', Format::numberFormat($credit), 1 == $credit ? 'crédit reçu' : 'crédits reçus')
 				)
 			)
-			->for($receiver);
+			->forPlayer($receiver);
 
-		$notificationRepository->save($n);
+		$notificationPersister->saveFromBuilder($n);
 
 		$this->addFlash('success', 'Crédits envoyés');
 

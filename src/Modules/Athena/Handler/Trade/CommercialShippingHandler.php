@@ -9,6 +9,7 @@ use App\Modules\Athena\Message\Trade\CommercialShippingMessage;
 use App\Modules\Athena\Model\CommercialShipping;
 use App\Modules\Athena\Model\Transaction;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Shared\Application\Handler\DurationHandler;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -23,7 +24,7 @@ readonly class CommercialShippingHandler
 		private CommercialShippingManager $commercialShippingManager,
 		private CommercialShippingRepositoryInterface $commercialShippingRepository,
 		private MessageBusInterface $messageBus,
-		private NotificationRepositoryInterface $notificationRepository,
+		private NotificationPersister $notificationPersister,
 		private UrlGeneratorInterface $urlGenerator,
 	) {
 	}
@@ -74,9 +75,9 @@ readonly class CommercialShippingHandler
 							? 'Votre vaisseau de commerce est à nouveau disponible pour faire d\'autres transactions ou routes commerciales.'
 							: 'Vos '.$cs->shipQuantity.' vaisseaux de commerce sont à nouveau disponibles pour faire d\'autres transactions ou routes commerciales.',
 					))
-					->for($cs->player);
+					->forPlayer($cs->player);
 
-				$this->notificationRepository->save($notification);
+				$this->notificationPersister->saveFromBuilder($notification);
 				// delete commercialShipping
 				$this->commercialShippingRepository->remove($cs);
 				break;
