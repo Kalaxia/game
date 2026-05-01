@@ -15,6 +15,11 @@ readonly class SortCandidatesByVotes
 	) {
 	}
 
+
+	/** @return array<string, array{
+	 *     candidate: Candidate,
+	 *     votes_count: int,
+ *     }> */
 	public function __invoke(PoliticalEvent $election): array
 	{
 		$votes = $this->voteRepository->getPoliticalEventVotes($election);

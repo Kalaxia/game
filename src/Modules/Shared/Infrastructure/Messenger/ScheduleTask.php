@@ -6,15 +6,17 @@ namespace App\Modules\Shared\Infrastructure\Messenger;
 
 use App\Classes\Library\DateTimeConverter;
 use App\Shared\Domain\Message\UniqueMessage;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\DeduplicateStamp;
 
+#[WithMonologChannel('tasks')]
 readonly class ScheduleTask
 {
 	public function __construct(
 		private MessageBusInterface $messageBus,
-		private LoggerInterface $logger,
+		private LoggerInterface     $logger,
 	) {
 	}
 
