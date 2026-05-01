@@ -4,6 +4,7 @@ namespace App\Modules\Demeter\Infrastructure\Controller\Government\Ruler;
 
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
@@ -22,7 +23,7 @@ class ChooseMinister extends AbstractController
 		EntityManagerInterface $entityManager,
 		GetFactionsConfiguration $getFactionsConfiguration,
 		PlayerRepositoryInterface $playerRepository,
-		NotificationRepositoryInterface $notificationRepository,
+		NotificationPersister $notificationPersister,
 		int $department,
 	): Response {
 		// TODO Replace with voter
@@ -58,8 +59,8 @@ class ChooseMinister extends AbstractController
 				$statusArray[$department - 1],
 				' de votre faction.'
 			))
-			->for($appointee);
-		$notificationRepository->save($notification);
+			->forPlayer($appointee);
+		$notificationPersister->saveFromBuilder($notification);
 
 		$entityManager->flush();
 

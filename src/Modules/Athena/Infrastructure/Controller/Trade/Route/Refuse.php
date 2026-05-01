@@ -8,6 +8,7 @@ use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
 use App\Modules\Galaxy\Application\Handler\GetDistanceBetweenPlaces;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Manager\PlayerManager;
@@ -29,7 +30,7 @@ class Refuse extends AbstractController
 		GetDistanceBetweenPlaces $getDistanceBetweenPlaces,
 		PlayerRepositoryInterface $playerRepository,
 		PlayerManager $playerManager,
-		NotificationRepositoryInterface $notificationRepository,
+		NotificationPersister $notificationPersister,
 		Uuid $planetId,
 		Uuid $id,
 	): Response {
@@ -73,9 +74,9 @@ class Refuse extends AbstractController
 				Format::numberFormat($price),
 				' crédits bloqués sont à nouveau disponibles.',
 			))
-			->for($proposerBase->player);
+			->forPlayer($proposerBase->player);
 
-		$notificationRepository->save($notification);
+		$notificationPersister->saveFromBuilder($notification);
 
 		// destruction de la route
 		$commercialRouteRepository->remove($cr);

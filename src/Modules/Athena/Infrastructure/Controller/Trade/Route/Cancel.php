@@ -7,6 +7,7 @@ use App\Modules\Athena\Domain\Repository\CommercialRouteRepositoryInterface;
 use App\Modules\Galaxy\Application\Handler\GetDistanceBetweenPlaces;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Manager\PlayerManager;
 use App\Modules\Zeus\Model\Player;
@@ -25,7 +26,7 @@ class Cancel extends AbstractController
 		GetDistanceBetweenPlaces $getDistanceBetweenPlaces,
 		GetCommercialRoutePrice $getCommercialRoutePrice,
 		PlayerManager $playerManager,
-		NotificationRepositoryInterface $notificationRepository,
+		NotificationPersister $notificationPersister,
 		Planet $currentBase,
 		Uuid $id,
 	): Response {
@@ -63,8 +64,8 @@ class Cancel extends AbstractController
 					$proposerBase->name,
 				),
 			))
-			->for($linkedBase->player);
-		$notificationRepository->save($notification);
+			->forPlayer($linkedBase->player);
+		$notificationPersister->saveFromBuilder($notification);
 
 		// destruction de la route
 		$commercialRouteRepository->remove($cr);

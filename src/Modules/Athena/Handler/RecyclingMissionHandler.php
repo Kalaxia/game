@@ -18,6 +18,7 @@ use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Manager\PlayerManager;
 use App\Shared\Application\Handler\DurationHandler;
@@ -38,7 +39,7 @@ readonly class RecyclingMissionHandler
 		private PlaceManager $placeManager,
 		private PlayerManager $playerManager,
 		private GetMissionTime $getMissionTime,
-		private NotificationRepositoryInterface $notificationRepository,
+		private NotificationPersister $notificationPersister,
 		private RecyclingMissionRepositoryInterface $recyclingMissionRepository,
 		private RecyclingLogRepositoryInterface $recyclingLogRepository,
 		private MessageBusInterface $messageBus,
@@ -79,7 +80,7 @@ readonly class RecyclingMissionHandler
 			// stop the mission
 			$mission->statement = RecyclingMission::ST_DELETED;
 
-			$this->notificationRepository->save(NotificationBuilder::new()
+			$this->notificationPersister->saveFromBuilder(NotificationBuilder::new()
 				->setTitle('Arrêt de mission de recyclage')
 				->setContent(NotificationBuilder::paragraph(
 					'Un ',
@@ -96,7 +97,7 @@ readonly class RecyclingMissionHandler
 					),
 					' le temps que vous programmiez une autre mission.',
 				))
-				->for($player));
+				->forPlayer($player));
 
 			$this->entityManager->flush();
 
@@ -133,9 +134,9 @@ readonly class RecyclingMissionHandler
 					),
 					' le temps que vous programmiez une autre mission.',
 				))
-				->for($player);
+				->forPlayer($player);
 
-			$this->notificationRepository->save($notification);
+			$this->notificationPersister->saveFromBuilder($notification);
 		}
 
 		// if the sector change its color between 2 recyclings
@@ -143,7 +144,7 @@ readonly class RecyclingMissionHandler
 		if (null !== $targetPlace->system->sector->faction && !$player->faction->id->equals($targetPlace->system->sector->faction?->id)) {
 			$mission->stop();
 
-			$this->notificationRepository->save(NotificationBuilder::new()
+			$this->notificationPersister->saveFromBuilder(NotificationBuilder::new()
 				->setTitle('Arrêt de mission de recyclage')
 				->setContent(NotificationBuilder::paragraph(
 					'Le secteur d\'un ',
@@ -160,7 +161,7 @@ readonly class RecyclingMissionHandler
 					),
 					' le temps que vous programmiez une autre mission.',
 				))
-				->for($player));
+				->forPlayer($player));
 		}
 
 		// diversify a little (resource and credit)

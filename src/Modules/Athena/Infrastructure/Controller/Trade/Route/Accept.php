@@ -13,6 +13,7 @@ use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Shared\Application\PercentageApplier;
 use App\Modules\Zeus\Manager\PlayerManager;
@@ -35,7 +36,7 @@ class Accept extends AbstractController
 		CommercialRouteRepositoryInterface $commercialRouteRepository,
 		PlanetHelper $planetHelper,
 		PlayerManager $playerManager,
-		NotificationRepositoryInterface $notificationRepository,
+		NotificationPersister $notificationPersister,
 		EntityManagerInterface $entityManager,
 		Uuid $id,
 	): Response {
@@ -124,8 +125,8 @@ class Accept extends AbstractController
 					)
 				)
 			)
-			->for($proposerBase->player);
-		$notificationRepository->save($notification);
+			->forPlayer($proposerBase->player);
+		$notificationPersister->saveFromBuilder($notification);
 
 		$entityManager->flush();
 

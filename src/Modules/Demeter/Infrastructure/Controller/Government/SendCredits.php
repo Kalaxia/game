@@ -4,6 +4,7 @@ namespace App\Modules\Demeter\Infrastructure\Controller\Government;
 
 use App\Classes\Library\Parser;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\CreditTransactionRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
@@ -25,7 +26,7 @@ class SendCredits extends AbstractController
 		PlayerManager $playerManager,
 		PlayerRepositoryInterface $playerRepository,
 		CreditTransactionRepositoryInterface $creditTransactionRepository,
-		NotificationRepositoryInterface $notificationRepository,
+		NotificationPersister $notificationPersister,
 	): Response {
 		$name = $request->request->get('name') ?? throw new BadRequestHttpException('Missing receiver name');
 		$credit = $request->request->getInt('quantity');
@@ -79,8 +80,8 @@ class SendCredits extends AbstractController
 					1 == $credit ? 'crédit reçu' : 'crédits reçus',
 				),
 			))
-			->for($receiver);
-		$notificationRepository->save($notification);
+			->forPlayer($receiver);
+		$notificationPersister->saveFromBuilder($notification);
 
 		$this->addFlash('success', 'Crédits envoyés');
 

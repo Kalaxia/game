@@ -5,6 +5,7 @@ namespace App\Modules\Demeter\Infrastructure\Controller\Government\Ruler;
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
@@ -22,7 +23,7 @@ class Abdicate extends AbstractController
 		Player $currentPlayer,
 		GetFactionsConfiguration $getFactionsConfiguration,
 		PlayerRepositoryInterface $playerRepository,
-		NotificationRepositoryInterface $notificationRepository,
+		NotificationPersister $notificationPersister,
 		EntityManagerInterface $entityManager,
 		NextElectionDateCalculator $nextElectionDateCalculator,
 	): Response {
@@ -38,7 +39,6 @@ class Abdicate extends AbstractController
 			if (!$faction->isInMandate()) {
 				throw new ConflictHttpException('Des élections sont déjà en cours.');
 			}
-			$faction->lastElectionHeldAt = new \DateTimeImmutable(sprintf('-%d seconds', $mandateDuration));
 			$this->addFlash('success', 'Des élections anticipées vont être lancées.');
 
 			return $this->redirect($request->headers->get('referer'));
@@ -73,8 +73,8 @@ class Abdicate extends AbstractController
 				$statusArray[5],
 				' de votre faction pour être son successeur, vous prenez la tête du gouvernement immédiatement.',
 			))
-			->for($heir);
-		$notificationRepository->save($notification);
+			->forPlayer($heir);
+		$notificationPersister->saveFromBuilder($notification);
 
 		$this->addFlash('success', $heir->name.' est désigné comme votre successeur.');
 

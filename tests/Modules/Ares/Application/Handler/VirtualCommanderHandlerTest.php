@@ -11,14 +11,13 @@ use App\Modules\Galaxy\Domain\Entity\Sector;
 use App\Modules\Galaxy\Domain\Entity\System;
 use App\Modules\Galaxy\Domain\Enum\PlanetType;
 use App\Modules\Galaxy\Domain\Enum\SystemType;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Uid\Uuid;
 
 class VirtualCommanderHandlerTest extends KernelTestCase
 {
-	/**
-	 * @dataProvider provideData
-	 */
+	#[DataProvider('provideData')]
 	public function testCreateVirtualCommander(Planet $place, int $expectedSquadronsCount, int $expectedPev): void
 	{
 		static::bootKernel();

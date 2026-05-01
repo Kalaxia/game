@@ -17,7 +17,6 @@ class PlayerFactory extends PersistentObjectFactory
 	{
 		return [
 			'id' => 0,
-			'bind' => self::faker()->md5(),
 			'faction' => FactionFactory::randomOrCreate(),
 			'godFather' => null,
 			'name' => self::faker()->userName(),

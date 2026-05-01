@@ -15,6 +15,7 @@ use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;
 use App\Shared\Domain\Model\DurationInterface;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 
@@ -27,9 +28,7 @@ class DurationHandlerTest extends TestCase
 		$this->durationHandler = new DurationHandler();
 	}
 
-	/**
-	 * @dataProvider provideGetHoursDiffData
-	 */
+	#[DataProvider('provideGetHoursDiffData')]
 	public function testGetHoursDiff(\DateTimeImmutable $from, \DateTimeImmutable $to, int $expectedHours): void
 	{
 		static::assertSame(
@@ -38,9 +37,7 @@ class DurationHandlerTest extends TestCase
 		);
 	}
 
-	/**
-	 * @dataProvider provideGetRemainingTimeData
-	 */
+	#[DataProvider('provideGetRemainingTimeData')]
 	public function testGetRemainingTime(DurationInterface $duration, int $expectedTime): void
 	{
 		static::assertSame(
@@ -49,9 +46,7 @@ class DurationHandlerTest extends TestCase
 		);
 	}
 
-	/**
-	 * @dataProvider provideGetDurationEndData
-	 */
+	#[DataProvider('provideGetDurationEndData')]
 	public function testGetDurationEnd(\DateTimeImmutable $startedAt, int $seconds, \DateTimeInterface $expected): void
 	{
 		static::assertSame(

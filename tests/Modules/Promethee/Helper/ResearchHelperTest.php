@@ -4,13 +4,12 @@ namespace App\Tests\Modules\Promethee\Helper;
 
 use App\Modules\Promethee\Helper\ResearchHelper;
 use App\Modules\Promethee\Model\Research;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ResearchHelperTest extends TestCase
 {
-	/**
-	 * @dataProvider provideData
-	 */
+	#[DataProvider('provideData')]
 	public function testGetResearchPrice(int $research, int $level, float $researchCoeff, int $expectedPrice): void
 	{
 		$researchHelper = new ResearchHelper($researchCoeff, 1);

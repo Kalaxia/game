@@ -10,6 +10,7 @@ use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Galaxy\Domain\Service\UpdatePlanetPoints;
 use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Promethee\Model\TechnologyId;
@@ -21,8 +22,6 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// @TODO Remove bounds to sessions
-// TODO reapply readonly when service has been simplified
 readonly class PlayerManager
 {
 	public function __construct(
@@ -32,15 +31,12 @@ readonly class PlayerManager
 		private UpdatePlanetPoints $updatePlanetPoints,
 		private PlanetRepositoryInterface $planetRepository,
 		private PlaceManager $placeManager,
-		private PlaceRepositoryInterface $placeRepository,
-		private NotificationRepositoryInterface $notificationRepository,
+		private NotificationPersister $notificationPersister,
 		private SectorRepositoryInterface $sectorRepository,
 		private TechnologyRepositoryInterface $technologyRepository,
 		private UrlGeneratorInterface $urlGenerator,
 		#[Autowire('%zeus.player.base_level%')]
 		private int $playerBaseLevel,
-		#[Autowire('%server_id%')]
-		private int $serverId,
 	) {
 	}
 
@@ -123,8 +119,8 @@ readonly class PlayerManager
 					'Vous vous êtes malheureusement fait prendre votre dernière planète.
 					Une nouvelle colonie vous a été attribuée'
 				))
-				->for($player);
-			$this->notificationRepository->save($notif);
+				->forPlayer($player);
+			$this->notificationPersister->saveFromBuilder($notif);
 			$this->entityManager->flush();
 		} else {
 			// si on ne trouve pas de lieu pour le faire poper ou si la faction n'a plus de secteur, le joueur meurt
@@ -187,9 +183,9 @@ readonly class PlayerManager
 					default => '',
 				}
 			)
-			->for($player);
+			->forPlayer($player);
 
-		$this->notificationRepository->save($notification);
+		$this->notificationPersister->saveFromBuilder($notification);
 
 		// parrainage : au niveau 3, le parrain gagne 1M crédits
 		if (3 == $player->level and null !== $player->godFather) {
@@ -214,9 +210,9 @@ readonly class PlayerManager
 						'N\'hésitez pas à parrainer d\'autres personnes pour gagner encore plus.'
 					)
 				)
-				->for($player->godFather);
+				->forPlayer($player->godFather);
 
-			$this->notificationRepository->save($notification);
+			$this->notificationPersister->saveFromBuilder($notification);
 		}
 		$this->entityManager->flush();
 	}

@@ -1,0 +1,21 @@
+<div>
+	<header>
+		<h3 class="text-lg">
+			Mandat actuel
+		</h3>
+	</header>
+
+	<section class="mt-4">
+		<twig:ProgressBar :faction="currentMandate.faction" :current="this.getPercent()" />
+
+
+		<div class="mt-2 flex justify-between text-sm font-medium text-gray-200 sm:grid">
+			<div class="">
+				Démarre le {{ currentMandate.startedAt.format('c') }}
+			</div>
+			<div class="text-right">
+				Termine le {{ currentMandate.expiredAt.format('c') }}
+			</div>
+		</div>
+	</section>
+</div>

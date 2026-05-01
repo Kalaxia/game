@@ -211,12 +211,6 @@
     "sebastian/cli-parser": {
         "version": "1.0.1"
     },
-    "sebastian/code-unit": {
-        "version": "1.0.8"
-    },
-    "sebastian/code-unit-reverse-lookup": {
-        "version": "2.0.3"
-    },
     "sebastian/comparator": {
         "version": "4.0.6"
     },
@@ -424,6 +418,18 @@
     },
     "symfony/intl": {
         "version": "v6.0.3"
+    },
+    "symfony/lock": {
+        "version": "8.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "5.2",
+            "ref": "8e937ff2b4735d110af1770f242c1107fdab4c8e"
+        },
+        "files": [
+            "config/packages/lock.yaml"
+        ]
     },
     "symfony/mercure-bundle": {
         "version": "0.3",
@@ -714,6 +720,18 @@
             "config/packages/webpack_encore.yaml",
             "package.json",
             "webpack.config.js"
+        ]
+    },
+    "symfony/workflow": {
+        "version": "8.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "3.3",
+            "ref": "3b2f8ca32a07fcb00f899649053943fa3d8bbfb6"
+        },
+        "files": [
+            "config/packages/workflow.yaml"
         ]
     },
     "symfony/yaml": {

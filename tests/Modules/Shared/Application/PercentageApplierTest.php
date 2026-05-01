@@ -3,21 +3,18 @@
 namespace App\Tests\Modules\Shared\Application;
 
 use App\Modules\Shared\Application\PercentageApplier;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class PercentageApplierTest extends TestCase
 {
-	/**
-	 * @dataProvider provideIntData
-	 */
+	#[DataProvider('provideIntData')]
 	public function testToInt(int|float $value, int|float $percent, int $expectedResult): void
 	{
 		static::assertSame($expectedResult, PercentageApplier::toInt($value, $percent));
 	}
 
-	/**
-	 * @dataProvider provideFloatData
-	 */
+	#[DataProvider('provideFloatData')]
 	public function testToFloat(int|float $value, int|float $percent, float $expectedResult): void
 	{
 		static::assertSame($expectedResult, PercentageApplier::toFloat($value, $percent));

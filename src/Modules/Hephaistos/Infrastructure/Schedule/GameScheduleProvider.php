@@ -32,6 +32,8 @@ readonly class GameScheduleProvider implements ScheduleProviderInterface
 			TimeMode::Fast => ['*/10 * * * *', '0 * * * *'],
 		};
 
+		return new Schedule();
+
 		return (new Schedule())->add(
 			// Hourly schedule
 			RecurringMessage::cron($hourlySchedule, new PlayersCreditsUpdateMessage()),

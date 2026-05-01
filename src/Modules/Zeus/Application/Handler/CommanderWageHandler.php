@@ -6,6 +6,7 @@ use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Manager\CommanderManager;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Model\PlayerFinancialReport;
@@ -15,7 +16,7 @@ readonly class CommanderWageHandler
 	public function __construct(
 		private CommanderRepositoryInterface $commanderRepository,
 		private CommanderManager $commanderManager,
-		private NotificationRepositoryInterface $notificationRepository,
+		private NotificationPersister $notificationPersister,
 	) {
 	}
 
@@ -88,7 +89,7 @@ readonly class CommanderWageHandler
 						)
 				),
 			)
-			->for($player);
-		$this->notificationRepository->save($notification);
+			->forPlayer($player);
+		$this->notificationPersister->saveFromBuilder($notification);
 	}
 }

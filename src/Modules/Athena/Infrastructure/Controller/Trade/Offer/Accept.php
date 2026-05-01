@@ -13,6 +13,7 @@ use App\Modules\Athena\Model\CommercialShipping;
 use App\Modules\Athena\Model\Transaction;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Travel\Domain\Model\TravelType;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;
@@ -40,7 +41,7 @@ class Accept extends AbstractController
 		CommercialShippingRepositoryInterface $commercialShippingRepository,
 		HubInterface $mercure,
 		MessageBusInterface $messageBus,
-		NotificationRepositoryInterface $notificationRepository,
+		NotificationPersister $notificationPersister,
 		PlayerManager $playerManager,
 		TransactionRepositoryInterface $transactionRepository,
 		EntityManagerInterface $entityManager,
@@ -130,8 +131,8 @@ class Accept extends AbstractController
 					'En savoir plus ?',
 				),
 			))
-			->for($transaction->player);
-		$notificationRepository->save($n);
+			->forPlayer($transaction->player);
+		$notificationPersister->saveFromBuilder($n);
 
 		//						if (true === $this->getContainer()->getParameter('data_analysis')) {
 		//							$qr = $database->prepare('INSERT INTO

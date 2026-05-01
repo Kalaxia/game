@@ -11,6 +11,7 @@ use App\Modules\Galaxy\Domain\Service\UpdatePlanetPoints;
 use App\Modules\Galaxy\Infrastructure\Repository\Doctrine\PlanetRepository;
 use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Hermes\Domain\Repository\ConversationUserRepositoryInterface;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
@@ -39,12 +40,11 @@ readonly class PlayerFactory
 		private EventDispatcherInterface $eventDispatcher,
 		private PlayerManager $playerManager,
 		private PlayerRepositoryInterface $playerRepository,
-		private NotificationRepositoryInterface $notificationRepository,
+		private NotificationPersister $notificationPersister,
 		private PlanetRepository $planetRepository,
 		private UpdatePlanetPoints $updatePlanetPoints,
 		private ResearchHelper $researchHelper,
 		private ResearchRepositoryInterface $researchRepository,
-		private PlaceRepositoryInterface $placeRepository,
 		private PlaceManager $placeManager,
 		private TechnologyRepositoryInterface $technologyRepository,
 		private UrlGeneratorInterface $urlGenerator,
@@ -128,9 +128,9 @@ readonly class PlayerFactory
 						'Vous venez de gagner 1000 crédits. Vous en gagnerez 1 million de plus lorsqu\'il atteindra le niveau 3.',
 					),
 				)
-				->for($player->godFather);
+				->forPlayer($player->godFather);
 
-			$this->notificationRepository->save($n);
+			$this->notificationPersister->saveFromBuilder($n);
 
 			// add 1000 credits to the godfather
 			$this->playerManager->increaseCredit($godFather, 1000);

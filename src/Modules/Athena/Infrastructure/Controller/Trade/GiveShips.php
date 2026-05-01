@@ -15,6 +15,7 @@ use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Travel\Domain\Model\TravelType;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;
@@ -40,7 +41,7 @@ class GiveShips extends AbstractController
 		PlanetRepositoryInterface $planetRepository,
 		PlanetHelper $planetHelper,
 		TransactionRepositoryInterface $transactionRepository,
-		NotificationRepositoryInterface $notificationRepository,
+		NotificationPersister $notificationPersister,
 		CountNeededCommercialShips $countNeededCommercialShips,
 		TranslatorInterface $translator,
 	): Response {
@@ -182,8 +183,8 @@ class GiveShips extends AbstractController
 						),
 					)
 				)
-				->for($otherBase->player);
-			$notificationRepository->save($notification);
+				->forPlayer($otherBase->player);
+			$notificationPersister->saveFromBuilder($notification);
 		}
 
 		$this->addFlash('success', 'Vaisseaux envoyés');

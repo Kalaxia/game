@@ -2,6 +2,19 @@ monolog:
     channels:
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
         - galaxy_generation
+        - political_events
+        - tasks
+    handlers:
+        political_events:
+            type: stream
+            path: "%kernel.logs_dir%/political_events.log"
+            level: debug
+            channels: ["political_events"]
+        tasks:
+            type: stream
+            path: "%kernel.logs_dir%/tasks.log"
+            level: debug
+            channels: ['tasks']
 
 when@dev:
     monolog:

@@ -1,188 +1,158 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Demeter\Manager;
 
-use App\Classes\Library\DateTimeConverter;
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\MandateRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Message\BallotMessage;
 use App\Modules\Demeter\Message\CampaignMessage;
 use App\Modules\Demeter\Message\ElectionMessage;
+use App\Modules\Demeter\Message\MandateExpirationMessage;
 use App\Modules\Demeter\Message\SenateUpdateMessage;
 use App\Modules\Demeter\Model\Color;
+use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
-use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
+use App\Modules\Hermes\Application\Persister\NotificationPersister;
+use App\Modules\Shared\Infrastructure\Messenger\ScheduleTask;
 use App\Modules\Zeus\Infrastructure\Validator\IsParliamentMember;
-use App\Modules\Zeus\Model\Player;
+use App\Shared\Application\Handler\DurationHandler;
 use App\Shared\Application\SchedulerInterface;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 readonly class ColorManager implements SchedulerInterface
 {
 	public function __construct(
+		private DurationHandler $durationHandler,
 		private ColorRepositoryInterface $colorRepository,
 		private GetFactionsConfiguration $getFactionsConfiguration,
-		private PlayerRepositoryInterface $playerRepository,
-		private NotificationRepositoryInterface $notificationRepository,
-		private MessageBusInterface $messageBus,
+		private MandateRepositoryInterface $mandateRepository,
+		private PoliticalEventRepositoryInterface $politicalEventRepository,
+		private NotificationPersister $notificationPersister,
 		private UrlGeneratorInterface $urlGenerator,
-		private EntityManagerInterface $entityManager,
 		private NextElectionDateCalculator $nextElectionDateCalculator,
+		private ScheduleTask $scheduleTask,
+		#[Autowire('%server_start_time%')]
+		private string $serverStartTime,
 	) {
 	}
 
 	public function schedule(): void
 	{
-		$this->scheduleSenateUpdate();
-		$this->scheduleElections();
-		$this->scheduleCampaigns();
-		$this->scheduleBallot();
-	}
-
-	public function scheduleSenateUpdate(): void
-	{
-		$factions = $this->colorRepository->getByRegimeAndElectionStatement([Color::REGIME_ROYALISTIC], [Color::MANDATE]);
-
-		foreach ($factions as $faction) {
-			$this->messageBus->dispatch(
-				new SenateUpdateMessage($faction->id),
-				[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getSenateUpdateMessage($faction))],
-			);
+		foreach ($this->colorRepository->getInGameFactions() as $faction) {
+			$this->scheduleFactionPoliticalEvents($faction);
+			$this->scheduleSenateUpdate($faction);
+			$this->scheduleMandateExpiration($faction);
 		}
 	}
 
-	public function scheduleCampaigns(): void
+	private function scheduleFactionPoliticalEvents(Color $faction): void
 	{
-		$factions = $this->colorRepository->getByRegimeAndElectionStatement(
-			[Color::REGIME_DEMOCRATIC, Color::REGIME_THEOCRATIC],
-			[Color::MANDATE]
-		);
+		$lastEvent = $this->politicalEventRepository->getFactionLastPoliticalEvent($faction);
 
-		foreach ($factions as $faction) {
-			$this->messageBus->dispatch(
-				new CampaignMessage($faction->id),
-				[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getCampaignStartDate($faction))],
-			);
-		}
-		$factions = $this->colorRepository->getByRegimeAndElectionStatement(
-			[Color::REGIME_ROYALISTIC],
-			[Color::ELECTION],
-		);
-		foreach ($factions as $faction) {
-			$this->messageBus->dispatch(
-				new BallotMessage($faction->id),
-				[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getPutschEndDate($faction))],
-			);
-		}
-	}
+		if (null === $lastEvent) {
+			$this->scheduleFirstEvent($faction);
 
-	public function scheduleElections(): void
-	{
-		$factions = $this->colorRepository->getByRegimeAndElectionStatement(
-			[Color::REGIME_DEMOCRATIC],
-			[Color::CAMPAIGN],
-		);
-		foreach ($factions as $faction) {
-			$this->messageBus->dispatch(
-				new ElectionMessage($faction->id),
-				[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getNextElectionDate($faction))],
-			);
+			return;
 		}
-	}
 
-	public function scheduleBallot(): void
-	{
-		$factions = array_merge(
-			$this->colorRepository->getByRegimeAndElectionStatement(
-				[Color::REGIME_DEMOCRATIC],
-				[Color::ELECTION],
+		if (MandateState::Active === $faction->mandateState && !$faction->isRoyalistic()) {
+			$nextCampaignStartedAt = $this->durationHandler->getDurationEnd(
+				$lastEvent->endedAt,
+				$this->nextElectionDateCalculator->getMandateDuration($faction),
+			);
+			($this->scheduleTask)(
+				message: new CampaignMessage($faction->id, $nextCampaignStartedAt),
+				datetime: $nextCampaignStartedAt,
+			);
+
+			return;
+		}
+
+		match ($faction->mandateState) {
+			MandateState::DemocraticCampaign => ($this->scheduleTask)(
+				message: new ElectionMessage($faction->id),
+				datetime: $lastEvent->campaignEndedAt,
 			),
-			$this->colorRepository->getByRegimeAndElectionStatement(
-				[Color::REGIME_THEOCRATIC],
-				[Color::CAMPAIGN, Color::ELECTION],
-			)
-		);
-		foreach ($factions as $faction) {
-			$this->messageBus->dispatch(
-				new BallotMessage($faction->id),
-				[DateTimeConverter::to_delay_stamp($this->nextElectionDateCalculator->getBallotDate($faction))],
-			);
+			MandateState::DemocraticVote,
+			MandateState::TheocraticCampaign,
+			MandateState::Putsch => ($this->scheduleTask)(
+				message: new BallotMessage($faction->id),
+				datetime: $lastEvent->endedAt,
+			),
+		};
+	}
+
+	private function scheduleFirstEvent(Color $faction): void
+	{
+		if ($faction->isRoyalistic()) {
+			return;
 		}
+
+		$campaignStartedAt = $this->durationHandler->getDurationEnd(
+			new \DateTimeImmutable($this->serverStartTime),
+			$this->nextElectionDateCalculator->getCampaignDuration(),
+		);
+
+		($this->scheduleTask)(
+			message: new CampaignMessage($faction->id, $campaignStartedAt),
+			datetime: $campaignStartedAt,
+		);
+	}
+
+	public function scheduleSenateUpdate(Color $faction): void
+	{
+		if (!$faction->isRoyalistic()) {
+			return;
+		}
+
+		($this->scheduleTask)(
+			message: new SenateUpdateMessage($faction->id),
+			datetime: $this->nextElectionDateCalculator->getSenateUpdateMessage($faction),
+		);
+	}
+
+	private function scheduleMandateExpiration(Color $faction): void
+	{
+		if ($faction->isRoyalistic()) {
+			return;
+		}
+
+		$currentMandate = $this->mandateRepository->getCurrentMandate($faction)
+			?? $this->mandateRepository->getLastMandate($faction)
+			?? throw new \RuntimeException(sprintf('No mandate found for faction %s.', $faction->identifier));
+
+		($this->scheduleTask)(
+			message: new MandateExpirationMessage($currentMandate->id),
+			datetime: $currentMandate->expiredAt,
+		);
 	}
 
 	public function sendSenateNotif(Color $faction, bool $isFromChief = false): void
 	{
-		$parliamentMembers = $this->playerRepository->getBySpecification(new IsParliamentMember($faction));
-
-		$notificationBuilder = NotificationBuilder::new()
-			->setTitle($isFromChief ? 'Loi appliquée' : 'Loi proposée')
-			->setContent(NotificationBuilder::paragraph(
-				$isFromChief
-					? sprintf(
+		$this->notificationPersister->saveFromBuilder(
+			NotificationBuilder::new()
+				->setTitle($isFromChief ? 'Loi appliquée' : 'Loi proposée')
+				->setContent(NotificationBuilder::paragraph(
+					$isFromChief
+						? sprintf(
 						'Votre %s a appliqué une loi.',
-						($this->getFactionsConfiguration)($faction, 'status')[5]
+						($this->getFactionsConfiguration)($faction, 'status')[5],
 					)
-					: 'Votre gouvernement a proposé un projet de loi, en tant que membre du sénat,
-					il est de votre devoir de voter pour l\'acceptation ou non de ladite loi.',
-				NotificationBuilder::divider(),
-				NotificationBuilder::link(
-					$this->urlGenerator->generate('faction_senate'),
-					$isFromChief ? 'voir les lois appliquées' : 'voir les lois en cours de vote',
-				),
-			));
-
-		foreach ($parliamentMembers as $parliamentMember) {
-			$this->notificationRepository->save($notificationBuilder->for($parliamentMember));
-		}
-	}
-
-	public function updateSenate(Color $faction): void
-	{
-		$factionPlayers = $this->playerRepository->getFactionPlayersByRanking($faction);
-		$limit = round(count($factionPlayers) / 4);
-		// If there is less than 40 players in a faction, the limit is up to 10 senators
-		if ($limit < 10) {
-			$limit = 10;
-		}
-		// If there is more than 120 players in a faction, the limit is up to 40 senators
-		if ($limit > 40) {
-			$limit = 40;
-		}
-
-		$senatePromoteNotificationBuilder = NotificationBuilder::new()
-			// TODO genders
-			->setTitle('Vous êtes sénateur')
-			->setContent(NotificationBuilder::paragraph(
-				'Vos actions vous ont fait gagner assez de prestige pour faire partie du sénat.',
-			));
-
-		$senateDemoteNotificationBuilder = NotificationBuilder::new()
-			->setTitle('Vous n\'êtes plus sénateur')
-			->setContent(NotificationBuilder::paragraph(
-				'Vous n\'avez plus assez de prestige pour rester dans le sénat.'
-			));
-
-		foreach ($factionPlayers as $key => $factionPlayer) {
-			if ($factionPlayer->isGovernmentMember()) {
-				continue;
-			}
-			if ($key < $limit) {
-				if (!$factionPlayer->isParliamentMember()) {
-					$this->notificationRepository->save($senatePromoteNotificationBuilder->for($factionPlayer));
-				}
-				$factionPlayer->status = Player::PARLIAMENT;
-			} else {
-				if ($factionPlayer->isParliamentMember()) {
-					$this->notificationRepository->save($senateDemoteNotificationBuilder->for($factionPlayer));
-				}
-				// TODO handle ministers
-				$factionPlayer->status = Player::STANDARD;
-			}
-		}
-		$this->entityManager->flush();
+						: 'Votre gouvernement a proposé un projet de loi, en tant que membre du sénat,
+						il est de votre devoir de voter pour l\'acceptation ou non de ladite loi.',
+					NotificationBuilder::divider(),
+					NotificationBuilder::link(
+						$this->urlGenerator->generate('faction_senate'),
+						$isFromChief ? 'voir les lois appliquées' : 'voir les lois en cours de vote',
+					),
+				))
+				->withRecipientSpecification(new IsParliamentMember($faction))
+		);
 	}
 }

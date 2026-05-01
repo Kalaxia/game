@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Demeter\Application\Election;
 
-use App\Modules\Demeter\Domain\Repository\Election\ElectionRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\MandateRepositoryInterface;
+use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
+use App\Modules\Demeter\Model\Election\MandateState;
+use App\Modules\Demeter\Model\Election\PoliticalEvent;
 use App\Modules\Shared\Domain\Server\TimeMode;
 use App\Shared\Application\Handler\DurationHandler;
 use Psr\Clock\ClockInterface;
@@ -15,7 +18,8 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 readonly class NextElectionDateCalculator
 {
 	public function __construct(
-		private ElectionRepositoryInterface $electionRepository,
+		private PoliticalEventRepositoryInterface $politicalEventRepository,
+		private MandateRepositoryInterface $mandateRepository,
 		private DurationHandler $durationHandler,
 		private ClockInterface $clock,
 		private GetFactionsConfiguration $getFactionsConfiguration,
@@ -23,6 +27,8 @@ readonly class NextElectionDateCalculator
 		private int $campaignDuration,
 		#[Autowire('%politics_election_duration%')]
 		private int $electionDuration,
+		#[Autowire('%politics_mandate_end_duration%')]
+		private int $mandateEndDuration,
 		#[Autowire('%politics_putsch_duration%')]
 		private int $putschDuration,
 		#[Autowire('%server_time_mode%')]
@@ -32,24 +38,66 @@ readonly class NextElectionDateCalculator
 	) {
 	}
 
-	public function getBallotDate(Color $faction): \DateTimeImmutable
+	public function getDateUntil(Color $faction, MandateState $mandateState, bool $mustBePresent = true): \DateTimeImmutable
 	{
-		return $this->calculate($faction, $this->getElectionDuration() + $this->getCampaignDuration());
+		if (!$this->supports($faction, $mandateState)) {
+			throw new \RuntimeException(sprintf('This faction with %s regime does not support %s mandate state', $faction->regime, $mandateState->value));
+		}
+
+		$currentMandate = $this->mandateRepository->getCurrentMandate($faction)
+			?? $this->mandateRepository->getLastMandate($faction)
+			?? throw new \RuntimeException(sprintf('Mandates not yet initialized for Faction %d', $faction->identifier));
+		$lastEvent = $this->politicalEventRepository->getFactionLastPoliticalEvent($faction);
+		$now = $this->clock->now();
+
+		$date = $this->getDurationUntilMandateState($faction, $mandateState, $currentMandate?->startedAt, $lastEvent);
+
+		return ($mustBePresent) ? max($date, $now) : $date;
+	}
+
+	public function getDurationUntilMandateState(
+		Color $faction,
+		MandateState $mandateState,
+		\DateTimeImmutable $from,
+		?PoliticalEvent $lastEvent = null,
+	): \DateTimeImmutable {
+		$now = $this->clock->now();
+		
+		return $this->durationHandler->getDurationEnd(
+			$from,
+			match ($mandateState) {
+				MandateState::DemocraticCampaign,
+				MandateState::TheocraticCampaign => $this->getMandateDuration($faction),
+				MandateState::DemocraticVote => $this->getMandateDuration($faction)
+					+ $this->getCampaignDuration(),
+				MandateState::Active => match ($faction->regime) {
+					Color::REGIME_DEMOCRATIC => $this->getMandateDuration($faction)
+						+ $this->getCampaignDuration()
+						+ $this->getElectionDuration()
+						+ $this->getMandateEndDuration(),
+					Color::REGIME_THEOCRATIC => $this->getMandateDuration($faction)
+						+ $this->getCampaignDuration()
+						+ $this->getMandateEndDuration(),
+					Color::REGIME_ROYALISTIC => (null !== $lastEvent && $lastEvent->endedAt > $now)
+						? $this->durationHandler->getDiff($now, $lastEvent->endedAt)
+						: 0,
+				},
+			},
+		);
+	}
+
+	private function supports(Color $faction, MandateState $mandateState): bool
+	{
+		return in_array($mandateState, [MandateState::Active, ...match ($faction->regime) {
+			Color::REGIME_DEMOCRATIC => [MandateState::DemocraticCampaign, MandateState::DemocraticVote],
+			Color::REGIME_THEOCRATIC => [MandateState::TheocraticCampaign],
+			Color::REGIME_ROYALISTIC => [],
+		}]);
 	}
 
 	public function getSenateUpdateMessage(Color $faction): \DateTimeImmutable
 	{
 		return $this->calculate($faction);
-	}
-
-	public function getNextElectionDate(Color $faction): \DateTimeImmutable
-	{
-		return $this->calculate($faction, addMandateDuration: false);
-	}
-
-	public function getStartDate(Color $faction): \DateTimeImmutable
-	{
-		return $this->calculate($faction, $this->getElectionDuration(), false);
 	}
 
 	public function getEndDate(Color $faction): \DateTimeImmutable
@@ -62,26 +110,19 @@ readonly class NextElectionDateCalculator
 		return $this->calculate($faction, $this->getPutschDuration(), false);
 	}
 
-	public function getCampaignStartDate(Color $faction): \DateTimeImmutable
-	{
-		return $this->calculate($faction);
-	}
-
-	public function getCampaignEndDate(Color $faction): \DateTimeImmutable
-	{
-		return $this->calculate($faction, $this->getCampaignDuration());
-	}
-
+	/**
+	 * @return int duration in seconds between the start of the mandate and the start of the campaign
+	 */
 	public function getMandateDuration(Color $faction): int
 	{
 		return $this->timeMode->isStandard() ?
 			($this->getFactionsConfiguration)($faction, 'mandateDuration')
-			: 60 * 40;
+			: 60 * 7;
 	}
 
 	private function calculate(Color $faction, int $duration = 0, bool $addMandateDuration = true): \DateTimeImmutable
 	{
-		$lastElection = $this->electionRepository->getFactionLastElection($faction);
+		$lastElection = $this->politicalEventRepository->getFactionLastPoliticalEvent($faction);
 		$durationEnd = null;
 
 		if ($addMandateDuration) {
@@ -89,11 +130,11 @@ readonly class NextElectionDateCalculator
 		}
 
 		if (0 === $duration) {
-			return $lastElection->dElection ?? new \DateTimeImmutable($this->serverStartTime);
+			return $lastElection->startedAt ?? new \DateTimeImmutable($this->serverStartTime);
 		}
 
 		do {
-			$durationStart = $durationEnd ?? $lastElection->dElection ?? new \DateTimeImmutable($this->serverStartTime);
+			$durationStart = $durationEnd ?? $lastElection->startedAt ?? new \DateTimeImmutable($this->serverStartTime);
 
 			$durationEnd = $this->durationHandler->getDurationEnd($durationStart, $duration);
 		} while ($durationEnd < $this->clock->now());
@@ -101,17 +142,22 @@ readonly class NextElectionDateCalculator
 		return $durationEnd;
 	}
 
-	private function getElectionDuration(): int
+	public function getElectionDuration(): int
 	{
-		return $this->timeMode->isStandard() ? $this->electionDuration : 1200;
+		return $this->timeMode->isStandard() ? $this->electionDuration : 60 * 2;
 	}
 
-	private function getCampaignDuration(): int
+	public function getCampaignDuration(): int
 	{
-		return $this->timeMode->isStandard() ? $this->campaignDuration : 300;
+		return $this->timeMode->isStandard() ? $this->campaignDuration : 60 * 2;
 	}
 
-	private function getPutschDuration(): int
+	public function getMandateEndDuration(): int
+	{
+		return $this->timeMode->isStandard() ? $this->mandateEndDuration : 30;
+	}
+
+	public function getPutschDuration(): int
 	{
 		return $this->timeMode->isStandard() ? $this->putschDuration : 1200;
 	}
