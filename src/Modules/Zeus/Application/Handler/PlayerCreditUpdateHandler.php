@@ -20,6 +20,7 @@ use App\Modules\Zeus\Manager\PlayerBonusManager;
 use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Model\PlayerFinancialReport;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -32,6 +33,7 @@ readonly class PlayerCreditUpdateHandler
 	private const int MAX_MISSING_UPDATES = 24;
 
 	public function __construct(
+		private ClockInterface $clock,
 		private EntityManagerInterface $entityManager,
 		private CommercialRouteIncomeHandler $commercialRouteIncomeHandler,
 		private CommercialRouteConstructionReportHandler $commercialRouteConstructionReportHandler,
@@ -119,9 +121,12 @@ readonly class PlayerCreditUpdateHandler
 					break;
 				}
 
-				$createdAt = (null !== $lastFinancialReport)
-					? (clone $lastFinancialReport->createdAt)->modify(sprintf('+%d seconds', $secondsToAdd))
-					: new \DateTimeImmutable();
+				$now = $this->clock->now();
+				$createdAt = $lastFinancialReport?->createdAt->modify(sprintf('+%d seconds', $secondsToAdd));
+
+				if (null === $createdAt || $createdAt > $now) {
+					$createdAt = $now;
+				}
 
 				$playerFinancialReport = new PlayerFinancialReport(
 					id: Uuid::v4(),
