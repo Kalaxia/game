@@ -43,7 +43,7 @@ class NewDemocraticLeaderEvent extends NewLeaderEvent
 		);
 	}
 
-	public function getNotificationBuilders(): \Generator
+	public function getNotificationBuilders(TranslatorInterface $translator): \Generator
 	{
 		yield NotificationBuilder::new()
 			->setTitle('Votre avez été élu')

@@ -27,7 +27,7 @@ class NewTheocraticLeaderEvent extends NewLeaderEvent
 			'</strong>.<br /><br /><br /><br />';
 	}
 
-	public function getNotificationBuilders(): \Generator
+	public function getNotificationBuilders(TranslatorInterface $translator): \Generator
 	{
 		yield NotificationBuilder::new()
 			->setTitle('Vous avez été nommé Guide')

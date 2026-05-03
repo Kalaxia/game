@@ -33,7 +33,7 @@ class NewRoyalisticLeaderEvent extends NewLeaderEvent
 		);
 	}
 
-	public function getNotificationBuilders(): \Generator
+	public function getNotificationBuilders(TranslatorInterface $translator): \Generator
 	{
 		yield NotificationBuilder::new()
 			->setTitle('Votre coup d\'état a réussi')

@@ -60,7 +60,7 @@ final readonly class MandateStartEvent implements LoggerEvent, ConversationMessa
 		return sprintf($text, ...$parameters);
 	}
 
-	public function getNotificationBuilders(): \Generator
+	public function getNotificationBuilders(TranslatorInterface $translator): \Generator
 	{
 		$previousLeader = $this->expiredMandate->leader;
 		$newLeader = $this->newMandate->leader;

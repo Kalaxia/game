@@ -12,7 +12,10 @@ use App\Modules\Demeter\Domain\Event\PutschFailedEvent;
 use App\Modules\Demeter\Domain\Event\UniqueCandidateEvent;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Event\NotificationEvent;
+use App\Modules\Zeus\Domain\Event\UnmaintainedHangarShipsEvent;
+use App\Modules\Zeus\Domain\Event\UnpaidFleetEvent;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[AsEventListener(PutschFailedEvent::class)]
 #[AsEventListener(UniqueCandidateEvent::class)]
@@ -20,16 +23,19 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 #[AsEventListener(NewDemocraticLeaderEvent::class)]
 #[AsEventListener(NewTheocraticLeaderEvent::class)]
 #[AsEventListener(NewRoyalisticLeaderEvent::class)]
-readonly class NotificationListener
+#[AsEventListener(UnpaidFleetEvent::class)]
+#[AsEventListener(UnmaintainedHangarShipsEvent::class)]
+final readonly class NotificationListener
 {
 	public function __construct(
 		private NotificationPersister $notificationPersister,
+		private TranslatorInterface $translator,
 	) {
 	}
 
 	public function __invoke(NotificationEvent $event): void
 	{
-		foreach ($event->getNotificationBuilders() as $notificationBuilder) {
+		foreach ($event->getNotificationBuilders($this->translator) as $notificationBuilder) {
 			$this->notificationPersister->saveFromBuilder($notificationBuilder);
 		}
 	}

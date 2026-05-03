@@ -57,7 +57,7 @@ readonly class UniqueCandidateEvent implements ConversationMessageEvent, LoggerE
 		return $this->newLeader;
 	}
 
-	public function getNotificationBuilders(): \Generator
+	public function getNotificationBuilders(TranslatorInterface $translator): \Generator
 	{
 		yield NotificationBuilder::new()
 			->setTitle('Vous avez remporté l\'élection par défaut')
