@@ -106,7 +106,7 @@ readonly class ShipsWageHandler
 				}
 				$unitCost = ($this->getShipCategoriesConfiguration)($j, 'cost');
 
-				$possibleMaintenable = floor($playerFinancialReport->getNewWallet() / $unitCost);
+				$possibleMaintenable = intval(floor($playerFinancialReport->getNewWallet() / $unitCost));
 				if ($possibleMaintenable > $shipsStorage[$j]) {
 					$possibleMaintenable = $shipsStorage[$j];
 				}
