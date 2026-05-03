@@ -15,8 +15,11 @@ use App\Modules\Athena\Model\Transaction;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
+use App\Modules\Zeus\Domain\Event\UnmaintainedHangarShipsEvent;
+use App\Modules\Zeus\Domain\Event\UnpaidFleetEvent;
 use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Model\PlayerFinancialReport;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -26,7 +29,7 @@ readonly class ShipsWageHandler
 		private CalculateFleetCost $calculateFleetCost,
 		private CommanderArmyHandler $commanderArmyHandler,
 		private CommanderRepositoryInterface $commanderRepository,
-		private NotificationPersister $notificationPersister,
+		private EventDispatcherInterface $eventDispatcher,
 		private TransactionRepositoryInterface $transactionRepository,
 		private TranslatorInterface $translator,
 		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
@@ -45,6 +48,13 @@ readonly class ShipsWageHandler
 		array $playerBases,
 		Player $rebelPlayer,
 	): void {
+		$this->payForShipsInSale($playerFinancialReport);
+		$this->payForFleets($playerFinancialReport, $commanders, $rebelPlayer);
+		$this->payForShipsInHanger($playerFinancialReport, $playerBases);
+	}
+
+	private function payForShipsInSale(PlayerFinancialReport $playerFinancialReport): void
+	{
 		$player = $playerFinancialReport->player;
 		$transactions = $this->transactionRepository->getPlayerPropositions($player, Transaction::TYP_SHIP);
 		// payer l'entretien des vaisseaux
@@ -55,13 +65,17 @@ readonly class ShipsWageHandler
 			$transaction = $transactions[$i];
 			$transactionTotalCost += ($this->getShipCategoriesConfiguration)($transaction->identifier, 'cost') * $this->shipCostReduction * $transaction->quantity;
 		}
-		if ($playerFinancialReport->canAfford($transactionTotalCost)) {
-			$playerFinancialReport->shipsCost += $transactionTotalCost;
-			// } else {
-			// TODO decide what to do when ships in transaction cannot be paid
+		$playerFinancialReport->shipsCost += $transactionTotalCost;
+		// if (!$playerFinancialReport->canAfford($transactionTotalCost)) {
 			// $newCredit = 0;
-		}
-		// vaisseaux affectés
+		// }
+	}
+
+	/**
+	 * @param list<Commander> $commanders
+	 */
+	private function payForFleets(PlayerFinancialReport $playerFinancialReport, array $commanders, Player $rebelPlayer): void
+	{
 		foreach ($commanders as $commander) {
 			$this->commanderArmyHandler->setArmy($commander);
 			$ships = $commander->getNbrShipByType();
@@ -76,19 +90,19 @@ readonly class ShipsWageHandler
 			$commander->statement = Commander::ONSALE;
 			$commander->player = $rebelPlayer;
 
-			$notification = NotificationBuilder::new()
-				->setTitle('Flotte impayée')
-				->setContent(NotificationBuilder::paragraph(
-					'Vous n\'avez pas assez de crédits pour payer l\'entretien de la flotte de votre officier ',
-					$commander->name,
-					'Celui-ci a donc déserté ! ... avec la flotte, désolé.',
-				))
-				->forPlayer($player);
-			$this->notificationPersister->saveFromBuilder($notification);
 			$this->commanderRepository->save($commander);
+
+			$this->eventDispatcher->dispatch(new UnpaidFleetEvent($playerFinancialReport, $commander));
 		}
-		// vaisseaux sur la planète
-		// TODO refactor this part for better carving
+	}
+
+	/**
+	 * @param PlayerFinancialReport $playerFinancialReport
+	 * @param list<Planet> $playerBases
+	 * @return void
+	 */
+	private function payForShipsInHanger(PlayerFinancialReport $playerFinancialReport, array $playerBases): void
+	{
 		foreach ($playerBases as $base) {
 			$shipsStorage = $base->getShipStorage();
 			$cost = ($this->calculateFleetCost)($shipsStorage, false);
@@ -100,46 +114,30 @@ readonly class ShipsWageHandler
 			}
 			// n'arrive pas à tous les payer !
 			$shipCategoriesCount = count(ShipCategory::cases());
-			for ($j = $shipCategoriesCount - 1; $j >= 0; --$j) {
-				if (0 === $shipsStorage[$j]) {
+			for ($shipIdentifier = $shipCategoriesCount - 1; $shipIdentifier >= 0; --$shipIdentifier) {
+				if (0 === $shipsStorage[$shipIdentifier]) {
 					continue;
 				}
-				$unitCost = ($this->getShipCategoriesConfiguration)($j, 'cost');
+				$unitCost = ($this->getShipCategoriesConfiguration)($shipIdentifier, 'cost');
 
 				$possibleMaintenable = intval(floor($playerFinancialReport->getNewWallet() / $unitCost));
-				if ($possibleMaintenable > $shipsStorage[$j]) {
-					$possibleMaintenable = $shipsStorage[$j];
+				if ($possibleMaintenable > $shipsStorage[$shipIdentifier]) {
+					$possibleMaintenable = $shipsStorage[$shipIdentifier];
 				}
 				$playerFinancialReport->shipsCost += $possibleMaintenable * $unitCost;
 
-				$toKill = $shipsStorage[$j] - $possibleMaintenable;
+				$toKill = $shipsStorage[$shipIdentifier] - $possibleMaintenable;
 				if (0 === $toKill) {
 					continue;
 				}
-				$base->removeShips($j, $toKill);
+				$base->removeShips($shipIdentifier, $toKill);
 
-				$notification = NotificationBuilder::new()
-					->setTitle('Entretien vaisseau impayé')
-					->setContent(NotificationBuilder::paragraph(
-						'Domaine',
-						NotificationBuilder::divider(),
-						'Vous n\'avez pas assez de crédits pour payer l\'entretien',
-						(1 == $toKill)
-							? sprintf(
-								' d\'un(e) %s sur %s. Ce vaisseau part donc à la casse ! ',
-								$this->translator->trans(sprintf('ship_categories.%s.name', $j)),
-								$base->name,
-							)
-							: sprintf(
-								'Vous n\'avez pas assez de crédits pour payer l\'entretien de %d %ss sur %s.
-								Ces vaisseaux partent donc à la casse !',
-								$toKill,
-								$this->translator->trans(sprintf('ship_categories.%s.name', $j)),
-								$base->name,
-							)
-					))
-					->forPlayer($player);
-				$this->notificationPersister->saveFromBuilder($notification);
+				$this->eventDispatcher->dispatch(new UnmaintainedHangarShipsEvent(
+					$playerFinancialReport,
+					$base,
+					$shipIdentifier,
+					$toKill,
+				));
 			}
 		}
 	}
