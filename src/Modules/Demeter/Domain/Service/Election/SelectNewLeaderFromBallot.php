@@ -9,7 +9,7 @@ use App\Modules\Zeus\Model\Player;
 
 /**
  * This service selects the faction new leader from a pre-sorted ballot
- * If some candidates are ex aequo, then the leader is chosen randomly between them
+ * If some candidates are ex aequo, then the leader is chosen randomly between them.
  */
 class SelectNewLeaderFromBallot
 {

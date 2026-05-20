@@ -64,10 +64,13 @@ class CommanderRepository extends DoctrineRepository implements CommanderReposit
 			$qb->addOrderBy($field, $order);
 		}
 
+		if (!empty($statements)) {
+			$qb->andWhere($qb->expr()->in('c.statement', $statements))
+				->setParameter('statements', $statements);
+		}
+
 		return $qb
-			->andWhere($qb->expr()->in('c.statement', ':statements'))
 			->andWhere('c.player = :player')
-			->setParameter('statements', $statements)
 			->setParameter('player', $player)
 			->getQuery()
 			->getResult();

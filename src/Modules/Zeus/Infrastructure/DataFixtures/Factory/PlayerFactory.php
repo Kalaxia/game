@@ -16,7 +16,7 @@ class PlayerFactory extends PersistentObjectFactory
 	protected function defaults(): array
 	{
 		return [
-			'id' => 0,
+			'id' => self::faker()->randomNumber(),
 			'faction' => FactionFactory::randomOrCreate(),
 			'godFather' => null,
 			'name' => self::faker()->userName(),

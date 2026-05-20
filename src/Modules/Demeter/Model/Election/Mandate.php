@@ -25,7 +25,7 @@ class Mandate
 		public \DateTimeImmutable $expiredAt,
 		#[ORM\ManyToOne]
 		#[ORM\JoinColumn(nullable: true)]
-		public Player|null $leader = null,
+		public ?Player $leader = null,
 		#[ORM\OneToOne]
 		#[ORM\JoinColumn(nullable: true)]
 		public ?PoliticalEvent $election = null,

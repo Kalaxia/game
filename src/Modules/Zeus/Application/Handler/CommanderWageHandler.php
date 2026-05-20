@@ -7,7 +7,6 @@ use App\Modules\Ares\Manager\CommanderManager;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Model\PlayerFinancialReport;
 

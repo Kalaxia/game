@@ -15,7 +15,6 @@ use App\Modules\Hermes\Domain\Event\ConversationMessageEvent;
 use App\Modules\Hermes\Domain\Repository\ConversationMessageRepositoryInterface;
 use App\Modules\Hermes\Model\ConversationMessage;
 use App\Modules\Hermes\Model\ConversationUser;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Translation\TranslatorInterface;

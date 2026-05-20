@@ -52,16 +52,16 @@ final readonly class UnmaintainedHangarShipsEvent implements NotificationEvent, 
 				'Vous n\'avez pas assez de crédits pour payer l\'entretien',
 				(1 === $this->shipsToKill)
 					? sprintf(
-					' d\'un(e) %s sur %s. Ce vaisseau part donc à la casse ! ',
-					$translator->trans(sprintf('ship_categories.%s.name', $this->shipIdentifier)),
-					$this->planet->name,
-				)
+						' d\'un(e) %s sur %s. Ce vaisseau part donc à la casse ! ',
+						$translator->trans(sprintf('ship_categories.%s.name', $this->shipIdentifier)),
+						$this->planet->name,
+					)
 					: sprintf(
-					' de %d %ss sur %s. Ces vaisseaux partent donc à la casse !',
-					$this->shipsToKill,
-					$translator->trans(sprintf('ship_categories.%s.name', $this->shipIdentifier)),
-					$this->planet->name,
-				)
+						' de %d %ss sur %s. Ces vaisseaux partent donc à la casse !',
+						$this->shipsToKill,
+						$translator->trans(sprintf('ship_categories.%s.name', $this->shipIdentifier)),
+						$this->planet->name,
+					)
 			))
 			->forPlayer($this->playerFinancialReport->player);
 	}

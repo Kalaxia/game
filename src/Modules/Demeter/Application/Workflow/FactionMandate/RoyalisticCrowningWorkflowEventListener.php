@@ -18,7 +18,6 @@ use App\Modules\Demeter\Model\Election\Putsch;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Shared\Infrastructure\Messenger\ScheduleTask;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;

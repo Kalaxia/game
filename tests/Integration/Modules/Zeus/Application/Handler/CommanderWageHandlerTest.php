@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Modules\Zeus\Application\Handler;
+namespace App\Tests\Integration\Modules\Zeus\Application\Handler;
 
 use App\Modules\Zeus\Application\Handler\CommanderWageHandler;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

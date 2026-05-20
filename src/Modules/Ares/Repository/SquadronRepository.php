@@ -12,6 +12,9 @@ use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 
+/**
+ * @extends DoctrineRepository<Squadron>
+ */
 class SquadronRepository extends DoctrineRepository implements SquadronRepositoryInterface
 {
 	public function __construct(ManagerRegistry $registry)
@@ -45,5 +48,13 @@ class SquadronRepository extends DoctrineRepository implements SquadronRepositor
 			->setParameter('faction', $faction->id, UuidType::NAME);
 
 		return $qb->getQuery()->getSingleResult();
+	}
+
+	public function getCommanderSquadrons(Commander $commander): array
+	{
+		return $this->findBy(
+			['commander' => $commander],
+			orderBy: ['position' => 'ASC'],
+		);
 	}
 }

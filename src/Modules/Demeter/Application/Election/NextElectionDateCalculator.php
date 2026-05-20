@@ -62,7 +62,7 @@ readonly class NextElectionDateCalculator
 		?PoliticalEvent $lastEvent = null,
 	): \DateTimeImmutable {
 		$now = $this->clock->now();
-		
+
 		return $this->durationHandler->getDurationEnd(
 			$from,
 			match ($mandateState) {

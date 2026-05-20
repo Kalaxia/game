@@ -14,7 +14,6 @@ use App\Modules\Athena\Model\Transaction;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Travel\Domain\Model\TravelType;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;
 use App\Modules\Zeus\Manager\PlayerManager;

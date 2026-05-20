@@ -7,7 +7,6 @@ namespace App\Modules\Demeter\Domain\Service;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;

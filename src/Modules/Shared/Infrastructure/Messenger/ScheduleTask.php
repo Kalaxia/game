@@ -16,7 +16,7 @@ readonly class ScheduleTask
 {
 	public function __construct(
 		private MessageBusInterface $messageBus,
-		private LoggerInterface     $logger,
+		private LoggerInterface $logger,
 	) {
 	}
 

@@ -51,8 +51,8 @@ final readonly class MandateStartEvent implements LoggerEvent, ConversationMessa
 		$text = "Le précédent mandat vient de s'achever, ";
 		$parameters = [];
 
-		if ($this->newMandate->leader !== null) {
-			$text .= "laissant le siège du pouvoir à notre %s %s: %s";
+		if (null !== $this->newMandate->leader) {
+			$text .= 'laissant le siège du pouvoir à notre %s %s: %s';
 		} else {
 			$text .= "laissant le siège du pouvoir vacant jusqu'aux prochaines élections.";
 		}
@@ -67,25 +67,25 @@ final readonly class MandateStartEvent implements LoggerEvent, ConversationMessa
 
 		yield NotificationBuilder::new()
 			->setTitle(
-				$newLeader !== null
+				null !== $newLeader
 				? 'Un nouveau mandat démarre'
 				: 'Le siège du pouvoir demeure vacant'
 			)
 			->setContent(
-				$newLeader !== null
+				null !== $newLeader
 				? "C'est maintenant à %s que reviennent les rênes du pouvoir"
 				: 'Il faudra attendre les prochaines élections pour connaître la personne qui règnera sur notre faction.'
 			)
 			->withRecipientSpecification(new IsFromFaction($this->newMandate->faction));
 
-		if ($previousLeader !== null && $previousLeader->id !== $newLeader?->id) {
+		if (null !== $previousLeader && $previousLeader->id !== $newLeader?->id) {
 			yield NotificationBuilder::new()
 				->setTitle('Votre mandat touche à son terme')
 				->setContent('Vous avez fait votre temps à la tête de votre faction.')
 				->forPlayer($previousLeader);
 		}
 
-		if ($newLeader === null) {
+		if (null === $newLeader) {
 			return;
 		}
 

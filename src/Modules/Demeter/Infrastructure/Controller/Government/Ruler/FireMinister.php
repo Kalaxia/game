@@ -5,7 +5,6 @@ namespace App\Modules\Demeter\Infrastructure\Controller\Government\Ruler;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;

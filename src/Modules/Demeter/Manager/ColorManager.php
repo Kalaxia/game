@@ -144,9 +144,9 @@ readonly class ColorManager implements SchedulerInterface
 				->setContent(NotificationBuilder::paragraph(
 					$isFromChief
 						? sprintf(
-						'Votre %s a appliqué une loi.',
-						($this->getFactionsConfiguration)($faction, 'status')[5],
-					)
+							'Votre %s a appliqué une loi.',
+							($this->getFactionsConfiguration)($faction, 'status')[5],
+						)
 						: 'Votre gouvernement a proposé un projet de loi, en tant que membre du sénat,
 						il est de votre devoir de voter pour l\'acceptation ou non de ladite loi.',
 					NotificationBuilder::divider(),

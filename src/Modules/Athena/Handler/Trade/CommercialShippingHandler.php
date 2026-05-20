@@ -10,7 +10,6 @@ use App\Modules\Athena\Model\CommercialShipping;
 use App\Modules\Athena\Model\Transaction;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Shared\Application\Handler\DurationHandler;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;

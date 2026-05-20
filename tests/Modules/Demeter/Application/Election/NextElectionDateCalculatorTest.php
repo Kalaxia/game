@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Modules\Demeter\Application\Election;
 
 use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
-use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\Election\DemocraticElectionFactory;
 use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\Election\ElectionFactory;
 use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\Election\MandateFactory;
 use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\FactionFactory;

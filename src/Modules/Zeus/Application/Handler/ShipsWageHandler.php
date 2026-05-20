@@ -13,15 +13,12 @@ use App\Modules\Ares\Model\Commander;
 use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
 use App\Modules\Athena\Model\Transaction;
 use App\Modules\Galaxy\Domain\Entity\Planet;
-use App\Modules\Hermes\Application\Builder\NotificationBuilder;
-use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Zeus\Domain\Event\UnmaintainedHangarShipsEvent;
 use App\Modules\Zeus\Domain\Event\UnpaidFleetEvent;
 use App\Modules\Zeus\Model\Player;
 use App\Modules\Zeus\Model\PlayerFinancialReport;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 readonly class ShipsWageHandler
 {
@@ -31,7 +28,6 @@ readonly class ShipsWageHandler
 		private CommanderRepositoryInterface $commanderRepository,
 		private EventDispatcherInterface $eventDispatcher,
 		private TransactionRepositoryInterface $transactionRepository,
-		private TranslatorInterface $translator,
 		private GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
 		#[Autowire('%game.ship_cost_reduction%')]
 		private float $shipCostReduction,
@@ -67,7 +63,7 @@ readonly class ShipsWageHandler
 		}
 		$playerFinancialReport->shipsCost += $transactionTotalCost;
 		// if (!$playerFinancialReport->canAfford($transactionTotalCost)) {
-			// $newCredit = 0;
+		// $newCredit = 0;
 		// }
 	}
 
@@ -78,7 +74,9 @@ readonly class ShipsWageHandler
 	{
 		foreach ($commanders as $commander) {
 			$this->commanderArmyHandler->setArmy($commander);
+
 			$ships = $commander->getNbrShipByType();
+
 			$cost = ($this->calculateFleetCost)($ships);
 
 			if ($playerFinancialReport->canAfford($cost)) {
@@ -97,9 +95,7 @@ readonly class ShipsWageHandler
 	}
 
 	/**
-	 * @param PlayerFinancialReport $playerFinancialReport
 	 * @param list<Planet> $playerBases
-	 * @return void
 	 */
 	private function payForShipsInHanger(PlayerFinancialReport $playerFinancialReport, array $playerBases): void
 	{

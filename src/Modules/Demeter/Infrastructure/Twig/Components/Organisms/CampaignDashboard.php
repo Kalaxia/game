@@ -7,7 +7,6 @@ namespace App\Modules\Demeter\Infrastructure\Twig\Components\Organisms;
 use App\Classes\Library\Format;
 use App\Modules\Demeter\Model\Election\DemocraticElection;
 use App\Modules\Demeter\Model\Election\DivineDesignation;
-use App\Modules\Shared\Application\PercentageApplier;
 use App\Shared\Application\Handler\DurationHandler;
 use Psr\Clock\ClockInterface;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;

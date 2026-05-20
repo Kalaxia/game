@@ -2,6 +2,7 @@
 
 namespace App\Modules\Ares\Domain\Repository;
 
+use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\Squadron;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
@@ -28,4 +29,6 @@ interface SquadronRepositoryInterface extends EntityRepositoryInterface
 	 * }
 	 */
 	public function getFactionFleetStats(Color $faction): array;
+
+	public function getCommanderSquadrons(Commander $commander): array;
 }

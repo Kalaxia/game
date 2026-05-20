@@ -5,6 +5,7 @@ namespace App\Modules\Ares\Application\Handler;
 use App\Modules\Ares\Application\Handler\Battle\ShipStatsHandler;
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Domain\Model\ShipStat;
+use App\Modules\Ares\Domain\Repository\SquadronRepositoryInterface;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Ares\Domain\Service\GetSquadronPev;
 use App\Modules\Ares\Model\Commander;
@@ -21,6 +22,7 @@ readonly class CommanderArmyHandler
 		private GetSquadronPev $getSquadronPev,
 		private ShipStatsHandler $shipStatsHandler,
 		private PlayerBonusManager $playerBonusManager,
+		private SquadronRepositoryInterface $squadronRepository,
 	) {
 	}
 
@@ -33,10 +35,13 @@ readonly class CommanderArmyHandler
 				$playerBonus = $this->playerBonusManager->getBonusByPlayer($commander->player);
 			}
 
-			for ($i = 0; $i < $commander->level and $i < 25; ++$i) {
-				$commander->army[$i] = (null !== ($squadron = $commander->findSquadron($i)))
-					? $squadron
-					: new Squadron(
+			foreach ($commander->squadrons as $squadron) {
+				$commander->army[$squadron->position] = $squadron;
+			}
+
+			for ($i = 0; $i < $commander->level && $i < 25; ++$i) {
+				if (!isset($commander->army[$i])) {
+					$commander->army[$i] = new Squadron(
 						id: Uuid::v4(),
 						commander: $commander,
 						createdAt: new \DateTimeImmutable(),
@@ -44,6 +49,7 @@ readonly class CommanderArmyHandler
 						lineCoord: Commander::$LINECOORD[$i],
 						position: $i,
 					);
+				}
 				$this->initializeShips($commander->army[$i], $playerBonus);
 				$commander->squadronsIds[] = $i;
 			}

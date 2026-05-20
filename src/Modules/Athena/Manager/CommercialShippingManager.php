@@ -13,7 +13,6 @@ use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Shared\Application\SchedulerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;

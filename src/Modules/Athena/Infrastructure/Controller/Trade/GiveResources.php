@@ -15,7 +15,6 @@ use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Travel\Domain\Model\TravelType;
 use App\Modules\Travel\Domain\Service\GetTravelDuration;
 use App\Modules\Zeus\Model\Player;

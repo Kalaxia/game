@@ -31,11 +31,7 @@ readonly class SortCandidatesByVotes
 		foreach ($votes as $vote) {
 			$candidateId = $vote->candidate->id->toBase32();
 			if (!array_key_exists($candidateId, $ballot)) {
-				throw new \RuntimeException(sprintf(
-					'Vote for candidate with id %s that is not part of the election %s',
-					$candidateId,
-					$election->id->toBase32(),
-				));
+				throw new \RuntimeException(sprintf('Vote for candidate with id %s that is not part of the election %s', $candidateId, $election->id->toBase32()));
 			}
 			++$ballot[$candidateId]['votes_count'];
 		}

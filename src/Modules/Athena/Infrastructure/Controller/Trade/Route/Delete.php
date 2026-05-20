@@ -7,8 +7,6 @@ use App\Modules\Athena\Manager\CommercialRouteManager;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
-use App\Modules\Hermes\Manager\NotificationManager;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

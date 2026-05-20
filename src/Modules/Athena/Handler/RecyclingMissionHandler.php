@@ -19,7 +19,6 @@ use App\Modules\Galaxy\Manager\PlaceManager;
 use App\Modules\Galaxy\Manager\PlanetManager;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Manager\PlayerManager;
 use App\Shared\Application\Handler\DurationHandler;
 use Doctrine\ORM\EntityManagerInterface;

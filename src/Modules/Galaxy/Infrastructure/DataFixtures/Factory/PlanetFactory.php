@@ -20,9 +20,11 @@ class PlanetFactory extends PersistentObjectFactory
 		return [
 			'id' => Uuid::v4(),
 			'planetType' => self::faker()->randomElement(PlanetType::cases()),
+			'system' => SystemFactory::randomOrCreate(),
 			'player' => PlayerFactory::randomOrCreate(),
 			'name' => 'Colonie',
 			'typeOfBase' => Planet::BASE_TYPE_COLONY,
+			'position' => self::faker()->randomDigitNotZero(),
 			'levelGenerator' => 1,
 			'levelRefinery' => 1,
 			'levelDock1' => 1,

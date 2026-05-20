@@ -14,7 +14,6 @@ use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Galaxy\Resource\PlanetResource;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Shared\Application\PercentageApplier;
 use App\Modules\Zeus\Manager\PlayerManager;
 use App\Modules\Zeus\Model\Player;

@@ -6,7 +6,6 @@ use App\Classes\Container\StackList;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\ResearchRepositoryInterface;
 use App\Modules\Promethee\Helper\ResearchHelper;
 use App\Modules\Promethee\Model\Research;

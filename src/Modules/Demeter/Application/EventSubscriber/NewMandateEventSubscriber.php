@@ -13,7 +13,6 @@ use App\Modules\Demeter\Domain\Repository\Election\MandateRepositoryInterface;
 use App\Modules\Demeter\Message\MandateExpirationMessage;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\Mandate;
-use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Demeter\Model\Election\PoliticalEvent;
 use App\Modules\Shared\Infrastructure\Messenger\ScheduleTask;
 use App\Modules\Zeus\Model\Player;
@@ -82,7 +81,7 @@ readonly class NewMandateEventSubscriber implements EventSubscriberInterface
 			$this->nextElectionDateCalculator->getMandateDuration($faction),
 		);
 
-		if ($this->mandateRepository->getMandateByElection($politicalEvent) !== null) {
+		if (null !== $this->mandateRepository->getMandateByElection($politicalEvent)) {
 			$this->logger->info('An existing mandate is already stored for election {electionId}', [
 				'electionId' => $politicalEvent->id->toRfc4122(),
 			]);

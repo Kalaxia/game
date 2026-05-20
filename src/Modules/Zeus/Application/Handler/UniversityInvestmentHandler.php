@@ -5,7 +5,6 @@ namespace App\Modules\Zeus\Application\Handler;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\ResearchRepositoryInterface;
 use App\Modules\Promethee\Manager\ResearchManager;
 use App\Modules\Promethee\Model\Research;

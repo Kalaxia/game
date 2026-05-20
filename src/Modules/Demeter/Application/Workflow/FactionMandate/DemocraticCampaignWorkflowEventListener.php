@@ -51,7 +51,7 @@ readonly class DemocraticCampaignWorkflowEventListener
 			$event->setBlocked(true, sprintf('Faction %s is not in mandate', $faction->identifier));
 		}
 
-		if ($this->electionRepository->getFactionCurrentPoliticalEvent($faction) !== null) {
+		if (null !== $this->electionRepository->getFactionCurrentPoliticalEvent($faction)) {
 			$event->setBlocked(true, sprintf('Faction %s has already an ongoing election', $faction->identifier));
 		}
 	}

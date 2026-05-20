@@ -23,14 +23,14 @@ use Symfony\Component\Workflow\Event\EnterEvent;
 readonly class DemocraticResultWorkflowEventListener
 {
 	public function __construct(
-		private ConversationRepositoryInterface   $conversationRepository,
-		private GetFactionsConfiguration          $getFactionsConfiguration,
+		private ConversationRepositoryInterface $conversationRepository,
+		private GetFactionsConfiguration $getFactionsConfiguration,
 		private PoliticalEventRepositoryInterface $electionRepository,
-		private EventDispatcherInterface          $eventDispatcher,
-		private PlayerRepositoryInterface         $playerRepository,
-		private SortCandidatesByVotes             $sortCandidatesByVotes,
-		private SelectNewLeaderFromBallot         $selectNewLeaderFromBallot,
-		private LoggerInterface                   $logger,
+		private EventDispatcherInterface $eventDispatcher,
+		private PlayerRepositoryInterface $playerRepository,
+		private SortCandidatesByVotes $sortCandidatesByVotes,
+		private SelectNewLeaderFromBallot $selectNewLeaderFromBallot,
+		private LoggerInterface $logger,
 	) {
 	}
 

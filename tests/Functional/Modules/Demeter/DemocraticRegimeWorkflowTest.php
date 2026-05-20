@@ -20,7 +20,6 @@ use App\Modules\Demeter\Model\Election\DemocraticElection;
 use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
-use App\Modules\Zeus\Infrastructure\DataFixtures\Factory\PlayerFactory;
 use App\Modules\Zeus\Infrastructure\Validator\IsParliamentMember;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

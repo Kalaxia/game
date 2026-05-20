@@ -12,7 +12,6 @@ use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\DemocraticElection;
 use App\Modules\Demeter\Model\Election\Mandate;
 use App\Modules\Demeter\Model\Election\PoliticalEvent;
-use App\Modules\Demeter\Model\Election\PoliticalEventType;
 use App\Shared\Application\Handler\DurationHandler;
 use Psr\Clock\ClockInterface;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;

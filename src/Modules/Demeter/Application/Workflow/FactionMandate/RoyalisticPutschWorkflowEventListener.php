@@ -11,7 +11,6 @@ use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Demeter\Model\Election\Putsch;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
-use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Infrastructure\Validator\IsFromFaction;
 use App\Modules\Zeus\Model\Player;

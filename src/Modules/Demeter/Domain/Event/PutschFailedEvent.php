@@ -10,7 +10,6 @@ use App\Modules\Hermes\Domain\Event\NotificationEvent;
 use App\Modules\Hermes\Model\Conversation;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Event\LoggerEvent;
-use App\Shared\Domain\Specification\SelectorSpecification;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
