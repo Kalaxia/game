@@ -1,6 +1,4 @@
-{% set statuses = get_faction_info(faction.identifier, 'status') %}
-
-<div class="flex flex-col gap-y-4">
+<div class="flex flex-col gap-y-4 col-span-2">
 	{% for type in players_by_type|keys %}
 		{% set players = players_by_type[type] %}
 		<section>
@@ -10,17 +8,23 @@
 				<p>aucun joueur</p>
 			{% endif %}
 
-			<div class="flex mt-4">
+			<div class="flex mt-4 gap-4">
 				{% for player in players %}
 					<div class="flex items-center gap-x-2 bg-gray-800 w-64 p-2 rounded-md shadow-md">
 						<a href="{{ path('embassy', {'player': player.id}) }}">
-							<twig:Avatar :player="player" class="max-w-14 max-h-14" />
+							<twig:Avatar :player="player" class="!w-14 !h-14" />
 						</a>
 
 						<div class="grow">
-							<span class="text-sm">{{ statuses[player.status - 1] }}</span><br>
-							<strong class="name">{{ player.name }}</strong><br>
-							<span class="text-xs">{{ player.factionPoint|number }} points</span>
+							<span class="text-sm">
+								<twig:PlayerStatus :player="player" />
+							</span><br>
+							<strong class="name">
+								{{ player.name }}
+							</strong><br>
+							<span class="text-xs">
+								{{ player.factionPoint|number }} points
+							</span>
 						</div>
 
 						{% if is_player_online(player) %}

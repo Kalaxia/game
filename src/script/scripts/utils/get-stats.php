@@ -3,6 +3,7 @@
 use App\Classes\Library\Format;
 use App\Classes\Worker\ASM;
 use App\Modules\Demeter\Resource\ColorResource;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Manager\PlayerManager;
 
 echo '<h1>Création automatisée de statistiques</h1>';
@@ -11,12 +12,12 @@ echo '<h2>Joueurs</h2>';
 
 echo '<p>';
 echo 'Joueurs actifs<br />';
-echo '<strong>'.Format::number(PlayerManager::count(['statement' => Player::ACTIVE])).'</strong>';
+echo '<strong>'.Format::number(PlayerManager::count(['statement' => PlayerStatement::Active])).'</strong>';
 echo '</p>';
 
 echo '<p>';
 echo 'Joueurs inscrits<br />';
-echo '<strong>'.Format::number(PlayerManager::count(['statement' => [Player::ACTIVE, Player::INACTIVE]])).'</strong>';
+echo '<strong>'.Format::number(PlayerManager::count(['statement' => [PlayerStatement::Active, PlayerStatement::Inactive]])).'</strong>';
 echo '</p>';
 
 $S_PAM = ASM::$pam->getCurrentSession();

@@ -11,8 +11,9 @@ use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Hermes\Infrastructure\DataFixtures\Factory\ConversationFactory;
 use App\Modules\Hermes\Infrastructure\DataFixtures\Factory\ConversationUserFactory;
 use App\Modules\Hermes\Model\Conversation;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Infrastructure\DataFixtures\Factory\PlayerFactory;
-use App\Modules\Zeus\Model\Player;
 use Zenstruck\Foundry\Story;
 
 class DemocraticRegimeWorkflowStory extends Story
@@ -27,17 +28,17 @@ class DemocraticRegimeWorkflowStory extends Story
 
 		$factionPlayer = PlayerFactory::createOne([
 			'faction' => $faction,
-			'statement' => Player::DEAD,
+			'statement' => PlayerStatement::Dead,
 		]);
 
 		PlayerFactory::createMany(20, [
 			'faction' => $faction,
-			'status' => Player::STANDARD,
+			'status' => PlayerStatus::Standard,
 		]);
 
 		PlayerFactory::createMany(10, [
 			'faction' => $faction,
-			'status' => Player::PARLIAMENT,
+			'status' => PlayerStatus::Parliament,
 		]);
 
 		$conversation = ConversationFactory::createOne([

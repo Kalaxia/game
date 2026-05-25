@@ -8,6 +8,7 @@ use App\Classes\Exception\FormException;
 use App\Classes\Library\Utils;
 use App\Modules\Hermes\Model\ConversationMessage;
 use App\Modules\Hermes\Model\ConversationUser;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Model\Player;
 
 $request = $this->getContainer()->get('app.request');
@@ -22,7 +23,7 @@ $content = $parser->parse($request->request->get('message'));
 
 if (false !== $content) {
 	if ($player = $playerManager->get($session->get('playerId'))) {
-		if ($player->status > Player::PARLIAMENT) {
+		if ($player->status->value > PlayerStatus::Parliament->value) {
 			if ('' !== $content && strlen((string) $content) < 25000) {
 				if (($factionAccount = $playerManager->getFactionAccount($player->rColor)) !== null) {
 					$S_CVM = $conversationManager->getCurrentSession();

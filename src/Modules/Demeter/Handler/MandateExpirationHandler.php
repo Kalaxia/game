@@ -8,9 +8,9 @@ use App\Modules\Demeter\Domain\Event\MandateStartEvent;
 use App\Modules\Demeter\Domain\Repository\Election\MandateRepositoryInterface;
 use App\Modules\Demeter\Message\MandateExpirationMessage;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Infrastructure\Validator\IsGovernmentMember;
-use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Attribute\WithMonologChannel;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -39,11 +39,11 @@ class MandateExpirationHandler
 		$governmentMembers = $this->playerRepository->getBySpecification(new IsGovernmentMember($expiredMandate->faction));
 
 		foreach ($governmentMembers as $governmentMember) {
-			$governmentMember->status = Player::PARLIAMENT;
+			$governmentMember->status = PlayerStatus::Parliament;
 		}
 
 		if (null !== $newMandate->leader) {
-			$newMandate->leader->status = Player::CHIEF;
+			$newMandate->leader->status = PlayerStatus::Chief;
 		}
 
 		$factionAccount = $this->playerRepository->getFactionAccount($newMandate->faction);

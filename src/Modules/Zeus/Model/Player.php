@@ -5,6 +5,8 @@ namespace App\Modules\Zeus\Model;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Portal\Domain\Entity\User;
 use App\Modules\Shared\Domain\Model\SystemUpdatable;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Resource\TutorialResource;
 
 class Player implements CreditHolderInterface, SystemUpdatable, \JsonSerializable
@@ -17,7 +19,7 @@ class Player implements CreditHolderInterface, SystemUpdatable, \JsonSerializabl
 	public int $sex = 0;
 	public string $description = '';
 	public string $avatar = '';
-	public int $status = 1;
+	public PlayerStatus $status = PlayerStatus::Standard;
 	// @TODO rename to credits
 	public int $credit = 0;
 	public int $experience = 0;
@@ -37,38 +39,34 @@ class Player implements CreditHolderInterface, SystemUpdatable, \JsonSerializabl
 	public ?\DateTimeImmutable $dLastConnection = null;
 	public ?\DateTimeImmutable $dLastActivity = null;
 	public bool $premium = false;
-	public int $statement = 0;
+	public PlayerStatement $statement = PlayerStatement::Active;
+	public ?\DateTimeImmutable $lastReadNewsAt = null;
 
 	public bool $synchronized = false;
 
-	public const ACTIVE = 1;
-	public const INACTIVE = 2;
-	public const HOLIDAY = 3;
-	public const BANNED = 4;
-	public const DELETED = 5;
-	public const DEAD = 6;
-
-	public const STANDARD = 1;
-	public const PARLIAMENT = 2;
-	public const TREASURER = 3;
-	public const WARLORD = 4;
-	public const MINISTER = 5;
-	public const CHIEF = 6;
-
 	public function isInGame(): bool
 	{
-		return in_array($this->statement, [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY, Player::BANNED]);
+		return in_array($this->statement, [
+			PlayerStatement::Active,
+			PlayerStatement::Inactive,
+			PlayerStatement::Holiday,
+			PlayerStatement::Banned,
+		]);
 	}
 
 	public function isAlive(): bool
 	{
-		return static::DEAD !== $this->statement;
+		return PlayerStatement::Dead !== $this->statement;
 	}
 
 	// @TODO transform into Voter
 	public function canAccess(): bool
 	{
-		return in_array($this->statement, [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY]);
+		return in_array($this->statement, [
+			PlayerStatement::Active,
+			PlayerStatement::Inactive,
+			PlayerStatement::Holiday,
+		]);
 	}
 
 	public function isSynchronized(): bool
@@ -78,22 +76,27 @@ class Player implements CreditHolderInterface, SystemUpdatable, \JsonSerializabl
 
 	public function isRuler(): bool
 	{
-		return self::CHIEF === $this->status;
+		return PlayerStatus::Chief === $this->status;
 	}
 
 	public function isSenator(): bool
 	{
-		return self::PARLIAMENT === $this->status;
+		return PlayerStatus::Parliament === $this->status;
 	}
 
 	public function isGovernmentMember(): bool
 	{
-		return in_array($this->status, [self::CHIEF, self::WARLORD, self::TREASURER, self::MINISTER]);
+		return in_array($this->status, [
+			PlayerStatus::Chief,
+			PlayerStatus::Warlord,
+			PlayerStatus::Treasurer,
+			PlayerStatus::Minister,
+		]);
 	}
 
 	public function isTreasurer(): bool
 	{
-		return self::TREASURER === $this->status;
+		return PlayerStatus::Treasurer === $this->status;
 	}
 
 	public function isParliamentMember(): bool
@@ -103,7 +106,7 @@ class Player implements CreditHolderInterface, SystemUpdatable, \JsonSerializabl
 
 	public function isPeopleMember(): bool
 	{
-		return self::STANDARD === $this->status;
+		return PlayerStatus::Standard === $this->status;
 	}
 
 	public function setCredits(int $credit): static
@@ -136,6 +139,11 @@ class Player implements CreditHolderInterface, SystemUpdatable, \JsonSerializabl
 	public function getRoles(): array
 	{
 		return ['ROLE_USER'];
+	}
+
+	public function getGender(): string
+	{
+		return 'male';
 	}
 
 	public function jsonSerialize(): array

@@ -37,13 +37,6 @@
 				</div>
 
 				{% for message in messages %}
-					{% if message.player.faction.identifier > 0 %}
-						{% set statuses = get_faction_info(message.player.faction.identifier, 'status') %}
-						{% set status = statuses[message.player.status - 1] %}
-					{% else %}
-						{% set status = 'Rebelle' %}
-					{% endif %}
-
 					{% set can_edit = current_player.id == message.player.id or current_player.isGovernmentMember is same as(true) and topic.forum != 20 %}
 
 					<div class="flex items-start gap-x-4 pt-4">
@@ -52,7 +45,9 @@
 						</a>
 						<div class="content">
 							<p class="text">
-								≡ {{ status }} {{ message.player.name }}<br /><br />
+								≡
+								<twig:PlayerStatus :player="message.player" />
+								{{ message.player.name }}<br /><br />
 								{{ message.pContent|raw }}
 							</p>
 

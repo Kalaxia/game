@@ -2,6 +2,7 @@
 
 namespace App\Modules\Demeter\Infrastructure\Controller;
 
+use App\Modules\Demeter\Domain\Event\NewCandidateEvent;
 use App\Modules\Demeter\Domain\Repository\Election\CandidateRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\VoteRepositoryInterface;
@@ -11,6 +12,7 @@ use App\Modules\Demeter\Model\Forum\ForumTopic;
 use App\Modules\Demeter\Resource\ColorResource;
 use App\Modules\Zeus\Manager\PlayerManager;
 use App\Modules\Zeus\Model\Player;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,6 +26,7 @@ class Postulate extends AbstractController
 		Request $request,
 		Player $currentPlayer,
 		PlayerManager $playerManager,
+		EventDispatcherInterface $eventDispatcher,
 		CandidateRepositoryInterface $candidateRepository,
 		PoliticalEventRepositoryInterface $electionRepository,
 		ForumTopicRepositoryInterface $forumTopicRepository,
@@ -60,6 +63,9 @@ class Postulate extends AbstractController
 
 			return $this->redirect($request->headers->get('referer'));
 		}
+
+		$otherCandidates = $candidateRepository->getByPoliticalEvent($election);
+
 		$candidate = new Candidate(
 			id: Uuid::v4(),
 			politicalEvent: $election,
@@ -90,6 +96,8 @@ class Postulate extends AbstractController
 
 			$voteRepository->save($vote);
 		}
+		$eventDispatcher->dispatch(new NewCandidateEvent($election, $candidate, $otherCandidates));
+
 		$this->addFlash('success', 'Candidature déposée.');
 
 		return $this->redirectToRoute('view_faction_election', ['candidate' => $candidate->id]);

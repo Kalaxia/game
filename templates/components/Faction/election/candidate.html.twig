@@ -1,5 +1,3 @@
-{% set statuses = get_faction_info(current_player.faction.identifier, 'status') %}
-
 <div class="component player profil size1">
 	<div class="head"></div>
 	<div class="fix-body">
@@ -49,13 +47,13 @@
 
 			<div class="center-box">
 				<span class="label">
-					{{ statuses[candidate.player.status - 1] }}
+					<twig:PlayerStatus :player="candidate.player" />
 				</span>
 				<span class="value">{{ candidate.player.name }}</span>
 			</div>
 
 			<div class="profil-flag">
-				<img src="{{ asset('build/media/avatar/big/' ~ candidate.player.avatar ~ '.png') }}" alt="{{ candidate.player.name }}">
+				<twig:Avatar :player="candidate.player" class="!w-16 !h-16" />
 			</div>
 		</div>
 	</div>

@@ -6,7 +6,9 @@
 	<section>
 		<div class="center-box">
 			<span class="label">
-				{{ get_faction_info(best_player.faction.identifier, 'status')[best_player.status - 1] }} de {{ get_faction_info(best_player.faction.identifier, 'popularName') }}
+				<twig:PlayerStatus :player="best_player" class="!w-16 !h-16" />
+				de
+				<twig:FactionName :faction="best_player.faction" type="popular" />
 			</span>
 			<span class="value">{{ best_player.name }}</span>
 		</div>

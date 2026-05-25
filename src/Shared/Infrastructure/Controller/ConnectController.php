@@ -7,6 +7,7 @@ use App\Classes\Container\EventList;
 use App\Classes\Library\Utils;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Portal\Domain\Entity\User;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Domain\Event\PlayerConnectionEvent;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
@@ -50,7 +51,7 @@ class ConnectController extends AbstractController
 			throw $this->createAccessDeniedException('This player account does not belong to you');
 		}
 
-		$player->statement = Player::ACTIVE;
+		$player->statement = PlayerStatement::Active;
 
 		$session->set('token', Utils::generateString(5));
 

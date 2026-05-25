@@ -1,27 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Demeter\Infrastructure\Controller\Government\Ruler;
 
-use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
-use App\Modules\Hermes\Application\Builder\NotificationBuilder;
-use App\Modules\Hermes\Application\Persister\NotificationPersister;
+use App\Modules\Demeter\Domain\Event\Government\FiredMinisterEvent;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FireMinister extends AbstractController
 {
 	public function __invoke(
 		Request $request,
 		Player $currentPlayer,
+		EventDispatcherInterface $eventDispatcher,
 		EntityManagerInterface $entityManager,
-		GetFactionsConfiguration $getFactionsConfiguration,
 		PlayerRepositoryInterface $playerRepository,
-		NotificationPersister $notificationPersister,
+		TranslatorInterface $translator,
 		int $id,
 	): Response {
 		// TODO Replace with voter
@@ -30,6 +33,7 @@ class FireMinister extends AbstractController
 		}
 
 		$minister = $playerRepository->get($id) ?? throw $this->createNotFoundException('Player not found');
+		$status = $minister->status;
 
 		if (!$minister->faction->id->equals($currentPlayer->faction->id)) {
 			throw new ConflictHttpException('Vous ne pouvez pas virer un joueur d\'une autre faction.');
@@ -39,22 +43,11 @@ class FireMinister extends AbstractController
 			throw new ConflictHttpException('Vous ne pouvez choisir qu\'un membre du gouvernement.');
 		}
 
-		$statusArray = $getFactionsConfiguration($minister->faction, 'status');
-
-		$notification = NotificationBuilder::new()
-			->setTitle('Eviction du gouvernement')
-			->setContent(NotificationBuilder::paragraph(
-				'Vous avez été renvoyé du poste de ',
-				$statusArray[$minister->status - 1],
-				' de votre faction.',
-			))
-			->forPlayer($minister);
-
-		$notificationPersister->saveFromBuilder($notification);
-
-		$minister->status = Player::PARLIAMENT;
+		$minister->status = PlayerStatus::Parliament;
 
 		$entityManager->flush();
+
+		$eventDispatcher->dispatch(new FiredMinisterEvent($currentPlayer, $minister, $status));
 
 		return $this->redirect($request->headers->get('referer'));
 	}

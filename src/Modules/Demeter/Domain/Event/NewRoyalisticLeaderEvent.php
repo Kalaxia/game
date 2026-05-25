@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace App\Modules\Demeter\Domain\Event;
 
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
-use App\Modules\Zeus\Model\Player;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NewRoyalisticLeaderEvent extends NewLeaderEvent
 {
 	public function log(LoggerInterface $logger): void
 	{
-		$logger->info('Faction {factionName} has a new royalistic leader: {newLeaderName}.', [
-			'factionName' => $this->factionName,
+		$logger->info('Faction {factionIdentifier} has a new royalistic leader: {newLeaderName}.', [
+			'factionIdentifier' => $this->faction->identifier,
 			'newLeaderName' => $this->newLeader->name,
 		]);
 	}
@@ -26,20 +27,26 @@ class NewRoyalisticLeaderEvent extends NewLeaderEvent
 			à travers la galaxie. Longue vie à <strong>%s</strong>.<br /><br />
 			De nombreux membres de la faction ont soutenu le mouvement révolutionnaire :<br /><br />
 			%s a reçu le soutien de %f%% de la population.<br />',
-			$this->factionName,
+			$translator->trans(sprintf('factions.%d.name.popular', $this->faction->identifier)),
 			$this->newLeader->name,
 			$this->newLeader->name,
 			$this->candidatesData['supportPercentage'],
 		);
 	}
 
-	public function getNotificationBuilders(TranslatorInterface $translator): \Generator
-	{
+	public function getNotificationBuilders(
+		UrlGeneratorInterface $urlGenerator,
+		TranslatorInterface $translator,
+	): \Generator {
 		yield NotificationBuilder::new()
 			->setTitle('Votre coup d\'état a réussi')
 			->setContent(NotificationBuilder::paragraph(
 				'Le peuple vous a soutenu, vous avez renversé le ',
-				$this->factionStatuses[Player::CHIEF - 1],
+				$translator->trans(sprintf(
+					'factions.%d.status.%d',
+					$this->faction->identifier,
+					PlayerStatus::Chief->value,
+				)),
 				' de votre faction et avez pris sa place.',
 			))
 			->forPlayer($this->newLeader)

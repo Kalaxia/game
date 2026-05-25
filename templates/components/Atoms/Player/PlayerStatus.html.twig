@@ -1,0 +1,3 @@
+{{ ('factions.' ~ player.faction.identifier ~ '.status.' ~ player.status.value)|trans({
+	'gender' : player.getGender()
+}) }}

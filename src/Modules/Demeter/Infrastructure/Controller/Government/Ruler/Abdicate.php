@@ -6,6 +6,7 @@ use App\Modules\Demeter\Application\Election\NextElectionDateCalculator;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
@@ -56,10 +57,10 @@ class Abdicate extends AbstractController
 		if (!$faction->isInMandate()) {
 			throw new ConflictHttpException('vous ne pouvez pas abdiquer pendant un putsch.');
 		}
-		$heir->status = Player::CHIEF;
+		$heir->status = PlayerStatus::Chief;
 		// The player is now a member of Parliament
-		$currentPlayer->status = Player::PARLIAMENT;
-		$request->getSession()->get('playerInfo')->add('status', Player::PARLIAMENT);
+		$currentPlayer->status = PlayerStatus::Parliament;
+		$request->getSession()->get('playerInfo')->add('status', PlayerStatus::Parliament->value);
 
 		$entityManager->flush();
 

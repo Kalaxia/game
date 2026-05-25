@@ -8,6 +8,10 @@ use App\Modules\Ares\Domain\Event\Fleet\PlannedLootEvent;
 use App\Modules\Artemis\Domain\Event\SpyEvent;
 use App\Modules\Athena\Domain\Event\NewBuildingQueueEvent;
 use App\Modules\Athena\Domain\Event\NewShipQueueEvent;
+use App\Modules\Demeter\Domain\Event\Government\FiredMinisterEvent;
+use App\Modules\Demeter\Domain\Event\Government\NewMinisterEvent;
+use App\Modules\Demeter\Domain\Event\NewCandidateEvent;
+use App\Modules\Galaxy\Domain\Event\SectorOwnerChangeEvent;
 use App\Modules\Promethee\Domain\Event\NewTechnologyQueueEvent;
 use App\Modules\Zeus\Domain\Event\PlayerConnectionEvent;
 use App\Modules\Zeus\Domain\Event\UnmaintainedHangarShipsEvent;
@@ -42,9 +46,15 @@ final readonly class MixpanelListener
 	#[AsEventListener(SpyEvent::class)]
 	#[AsEventListener(UnpaidFleetEvent::class)]
 	#[AsEventListener(UnmaintainedHangarShipsEvent::class)]
+	#[AsEventListener(NewCandidateEvent::class)]
+	#[AsEventListener(SectorOwnerChangeEvent::class)]
+	#[AsEventListener(NewMinisterEvent::class)]
+	#[AsEventListener(FiredMinisterEvent::class)]
 	public function onTrackingEvent(TrackingEvent $event): void
 	{
-		$this->mixpanel->identify($event->getTrackingPeopleId());
+		if (null !== $trackingPeopleId = $event->getTrackingPeopleId()) {
+			$this->mixpanel->identify($trackingPeopleId);
+		}
 
 		$this->mixpanel->track($event->getTrackingEventName(), $event->getTrackingData());
 	}

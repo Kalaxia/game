@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Zeus\Infrastructure\Validator;
 
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Zeus\Model\Player;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Shared\Domain\Specification\SelectorCompositeSpecification;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Validator\Constraint;
@@ -27,7 +27,12 @@ class IsGovernmentMember extends SelectorCompositeSpecification
 		return [
 			new IsFromFaction($this->faction),
 			new IsPlayerAlive(),
-			new HasStatus([Player::MINISTER, Player::TREASURER, Player::WARLORD, Player::CHIEF]),
+			new HasStatus([
+				PlayerStatus::Minister,
+				PlayerStatus::Treasurer,
+				PlayerStatus::Warlord,
+				PlayerStatus::Chief,
+			]),
 		];
 	}
 

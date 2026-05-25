@@ -1,6 +1,6 @@
 <div class="component report">
 	<div class="head skin-1">
-		<img src="{{ asset('build/media/avatar/medium/' ~ report_attacker.avatar ~ '.png') }}" alt="{{ report_attacker.name }}" />
+		<twig:Avatar :player="report_attacker" class="!w-24 !h-24" />
 		<h2>Attaquant</h2>
 		<em>{{ report_attacker.name }}</em>
 	</div>
@@ -80,7 +80,7 @@
 			<h2>Défenseur</h2>
 			<em>Rebelle</em>
 		{% else %}
-			<img src="{{ asset('build/media/avatar/medium/' ~ report_defender.avatar ~ '.png') }}" alt="{{ report_defender.name }}" />
+			<twig:Avatar :player="report_defender" class="!w-24 !h-24" />
 			<h2>Défenseur</h2>
 			<em>{{ report_defender.name }}</em>
 		{% endif %}

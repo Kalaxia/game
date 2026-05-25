@@ -4,6 +4,7 @@ namespace App\Modules\Zeus\Domain\Repository;
 
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Shared\Domain\Repository\EntityRepositoryInterface;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Specification\SelectorSpecification;
 
@@ -69,7 +70,7 @@ interface PlayerRepositoryInterface extends EntityRepositoryInterface
 	 */
 	public function getLastFactionPlayers(Color $faction): array;
 
-	public function getGovernmentMember(Color $faction, int $status): ?Player;
+	public function getGovernmentMember(Color $faction, PlayerStatus $status): ?Player;
 
 	public function getFactionLeader(Color $faction): ?Player;
 

@@ -19,8 +19,8 @@ use App\Modules\Demeter\Message\Law\VoteMessage;
 use App\Modules\Demeter\Message\Law\WarDeclarationResultMessage;
 use App\Modules\Demeter\Model\Law\Law;
 use App\Modules\Demeter\Resource\LawResources;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
-use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -53,7 +53,7 @@ readonly class VoteHandler
 			// refuser la loi
 			$law->statement = Law::REFUSED;
 			if (LawResources::getInfo($law->type, 'bonusLaw')) {
-				$activePlayers = $this->playerRepository->countByFactionAndStatements($faction, [Player::ACTIVE]);
+				$activePlayers = $this->playerRepository->countByFactionAndStatements($faction, [PlayerStatement::Active]);
 				$faction->credits += intval(round((LawResources::getInfo($law->type, 'price') * $this->durationHandler->getHoursDiff($law->voteEndedAt, $law->endedAt) * ($activePlayers + 1) * 90) / 100));
 			} else {
 				$faction->credits += intval(round((LawResources::getInfo($law->type, 'price') * 90) / 100));

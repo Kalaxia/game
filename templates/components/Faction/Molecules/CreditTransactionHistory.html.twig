@@ -1,6 +1,6 @@
 <div class="player color{{ this.displayFaction }}">
 	<a href="{{ this.displayLink }}">
-		<img src="{{ asset('build/media/avatar/small/' ~ this.displayAvatar ~ '.png') }}" class="picto" alt="{{ this.displayName }}">
+		<twig:Avatar :avatar="this.displayAvatar" class="!w-16 !h-16" />
 	</a>
 
 	<span class="title">{{ this.displayStatus }}</span>

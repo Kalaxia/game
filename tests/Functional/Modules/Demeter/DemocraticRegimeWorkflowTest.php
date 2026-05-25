@@ -19,6 +19,7 @@ use App\Modules\Demeter\Message\MandateExpirationMessage;
 use App\Modules\Demeter\Model\Election\DemocraticElection;
 use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Demeter\Resource\ColorResource;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Infrastructure\Validator\IsParliamentMember;
 use App\Modules\Zeus\Model\Player;
@@ -293,7 +294,7 @@ class DemocraticRegimeWorkflowTest extends KernelTestCase
 
 		/**************** VALIDATE PLAYER STATUS CHANGE ****************/
 
-		static::assertEquals(Player::CHIEF, $candidatePlayer->status);
+		static::assertEquals(PlayerStatus::Chief, $candidatePlayer->status);
 
 		/**************** VALIDATE MANDATE CREATION ****************/
 

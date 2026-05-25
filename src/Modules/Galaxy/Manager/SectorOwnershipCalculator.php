@@ -6,9 +6,11 @@ namespace App\Modules\Galaxy\Manager;
 
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Galaxy\Domain\Entity\Sector;
+use App\Modules\Galaxy\Domain\Event\SectorOwnerChangeEvent;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Galaxy\Domain\Repository\SystemRepositoryInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -19,6 +21,7 @@ readonly class SectorOwnershipCalculator
 	private const int CONTROLLED_SYSTEM_POINTS = 2;
 
 	public function __construct(
+		private EventDispatcherInterface $eventDispatcher,
 		private ColorRepositoryInterface $colorRepository,
 		private TagAwareCacheInterface $cache,
 		private SystemRepositoryInterface $systemRepository,
@@ -102,14 +105,29 @@ readonly class SectorOwnershipCalculator
 
 		$currentFactionIdentifier = $sector->faction?->identifier ?? 0;
 
-		if (!$hasEnoughPoints) {
-			// If this is a prime sector, we do not pull back the color from the sector
-			// TODO check behavior if another faction has taken the prime sector before
+		if (!$hasEnoughPoints && null !== $sector->faction) {
 			if (!$sector->prime) {
+				$this->eventDispatcher->dispatch(new SectorOwnerChangeEvent(
+					sector: $sector,
+					winner: null,
+					loser: $sector->faction,
+				));
+
 				$sector->faction = null;
 			}
 		} elseif ($currentFactionIdentifier !== $newColor && $score > $scores[$currentFactionIdentifier]) {
-			$sector->faction = $this->colorRepository->getOneByIdentifier($newColor);
+			$newOwner = $this->colorRepository->getOneByIdentifier($newColor)
+				?? throw new \LogicException(sprintf('Faction %d not found', $newColor));
+
+			$this->eventDispatcher->dispatch(new SectorOwnerChangeEvent(
+				sector: $sector,
+				winner: $newOwner,
+				loser: $sector->faction,
+			));
+
+			$sector->faction = $newOwner;
+			// Once a sector is conquered, it is not considered as a spawn sector anymore
+			$sector->prime = false;
 		}
 
 		$this->sectorRepository->save($sector);

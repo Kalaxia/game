@@ -7,6 +7,7 @@ namespace App\Modules\Demeter\Repository;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
@@ -59,7 +60,7 @@ class ColorRepository extends DoctrineRepository implements ColorRepositoryInter
 			->leftJoin(Player::class, 'p', Join::WITH, 'IDENTITY(p.faction) = f.id AND p.status = :active_status')
 			->groupBy('f.id')
 			->orderBy('active_players', 'ASC')
-			->setParameter('active_status', Player::ACTIVE);
+			->setParameter('active_status', PlayerStatement::Active);
 
 		return $qb->getQuery()->getResult();
 	}

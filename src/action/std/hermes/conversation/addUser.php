@@ -5,7 +5,6 @@ use App\Classes\Library\Flashbag;
 use App\Classes\Library\Utils;
 use App\Modules\Hermes\Model\ConversationMessage;
 use App\Modules\Hermes\Model\ConversationUser;
-use App\Modules\Zeus\Model\Player;
 
 $request = $this->getContainer()->get('app.request');
 $session = $this->getContainer()->get(App\Classes\Library\Session\SessionWrapper::class);
@@ -42,7 +41,7 @@ if (false !== $recipients and false !== $conversation) {
 
 		if ((count($recipients) + count($players)) <= ConversationUser::MAX_USERS) {
 			// chargement des utilisateurs
-			$newPlayers = $playerManager->getByIdsAndStatements($recipients, [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY]);
+			$newPlayers = $playerManager->getByIdsAndStatements($recipients, [App\Modules\Zeus\Domain\Enum\PlayerStatement::Active, PlayerStatement::Inactive, PlayerStatement::Holiday]);
 			if (count($newPlayers) >= 1) {
 				// création de la date précédente
 				$readingDate = date('Y-m-d H:i:s', strtotime(Utils::now()) - 20);

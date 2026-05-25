@@ -1,5 +1,3 @@
-{% set statuses = get_faction_info(current_player.faction.identifier, 'status') %}
-
 <div class="min-w-96">
 	<header>
 		<twig:H2>
@@ -12,12 +10,12 @@
 			{% for candidate in candidates %}
 				<div class="item">
 					<div class="left">
-						<img src="{{ asset('build/media/avatar/small/' ~ candidate.player.avatar ~ '.png') }}" alt="{{ candidate.player.name }}" />
-						</div>
+						<twig:Avatar :player="candidate.player" class="!w-16 !h-16" />
+					</div>
 
 					<div class="center">
 						<strong>{{ candidate.player.name }}</strong>
-						{{ statuses[candidate.player.status - 1] }}
+						<twig:PlayerStatus :player="candidate.player" />
 					</div>
 
 					<div class="right">

@@ -6,8 +6,8 @@ namespace App\Modules\Demeter\Domain\Service\Law;
 
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Resource\LawResources;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
-use App\Modules\Zeus\Model\Player;
 
 readonly class GetPrice
 {
@@ -24,7 +24,7 @@ readonly class GetPrice
 			return $baseLawPrice;
 		}
 		// Laws with duration are for now bonuses, their price is multiplied by the number of players it will apply to
-		$activePlayers = $this->playerRepository->countByFactionAndStatements($faction, [Player::ACTIVE]);
+		$activePlayers = $this->playerRepository->countByFactionAndStatements($faction, [PlayerStatement::Active]);
 
 		return $baseLawPrice * $gameCycles * $activePlayers;
 	}

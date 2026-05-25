@@ -8,6 +8,7 @@ use App\Modules\Demeter\Model\Color;
 use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Galaxy\Manager\PlanetManager;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Infrastructure\Validator\IsGovernmentMember;
 use App\Modules\Zeus\Manager\PlayerManager;
@@ -58,7 +59,7 @@ class ViewEmbassy extends AbstractController
 						Color::NEUTRAL => 'Neutre',
 					],
 					'sectors_count' => $sectorRepository->countFactionSectors($faction),
-					'active_players_count' => $playerRepository->countByFactionAndStatements($faction, [Player::ACTIVE]),
+					'active_players_count' => $playerRepository->countByFactionAndStatements($faction, [PlayerStatement::Active]),
 				];
 			} else {
 				throw new NotFoundHttpException('Faction not found');

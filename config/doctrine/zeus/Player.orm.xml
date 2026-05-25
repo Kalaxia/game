@@ -30,7 +30,7 @@
 				<option name="default">1</option>
 			</options>
 		</field>
-		<field name="status" type="smallint" column="status">
+		<field name="status" type="smallint" column="status" enum-type="App\Modules\Zeus\Domain\Enum\PlayerStatus">
 			<options>
 				<option name="unsigned">true</option>
 				<option name="default">1</option>
@@ -77,7 +77,7 @@
 				<option name="default">0</option>
 			</options>
 		</field>
-		<field name="statement" column="statement" type="smallint">
+		<field name="statement" column="statement" type="smallint" enum-type="App\Modules\Zeus\Domain\Enum\PlayerStatement">
 			<options>
 				<option name="unsigned">true</option>
 				<option name="default">0</option>
@@ -128,5 +128,6 @@
 		<field name="dLastConnection" column="dLastConnection" type="datetime_immutable" nullable="true" />
 		<field name="dLastActivity" column="dLastActivity" type="datetime_immutable" nullable="true" />
 		<field name="uPlayer" column="uPlayer" type="datetime_immutable" nullable="true" />
+		<field name="lastReadNewsAt" type="datetime_immutable" nullable="true" />
 	</entity>
 </doctrine-mapping>

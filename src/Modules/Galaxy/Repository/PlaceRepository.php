@@ -8,7 +8,7 @@ use App\Modules\Galaxy\Domain\Entity\Place;
 use App\Modules\Galaxy\Domain\Entity\System;
 use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
-use App\Modules\Zeus\Model\Player;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
 
@@ -51,7 +51,7 @@ class PlaceRepository extends DoctrineRepository implements PlaceRepositoryInter
 			->join('ob.player', 'pl')
 			->where($qb->expr()->andX(
 				$qb->expr()->orX(
-					$qb->expr()->in('pl.statement', [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY])
+					$qb->expr()->in('pl.statement', [PlayerStatement::Active, PlayerStatement::Inactive, PlayerStatement::Holiday])
 				),
 				$qb->expr()->orX(
 					$qb->expr()->like('LOWER(pl.name)', 'LOWER(:search)'),

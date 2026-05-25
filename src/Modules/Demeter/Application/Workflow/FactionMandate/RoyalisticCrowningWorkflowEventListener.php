@@ -9,7 +9,6 @@ use App\Modules\Demeter\Domain\Event\NewRoyalisticLeaderEvent;
 use App\Modules\Demeter\Domain\Event\PutschFailedEvent;
 use App\Modules\Demeter\Domain\Repository\Election\CandidateRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
-use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Domain\Service\GetPutschSupportPercentage;
 use App\Modules\Demeter\Message\SenateUpdateMessage;
 use App\Modules\Demeter\Model\Color;
@@ -35,7 +34,6 @@ readonly class RoyalisticCrowningWorkflowEventListener
 		private PlayerRepositoryInterface $playerRepository,
 		private EventDispatcherInterface $eventDispatcher,
 		private ConversationRepositoryInterface $conversationRepository,
-		private GetFactionsConfiguration $getFactionsConfiguration,
 		private ScheduleTask $scheduleTask,
 		private NotificationPersister $notificationPersister,
 		private UrlGeneratorInterface $urlGenerator,
@@ -76,7 +74,6 @@ readonly class RoyalisticCrowningWorkflowEventListener
 		?Player $previousLeader,
 		float $supportPercentage,
 	): void {
-		$statuses = ($this->getFactionsConfiguration)($faction, 'status');
 		($this->scheduleTask)(
 			message: new SenateUpdateMessage($faction->id),
 			datetime: new \DateTimeImmutable(sprintf(
@@ -100,12 +97,11 @@ readonly class RoyalisticCrowningWorkflowEventListener
 		}
 
 		$factionPlayer = $this->playerRepository->getFactionAccount($faction);
+
 		$this->eventDispatcher->dispatch(new NewRoyalisticLeaderEvent(
 			faction: $faction,
 			newLeader: $newLeader,
 			politicalEvent: $putsch,
-			factionName: ($this->getFactionsConfiguration)($faction, 'popularName'),
-			factionStatuses: $statuses,
 			factionPlayer: $factionPlayer,
 			factionConversation: $this->conversationRepository->getOneByPlayer($factionPlayer),
 			candidatesData: [
@@ -116,28 +112,13 @@ readonly class RoyalisticCrowningWorkflowEventListener
 
 	private function reinstatePreviousLeader(Color $faction, ?Player $leader, Player $putschist): void
 	{
-		if (null !== $leader) {
-			$this->notificationPersister->saveFromBuilder(NotificationBuilder::new()
-				->setTitle('Un coup d\'état a échoué')
-				->setContent(NotificationBuilder::paragraph(
-					// TODO replace "player"'s notion with a proper IG status
-					' Le joueur ',
-					NotificationBuilder::link(
-						$this->urlGenerator->generate('embassy', ['player' => $putschist->id]),
-						$putschist->name,
-					),
-					' a tenté un coup d\'état, celui-ci a échoué.',
-				))
-				->forPlayer($leader));
-		}
-
 		$factionAccount = $this->playerRepository->getFactionAccount($faction);
+
 		$this->eventDispatcher->dispatch(new PutschFailedEvent(
+			putschist: $putschist,
 			leader: $leader,
-			putchist: $putschist,
 			factionAccount: $factionAccount,
 			factionConversation: $this->conversationRepository->getOneByPlayer($factionAccount),
-			factionName: ($this->getFactionsConfiguration)($faction, 'popularName'),
 		));
 	}
 }

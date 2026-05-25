@@ -12,6 +12,7 @@ use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Promethee\Model\TechnologyId;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Domain\Event\UniversityInvestmentsUpdateEvent;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
@@ -56,7 +57,7 @@ readonly class PlayerManager
 		}
 		// deadify the player
 		$player->name = $futureName;
-		$player->statement = Player::DEAD;
+		$player->statement = PlayerStatement::Dead;
 
 		$this->entityManager->flush();
 	}
@@ -84,7 +85,7 @@ readonly class PlayerManager
 			$player->partLifeSciences = 25;
 			$player->partSocialPoliticalSciences = 25;
 			$player->partInformaticEngineering = 25;
-			$player->statement = Player::ACTIVE;
+			$player->statement = PlayerStatement::Active;
 			$player->factionPoint = 0;
 
 			$technos = $this->technologyRepository->getPlayerTechnology($player);

@@ -1,5 +1,3 @@
-{% set statuses = get_faction_info(faction.identifier, 'status') %}
-
 <twig:LayoutBox>
 	<header>
 		<twig:H2>
@@ -15,7 +13,9 @@
 						<twig:Avatar :player="minister" class="w-10 h-10" />
 					</a>
 					<div>
-						<span class="title">{{ statuses[minister.status - 1] }}</span>
+						<span class="title">
+							<twig:PlayerStatus :player="minister" />
+						</span>
 						<strong class="name">{{ minister.name }}</strong>
 					</div>
 				</div>

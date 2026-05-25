@@ -20,6 +20,8 @@ use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
 use App\Modules\Hermes\Domain\Repository\ConversationUserRepositoryInterface;
 use App\Modules\Hermes\Model\Conversation;
 use App\Modules\Hermes\Model\ConversationUser;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -94,7 +96,7 @@ class PopulateDatabase extends Command
 		$output->writeln('Ajout du Joueur Galaxy');
 
 		$p = new Player();
-		$p->status = Player::STANDARD;
+		$p->status = PlayerStatus::Standard;
 		$p->credit = 10000000;
 		$p->experience = 15000;
 		$p->factionPoint = 0;
@@ -113,7 +115,7 @@ class PopulateDatabase extends Command
 		$p->dLastConnection = new \DateTimeImmutable();
 		$p->dLastActivity = new \DateTimeImmutable();
 		$p->premium = false;
-		$p->statement = Player::DEAD;
+		$p->statement = PlayerStatement::Dead;
 
 		// @TODO remove Rebel player
 		$rebelPlayer = clone $p;

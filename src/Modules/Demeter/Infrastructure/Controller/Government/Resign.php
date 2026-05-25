@@ -2,6 +2,7 @@
 
 namespace App\Modules\Demeter\Infrastructure\Controller\Government;
 
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,9 +24,9 @@ class Resign extends AbstractController
 		if ($currentPlayer->isRuler()) {
 			throw new ConflictHttpException('Vous êtes le chef de votre faction.');
 		}
-		$currentPlayer->status = Player::PARLIAMENT;
+		$currentPlayer->status = PlayerStatus::Parliament;
 
-		$request->getSession()->get('playerInfo')->add('status', Player::PARLIAMENT);
+		$request->getSession()->get('playerInfo')->add('status', PlayerStatus::Parliament->value);
 
 		$this->addFlash('success', 'Vous n\'êtes plus membre du gouvernement.');
 

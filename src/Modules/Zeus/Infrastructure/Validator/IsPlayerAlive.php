@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Zeus\Infrastructure\Validator;
 
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Specification\SelectorSpecification;
 use App\Shared\Domain\Specification\Specification;
@@ -23,7 +24,7 @@ class IsPlayerAlive extends Constraint implements Specification, SelectorSpecifi
 	public function addMatchingCriteria(QueryBuilder $queryBuilder): void
 	{
 		$queryBuilder->andWhere(
-			$queryBuilder->expr()->neq('p.statement', Player::DEAD)
-		);
+			$queryBuilder->expr()->neq('p.statement', ':statement')
+		)->setParameter('statement', PlayerStatement::Dead);
 	}
 }

@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Demeter\Infrastructure\Controller\Government\Ruler;
 
+use App\Modules\Demeter\Domain\Event\Government\NewMinisterEvent;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
-use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,11 +23,12 @@ class ChooseMinister extends AbstractController
 	public function __invoke(
 		Request $request,
 		Player $currentPlayer,
+		EventDispatcherInterface $eventDispatcher,
 		EntityManagerInterface $entityManager,
 		GetFactionsConfiguration $getFactionsConfiguration,
 		PlayerRepositoryInterface $playerRepository,
 		NotificationPersister $notificationPersister,
-		int $department,
+		PlayerStatus $department,
 	): Response {
 		// TODO Replace with voter
 		if (!$currentPlayer->isRuler()) {
@@ -31,11 +36,7 @@ class ChooseMinister extends AbstractController
 		}
 		$minister = $playerRepository->getGovernmentMember($currentPlayer->faction, $department);
 
-		if (null !== $minister) {
-			throw new ConflictHttpException(sprintf('This post is already occupied by %s', $minister->name));
-		}
-
-		$rPlayer = $request->request->get('rplayer') ?? throw new BadRequestHttpException('Missing player ID');
+		$rPlayer = $request->request->getInt('rplayer') ?? throw new BadRequestHttpException('Missing player ID');
 
 		$appointee = $playerRepository->get($rPlayer) ?? throw $this->createNotFoundException('Player not found');
 		if (!$appointee->faction->id->equals($currentPlayer->faction->id)) {
@@ -44,24 +45,22 @@ class ChooseMinister extends AbstractController
 		if (!$appointee->isParliamentMember()) {
 			throw new ConflictHttpException('Vous ne pouvez choisir qu\'un membre du sénat.');
 		}
-		if (!in_array($department, [Player::TREASURER, Player::WARLORD, Player::MINISTER])) {
+		if (!in_array($department, [PlayerStatus::Treasurer, PlayerStatus::Warlord, PlayerStatus::Minister])) {
 			throw new ConflictHttpException('Ce département est inconnu.');
+		}
+
+		if (null !== $minister) {
+			$minister->status = PlayerStatus::Parliament;
 		}
 		$appointee->status = $department;
 
-		$statusArray = $getFactionsConfiguration($appointee->faction, 'status');
-
-		$notification = NotificationBuilder::new()
-			->setTitle('Nomination au gouvernement')
-			->setContent(NotificationBuilder::paragraph(
-				'Vous avez été choisi pour être le ',
-				$statusArray[$department - 1],
-				' de votre faction.'
-			))
-			->forPlayer($appointee);
-		$notificationPersister->saveFromBuilder($notification);
-
 		$entityManager->flush();
+
+		$eventDispatcher->dispatch(new NewMinisterEvent(
+			$currentPlayer,
+			$appointee,
+			$minister,
+		));
 
 		$this->addFlash('success', $appointee->name.' a rejoint votre gouvernement.');
 
