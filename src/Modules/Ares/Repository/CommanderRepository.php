@@ -65,7 +65,7 @@ class CommanderRepository extends DoctrineRepository implements CommanderReposit
 		}
 
 		if (!empty($statements)) {
-			$qb->andWhere($qb->expr()->in('c.statement', $statements))
+			$qb->andWhere($qb->expr()->in('c.statement', ':statements'))
 				->setParameter('statements', $statements);
 		}
 
