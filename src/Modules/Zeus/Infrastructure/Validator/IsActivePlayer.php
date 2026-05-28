@@ -14,7 +14,7 @@ class IsActivePlayer extends Constraint implements SelectorSpecification
 	public function addMatchingCriteria(QueryBuilder $queryBuilder): void
 	{
 		$queryBuilder->andWhere(
-			$queryBuilder->expr()->in('p.statement', [PlayerStatement::Active, PlayerStatement::Holiday])
-		);
+			$queryBuilder->expr()->in('p.statement', ':statements')
+		)->setParameter('statements', [PlayerStatement::Active, PlayerStatement::Holiday]);
 	}
 }
