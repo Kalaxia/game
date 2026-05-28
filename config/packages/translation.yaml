@@ -6,4 +6,4 @@ framework:
             - fr
         providers:
         globals:
-            '{gender}': 'other'
+            'gender': 'other'

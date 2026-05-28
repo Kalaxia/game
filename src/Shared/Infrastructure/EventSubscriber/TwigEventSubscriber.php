@@ -7,6 +7,7 @@ use App\Modules\Athena\Domain\Repository\BuildingQueueRepositoryInterface;
 use App\Modules\Athena\Domain\Repository\ShipQueueRepositoryInterface;
 use App\Modules\Galaxy\Application\Registry\CurrentPlayerPlanetsRegistry;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
+use App\Modules\Hermes\Domain\Repository\NewsRepositoryInterface;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
 use App\Modules\Promethee\Domain\Repository\TechnologyQueueRepositoryInterface;
 use App\Modules\Zeus\Application\Registry\CurrentPlayerRegistry;
@@ -23,6 +24,7 @@ class TwigEventSubscriber implements EventSubscriberInterface
 		private readonly Environment $twig,
 		private readonly CommanderRepositoryInterface $commanderRepository,
 		private readonly ConversationRepositoryInterface $conversationRepository,
+		private readonly NewsRepositoryInterface $newsRepository,
 		private readonly NotificationRepositoryInterface $notificationRepository,
 		private readonly CurrentPlayerRegistry $currentPlayerRegistry,
 		private readonly CurrentPlayerPlanetsRegistry $currentPlayerPlanetsRegistry,
@@ -75,5 +77,6 @@ class TwigEventSubscriber implements EventSubscriberInterface
 		$this->twig->addGlobal('conversations_count', $this->conversationRepository->countPlayerUnreadConversations($currentPlayer));
 		$this->twig->addGlobal('current_player_notifications', $this->notificationRepository->getUnreadNotifications($currentPlayer, 15));
 		$this->twig->addGlobal('current_player_notifications_count', $this->notificationRepository->countUnreadNotifications($currentPlayer));
+		$this->twig->addGlobal('current_player_unread_news_count', $this->newsRepository->countUnreadNewsForPlayer($currentPlayer));
 	}
 }

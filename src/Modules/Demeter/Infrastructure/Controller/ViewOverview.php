@@ -13,6 +13,7 @@ use App\Modules\Demeter\Manager\Forum\FactionNewsManager;
 use App\Modules\Demeter\Manager\Law\LawManager;
 use App\Modules\Demeter\Model\Law\Law;
 use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Infrastructure\Validator\IsGovernmentMember;
 use App\Modules\Zeus\Model\Player;
@@ -55,7 +56,7 @@ class ViewOverview extends AbstractController
 			'effective_laws' => $lawRepository->getByFactionAndStatements($faction, [Law::EFFECTIVE]),
 			'voting_laws' => $lawRepository->getByFactionAndStatements($faction, [Law::VOTATION]),
 			'sectors_count' => $sectorRepository->countFactionSectors($faction),
-			'active_players_count' => $playerRepository->countByFactionAndStatements($faction, [Player::ACTIVE]),
+			'active_players_count' => $playerRepository->countByFactionAndStatements($faction, [PlayerStatement::Active]),
 		]);
 	}
 }

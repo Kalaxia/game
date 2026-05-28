@@ -4,10 +4,10 @@ namespace App\Modules\Hephaistos\Handler;
 
 use App\Modules\Hephaistos\Message\DailyRoutineMessage;
 use App\Modules\Hermes\Domain\Repository\NotificationRepositoryInterface;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Domain\Repository\PlayerFinancialReportRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Manager\PlayerManager;
-use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;
 use Psr\Clock\ClockInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -45,7 +45,7 @@ readonly class DailyRoutineHandler
 
 		$this->playerFinancialReportRepository->cleanPlayerFinancialReports($this->playerFinancialReportsTimeout);
 
-		$players = $this->playerRepository->getByStatements([Player::ACTIVE, Player::INACTIVE]);
+		$players = $this->playerRepository->getByStatements([PlayerStatement::Active, PlayerStatement::Inactive]);
 		$nbPlayers = count($players);
 		// @TODO understand this strange loop condition
 		for ($i = $nbPlayers - 1; $i >= 0; --$i) {
@@ -53,8 +53,8 @@ readonly class DailyRoutineHandler
 			$hoursSinceLastConnection = $this->durationHandler->getHoursDiff($player->dLastConnection, $this->clock->now());
 			if ($hoursSinceLastConnection >= $this->playerInactiveTimeLimit) {
 				// $this->playerManager->kill($player);
-			} elseif ($hoursSinceLastConnection >= $this->playerGlobalInactiveTime && Player::ACTIVE === $player->statement) {
-				$player->statement = Player::INACTIVE;
+			} elseif ($hoursSinceLastConnection >= $this->playerGlobalInactiveTime && PlayerStatement::Active === $player->statement) {
+				$player->statement = PlayerStatement::Inactive;
 				$this->playerRepository->save($player);
 
 				//				if ('enabled' === $this->apiMode) {

@@ -1,7 +1,5 @@
 {% extends 'components/Molecules/Ranking/RankingCard.html.twig' %}
 
-{% set statuses = get_faction_info(player_ranking.player.faction.identifier, 'status') %}
-
 {% block picture %}
 	<a href="{{ path('embassy', {'player': player_ranking.player.id}) }}">
 		<twig:Avatar :player="player_ranking.player" class="min-w-12 max-w-12 min-h-12 max-h-12" />
@@ -9,7 +7,9 @@
 {% endblock picture %}
 
 {% block name %}
-	<span class="title text-sm">{{ statuses[player_ranking.player.status - 1] }}</span>
+	<span class="title text-sm">
+		<twig:PlayerStatus :player="player_ranking.player" />
+	</span>
 	<strong class="name">{{ player_ranking.player.name }}</strong>
 {% endblock name %}
 

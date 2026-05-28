@@ -7,8 +7,8 @@ namespace App\Modules\Demeter\Domain\Service;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
-use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -53,7 +53,7 @@ readonly class UpdateSenate
 
 					$this->notificationPersister->saveFromBuilder($senatePromoteNotificationBuilder->forPlayer($factionPlayer));
 				}
-				$factionPlayer->status = Player::PARLIAMENT;
+				$factionPlayer->status = PlayerStatus::Parliament;
 			} else {
 				if ($factionPlayer->isParliamentMember()) {
 					++$lostSeatsCount;
@@ -61,7 +61,7 @@ readonly class UpdateSenate
 					$this->notificationPersister->saveFromBuilder($senateDemoteNotificationBuilder->forPlayer($factionPlayer));
 				}
 				// TODO handle ministers
-				$factionPlayer->status = Player::STANDARD;
+				$factionPlayer->status = PlayerStatus::Standard;
 			}
 		}
 		$this->entityManager->flush();

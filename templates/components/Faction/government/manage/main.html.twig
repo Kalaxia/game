@@ -1,49 +1,23 @@
-{% set statuses = get_faction_info(faction.identifier, 'status') %}
+<twig:LayoutBox class="flew-grow grow">
+	<header>
+		<twig:H2>
+			Nomination
+		</twig:H2>
+	</header>
 
-<div class="component profil player size1">
-	<div class="head skin-2">
-		<h2>Nomination</h2>
-		</div>
-	<div class="fix-body">
-		<div class="body">
-			{% set list = [
-				constant('App\\Modules\\Zeus\\Model\\Player::MINISTER'),
-				constant('App\\Modules\\Zeus\\Model\\Player::WARLORD'),
-				constant('App\\Modules\\Zeus\\Model\\Player::TREASURER'),
-			] %}
+	<section class="mt-4 flex flex-col gap-y-2">
+		{% set list = [
+			enum('App\\Modules\\Zeus\\Domain\\Enum\\PlayerStatus').Minister,
+			enum('App\\Modules\\Zeus\\Domain\\Enum\\PlayerStatus').Warlord,
+			enum('App\\Modules\\Zeus\\Domain\\Enum\\PlayerStatus').Treasurer,
+		] %}
 
-			{% for type in list %}
-				<h4>{{ statuses[type - 1] }}</h4>
-
-				{% set department_minister = government_members|filter(minister => minister.status == type)|first %}
-				{% if department_minister is not same as(false) %}
-					<div class="player">
-						<a href="{{ path('embassy', {'player': department_minister.id}) }}">
-							<img src="{{ asset('build/media/avatar/small/' ~ department_minister.avatar ~ '.png') }}" alt="{{ department_minister.name }}"  class="picto" />
-						</a>
-						<span class="title">{{ statuses[department_minister.status - 1] }}</span>
-						<strong class="name">{{ department_minister.name }}</strong>
-						<span class="experience">{{ department_minister.factionPoint|number }} de prestige</span>
-					</div>
-
-					<a href="{{ path('fire_minister', {'id': department_minister.id}) }}" class="more-button">Démettre de ses fonctions</a>
-
-				{% elseif current_player.isRuler %}
-					<form action="{{ path('choose_minister', {'department': type}) }}" method="post" class="choose-government">
-						<select name="rplayer">
-							<option value="-1">Choisissez un joueur</option>
-							{% for senator in senators %}
-								<option value="{{ senator.id }}">{{ statuses[senator.status - 1] }} {{ senator.name }}</option>
-							{% endfor %}
-						</select>
-						<button type="submit">Nommer au poste</button>
-					</form>
-				{% else %}
-					<div class="center-box">
-						<span class="label">Aucun joueur à ce poste</span>
-					</div>
-				{% endif %}
-			{% endfor %}
-		</div>
-	</div>
-</div>
+		{% for status in list %}
+			{% set minister = government_members|filter(minister => minister.status == status)|first %}
+			<twig:MinistryCard :status="status"
+							   :faction="current_player.faction"
+							   :senators="senators"
+							   :minister="minister is not same as(false) ? minister : null" />
+		{% endfor %}
+	</section>
+</twig:LayoutBox>

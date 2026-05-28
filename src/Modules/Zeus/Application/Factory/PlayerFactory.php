@@ -20,6 +20,8 @@ use App\Modules\Promethee\Domain\Repository\TechnologyRepositoryInterface;
 use App\Modules\Promethee\Helper\ResearchHelper;
 use App\Modules\Promethee\Model\Research;
 use App\Modules\Promethee\Model\Technology;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Manager\PlayerManager;
 use App\Modules\Zeus\Model\Player;
@@ -72,7 +74,7 @@ readonly class PlayerFactory
 		$player->name = $name;
 		$player->avatar = $avatar;
 		$player->godFather = $godFather;
-		$player->status = Player::STANDARD;
+		$player->status = PlayerStatus::Standard;
 		$player->uPlayer = new \DateTimeImmutable();
 
 		$player->victory = 0;
@@ -94,7 +96,7 @@ readonly class PlayerFactory
 		$player->dLastActivity = new \DateTimeImmutable();
 
 		$player->premium = false;
-		$player->statement = Player::ACTIVE;
+		$player->statement = PlayerStatement::Active;
 
 		// ajout des variables dépendantes
 		if ($highMode) {

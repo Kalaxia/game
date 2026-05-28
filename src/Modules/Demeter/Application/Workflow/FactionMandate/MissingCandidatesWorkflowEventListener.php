@@ -6,20 +6,20 @@ namespace App\Modules\Demeter\Application\Workflow\FactionMandate;
 
 use App\Modules\Demeter\Domain\Event\MissingCandidatesEvent;
 use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
-use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
-use App\Modules\Zeus\Model\Player;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\Attribute\AsEnteredListener;
 use Symfony\Component\Workflow\Attribute\AsEnterListener;
 use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\EnterEvent;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 readonly class MissingCandidatesWorkflowEventListener
 {
@@ -30,7 +30,7 @@ readonly class MissingCandidatesWorkflowEventListener
 		private NotificationPersister $notificationPersister,
 		private PlayerRepositoryInterface $playerRepository,
 		private PoliticalEventRepositoryInterface $politicalEventRepository,
-		private GetFactionsConfiguration $getFactionsConfiguration,
+		private TranslatorInterface $translator,
 	) {
 	}
 
@@ -45,22 +45,29 @@ readonly class MissingCandidatesWorkflowEventListener
 		$faction = $event->getSubject();
 
 		$previousLeader = $this->playerRepository->getFactionLeader($faction);
+		$leaderRole = $this->translator->trans(sprintf(
+			'factions.%d.status.%d',
+			$faction->identifier,
+			PlayerStatus::Chief->value,
+		), ['gender' => $previousLeader?->getGender() ?? 'other']);
 
 		if (null !== $previousLeader && Color::REGIME_DEMOCRATIC === $faction->regime) {
 			$this->notificationPersister->saveFromBuilder(NotificationBuilder::new()
-				->setTitle('Vous demeurez '.($this->getFactionsConfiguration)($faction, 'status')[Player::CHIEF - 1])
+				->setTitle('Vous demeurez '.$leaderRole)
 				->setContent(NotificationBuilder::paragraph(
 					'Aucun candidat ne s\'est présenté oour vous remplacer lors des dernières élections.',
 					'Par conséquent, vous êtes toujours à la tête de ',
-					($this->getFactionsConfiguration)($faction, 'popularName'),
+					$this->translator->trans(sprintf('factions.%d.name.popular', $faction->identifier)),
 				))
 				->forPlayer($previousLeader));
 		} elseif (null !== $previousLeader && Color::REGIME_THEOCRATIC === $faction->regime) {
 			$this->notificationPersister->saveFromBuilder(NotificationBuilder::new()
-				->setTitle('Vous avez été nommé Guide')
+				->setTitle('Vous avez été nommé '.$leaderRole)
 				->setContent(NotificationBuilder::paragraph(
 					'Les Oracles ont parlé,',
-					' vous êtes toujours désigné par la Grande Lumière pour guider Cardan vers la Gloire.',
+					' vous êtes toujours désigné par la Grande Lumière pour guider ',
+					$this->translator->trans(sprintf('factions.%d.name.popular', $faction->identifier)),
+					' vers la Gloire.',
 				))
 				->forPlayer($previousLeader));
 		}
@@ -70,7 +77,6 @@ readonly class MissingCandidatesWorkflowEventListener
 		$factionConversation = $this->factionConversationRepository->getOneByPlayer($factionAccount);
 
 		$this->eventDispatcher->dispatch(new MissingCandidatesEvent(
-			factionName: ($this->getFactionsConfiguration)($faction, 'popularName'),
 			factionAccount: $factionAccount,
 			politicalEvent: $this->politicalEventRepository->getFactionLastPoliticalEvent($faction),
 			factionConversation: $factionConversation,

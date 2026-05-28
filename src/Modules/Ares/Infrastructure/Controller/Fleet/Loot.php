@@ -13,6 +13,7 @@ use App\Modules\Galaxy\Application\Handler\GetDistanceBetweenPlaces;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Domain\Enum\PlaceType;
 use App\Modules\Galaxy\Domain\Repository\PlaceRepositoryInterface;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -88,7 +89,7 @@ class Loot extends AbstractController
 		}
 
 		// Move that part in a Specification class
-		if (null !== ($targetPlayer = $place->player) && 1 === $targetPlayer->level && !in_array($place->player->statement, [Player::DELETED, Player::DEAD])) {
+		if (null !== ($targetPlayer = $place->player) && 1 === $targetPlayer->level && !in_array($place->player->statement, [PlayerStatement::Deleted, PlayerStatement::Dead])) {
 			throw new ConflictHttpException('Vous ne pouvez pas piller un joueur actif de niveau 1.');
 		}
 

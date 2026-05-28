@@ -2,6 +2,7 @@
 
 namespace App\Modules\Demeter\Infrastructure\Controller;
 
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;
@@ -47,8 +48,8 @@ class ViewMembers extends AbstractController
 			$pointsCount += $factionPlayer->experience;
 
 			$type = match ($factionPlayer->status) {
-				Player::STANDARD => 'Peuple',
-				Player::PARLIAMENT => 'Sénat',
+				PlayerStatus::Standard => 'Peuple',
+				PlayerStatus::Parliament => 'Sénat',
 				default => 'Gouvernement',
 			};
 			$playersByType[$type][] = $factionPlayer;

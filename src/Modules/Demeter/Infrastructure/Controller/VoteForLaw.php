@@ -5,7 +5,6 @@ namespace App\Modules\Demeter\Infrastructure\Controller;
 use App\Modules\Demeter\Domain\Repository\Law\LawRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Law\VoteLawRepositoryInterface;
 use App\Modules\Demeter\Manager\Law\LawManager;
-use App\Modules\Demeter\Model\Law\Law;
 use App\Modules\Demeter\Model\Law\VoteLaw;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,7 +34,7 @@ class VoteForLaw extends AbstractController
 		$law = $lawRepository->get($id)
 			?? throw $this->createNotFoundException('Cette loi n\'existe pas.');
 
-		if (Law::VOTATION !== $law->isBeingVoted()) {
+		if (!$law->isBeingVoted()) {
 			throw new ConflictHttpException('Cette loi est déjà votée.');
 		}
 		if ($voteLawRepository->hasVoted($currentPlayer, $law)) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Demeter\Infrastructure\Controller\Government;
 
 use App\Classes\Library\DateTimeConverter;
@@ -10,6 +12,7 @@ use App\Modules\Demeter\Domain\Service\Law\GetPrice;
 use App\Modules\Demeter\Manager\ColorManager;
 use App\Modules\Demeter\Message\Law\VoteMessage;
 use App\Modules\Demeter\Resource\LawResources;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Model\Player;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -37,21 +40,21 @@ class CreateLaw extends AbstractController
 		MessageBusInterface $messageBus,
 		LawRepositoryInterface $lawRepository,
 	): Response {
-		$type = (int) $request->query->get('type')
-			?? throw new BadRequestHttpException('Missing law type');
-		$duration = $request->request->get('duration');
+		$type = $request->query->getInt('type');
+		$duration = $request->request->getInt('duration');
 
 		// TODO replace with Voter
 		if ($currentPlayer->status !== LawResources::getInfo($type, 'department')) {
 			throw $this->createAccessDeniedException('Vous n\' avez pas le droit de proposer cette loi.');
 		}
 
-		if (null !== $duration && $duration > $this->lawMaxDuration) {
+		if (0 !== $duration && $duration > $this->lawMaxDuration) {
 			throw new BadRequestHttpException(sprintf('Maximum law duration is %d cycles', $this->lawMaxDuration));
 		}
-		$isRulerLaw = Player::CHIEF === LawResources::getInfo($type, 'department');
+		$isRulerLaw = PlayerStatus::Chief === LawResources::getInfo($type, 'department');
 
 		$lawPrice = $getPrice($type, $currentPlayer->faction, $duration);
+
 		if (!$currentPlayer->faction->canAfford($lawPrice)) {
 			throw new ConflictHttpException('Il n\'y a pas assez de crédits dans les caisses de l\'Etat.');
 		}

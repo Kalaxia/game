@@ -6,11 +6,12 @@
 		{% for transaction in members_donations %}
 			<div class="player color{{ transaction.sender.faction.identifier }}">
 				<a href="{{ path('embassy', {'player': transaction.sender.id}) }}">
-					<img src="{{ asset('build/media/avatar/small/' ~ transaction.sender.avatar ~ '.png') }}" class="picto" alt="{{ transaction.sender.name }}">
+					<twig:Avatar :player="transaction.sender" class="!w-16 !h-16" />
 				</a>
 
-				{% set statuses = get_faction_info(transaction.sender.faction.identifier, 'status') %}
-				<span class="title">{{ statuses[transaction.sender.status - 1] }}</span>
+				<span class="title">
+					<twig:PlayerStatus :player="transaction.sender" />
+				</span>
 				<strong class="name">{{ transaction.sender.name }}</strong>
 				<span class="experience">{{ transaction.amount|number }} crédit{{ transaction.amount|plural }}</span>
 			</div>
@@ -30,13 +31,14 @@
 
 	<section>
 		{% for transaction in faction_donations %}
-				<div class="player color{{ transaction.playerReceiver.faction.identifier }}">
-					<a href="{{ path('embassy', {'player': transaction.playerReceiver.id}) }}">
-					<img src="{{ asset('build/media/avatar/small/' ~ transaction.playerReceiver.avatar ~ '.png') }}" class="picto" alt="{{ transaction.playerReceiver.name }}">
+			<div class="player color{{ transaction.playerReceiver.faction.identifier }}">
+				<a href="{{ path('embassy', {'player': transaction.playerReceiver.id}) }}">
+					<twig:Avatar :player="transaction.playerReceiver" class="!w-16 !h-16" />
 				</a>
 
-				{% set statuses = get_faction_info(transaction.playerReceiver.faction.identifier, 'status') %}
-				<span class="title">{{ statuses[transaction.playerReceiver.status - 1] }}</span>
+				<span class="title">
+					<twig:PlayerStatus :player="transaction.playerReceiver" />
+				</span>
 				<strong class="name">{{ transaction.playerReceiver.name }}</strong>
 				<span class="experience">{{ transaction.amount|number }} crédit{{ transaction.amount|plural }}</span>
 			</div>

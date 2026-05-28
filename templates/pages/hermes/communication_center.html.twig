@@ -60,7 +60,7 @@
 
 					<a class="conv-item" href="/messages/{{ conv.id }}">
 						<span class="cover">
-							<img src="{{ asset('build/media/avatar/small/' ~ conversation_avatar ~ '.png') }}" alt="" class="picture color{{ conversation_faction_identifier }}'" />
+							<twig:Avatar :avatar="conversation_avatar" class="!w-16 !h-16" />
 							<span class="number">{{ conv.messagesCount }}</span>
 							{% if (own_last_view.timestamp ?? null) < conv.lastMessageAt.timestamp %}
 								<span class="new-message"><img src="{{ asset('build/media/common/nav-message.png') }}" alt="" /></span>
@@ -142,7 +142,7 @@
 				<div class="body">
 					{% if constant('App\\Modules\\Hermes\\Model\\Conversation::TY_SYSTEM') != conversation.type %}
 						<div class="message write">
-							<img src="{{ asset('build/media/avatar/small/' ~ current_player.avatar ~ '.png') }}" alt="{{ current_player.name }}" class="avatar" />
+							<twig:Avatar :player="current_player" class="!w-16 !h-16" />
 							<div class="content">
 								<form action="{{ url('new_conversation_message', { conversationId: conversation.id }) }}" method="post">
 									<div class="wysiwyg" data-id="new-message">
@@ -157,9 +157,6 @@
 					{% endif %}
 
 					{% for message in messages %}
-						{% set player_faction_statuses = get_faction_info(message.player.faction.identifier, 'status') %}
-						{% set player_status = player_faction_statuses[message.player.status - 1] %}
-
 						{% if 0 < loop.index0 and messages[loop.index0 - 1].createdAt > player_last_viewed_at and message.createdAt <= player_last_viewed_at  %}
 							<div class="system-message">
 								Dernier message lu
@@ -169,14 +166,15 @@
 						{% if constant('App\\Modules\\Hermes\\Model\\ConversationMessage::TY_STD') == message.type %}
 							<div class="message">
 								<a href="{{ url('embassy', { 'playerId': message.player.id }) }}">
-									<img src="{{ asset('build/media/avatar/medium/' ~ message.player.avatar ~ '.png') }}" alt="{{ message.player.name }}" class="avatar" />
+									<twig:Avatar :player="message.player" />
 								</a>
 								<div class="content">
 									<p class="text">
 										{{ message.content|raw }}
 									</p>
 									<p class="footer">
-										{{ player_status }} {{ message.player.name }}
+										<twig:PlayerStatus :player="message.player" />
+										{{ message.player.name }}
 										{{ message.createdAt|game_date|raw }}
 									</p>
 								</div>

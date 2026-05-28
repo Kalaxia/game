@@ -10,6 +10,7 @@ use App\Modules\Demeter\Domain\Repository\Forum\ForumMessageRepositoryInterface;
 use App\Modules\Demeter\Domain\Repository\Forum\ForumTopicRepositoryInterface;
 use App\Modules\Demeter\Model\Election\Candidate;
 use App\Modules\Demeter\Model\Election\Vote;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Application\Handler\DurationHandler;
@@ -55,7 +56,7 @@ class ViewElection extends AbstractController
 
 				$data['player_vote'] = $voteRepository->getPlayerVote($currentPlayer, $election);
 				$data['votes'] = $votes;
-				$data['faction_members_count'] = $playerRepository->countByFactionAndStatements($faction, [Player::ACTIVE]);
+				$data['faction_members_count'] = $playerRepository->countByFactionAndStatements($faction, [PlayerStatement::Active]);
 
 				$candidate = ($request->query->has('candidate') && ($candidate = $candidateRepository->get(Uuid::fromString($request->query->get('candidate')))) !== null)
 					? $candidate

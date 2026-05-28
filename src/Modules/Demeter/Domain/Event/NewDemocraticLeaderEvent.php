@@ -7,16 +7,17 @@ namespace App\Modules\Demeter\Domain\Event;
 use App\Classes\Library\Format;
 use App\Modules\Demeter\Model\Election\Candidate;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
-use App\Modules\Zeus\Model\Player;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NewDemocraticLeaderEvent extends NewLeaderEvent
 {
 	public function log(LoggerInterface $logger): void
 	{
-		$logger->info('Faction {factionName} has a new democratic leader: {newLeaderName}.', [
-			'factionName' => $this->factionName,
+		$logger->info('Faction {factionIdentifier} has a new democratic leader: {newLeaderName}.', [
+			'factionIdentifier' => $this->faction->identifier,
 			'newLeaderName' => $this->newLeader->name,
 		]);
 	}
@@ -28,7 +29,7 @@ class NewDemocraticLeaderEvent extends NewLeaderEvent
 						Un nouveau dirigeant a été élu pour faire valoir la force de %s à travers la galaxie.
 						Gloire à <strong>%s</strong>.<br /><br />Voici les résultats des élections :<br /><br />
 						%s',
-			$this->factionName,
+			$translator->trans(sprintf('factions.%d.name.popular', $this->faction->identifier)),
 			$this->newLeader->name,
 			implode('<br>', array_map(
 				/** @param array{candidate: Candidate, votes_count: int} $player */
@@ -43,13 +44,22 @@ class NewDemocraticLeaderEvent extends NewLeaderEvent
 		);
 	}
 
-	public function getNotificationBuilders(TranslatorInterface $translator): \Generator
-	{
+	public function getNotificationBuilders(
+		UrlGeneratorInterface $urlGenerator,
+		TranslatorInterface $translator,
+	): \Generator {
 		yield NotificationBuilder::new()
 			->setTitle('Votre avez été élu')
 			->setContent(NotificationBuilder::paragraph(sprintf(
 				'Le peuple vous a soutenu, vous avez été élu %s de votre faction.',
-				$this->factionStatuses[Player::CHIEF - 1],
+				$translator->trans(
+					sprintf(
+						'factions.%d.status.%d',
+						$this->faction->identifier,
+						PlayerStatus::Chief->value,
+					),
+					['gender' => $this->newLeader->getGender()],
+				),
 			)))
 			->forPlayer($this->newLeader)
 		;

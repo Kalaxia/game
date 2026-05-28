@@ -1,0 +1,35 @@
+{% extends 'layouts/game.html.twig' %}
+
+
+{% block body %}
+	<twig:PageTitle>
+		Gazette galactique
+	</twig:PageTitle>
+
+	<twig:ContentContainer class="grid grid-cols-4 gap-4">
+		{% for n in news %}
+
+			{% if loop.first %}
+				{% set extra_class = 'col-span-2 border-t-0 border-t-4 lg:border-t-8' %}
+			{% else %}
+				{% set extra_class = '' %}
+			{% endif %}
+
+			<twig:LayoutBox class="flex flex-col gap-y-4 border-t-2 border-light{{ n.source.identifier }} {{ extra_class }}">
+				<header>
+					<h4 class="font-semibold">
+						{{ ('news.' ~ n.type.value ~ '.title')|trans(n.data) }}
+					</h4>
+				</header>
+
+				<section class="grow text-sm">
+						{{ n|trans|raw }}
+				</section>
+
+				<footer class="text-xs text-gray-500">
+					Le {{ n.createdAt.format('c') }}
+				</footer>
+			</twig:LayoutBox>
+		{% endfor %}
+	</twig:ContentContainer>
+{% endblock body %}

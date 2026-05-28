@@ -13,6 +13,7 @@ use App\Modules\Zeus\Infrastructure\Validator\IsFromFaction;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Event\LoggerEvent;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 final readonly class MandateStartEvent implements LoggerEvent, ConversationMessageEvent, NotificationEvent
@@ -60,8 +61,10 @@ final readonly class MandateStartEvent implements LoggerEvent, ConversationMessa
 		return sprintf($text, ...$parameters);
 	}
 
-	public function getNotificationBuilders(TranslatorInterface $translator): \Generator
-	{
+	public function getNotificationBuilders(
+		UrlGeneratorInterface $urlGenerator,
+		TranslatorInterface $translator,
+	): \Generator {
 		$previousLeader = $this->expiredMandate->leader;
 		$newLeader = $this->newMandate->leader;
 

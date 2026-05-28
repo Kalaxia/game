@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Zeus\Infrastructure\DataFixtures\Factory;
 
 use App\Modules\Demeter\Infrastructure\DataFixtures\Factory\FactionFactory;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Model\Player;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
@@ -23,7 +25,7 @@ class PlayerFactory extends PersistentObjectFactory
 			'sex' => 0,
 			'description' => '',
 			'avatar' => 't3-c4',
-			'status' => Player::STANDARD,
+			'status' => PlayerStatus::Standard,
 			'credit' => 0,
 			'experience' => 0,
 			'factionPoint' => 0,
@@ -42,7 +44,7 @@ class PlayerFactory extends PersistentObjectFactory
 			'dLastConnection' => null,
 			'dLastActivity' => null,
 			'premium' => false,
-			'statement' => Player::ACTIVE,
+			'statement' => PlayerStatement::Active,
 		];
 	}
 

@@ -1,7 +1,6 @@
 <?php
 
 use App\Classes\Exception\ErrorException;
-use App\Modules\Zeus\Model\Player;
 
 $playerManager = $this->getContainer()->get(App\Modules\Zeus\Manager\PlayerManager::class);
 $session = $this->getContainer()->get(App\Classes\Library\Session\SessionWrapper::class);
@@ -13,7 +12,7 @@ if (($player = $playerManager->get($session->get('playerId'))) !== null) {
 
 	if ($success) {
 		$player->bind .= 'ABANDON';
-		$player->statement = Player::DELETED;
+		$player->statement = App\Modules\Zeus\Domain\Enum\PlayerStatement::Deleted;
 
 		$this->getContainer()->get(App\Classes\Entity\EntityManager::class)->flush($player);
 		// clean session

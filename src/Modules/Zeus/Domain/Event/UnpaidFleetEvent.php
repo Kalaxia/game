@@ -9,6 +9,7 @@ use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Domain\Event\NotificationEvent;
 use App\Modules\Zeus\Model\PlayerFinancialReport;
 use App\Shared\Domain\Event\TrackingEvent;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 final readonly class UnpaidFleetEvent implements NotificationEvent, TrackingEvent
@@ -39,8 +40,10 @@ final readonly class UnpaidFleetEvent implements NotificationEvent, TrackingEven
 		return $this->playerFinancialReport->player->id;
 	}
 
-	public function getNotificationBuilders(TranslatorInterface $translator): \Generator
-	{
+	public function getNotificationBuilders(
+		UrlGeneratorInterface $urlGenerator,
+		TranslatorInterface $translator,
+	): \Generator {
 		yield NotificationBuilder::new()
 			->setTitle('Flotte impayée')
 			->setContent(NotificationBuilder::paragraph(

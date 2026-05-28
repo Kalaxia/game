@@ -1,5 +1,4 @@
 {% set mode = app.request.query.get('mode', 'law') %}
-{% set statuses = get_faction_info(faction.identifier, 'status') %}
 
 <twig:LayoutBox class="min-w-80 flex flex-col divide-y divide-gray-900 [&>a]:p-2 [&>a]:bg-gray-700 [&>a:hover]:bg-gray-900">
 	<a href="{{ path('faction_government', {'mode': 'law'}) }}" class="nav-element {% if 'law' == mode %}bg-gray-900{% endif %}">
@@ -53,7 +52,10 @@
 				<select name="rplayer">
 					<option value="-1">Choisissez un joueur</option>
 					{% for senator in senators %}
-						<option value="{{ senator.id }}">{{ statuses[senator.status - 1] }} {{ senator.name }}</option>
+						<option value="{{ senator.id }}">
+							<twig:PlayerStatus :player="senator" />
+							{{ senator.name }}
+						</option>
 					{% endfor %}
 					</select>
 				<button type="submit">Désigner comme successeur</button>

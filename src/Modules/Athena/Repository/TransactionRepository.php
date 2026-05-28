@@ -8,6 +8,7 @@ use App\Modules\Athena\Domain\Repository\TransactionRepositoryInterface;
 use App\Modules\Athena\Model\Transaction;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
@@ -46,7 +47,7 @@ class TransactionRepository extends DoctrineRepository implements TransactionRep
 		$qb
 			->join('t.player', 'p')
 			->where($qb->expr()->andX(
-				$qb->expr()->neq('p.statement', Player::DEAD),
+				$qb->expr()->neq('p.statement', PlayerStatement::Dead),
 				$qb->expr()->eq('t.statement', Transaction::ST_PROPOSED),
 				$qb->expr()->eq('t.type', $type),
 			))

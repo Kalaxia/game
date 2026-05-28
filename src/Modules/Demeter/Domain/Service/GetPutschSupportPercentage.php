@@ -9,8 +9,8 @@ use App\Modules\Demeter\Domain\Repository\Election\VoteRepositoryInterface;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\Vote;
 use App\Modules\Shared\Application\PercentageApplier;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
-use App\Modules\Zeus\Model\Player;
 
 readonly class GetPutschSupportPercentage
 {
@@ -33,7 +33,7 @@ readonly class GetPutschSupportPercentage
 		);
 
 		// TODO replace by count by IsActiveFactionPlayer specification
-		$factionActivePlayersCount = $this->playerRepository->countByFactionAndStatements($faction, [Player::ACTIVE]);
+		$factionActivePlayersCount = $this->playerRepository->countByFactionAndStatements($faction, [PlayerStatement::Active]);
 
 		return PercentageApplier::toFloat($positiveVotesCount, $factionActivePlayersCount + 1);
 	}

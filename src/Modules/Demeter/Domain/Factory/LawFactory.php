@@ -17,6 +17,7 @@ use App\Modules\Demeter\Model\Law\Law;
 use App\Modules\Demeter\Resource\LawResources;
 use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
 use App\Modules\Shared\Domain\Server\TimeMode;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Psr\Clock\ClockInterface;
@@ -52,7 +53,7 @@ readonly class LawFactory
 		array $payload,
 	): Law {
 		$faction = $player->faction;
-		$isRulerLaw = Player::CHIEF === LawResources::getInfo($type, 'department');
+		$isRulerLaw = PlayerStatus::Chief === LawResources::getInfo($type, 'department');
 		$statement = $isRulerLaw ? Law::EFFECTIVE : Law::VOTATION;
 
 		$voteEndedAt = $isRulerLaw

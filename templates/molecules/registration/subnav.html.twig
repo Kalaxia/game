@@ -7,7 +7,7 @@
 			{% endif %}
 		</h2>
 		{% if app.session.get('inscription').exist('avatar') %}
-			<img src="{{ asset('build/media/avatar/big/' ~ app.session.get('inscription').get('avatar') ~ '.png') }}" alt="" />
+			<twig:Avatar :avatar="app.session.get('inscription').get('avatar')" class="!w-32 !h-32" />
 		{% else %}
 			<img src="{{ asset('build/media/avatar/big/empty.png') }}" alt="" />
 		{% endif %}

@@ -1,7 +1,6 @@
 <?php
 
 use App\Classes\Exception\ErrorException;
-use App\Modules\Zeus\Model\Player;
 
 $request = $this->getContainer()->get('app.request');
 $session = $this->getContainer()->get(App\Classes\Library\Session\SessionWrapper::class);
@@ -15,7 +14,7 @@ if (false !== $id) {
 	$topicManager->load(['id' => $id]);
 
 	if (1 == $topicManager->size()) {
-		if (in_array($session->get('playerInfo')->get('status'), [Player::CHIEF, Player::WARLORD, Player::TREASURER, Player::MINISTER])) {
+		if (in_array($session->get('playerInfo')->get('status'), [App\Modules\Zeus\Domain\Enum\PlayerStatus::Chief, App\Modules\Zeus\Domain\Enum\PlayerStatus::Warlord, App\Modules\Zeus\Domain\Enum\PlayerStatus::Treasurer, App\Modules\Zeus\Domain\Enum\PlayerStatus::Minister])) {
 			$topic = $topicManager->get();
 
 			if ($topic->isUp) {

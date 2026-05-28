@@ -8,6 +8,7 @@ use App\Modules\Demeter\Domain\Repository\Forum\FactionNewsRepositoryInterface;
 use App\Modules\Demeter\Manager\ColorManager;
 use App\Modules\Demeter\Resource\LawResources;
 use App\Modules\Galaxy\Domain\Repository\SectorRepositoryInterface;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Domain\Repository\CreditTransactionRepositoryInterface;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Infrastructure\Validator\IsGovernmentMember;
@@ -42,7 +43,7 @@ class ViewGovernment extends AbstractController
 			'faction_news' => $factionNewsRepository->getFactionNews($faction),
 			'faction_news_to_edit' => $request->query->has('news') ? $factionNewsRepository->get(Uuid::fromString($request->query->get('news'))) : null,
 			'faction_members' => $playerRepository->getFactionPlayersByName($faction),
-			'members_count' => $playerRepository->countByFactionAndStatements($faction, [Player::ACTIVE]),
+			'members_count' => $playerRepository->countByFactionAndStatements($faction, [PlayerStatement::Active]),
 			'government_members' => $playerRepository->getBySpecification(new IsGovernmentMember($faction)),
 			'total_laws_count' => LawResources::size(),
 		]);

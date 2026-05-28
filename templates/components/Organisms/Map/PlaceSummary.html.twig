@@ -22,8 +22,7 @@
 				<span class="font-medium text-sm">Propriété du</span>
 				<span>
 					{% if playerFactionIdentifier != 0 %}
-						{% set player_status = get_faction_info(playerFactionIdentifier, 'status')[place.player.status - 1] %}
-						{{ player_status }}
+						<twig:PlayerStatus :player="place.player" />
 						<span class="player-name">
 							<a href="{{ path('embassy', {'player': place.player.id }) }}" class="color{{ playerFactionIdentifier }}">
 								{{ place.player.name }}

@@ -12,6 +12,7 @@ use App\Modules\Hermes\Model\Conversation;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Event\LoggerEvent;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 readonly class UniqueCandidateEvent implements ConversationMessageEvent, LoggerEvent, NotificationEvent
@@ -56,8 +57,10 @@ readonly class UniqueCandidateEvent implements ConversationMessageEvent, LoggerE
 		return $this->newLeader;
 	}
 
-	public function getNotificationBuilders(TranslatorInterface $translator): \Generator
-	{
+	public function getNotificationBuilders(
+		UrlGeneratorInterface $urlGenerator,
+		TranslatorInterface $translator,
+	): \Generator {
 		yield NotificationBuilder::new()
 			->setTitle('Vous avez remporté l\'élection par défaut')
 			->setContent('Personne n\'a présenté de candidature contre vous, vous êtes donc automatiquement élu.')

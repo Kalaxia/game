@@ -10,6 +10,7 @@ use App\Modules\Atlas\Model\PlayerRanking;
 use App\Modules\Atlas\Model\Ranking;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Types;
@@ -69,7 +70,7 @@ class PlayerRankingRepository extends DoctrineRepository implements PlayerRankin
 			->from('report', 'r')
 			->join('r', 'player', 'p', 'r.attacker_id = p.id')
 			->where('p.statement IN (:statements)')
-			->setParameter('statements', [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY], Types::SIMPLE_ARRAY)
+			->setParameter('statements', [PlayerStatement::Active, PlayerStatement::Inactive, PlayerStatement::Holiday], Types::SIMPLE_ARRAY)
 			->groupBy('p.id')
 			->orderBy('p.id');
 
@@ -89,7 +90,7 @@ class PlayerRankingRepository extends DoctrineRepository implements PlayerRankin
 			->from('report', 'r')
 			->join('r', 'player', 'p', 'r.defender_id = p.id')
 			->where('p.statement IN (:statements)')
-			->setParameter('statements', [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY], Types::SIMPLE_ARRAY)
+			->setParameter('statements', [PlayerStatement::Active, PlayerStatement::Inactive, PlayerStatement::Holiday], Types::SIMPLE_ARRAY)
 			->groupBy('p.id')
 			->orderBy('p.id');
 
@@ -112,7 +113,7 @@ class PlayerRankingRepository extends DoctrineRepository implements PlayerRankin
 			->from('galaxy__planets', 'pl')
 			->join('pl', 'player', 'p', 'p.id = pl.player_id')
 			->where('p.statement IN (:statements)')
-			->setParameter('statements', [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY], Types::SIMPLE_ARRAY);
+			->setParameter('statements', [PlayerStatement::Active, PlayerStatement::Inactive, PlayerStatement::Holiday], Types::SIMPLE_ARRAY);
 
 		return $qb->executeQuery();
 	}
@@ -126,7 +127,7 @@ class PlayerRankingRepository extends DoctrineRepository implements PlayerRankin
 			->from('galaxy__planets', 'pl')
 			->join('pl', 'player', 'p', 'p.id = pl.player_id')
 			->where('p.statement IN (:statements)')
-			->setParameter('statements', [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY], Types::SIMPLE_ARRAY)
+			->setParameter('statements', [PlayerStatement::Active, PlayerStatement::Inactive, PlayerStatement::Holiday], Types::SIMPLE_ARRAY)
 			->groupBy('pl.id');
 
 		return $qb->executeQuery();
@@ -145,7 +146,7 @@ class PlayerRankingRepository extends DoctrineRepository implements PlayerRankin
 			->from('galaxy__planets', 'pl')
 			->join('pl', 'player', 'p', 'p.id = pl.player_id')
 			->where('p.statement IN (:statements)')
-			->setParameter('statements', [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY], Types::SIMPLE_ARRAY)
+			->setParameter('statements', [PlayerStatement::Active, PlayerStatement::Inactive, PlayerStatement::Holiday], Types::SIMPLE_ARRAY)
 			->groupBy('p.id');
 
 		return $qb->executeQuery();
@@ -191,7 +192,7 @@ class PlayerRankingRepository extends DoctrineRepository implements PlayerRankin
 			->from('galaxy__planets', 'pl')
 			->join('pl', 'player', 'p', 'p.id = pl.player_id')
 			->where('p.statement IN (:statements)')
-			->setParameter('statements', [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY], Types::SIMPLE_ARRAY)
+			->setParameter('statements', [PlayerStatement::Active, PlayerStatement::Inactive, PlayerStatement::Holiday], Types::SIMPLE_ARRAY)
 			->groupBy('p.id');
 
 		return $qb->executeQuery();
@@ -209,7 +210,7 @@ class PlayerRankingRepository extends DoctrineRepository implements PlayerRankin
 			->join('c', 'galaxy__planets', 'pl', 'pl.id = c.origin_base_id')
 			->join('pl', 'player', 'p', 'p.id = pl.player_id')
 			->where('p.statement IN (:statements)')
-			->setParameter('statements', [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY], Types::SIMPLE_ARRAY)
+			->setParameter('statements', [PlayerStatement::Active, PlayerStatement::Inactive, PlayerStatement::Holiday], Types::SIMPLE_ARRAY)
 			->groupBy('p.id')
 			->orderBy('p.id');
 
@@ -228,7 +229,7 @@ class PlayerRankingRepository extends DoctrineRepository implements PlayerRankin
 			->join('c', 'galaxy__planets', 'pl', 'pl.id = c.destination_base_id')
 			->join('pl', 'player', 'p', 'p.id = pl.player_id')
 			->where('p.statement IN (:statements)')
-			->setParameter('statements', [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY], Types::SIMPLE_ARRAY)
+			->setParameter('statements', [PlayerStatement::Active, PlayerStatement::Inactive, PlayerStatement::Holiday], Types::SIMPLE_ARRAY)
 			->groupBy('p.id')
 			->orderBy('p.id');
 

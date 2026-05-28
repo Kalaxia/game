@@ -9,6 +9,7 @@ use App\Modules\Atlas\Model\PlayerRanking;
 use App\Modules\Atlas\Model\Ranking;
 use App\Modules\Galaxy\Helper\PlanetHelper;
 use App\Modules\Galaxy\Resource\PlanetResource;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\DBAL\Result;
@@ -30,7 +31,7 @@ class PlayerRoutineHandler
 
 	public function process(Ranking $ranking): void
 	{
-		$players = $this->playerRepository->getByStatements([Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY]);
+		$players = $this->playerRepository->getByStatements([PlayerStatement::Active, PlayerStatement::Inactive, PlayerStatement::Holiday]);
 
 		$this->execute(
 			$players,

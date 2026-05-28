@@ -6,7 +6,6 @@ namespace App\Modules\Demeter\Application\Workflow\FactionMandate;
 
 use App\Modules\Demeter\Domain\Event\NewDemocraticLeaderEvent;
 use App\Modules\Demeter\Domain\Repository\Election\PoliticalEventRepositoryInterface;
-use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Domain\Service\Election\SelectNewLeaderFromBallot;
 use App\Modules\Demeter\Domain\Service\Election\SortCandidatesByVotes;
 use App\Modules\Demeter\Model\Color;
@@ -24,7 +23,6 @@ readonly class DemocraticResultWorkflowEventListener
 {
 	public function __construct(
 		private ConversationRepositoryInterface $conversationRepository,
-		private GetFactionsConfiguration $getFactionsConfiguration,
 		private PoliticalEventRepositoryInterface $electionRepository,
 		private EventDispatcherInterface $eventDispatcher,
 		private PlayerRepositoryInterface $playerRepository,
@@ -68,8 +66,6 @@ readonly class DemocraticResultWorkflowEventListener
 			faction: $faction,
 			newLeader: $newLeader,
 			politicalEvent: $election,
-			factionName: ($this->getFactionsConfiguration)($faction, 'popularName'),
-			factionStatuses: ($this->getFactionsConfiguration)($faction, 'status'),
 			factionPlayer: $factionPlayer,
 			factionConversation: $this->conversationRepository->getOneByPlayer($factionPlayer),
 			candidatesData: $ballot,

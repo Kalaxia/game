@@ -6,6 +6,8 @@ namespace App\Modules\Zeus\Repository;
 
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Shared\Infrastructure\Repository\Doctrine\DoctrineRepository;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use App\Shared\Domain\Specification\SelectorSpecification;
@@ -71,7 +73,7 @@ class PlayerRepository extends DoctrineRepository implements PlayerRepositoryInt
 		return $this->createQueryBuilder('p')
 			->select('COUNT(p.id)')
 			->where('p.statement = :statement')
-			->setParameter('statement', Player::ACTIVE)
+			->setParameter('statement', PlayerStatement::Active)
 			->getQuery()
 			->getSingleScalarResult();
 	}
@@ -83,7 +85,7 @@ class PlayerRepository extends DoctrineRepository implements PlayerRepositoryInt
 		$qb
 			->select('COUNT(p.id)')
 			->where($qb->expr()->in('p.statement', ':statement'))
-			->setParameter('statement', [Player::ACTIVE, Player::INACTIVE]);
+			->setParameter('statement', [PlayerStatement::Active, PlayerStatement::Inactive]);
 
 		return $qb->getQuery()->getSingleScalarResult();
 	}
@@ -106,7 +108,7 @@ class PlayerRepository extends DoctrineRepository implements PlayerRepositoryInt
 	{
 		return $this->findOneBy([
 			'faction' => $faction,
-			'statement' => Player::DEAD,
+			'statement' => PlayerStatement::Dead,
 		], ['id' => 'ASC']);
 	}
 
@@ -128,7 +130,7 @@ class PlayerRepository extends DoctrineRepository implements PlayerRepositoryInt
 			->where('p.faction = :faction')
 			->andWhere('p.statement != :statement')
 			->setParameter('faction', $faction->id, UuidType::NAME)
-			->setParameter('statement', Player::DEAD)
+			->setParameter('statement', PlayerStatement::Dead)
 			->orderBy('p.factionPoint', 'DESC')
 			->getQuery()
 			->getResult();
@@ -143,7 +145,8 @@ class PlayerRepository extends DoctrineRepository implements PlayerRepositoryInt
 
 		$qb
 			->where('p.faction = :faction')
-			->andWhere($qb->expr()->in('p.statement', [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY]))
+			->andWhere($qb->expr()->in('p.statement', ':statements'))
+			->setParameter('statements', [PlayerStatement::Active, PlayerStatement::Inactive, PlayerStatement::Holiday])
 			->setParameter('faction', $faction->id, UuidType::NAME)
 			->orderBy('p.name', 'ASC');
 
@@ -158,30 +161,30 @@ class PlayerRepository extends DoctrineRepository implements PlayerRepositoryInt
 		return $this->createQueryBuilder('p')
 			->where('p.faction = :faction')
 			->andWhere('p.statement != :statement')
-			->setParameter('faction', $faction)
-			->setParameter('statement', Player::DEAD)
+			->setParameter('faction', $faction->id, UuidType::NAME)
+			->setParameter('statement', PlayerStatement::Dead)
 			->orderBy('p.dInscription', 'DESC')
 			->setMaxResults(25)
 			->getQuery()
 			->getResult();
 	}
 
-	public function getGovernmentMember(Color $faction, int $status): ?Player
+	public function getGovernmentMember(Color $faction, PlayerStatus $status): ?Player
 	{
 		return $this->createQueryBuilder('p')
 			->where('p.faction = :faction')
 			->andWhere('p.status = :status')
 			->andWhere('p.statement != :statement')
-			->setParameter('faction', $faction)
+			->setParameter('faction', $faction->id, UuidType::NAME)
 			->setParameter('status', $status)
-			->setParameter('statement', Player::DEAD)
+			->setParameter('statement', PlayerStatement::Dead)
 			->getQuery()
 			->getOneOrNullResult();
 	}
 
 	public function getFactionLeader(Color $faction): ?Player
 	{
-		return $this->getGovernmentMember($faction, Player::CHIEF);
+		return $this->getGovernmentMember($faction, PlayerStatus::Chief);
 	}
 
 	/**
@@ -190,7 +193,7 @@ class PlayerRepository extends DoctrineRepository implements PlayerRepositoryInt
 	public function getActivePlayers(): array
 	{
 		return $this->findBy([
-			'statement' => Player::ACTIVE,
+			'statement' => PlayerStatement::Active,
 		]);
 	}
 

@@ -3,9 +3,9 @@
 
 	<div class="font-bold">
 		<span class="font-bold">
-			{{ get_faction_statuses(current_player_faction_id)[player.status - 1] }}
+			<twig:PlayerStatus :player="current_player" />
 			de
-			{{  get_faction_name(current_player_faction_id) }}
+			{{ ('factions.' ~ current_player_faction_id ~ '.name.popular')|trans }}
 		</span>
 		<span class="value">{{ player.name }}</span>
 	</div>

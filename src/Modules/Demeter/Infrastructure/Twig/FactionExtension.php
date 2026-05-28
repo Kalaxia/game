@@ -30,8 +30,6 @@ class FactionExtension extends AbstractExtension
 	{
 		return [
 			// @TODO move get_faction_info here and replace these methods
-			new TwigFunction('get_faction_statuses', fn (int $factionId) => $this->getFactionStatuses($factionId)),
-			new TwigFunction('get_faction_name', fn (int $factionId) => $this->getFactionName($factionId)),
 			new TwigFunction('get_faction_bonuses', fn (Color $faction) => ($this->getFactionsConfiguration)($faction, 'bonus')),
 			new TwigFunction('get_law_info', fn (int $lawType, string $info) => LawResources::getInfo($lawType, $info)),
 			new TwigFunction('has_voted_law', fn (Law $law, Player $player) => $this->voteLawRepository->hasVoted($player, $law)),
@@ -42,15 +40,5 @@ class FactionExtension extends AbstractExtension
 			}),
 			new TwigFunction('get_bonus_text', fn (int $bonusIdentifier) => ($this->getFactionBonusesConfiguration)($bonusIdentifier)),
 		];
-	}
-
-	protected function getFactionStatuses(int $factionId): array
-	{
-		return ($this->getFactionsConfiguration)($factionId, 'status');
-	}
-
-	protected function getFactionName(int $factionId): string
-	{
-		return ($this->getFactionsConfiguration)($factionId, 'popularName');
 	}
 }

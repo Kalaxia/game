@@ -1,5 +1,3 @@
-{% set faction_statuses = get_faction_info(player.faction.identifier, 'status') %}
-
 <twig:LayoutBox>
 	<header>
 		<twig:H2>Recherchez un joueur</twig:H2>
@@ -19,7 +17,11 @@
 
 			<div class="ml-4">
 				<twig:H3>{{ player.name }}</twig:H3>
-				<p>{{ faction_statuses[player.status - 1] }} de {{ get_faction_info(player.faction.identifier, 'popularName') }}</p>
+				<p>
+					<twig:PlayerStatus :player="player" />
+					de
+					<twig:FactionName :faction="player.faction" type="popular" />
+				</p>
 				<p>niveau {{ player.level }}</p>
 
 				{% if player.id != current_player.id %}

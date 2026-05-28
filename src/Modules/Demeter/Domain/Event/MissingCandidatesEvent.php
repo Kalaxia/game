@@ -16,7 +16,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 readonly class MissingCandidatesEvent implements ConversationMessageEvent, LoggerEvent
 {
 	public function __construct(
-		public string $factionName,
 		public Player $factionAccount,
 		public PoliticalEvent $politicalEvent,
 		public Conversation $factionConversation,
@@ -27,8 +26,8 @@ readonly class MissingCandidatesEvent implements ConversationMessageEvent, Logge
 
 	public function log(LoggerInterface $logger): void
 	{
-		$logger->info('No candidates participated to the election for the faction {factionName}. {leaderName} is still the faction leader.', [
-			'factionName' => $this->factionName,
+		$logger->info('No candidates participated to the election for the faction {factionIdentifier}. {leaderName} is still the faction leader.', [
+			'factionIdentifier' => $this->politicalEvent->faction->identifier,
 			'leaderName' => $this->currentLeader->name ?? 'No leader',
 		]);
 	}
@@ -40,17 +39,19 @@ readonly class MissingCandidatesEvent implements ConversationMessageEvent, Logge
 
 	public function getConversationMessageContent(TranslatorInterface $translator): string
 	{
+		$factionName = $translator->trans(sprintf('factions.%d.name.popular', $this->politicalEvent->faction->identifier));
 		// TODO put the translations in translations file and transform the interface to give the translation key and the parameters separately
 		if (Color::REGIME_THEOCRATIC === $this->regime) {
 			return 'Nul ne s\'est soumis au regard des dieux pour conduire '.
-				$this->factionName.' vers sa gloire.'.
+				$factionName.
+				' vers sa gloire.'.
 				((null !== $this->currentLeader)
 					? $this->currentLeader->name.' demeure l\'élu des dieux pour accomplir leurs desseins dans la galaxie.'
 					: 'Par conséquent, le siège du pouvoir demeure vacant.');
 		}
 
 		return 'La période électorale est terminée. Aucun candidat ne s\'est présenté pour prendre la tête de '.
-			$this->factionName.'.'.
+			$factionName.'.'.
 			((null !== $this->currentLeader)
 				? '<br>Par conséquent, '.$this->currentLeader->name.' est toujours au pouvoir.'
 				: '<br>Par conséquent, le siège du pouvoir demeure vacant.');

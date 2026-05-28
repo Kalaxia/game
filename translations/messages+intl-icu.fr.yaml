@@ -15,12 +15,12 @@ factions:
             senate: ''
             campaign: ''
         status:
-            player: ''
-            elite: ''
-            treasurer: ''
-            commander: ''
-            minister: ''
-            leader: ''
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Standard->value: ''
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Parliament->value: ''
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Treasurer->value: ''
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Warlord->value: ''
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Minister->value: ''
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Chief->value: ''
 
     !php/const App\Modules\Demeter\Resource\ColorResource::KALANKAR:
         name:
@@ -54,32 +54,32 @@ factions:
                 Il aura alors 7 rotations pour attirer des partisans.
                 Il aura réussi son putsch s'il arrive à recruter suffisamment de partisans.
         status:
-            player: 'Membre'
-            elite: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Standard->value: 'Membre'
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Parliament->value: >-
                 {gender, select,
                     female {Conseillère}
                     male {Conseiller}
                     other {Conseiller-e}
                 }
-            treasurer: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Treasurer->value: >-
                 {gender, select,
                     female {Gardienne}
                     male {Gardien}
                     other {Gardien-ne}
                 } du Trésor
-            commander: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Warlord->value: >-
                 {gender, select,
                     female {Gardienne}
                     male {Gardien}
                     other {Gardien-ne}
                 } des Armes
-            minister: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Minister->value: >-
                 {gender, select,
                     female {Gardienne}
                     male {Gardien}
                     other {Gardien-ne}
                 } du Domaine
-            leader: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Chief->value: >-
                 {gender, select,
                     female {Première Conseillère}
                     male {Premier Conseiller}
@@ -118,32 +118,32 @@ factions:
                 Il aura alors 7 relèves pour attirer des partisans.
                 Il aura réussi son putsch s'il arrive à recruter suffisemment de partisans.
         status:
-            player: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Standard->value: >-
                 {gender, select,
                     female {Guerrière}
                     male {Guerrier}
                     other {Guerrier-e}
                 }
-            elite: 'Dignitaire'
-            treasurer: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Parliament->value: 'Dignitaire'
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Treasurer->value: >-
                 {gender, select,
                     female {Trésorière}
                     male {Trésorier}
                     other {Trésorier-e}
                 }
-            commander: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Warlord->value: >-
                 {gender, select,
                     female {Maréchale}
                     male {Maréchal}
                     other {Maréchal-e}
                 }
-            minister: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Minister->value: >-
                 {gender, select,
                     female {Chambellane}
                     male {Chambellan}
                     other {Chambellan-e}
                 }
-            leader: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Chief->value: >-
                 {gender, select,
                     female {Impératrice}
                     male {Empereur}
@@ -187,32 +187,32 @@ factions:
                 Il aura alors 7 relèves pour attirer des partisans.
                 Il aura réussi son putsch s'il arrive à recruter suffisemment de partisans.
         status:
-            player: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Standard->value: >-
                 {gender, select,
                     female {Citoyenne}
                     male {Citoyen}
                     other {Citoyen-ne}
                 }
-            elite: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Parliament->value: >-
                 {gender, select,
                     female {Sénatrice}
                     male {Sénateur}
                     other {Sénateur-e}
                 }
-            treasurer: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Treasurer->value: >-
                 {gender, select,
                     female {Trésorière}
                     male {Trésorier}
                     other {Trésorier-e}
                 }
-            commander: 'Stratège'
-            minister: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Warlord->value: 'Stratège'
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Minister->value: >-
                 {gender, select,
                     female {Première Consule}
                     male {Premier Consul}
                     other {Premier-e Consul-e}
                 }
-            leader: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Chief->value: >-
                 {gender, select,
                     female {Présidente}
                     male {Président}
@@ -252,32 +252,32 @@ factions:
                 <br /><br />Une fois que toutes les candidatures ont été déposées, la Grande Lumière, via les Oracles décide de la personne la plus apte à la représenter dans le monde physique. Cet personne reçoit le titre de Guide Suprême.
                 <br /><br />Le Guide Suprême va ensuite choisir trois personnes parmi les membres du Sénat pour le seconder dans la Faction. Il va devoir déterminer le Camerlingue, l\'Inquisiteur et l\'Archiprêtre de la faction.
         status:
-            player: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Standard->value: >-
                 {gender, select,
                     female {Reine}
                     male {Roi}
                     other {Monarque}
                 }
-            elite: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Parliament->value: >-
                 {gender, select,
                     female {Soeur}
                     male {Frère}
                     other {Adelphe}
                 }
-            treasurer: 'Économe'
-            commander: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Treasurer->value: 'Économe'
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Warlord->value: >-
                 {gender, select,
                     female {Dévoreuse}
                     male {Dévoreur}
                     other {Dévoreur-e}
                 }
-            minister: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Minister->value: >-
                 {gender, select,
                     female {Coordinatrice}
                     male {Coordinateur}
                     other {Coordinateur-e}
                 }
-            leader: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Chief->value: >-
                 {gender, select,
                     female {Haute Reine}
                     male {Haut Roi}
@@ -318,17 +318,17 @@ factions:
                 <br /><br />Une fois que toutes les candidatures ont été déposées, chaque membre de Synelle peut voter pour le candidat de son choix. À la fin de la période de vote, la personne ayant reçu le plus de voix est élue Chancelier.
                 <br /><br />Le Chancelier va ensuite choisir trois personnes parmi les membres du Sénat pour le seconder dans la Faction. Il va devoir déterminer le Consul de la défense, le Consul des finances et le Premier Consul de la faction.
         status:
-            player: 'Fidèle'
-            elite: >-
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Standard->value: 'Fidèle'
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Parliament->value: >-
                 {gender, select,
                     female {Prêtresse}
                     male {Prêtre}
                     other {Prêtre-sse}
                 }
-            treasurer: 'La Raison'
-            commander: 'Le Poing'
-            minister: 'La Voix'
-            leader: 'La Vision'
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Treasurer->value: 'La Raison'
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Warlord->value: 'Le Poing'
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Minister->value: 'La Voix'
+            !php/enum App\Modules\Zeus\Domain\Enum\PlayerStatus::Chief->value: 'La Vision'
 
 ship_categories:
     !php/enum App\Modules\Ares\Domain\Model\ShipCategory::LightFighter->value:
@@ -478,6 +478,174 @@ galaxy:
                 name: "ceinture d'astéroïdes"
             !php/enum App\Modules\Galaxy\Domain\Enum\PlaceType::Empty->value:
                 name: 'zone vide'
+
+news:
+    !php/enum App\Modules\Hermes\Domain\Enum\NewsType::PutschAttempt->value:
+        title: 'Une tentative de coup d''état a débuté'
+        content: >-
+            {playerStatus} {playerName} a lancé une tentative de coup d'état pour tenter de s'emparer du pouvoir.
+            {complement}
+        complement: Le règne de {leaderName} est menacé. Quel camp prévaudra pour diriger notre faction ?
+
+    !php/enum App\Modules\Hermes\Domain\Enum\NewsType::NewCandidate->value:
+        title: >-
+            {candidateGender, select,
+                female {Une nouvelle candidate}
+                male {Un nouveau candidat}
+                other {Un nouveau candidat}
+            }
+            {factionRegime, select,
+                1 {se présente à l'élection}
+                3 {se soumet à la désignation divine}
+                other {se présente à l'élection}
+            }
+        content: >-
+            {candidateName} a annoncé sa volonté de diriger notre faction.
+            {otherCandidatesCount, plural,
+                =0 {C'est pour le moment l'unique candidature déclarée.}
+                =1 {{otherCandidatesString} a déjà déclaré son souhait d'accéder au pouvoir. Qui de ces deux membres l'emportera ?}
+                other {# autres candidatures s'opposent déjà : {otherCandidatesString}. Qui l'emportera ?}
+            }
+
+    !php/enum App\Modules\Hermes\Domain\Enum\NewsType::NewLeader->value:
+        title: >-
+            Nous avons {leaderGender, select, 
+                female {une nouvelle dirigeante}
+                male {un nouveau dirigeant}
+                other {un nouveau dirigeant}
+            } !
+        content: >-
+            {leaderName} devient {leaderStatus} de notre faction !
+
+    !php/enum App\Modules\Hermes\Domain\Enum\NewsType::FiredMinister->value:
+        title: >-
+            {ministerGender, select,
+                female {Une membre du gouvernement limogée}
+                male {Un membre du gouvernement limogé}
+                other {Un-e membre du gouvernement limogé-e}
+            }
+        content: >-
+            {ministerName} a été {ministerGender, select,
+                female {limogée}
+                male {limogé}
+                other {limogé-e}
+            } de son poste de {ministerStatus} par notre {leaderStatus} {leaderName}.
+
+    !php/enum App\Modules\Hermes\Domain\Enum\NewsType::NewMinister->value:
+        title: >-
+            {ministerGender, select,
+                female {Une nouvelle}
+                male {Un nouveau}
+                other {Un nouveau}
+            } membre entre au gouvernement
+        content: >-
+            {ministerName} a été {ministerGender, select,
+                female {nommée}
+                male {nommé}
+                other {nommé}
+            } {ministerStatus} par notre {leaderStatus} {leaderName}.<br><br>
+            {complement}
+        complement: >-
+            {predecessorStatus} {predecessorName} qui occupait précédemment ces fonctions
+            retrouve donc son rôle de {eliteStatus}.
+
+    !php/enum App\Modules\Hermes\Domain\Enum\NewsType::ForeignNewCandidate->value:
+        title: >-
+            {candidateGender, select,
+                female {Une nouvelle candidate}
+                male {Un nouveau candidat}
+                other {Un nouveau candidat}
+            }
+            {factionRegime, select,
+                1 {se présente à l'élection}
+                3 {se soumet à la désignation divine}
+                other {se présente à l'élection}
+            } à {factionPopularName}
+        content: >-
+            {candidateName} a annoncé sa volonté de diriger {factionPopularName}.
+            {otherCandidatesCount, plural,
+                =0 {C'est pour le moment l'unique candidature déclarée.}
+                =1 {{otherCandidatesString} a déjà déclaré son souhait d'accéder au pouvoir. Qui de ces deux membres l'emportera ?}
+                other {# autres candidatures s'opposent déjà : {otherCandidatesString}. Qui l'emportera ?}
+            }
+
+    !php/enum App\Modules\Hermes\Domain\Enum\NewsType::ForeignPutschAttempt->value:
+        title: Une tentative de coup d'état a débuté à {factionPopularName}
+        content: >-
+            {playerStatus} {playerName} a lancé une tentative de coup d'état pour tenter de s'emparer du pouvoir.
+            {complement}
+        complement: Le règne de {leaderName} est menacé. Quel camp prévaudra pour diriger {factionPopularName} ?
+
+    !php/enum App\Modules\Hermes\Domain\Enum\NewsType::ForeignNewLeader->value:
+        title: >-
+            {factionPopularName} a {leaderGender, select, 
+                female {une nouvelle dirigeante}
+                male {un nouveau dirigeant}
+                other {un nouveau dirigeant}
+            } !
+        content: >-
+            {leaderName} devient {leaderStatus} de {factionPopularName} !
+
+    !php/enum App\Modules\Hermes\Domain\Enum\NewsType::ForeignFiredMinister->value:
+        title: >-
+            {ministerGender, select,
+                female {Une membre du gouvernement limogée}
+                male {Un membre du gouvernement limogé}
+                other {Un-e membre du gouvernement limogé-e}
+            }
+        content: >-
+            {ministerName} a été {ministerGender, select,
+                female {limogée}
+                male {limogé}
+                other {limogé-e}
+            } de son poste de {ministerStatus} par {leaderStatus} {leaderName}.
+
+    !php/enum App\Modules\Hermes\Domain\Enum\NewsType::ForeignNewMinister->value:
+        title: >-
+            {ministerGender, select,
+                female {Une nouvelle}
+                male {Un nouveau}
+                other {Un nouveau}
+            } membre entre au gouvernement
+        content: >-
+            {ministerName} a été {gender, select,
+                female {nommée}
+                male {nommé}
+                other {nommé}
+            } {ministerStatus} de {factionPopularName} par {leaderStatus} {leaderName}.
+            {complement}
+        complement: >-
+            {predecessorStatus} {predecessorName} qui occupait précédemment ces fonctions
+            retrouve donc son rôle de {eliteStatus}.
+
+    !php/enum App\Modules\Hermes\Domain\Enum\NewsType::SectorWon->value:
+        title: Nous avons conquis un secteur !
+        content: >-
+            Le secteur {sectorIdentifier} est entre nos mains !
+            {complement}
+            Gloire à {factionPopularName} !
+        loserComplement: >-
+            {loserOfficialName} a été vaincu et perd du terrain face à nos armées. 
+
+    !php/enum App\Modules\Hermes\Domain\Enum\NewsType::SectorLost->value:
+        title: Nous avons perdu un secteur !
+        content: >-
+            Le secteur {sectorIdentifier} n'est plus sous notre contrôle !
+            {complement}
+            C'est un terrible événement pour {factionPopularName}.
+        winnerComplement: >-
+            Malgré nos efforts, nous n'avons pu repousser les armées de {winnerPopularName}.
+
+    !php/enum App\Modules\Hermes\Domain\Enum\NewsType::SectorOwnerChange->value:
+        title: Un secteur change de camp !
+        content: >-
+            Le secteur {sectorIdentifier}{loserComplement}{noWinnerComplement}{winnerComplement}.
+        loserComplement: >-
+            , auparavant sous le contrôle de {loserPopularName}
+        noWinnerComplement: n'a désormais plus de faction dominante
+        winnerComplement: a été conquis par {winnerPopularName}
+            
+
 language:
     new:  >-
         {gender, select,

@@ -1,13 +1,13 @@
-{% set statuses = get_faction_info(faction.identifier, 'status') %}
-
 <div class="w-96">
 	<header class="h-10">
-		{% if law_status == constant('App\\Modules\\Zeus\\Model\\Player::CHIEF') %}
+		{% if law_status == enum('App\\Modules\\Zeus\\Domain\\Enum\\PlayerStatus').Chief %}
 			<twig:H2>Lois</twig:H2>
 		{% endif %}
 	</header>
 	<section class="mt-4">
-		<twig:H3 class="pb-2">{{ statuses[law_status - 1] }}</twig:H3>
+		<twig:H3 class="pb-2">
+			{{ ('factions.' ~ faction.identifier ~ '.status.' ~ law_status.value)|trans }}
+		</twig:H3>
 		{% for i in 1..laws_count %}
 			{% if get_law_info(i, 'department') == law_status %}
 				<div class="mx-4 py-2 border-t border-gray-500 {% if not get_law_info(i, 'isImplemented') %}disabled{% endif %}">

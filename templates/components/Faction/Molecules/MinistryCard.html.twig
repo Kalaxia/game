@@ -1,0 +1,77 @@
+<div class="bg-gray-900 rounded-md w-full py-2 px-4 border-l-4 border-light{{ faction.identifier }}">
+	<header class="flex justify-between items-start">
+		<twig:H4>
+			{{ ('factions.' ~ faction.identifier ~ '.status.' ~ status.value)|trans({
+				'gender' : (minister is not null ? minister.getGender() : null)
+			}) }}
+		</twig:H4>
+
+		{% if minister is not null and current_player.isRuler %}
+			<a href="{{ path('fire_minister', {'id': minister.id}) }}">
+				<twig:Button :faction="faction">
+					Démettre de ses fonctions
+				</twig:Button>
+			</a>
+		{% endif %}
+	</header>
+
+	<section>
+		{% if minister is not null %}
+			<div class="flex items-center gap-x-4">
+				<a href="{{ path('embassy', {'player': minister.id}) }}">
+					<twig:Avatar :player="minister" class="!w-16 !h-16" />
+				</a>
+
+				<div>
+					<strong class="name">{{ minister.name }}</strong><br>
+					<span class="experience">{{ minister.factionPoint|number }} de prestige</span>
+				</div>
+			</div>
+		{% else %}
+			<div class="center-box">
+				<span class="label">Ce poste est vacant</span>
+			</div>
+		{% endif %}
+	</section>
+
+	{% if current_player.isRuler  %}
+		<footer class="mt-4 border-t border-gray-300 pt-2">
+			{% if senators|length > 0 %}
+				<form action="{{ path('choose_minister', {'department': status.value}) }}"
+					  method="post">
+					<label for="player" class="block text-sm/6 font-medium text-gray-900 dark:text-white">
+						{% if minister is not null %}
+							Remplacer par:
+						{% else %}
+							Nommer:
+						{% endif %}
+					</label>
+					<div class="flex items-center">
+						<div class="grow mt-2 grid grid-cols-1">
+							<select id="player" name="rplayer" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:*:bg-gray-800 dark:focus-visible:outline-indigo-500">
+								<option selected>Choisir</option>
+								{% for senator in senators %}
+									<option value="{{ senator.id }}">
+										<twig:PlayerStatus :player="senator" />
+										{{ senator.name }}
+									</option>
+								{% endfor %}
+							</select>
+							<svg viewBox="0 0 16 16" fill="currentColor" data-slot="icon" aria-hidden="true" class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4 dark:text-gray-400">
+								<path d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
+							</svg>
+						</div>
+
+						<twig:Button :faction="faction" type="submit">
+							Nommer au poste
+						</twig:Button>
+					</div>
+				</form>
+			{% else %}
+				<p>
+					Aucune personne disponible pour prendre ce poste
+				</p>
+			{% endif %}
+		</footer>
+	{% endif %}
+</div>

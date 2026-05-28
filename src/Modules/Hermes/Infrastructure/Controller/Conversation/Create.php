@@ -9,6 +9,7 @@ use App\Modules\Hermes\Domain\Repository\ConversationMessageRepositoryInterface;
 use App\Modules\Hermes\Model\Conversation;
 use App\Modules\Hermes\Model\ConversationMessage;
 use App\Modules\Hermes\Model\ConversationUser;
+use App\Modules\Zeus\Domain\Enum\PlayerStatement;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
@@ -57,8 +58,8 @@ class Create extends AbstractController
 			throw new BadRequestHttpException('Nombre maximum de joueur atteint.');
 		}
 		// chargement des utilisateurs
-		// $players = $playerRepository->getByIdsAndStatements($recipients, [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY]);
-		$players = $playerRepository->getByNamesAndStatements($recipients, [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY]);
+		// $players = $playerRepository->getByIdsAndStatements($recipients, [PlayerStatement::Active, PlayerStatement::Inactive, PlayerStatement::Holiday]);
+		$players = $playerRepository->getByNamesAndStatements($recipients, [PlayerStatement::Active, PlayerStatement::Inactive, PlayerStatement::Holiday]);
 
 		if (count($players) < 1) {
 			throw new ConflictHttpException('Le joueur n\'est pas joignable.');

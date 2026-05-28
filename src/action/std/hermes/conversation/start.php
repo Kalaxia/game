@@ -7,7 +7,6 @@ use App\Classes\Library\Utils;
 use App\Modules\Hermes\Model\Conversation;
 use App\Modules\Hermes\Model\ConversationMessage;
 use App\Modules\Hermes\Model\ConversationUser;
-use App\Modules\Zeus\Model\Player;
 
 $database = $this->getContainer()->get(App\Classes\Database\Database::class);
 $playerManager = $this->getContainer()->get(App\Modules\Zeus\Manager\PlayerManager::class);
@@ -33,7 +32,7 @@ if (!empty($recipients) && !empty($content)) {
 
 		if (count($recipients) <= ConversationUser::MAX_USERS) {
 			// chargement des utilisateurs
-			$players = $playerManager->getByIdsAndStatements($recipients, [Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY]);
+			$players = $playerManager->getByIdsAndStatements($recipients, [App\Modules\Zeus\Domain\Enum\PlayerStatement::Active, PlayerStatement::Inactive, PlayerStatement::Holiday]);
 
 			if (count($players) >= 1) {
 				// création de la date précédente

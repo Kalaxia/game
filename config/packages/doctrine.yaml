@@ -40,6 +40,11 @@ doctrine:
                 type: 'xml'
                 dir: '%kernel.project_dir%/config/doctrine/hephaistos'
                 prefix: 'App\Modules\Hephaistos\Model'
+            HermesDomain:
+                is_bundle: false
+                type: 'attribute'
+                dir: '%kernel.project_dir%/src/Modules/Hermes/Domain/Entity'
+                prefix: 'App\Modules\Hermes\Domain\Entity'
             Hermes:
                 is_bundle: false
                 type: 'xml'

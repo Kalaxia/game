@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Zeus\Infrastructure\Validator;
 
 use App\Modules\Demeter\Model\Color;
-use App\Modules\Zeus\Model\Player;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Shared\Domain\Specification\SelectorCompositeSpecification;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Validator\Constraint;
@@ -26,7 +26,7 @@ class IsFactionLeader extends SelectorCompositeSpecification
 	{
 		return [
 			new IsActiveFactionPlayer($this->faction),
-			new HasStatus([Player::CHIEF]),
+			new HasStatus([PlayerStatus::Chief]),
 		];
 	}
 

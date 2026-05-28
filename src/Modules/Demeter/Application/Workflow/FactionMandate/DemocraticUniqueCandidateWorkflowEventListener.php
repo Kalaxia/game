@@ -11,8 +11,8 @@ use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Demeter\Model\Election\MandateState;
 use App\Modules\Hermes\Domain\Repository\ConversationRepositoryInterface;
+use App\Modules\Zeus\Domain\Enum\PlayerStatus;
 use App\Modules\Zeus\Domain\Repository\PlayerRepositoryInterface;
-use App\Modules\Zeus\Model\Player;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Workflow\Attribute\AsEnterListener;
 use Symfony\Component\Workflow\Event\EnterEvent;
@@ -58,7 +58,7 @@ readonly class DemocraticUniqueCandidateWorkflowEventListener
 			newLeader: $newLeader,
 		));
 
-		$newLeader->status = Player::CHIEF;
+		$newLeader->status = PlayerStatus::Chief;
 		$this->playerRepository->save($newLeader);
 	}
 }

@@ -1,9 +1,10 @@
 {% for player in players %}
 	{# @TODO check the use of this statement #}
-	{# if (in_array($player->getStatement(), array(Player::ACTIVE, Player::INACTIVE, Player::HOLIDAY, Player::BANNED))) { #}
-	{% set status = player.faction.identifier > 0 ? get_faction_info(player.faction.identifier, 'status')[player.status - 1] : 'Rebelle' %}
+	{# if (in_array($player->getStatement(), array(PlayerStatement::Active, PlayerStatement::Inactive, PlayerStatement::Holiday, PlayerStatement::Banned))) { #}
 
-	<img class="img" src="{{ asset('build/media/avatar/small/' ~ player.avatar ~ '.png') }}" alt="{{ player.name }}" />
-	<span class="value-2">{{ status }}</span>
+	<twig:Avatar :player="player" class="!w-16 !h-16" />
+	<span class="value-2">
+		<twig:PlayerStatus :player="player" />
+	</span>
 	<span class="value-1"><span class="ac_value" data-id="{{ player.id }}">{{ player.name }}</span></span>
 {% endfor %}
