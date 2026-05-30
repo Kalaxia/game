@@ -6,7 +6,7 @@ class PlaceResource
 {
 	public static function get(int $type, string $info): mixed
 	{
-		if (in_array($info, ['name', 'desc', 'price', 'school-size', 'tax', 'l-line', 'r-line', 'l-line-position', 'r-line-position'])) {
+		if (in_array($info, ['name', 'desc', 'price', 'school-size', 'tax'])) {
 			return self::$place[$type][$info];
 		}
 
@@ -22,10 +22,6 @@ class PlaceResource
 			'school-size' => 3,
 
 			'tax' => 1,
-			'l-line' => 1,
-			'l-line-position' => [2],
-			'r-line' => 1,
-			'r-line-position' => [2],
 		],
 		[
 			'name' => 'Centre Industriel',
@@ -35,10 +31,6 @@ class PlaceResource
 			'school-size' => 3,
 
 			'tax' => 1.25,
-			'l-line' => 1,
-			'l-line-position' => [2],
-			'r-line' => 1,
-			'r-line-position' => [2],
 		],
 		[
 			'name' => 'Base Militaire',
@@ -48,10 +40,6 @@ class PlaceResource
 			'school-size' => 8,
 
 			'tax' => 0.5,
-			'l-line' => 3,
-			'l-line-position' => [1, 2, 3],
-			'r-line' => 2,
-			'r-line-position' => [1, 3],
 		],
 		[
 			'name' => 'Capitale',
@@ -61,10 +49,6 @@ class PlaceResource
 			'school-size' => 8,
 
 			'tax' => 1.25,
-			'l-line' => 3,
-			'l-line-position' => [1, 2, 3],
-			'r-line' => 2,
-			'r-line-position' => [1, 3],
 		],
 	];
 }

@@ -86,7 +86,6 @@ class MapController extends AbstractController
 			'local_commanders' => $commanderRepository->getPlanetCommanders(
 				$currentBase,
 				[Commander::AFFECTED, Commander::MOVING],
-				['line' => 'DESC'],
 			),
 			'moving_commanders' => $movingCommanders,
 			'attacking_commanders' => array_merge(

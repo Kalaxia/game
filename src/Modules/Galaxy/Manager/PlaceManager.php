@@ -69,24 +69,6 @@ readonly class PlaceManager
 					))
 					->forPlayer($commander->player),
 			],
-			Planet::CHANGEFAIL => [
-				NotificationBuilder::new()
-					->setTitle('Déplacement réussi')
-					->setContent(NotificationBuilder::paragraph(
-						'Votre officier ',
-						NotificationBuilder::link(
-							$this->urlGenerator->generate('fleet_headquarters', ['commander' => $commander->id]),
-							$commander->name,
-						),
-						' s\'est posé sur ',
-						NotificationBuilder::link(
-							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->name,
-						),
-						'. Il est en garnison car il n\'y avait pas assez de place en orbite.',
-					))
-					->forPlayer($commander->player),
-			],
 			Planet::CHANGELOST => [
 				NotificationBuilder::new()
 					->setTitle('Déplacement raté')

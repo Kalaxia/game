@@ -63,13 +63,6 @@ interface CommanderRepositoryInterface extends EntityRepositoryInterface
 	public function getIncomingCommanders(Planet $place): array;
 
 	/**
-	 * @return list<Commander>
-	 */
-	public function getCommandersByLine(Planet $planet, int $line): array;
-
-	public function countCommandersByLine(Planet $planet, int $line): int;
-
-	/**
 	 * @return array{nb: int, avgLevel: int}
 	 */
 	public function getFactionCommanderStats(Color $faction): array;

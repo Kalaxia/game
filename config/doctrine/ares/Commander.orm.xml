@@ -57,11 +57,6 @@
 				<option name="default">0</option>
 			</options>
 		</field>
-		<field name="line" column="line" type="smallint" nullable="true">
-			<options>
-				<option name="unsigned">true</option>
-			</options>
-		</field>
 		<field name="departedAt" type="datetime_immutable" nullable="true" />
 		<field name="arrivedAt" type="datetime_immutable" nullable="true" />
 		<field name="enlistedAt" type="datetime_immutable" nullable="true" />

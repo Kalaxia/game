@@ -35,7 +35,6 @@ abstract class Place implements SystemUpdatable
 
 	// CONST RESULT BATTLE
 	public const CHANGESUCCESS = 10;
-	public const CHANGEFAIL = 11;
 	public const CHANGELOST = 12;
 
 	public const LOOTEMPTYSSUCCESS = 20;

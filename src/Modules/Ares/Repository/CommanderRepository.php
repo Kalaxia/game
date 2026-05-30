@@ -84,14 +84,6 @@ class CommanderRepository extends DoctrineRepository implements CommanderReposit
 		], $orderBy);
 	}
 
-	public function getCommandersByLine(Planet $planet, int $line): array
-	{
-		return $this->findBy([
-			'base' => $planet,
-			'line' => $line,
-		]);
-	}
-
 	public function getIncomingAttacks(Player $player): array
 	{
 		$qb = $this->createQueryBuilder('c');
@@ -122,21 +114,6 @@ class CommanderRepository extends DoctrineRepository implements CommanderReposit
 			'destinationPlace' => $place,
 			'statement' => Commander::MOVING,
 		], ['dArrival' => 'ASC']);
-	}
-
-	public function countCommandersByLine(Planet $planet, int $line): int
-	{
-		$qb = $this->createQueryBuilder('c');
-
-		return $qb
-			->select('COUNT(c)')
-			->andWhere('c.base = :planet')
-			->andWhere('c.line = :line')
-			->andWhere($qb->expr()->in('c.statement', [Commander::AFFECTED, Commander::MOVING]))
-			->setParameter('planet', $planet->id, UuidType::NAME)
-			->setParameter('line', $line)
-			->getQuery()
-			->getSingleScalarResult();
 	}
 
 	public function getFactionCommanderStats(Color $faction): array

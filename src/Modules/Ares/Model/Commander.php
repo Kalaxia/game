@@ -53,7 +53,6 @@ class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatabl
 		public int $uExperience = 0,
 		public int $palmares = 0,
 		public int $statement = Commander::INSCHOOL,
-		public int $line = 1,
 		public ?string $comment = null,
 		/** @var Collection<Squadron> */
 		public Collection $squadrons = new ArrayCollection(),

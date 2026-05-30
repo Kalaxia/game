@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Zeus\Application\EventListener;
 
 use App\Modules\Ares\Domain\Event\Commander\AffectationEvent;
-use App\Modules\Ares\Domain\Event\Commander\LineChangeEvent;
 use App\Modules\Ares\Domain\Event\Commander\NewCommanderEvent;
 use App\Modules\Ares\Domain\Event\Fleet\PlannedLootEvent;
 use App\Modules\Ares\Domain\Event\Fleet\SquadronUpdateEvent;
@@ -18,10 +19,10 @@ use App\Modules\Zeus\Resource\TutorialResource;
 use App\Shared\Domain\Event\TutorialEvent;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
-class TutorialStepValidationListener
+final readonly class TutorialStepValidationListener
 {
 	public function __construct(
-		private readonly TutorialHelper $tutorialHelper,
+		private TutorialHelper $tutorialHelper,
 	) {
 	}
 
@@ -69,7 +70,6 @@ class TutorialStepValidationListener
 	}
 
 	#[AsEventListener(AffectationEvent::class)]
-	#[AsEventListener(LineChangeEvent::class)]
 	#[AsEventListener(PlannedLootEvent::class)]
 	#[AsEventListener(NewCommanderEvent::class)]
 	#[AsEventListener(NewShipQueueEvent::class)]

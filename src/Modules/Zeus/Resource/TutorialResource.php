@@ -26,7 +26,6 @@ class TutorialResource
 	public const BUILD_SHIP0 = 11;
 	public const AFFECT_COMMANDER = 12;
 	public const FILL_SQUADRON = 13;
-	public const MOVE_FLEET_LINE = 14;
 	public const SPY_PLANET = 15;
 	public const LOOT_PLANET = 16;
 
@@ -255,16 +254,6 @@ class TutorialResource
 				NB: Si des vaisseaux ont été transférés dans l\'escadrille et que l\'étoile du tutoriel ne s\'allume pas, rafraîchis ta page (F5).',
 			'experienceReward' => 2,
 			'creditReward' => 200,
-			'resourceReward' => 0,
-			'shipReward' => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], ],
-		[
-			'id' => 14,
-			'title' => 'Déplacer une flotte en première ligne',
-			'description' => 'Dans la vue de situation, deux lignes de défense sont disponibles autour d\'une planète. La première ligne (ligne extérieure) sert de défense lorsqu\'un ennemi attaque ta planète. La deuxième ligne sert de réserve, elle ne défendra pas lors d\'une attaque, par contre elle entrera en jeu lorsqu\'un ennemi tentera de prendre ta planète.
-				<br /><br />
-				Lorsque tu as affecté ton officier, il s\'est positionné en ligne 2. Pour mieux défendre ta planète, positionne-le en ligne 1. Pour ce faire, va dans la vue de situation (clique sur le nom de ta base en-haut de l\'écran), survole ta flotte avec la souris, une flèche apparaîtra. Si tu cliques dessus, ta flotte changera de ligne.',
-			'experienceReward' => 2,
-			'creditReward' => 40000,
 			'resourceReward' => 0,
 			'shipReward' => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], ],
 		[

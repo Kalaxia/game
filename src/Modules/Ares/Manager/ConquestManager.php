@@ -132,7 +132,6 @@ readonly class ConquestManager
 					$commander->base = $place;
 
 					$this->commanderManager->endTravel($commander, Commander::AFFECTED);
-					$commander->line = 2;
 
 					$this->eventDispatcher->dispatch(new PlanetOwnerChangeEvent($place, $placePlayer));
 
@@ -195,7 +194,6 @@ readonly class ConquestManager
 				// attibuer le commander à la place
 				$commander->base = $place;
 				$this->commanderManager->endTravel($commander, Commander::AFFECTED);
-				$commander->line = 2;
 
 				// création du rapport
 				$report = $this->commanderManager->createReport($place);

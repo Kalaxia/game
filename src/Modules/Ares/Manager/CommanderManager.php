@@ -136,53 +136,10 @@ readonly class CommanderManager implements SchedulerInterface
 
 			return;
 		}
-		$maxCom =
-			($place->isMilitaryBase() || $place->isCapital())
-			? Planet::MAXCOMMANDERMILITARY
-			: Planet::MAXCOMMANDERSTANDARD
-		;
+		$commander->base = $place;
+		$this->endTravel($commander, Commander::AFFECTED);
 
-		// si place a assez de case libre :
-		if (count($placeCommanders) < $maxCom) {
-			$comLine2 = 0;
-
-			foreach ($placeCommanders as $com) {
-				if (2 == $com->line) {
-					++$comLine2;
-				}
-			}
-
-			if (Planet::MAXCOMMANDERMILITARY == $maxCom) {
-				if ($comLine2 < 2) {
-					$commander->line = 2;
-				} else {
-					$commander->line = 1;
-				}
-			} else {
-				if ($comLine2 < 1) {
-					$commander->line = 2;
-				} else {
-					$commander->line = 1;
-				}
-			}
-
-			// changer rBase commander
-			// @TODO update that
-			$commander->base = $place;
-			$this->endTravel($commander, Commander::AFFECTED);
-
-			// envoi de notif
-			$this->placeManager->sendNotif($place, Planet::CHANGESUCCESS, $commander);
-		} else {
-			// changer rBase commander
-			$commander->base = $place;
-			$this->endTravel($commander, Commander::RESERVE);
-
-			$this->emptySquadrons($commander);
-
-			// envoi de notif
-			$this->placeManager->sendNotif($place, Planet::CHANGEFAIL, $commander);
-		}
+		$this->placeManager->sendNotif($place, Planet::CHANGESUCCESS, $commander);
 
 		// modifier le rPlayer (ne se modifie pas si c'est le même)
 		$commander->player = $place->player;
