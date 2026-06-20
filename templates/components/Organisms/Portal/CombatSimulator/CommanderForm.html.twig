@@ -1,0 +1,52 @@
+<div {{ attributes }}>
+{{ form_start(form, {
+	attr: {
+		'data-action': 'live#action:prevent',
+		'data-live-action-param': 'save'
+	}
+}) }}
+	<div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
+		<div>
+			{{ form_label(form.name, null, {
+				'attr': {'class': 'block text-sm/6 font-medium text-white'}
+			}) }}
+			<div class="mt-2">
+				{{ form_widget(form.name, {'attr': {
+					'class': 'block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6',
+					'data-1p-ignore': true,
+					'autocomplete': 'off',
+					'placeholder': 'Élève officier',
+				}}) }}
+			</div>
+		</div>
+
+		<div>
+			{{ form_label(form.level, null, {
+				'attr': {'class': 'block text-sm/6 font-medium text-white'}
+			}) }}
+			<div class="mt-2">
+				{{ form_widget(form.level, {'attr': {
+					'min': 1,
+					'max': 25,
+					'class': 'block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6'
+				}}) }}
+			</div>
+		</div>
+
+		<div>
+			{{ form_label(form.faction, null, {'attr': {'class': 'block text-sm/6 font-medium text-white'}}) }}
+			<div class="mt-2">
+				{{ form_widget(form.faction, {'attr': {
+					'class': 'block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6'
+				}}) }}
+			</div>
+		</div>
+	</div>
+
+	<div class="mt-4 py-4 border-b border-gray-500">
+		<twig:Button type="submit" :faction="current_player is defined ? current_player.faction : null">
+			Sauvegarder
+		</twig:Button>
+	</div>
+{{ form_end(form) }}
+</div>

@@ -1,0 +1,28 @@
+{% extends 'layouts/portal.html.twig' %}
+
+{% block body %}
+	<twig:PortalHeader />
+
+	<main class="mx-auto max-w-7xl mt-24" data-controller="ui--modal">
+		<div class="text-white">
+			Créez vos flottes et faites-les s'affronter dans ce simulateur !
+		</div>
+
+		<div class="mt-8">
+			<twig:SimulatorCommandersList :commanders="app.request.session.get('combat_simulator.commanders')" />
+		</div>
+
+		<dialog data-ui--modal-target="dialog" aria-modal="true" class="absolute size-full top-0 left-0 bg-black/60">
+			<div class="fixed inset-y-0 top-12 left-12 right-12 bottom-12 z-50 px-6 overflow-y-auto bg-gray-800 sm:ring-1 sm:ring-white/40 sm:rounded-lg text-white">
+				<div class="flex items-center justify-between mt-4">
+					<twig:H3>
+						Ajouter un commandant
+					</twig:H3>
+				</div>
+				<div class="mt-6 flow-root">
+					<twig:SimulatorCommanderForm />
+				</div>
+			</div>
+		</dialog>
+	</main>
+{% endblock body %}

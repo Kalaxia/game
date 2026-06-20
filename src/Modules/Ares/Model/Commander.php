@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Ares\Model;
 
+use App\Modules\Ares\Domain\Model\CommanderInterface;
 use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Galaxy\Domain\Entity\Planet;
@@ -14,7 +15,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Uid\Uuid;
 
-class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatable
+class Commander implements CommanderInterface, TravellerInterface, \JsonSerializable, SystemUpdatable
 {
 	// variables de combat
 	/** @var list<int> */
