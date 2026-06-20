@@ -2,6 +2,7 @@
 
 namespace App\Modules\Ares\Model;
 
+use App\Modules\Ares\Domain\Model\CommanderInterface;
 use Symfony\Component\Uid\Uuid;
 
 class Squadron implements \JsonSerializable
@@ -12,7 +13,7 @@ class Squadron implements \JsonSerializable
 
 	public function __construct(
 		public Uuid $id,
-		public Commander $commander,
+		public CommanderInterface $commander,
 		public \DateTimeImmutable $createdAt,
 		public \DateTimeImmutable $updatedAt,
 		public int $lineCoord = 0,

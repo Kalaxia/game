@@ -96,7 +96,7 @@ readonly class LootManager
 			if ((!$place->player->faction->id->equals($commander->player->faction->id) && $place->player->level > 1 && Color::ALLY !== $commanderColor->relations[$place->player->faction->identifier]) || null === $place->base) {
 				$dCommanders = [];
 				foreach ($placeCommanders as $dCommander) {
-					if ($dCommander->isAffected() && 1 == $dCommander->line) {
+					if ($dCommander->isAffected()) {
 						$dCommanders[] = $dCommander;
 					}
 				}

@@ -22,15 +22,6 @@ readonly class PlanetHelper
 		return \in_array($building, PlanetResource::BUILDINGS);
 	}
 
-	public function fleetQuantity(int $typeOfBase): int
-	{
-		return match ($typeOfBase) {
-			Planet::BASE_TYPE_COLONY, Planet::BASE_TYPE_COMMERCIAL => 2,
-			Planet::BASE_TYPE_MILITARY, Planet::BASE_TYPE_CAPITAL => 5,
-			default => 0,
-		};
-	}
-
 	// @TODO Check for the need of this method ??
 	public function getInfo($buildingNumber, $info, $level = 0, $sup = 'default')
 	{

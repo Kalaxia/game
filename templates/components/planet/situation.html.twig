@@ -35,16 +35,6 @@
 					</div>
 				</div>
 
-				<span class="hb line-help line-1" title="La première ligne de défense est là pour défendre votre planète en cas d\'attaque. Dès qu\'un ennemi vous attaque, il va engager le combat avec une flotte de cette ligne.">
-					I
-				</span>
-				<span class="hb line-help line-2" title="La deuxième ligne de défense est la ligne de réserve, elle ne défendra en aucun cas contre une attaque dont le but est le pillage. Par contre, elle prendra le relais en ce qui concerne la défense face à des envahisseurs si la première ligne est tombée.">
-					II
-				</span>
-
-				{% set current_vanguard_position = 0 %}
-				{% set current_rear_position = 0 %}
-
 				{% for commander in commanders %}
 					<div class="commander">
 						<a href="{{ path('fleet_headquarters', {'commander': commander.id}) }}" class="commander full">
@@ -59,37 +49,15 @@
 								{% endif %}
 							</span>
 						</a>
-						<a class="link hb {{ commander.line == 1 ? 'to-right' : 'to-left' }}" title="changer de ligne" href="{{ path('change_commander_line', {'id': commander.id}) }}"></a>
 					</div>
-
-					{% if commander.line == 1 %}
-						{% set current_vanguard_position = current_vanguard_position + 1 %}
-					{% else %}
-						{% set current_rear_position = current_rear_position + 1 %}
-					{% endif %}
 				{% endfor %}
 
-				{% if current_vanguard_position < vanguard_positions_count %}
-					{% for position in range(current_vanguard_position, vanguard_positions_count - 1) %}
-						<a href="{{ path('school') }}" class="commander empty position-1-{{ vanguard_positions[position] }}">
-							{#<img src="{{ asset('build/media/map/fleet/army-empty.png') }}" alt="vide" />#}
-							<twig:Button :faction="current_player.faction">
-								Affecter un officier
-							</twig:Button>
-						</a>
-					{% endfor %}
-				{% endif %}
-
-				{% if current_rear_position < rear_positions_count %}
-					{% for position in range(current_rear_position, rear_positions_count - 1) %}
-						<a href="{{ path('school') }}" class="commander empty position-2-{{ rear_positions[position] }}">
-							{#<img src="{{ asset('build/media/map/fleet/army-empty.png') }}" alt="vide" />#}
-							<twig:Button :faction="current_player.faction">
-								Affecter un officier
-							</twig:Button>
-						</a>
-					{% endfor %}
-				{% endif %}
+				<a href="{{ path('school') }}" class="commander empty">
+					{#<img src="{{ asset('build/media/map/fleet/army-empty.png') }}" alt="vide" />#}
+					<twig:Button :faction="current_player.faction">
+						Affecter un officier
+					</twig:Button>
+				</a>
 			</div>
 		</div>
 	</div>
