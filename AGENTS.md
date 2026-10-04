@@ -14,6 +14,10 @@ Guide for AI agents working on **Kalaxia**. It is a multiplayer, browser-based s
 - **Missions:** move, loot, colonise, conquer. Spying is paid in credits and countered by anti-spy investment.
 - **Factions:** 5 factions with bonuses, each with a senate, a government, laws, and elections, divine designation or coups depending on its regime. Diplomacy is done through laws. Sector control gives tax income and victory points; the first faction to 2000 points wins.
 
+## Ongoing work
+
+- **Fleet combat redesign** (branch `feature/fleet-composition`): see [`docs/fleet-combat/plan.md`](docs/fleet-combat/plan.md). It holds the vision, the open questions, the roadmap and the decision log. Keep it updated as decisions are made.
+
 ## Game design references
 
 Give game-design feedback **only when the maintainer asks for it**, to save tokens. When asked, use these references:
