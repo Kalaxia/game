@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+	--fleet-grid-position-size: 48px;
+}
+
+@layer utilities {
+	.fleet-grid-position {
+		width: var(--fleet-grid-position-size);
+		min-width: var(--fleet-grid-position-size);
+		max-width: var(--fleet-grid-position-size);
+		aspect-ratio: cos(30deg);
+		clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
+	}
+}

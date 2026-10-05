@@ -9,7 +9,7 @@
 		</div>
 
 		<div class="mt-8">
-			<twig:SimulatorCommandersList :commanders="app.request.session.get('combat_simulator.commanders')" />
+			<twig:SimulatorCommandersList :commanders="app.request.session.get('combat_simulator.commanders', [])" />
 		</div>
 
 		<dialog data-ui--modal-target="dialog" aria-modal="true" class="absolute size-full top-0 left-0 bg-black/60">

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Modules\Ares\Infrastructure\DependencyInjection\BattleShipTypeExtension;
 use App\Modules\Ares\Infrastructure\DependencyInjection\ShipCategoryExtension;
 use App\Modules\Demeter\Infrastructure\DependencyInjection\FactionBonusExtension;
 use App\Modules\Demeter\Infrastructure\DependencyInjection\FactionExtension;
@@ -28,5 +29,9 @@ class Kernel extends BaseKernel
 		$shipCategoriesExtension = new ShipCategoryExtension();
 		$container->registerExtension($shipCategoriesExtension);
 		$container->loadFromExtension($shipCategoriesExtension->getAlias());
+
+		$battleShipTypesExtension = new BattleShipTypeExtension();
+		$container->registerExtension($battleShipTypesExtension);
+		$container->loadFromExtension($battleShipTypesExtension->getAlias());
 	}
 }

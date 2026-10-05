@@ -1,7 +1,7 @@
 <div class="flex"
 	 data-controller="fleet--ship-transfer"
 	 data-fleet--ship-transfer-fleet--squadron-outlet="#fleet-squadrons"
-	 data-fleet--ship-transfer-base-value="{{ commander.base.id }}"
+	 data-fleet--ship-transfer-source-value="{{ commander.base.id }}"
 	 data-fleet--ship-transfer-squadron-update-url-value="{{ url('update_fleet_squadron', {id: commander.id, squadronId: '{squadronId}'}) }}"
 	 data-fleet--ship-transfer-manufacture-max-storable-ship-points-value="{{ manufactureMaxStorableShipPoints }}"
 	 data-fleet--ship-transfer-shipyard-max-storable-ship-points-value="{{ shipyardMaxStorableShipPoints }}"
@@ -14,7 +14,7 @@
 	</div>
 	<div id="base-tiles" class="ml-2">
 		{% for i in range(0, 11) %}
-			<twig:ShipTransferTile :identifier="i" :quantity="current_planet.getShipStorage()[i]" side="base" />
+			<twig:ShipTransferTile :identifier="i" :quantity="current_planet.getShipStorage()[i]" side="source" />
 		{% endfor %}
 	</div>
 </div>

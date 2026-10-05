@@ -1,7 +1,7 @@
 # Fleet combat redesign: work plan
 
 **Branch:** `feature/fleet-composition`
-**Status:** design reviewed (§5.7); Phase 0 next. The design described here is a target, not the current behaviour. For current rules, see [`docs/gameplay.md` §9–11](../gameplay.md#9-military-ships-commanders-fleets).
+**Status:** Phase 1 done (2026-10-04). Phase 2 (simulator v2) next. The design described here is a target, not the current behaviour. For current rules, see [`docs/gameplay.md` §9–11](../gameplay.md#9-military-ships-commanders-fleets).
 
 This file is the single source of truth for the fleet and combat redesign. Update it whenever a decision is made: answer the open question, add an entry to the decision log, and move the work items forward.
 
@@ -113,7 +113,7 @@ These are the maintainer's answers. Each item keeps its original question number
   - A **5×5 hex grid** for now; the size is arbitrary and should stay configurable.
   - Fleets are placed **by order of arrival**.
   - A fleet **moves** if it is not in contact with an enemy fleet and can get closer to one. Otherwise it waits.
-- **Q11. Fleet formation** (zoom 2). *Amended by D3: the officer, not the player, builds the formation.*
+- **Q11. Fleet formation** (zoom 2). *Confirmed by D9 after the community poll: the player draws the formation.*
   - The formation is prepared **on the planet** while composing the fleet.
   - Composition and formation are **locked once the fleet leaves on a mission**.
   - During combat, squadrons may **reposition automatically** according to their weapon range and capabilities.
@@ -175,11 +175,9 @@ These decisions **override** the earlier answers where they conflict.
   - **Engagement delay:** a fleet arriving outnumbered in an orbit waits several minutes before combat starts. This gives a placement phase and time for reinforcements.
   - Duration targets must be written down and checked by the balance harness.
 - **D2. Fleet weight for size maluses is measured in PEV for now.** This overrides R6. Counting squadrons would penalise diverse fleets, which conflicts with single-type squadrons.
-- **D3. Combat stays idle, as in Asylamba. The officer composes the formation.**
-  - ⚠️ **Provisional.** The maintainer is still undecided between officer-built and player-built formations; a community poll is ongoing. Keep the formation builder swappable: the engine must accept a formation from any source.
-  - The player **provides the ships**, and the **officer arranges them** into squadrons and a formation, according to their traits and the ships' roles.
-  - This amends Q11: the formation is not drawn by the player.
-  - How much the player can influence this (doctrines, preferences…) will be decided later.
+- **D3. Combat stays idle, as in Asylamba.** The player cannot act during a battle.
+  - ~~The officer composes the formation.~~ **Superseded by D9** (community poll): players compose their formations themselves.
+  - The officer-built formation (`BuildFleetFormation`) is kept as a **suggestion**: a "fill automatically" action in the editor. It also builds the formations of NPC fleets.
 - **D4. Each ship type has one or two clear roles.** Only **fighters and bombers** can move onto another fleet's grid, to flank or harass. Every other squadron stays within its own fleet's area.
 - **D5. Interest curve: to design later.** Battles need highlights (opening, reinforcements, routs, turning point), and replays need to be skimmable (timeline, summary, MVP). Not designed yet; noted as a risk.
 - **D6. Experience.**
@@ -189,9 +187,15 @@ These decisions **override** the earlier answers where they conflict.
 - **D7. Second battle at the same planet:** instead of running two battles in parallel, fleets that would start a second battle **wait** until the first one ends. This replaces the Q2 exception, so there is still at most **one battle per planet**.
 - **D8. Faction spectators: to test.** Members of a participant's faction may watch live, as a social draw (cf. EVE Online's large battles). Q17 stays "participants only" until this is tested.
 
+- **D9. Players compose their formations themselves** (community poll, 2026-10-04). This supersedes the officer-built formation of D3.
+  - The player builds single-type squadrons from the planet's ships and places them on the composition grid, top row being the front line.
+  - `BuildFleetFormation` stays as a suggestion ("fill automatically") and for NPC fleets.
+  - The engine is unchanged: it already takes a list of formation slots, whatever their source.
+  - Readability risk (§5.8) is reduced: the player's choices map directly to positions on the battlefield.
+
 ### 5.8 Known design risks
 
-- **Readability (P5) of the idle combat.** Many automatic systems pile up (officer-made formation, squadron movement, cell control, initiative, trait-driven targeting, range patterns, morale, size maluses, random dodge). Players may no longer connect their choices to the result.
+- **Readability (P5) of the idle combat.** Many automatic systems pile up (squadron movement, cell control, initiative, trait-driven targeting, range patterns, morale, size maluses, random dodge). Players may no longer connect their choices to the result.
   - **Mitigations:**
     - clear ship roles (D4);
     - every automatic decision is explained in the replay (e.g. "squadron X charges: Aggressive trait");
@@ -256,7 +260,7 @@ Each phase ends in a usable, tested state. Game-facing phases (6+) need explicit
 ### Phase 0: stabilise the branch
 
 - [x] Fix the items in §4.3 (ShipTransfer `base` → `source`, `dataset.has`, `dump`, `isInfinite`). Done 2026-10-04; static checks only, not yet tested in a browser.
-- [ ] Note: the simulator's ship tiles are not attached to any `fleet--ship-transfer` controller yet. Wire them once the formation model (D3) is settled.
+- [ ] Note: the simulator's ship tiles are not attached to any `fleet--ship-transfer` controller yet. They will be replaced by the formation editor (Phase 2, D9).
 
 ### Phase 1: battle domain model and engine (simulator only)
 
@@ -278,18 +282,74 @@ Each phase ends in a usable, tested state. Game-facing phases (6+) need explicit
 **Not in scope yet:** morale and retreat, complex weapon patterns, size maluses, traits.
 
 **Tasks:**
-- [ ] Draft first values for the new ship stats (R12), including **roles** (D4), in `ship_categories.yaml`, for the maintainer to review.
-- [ ] Hex grid primitives: axial coordinates, distance, neighbours, super-hex clusters, rotation. Pure PHP, unit-tested.
-- [ ] Model `Battle`, `BattleSide`, `BattleFleet` (fleet + formation + super-hex anchor + orientation), `BattleSquadron` (single ship type, cell, initiative), `BattleState` and `TurnResult` / events. Use pure PHP in `Ares/Domain`.
-- [ ] `ResolveBattleSides` service (Q2, Q3, R1) and its unit tests.
-- [ ] `BattleEngine::resolveTurn` with a seeded RNG: placement of joining fleets (Q9), movement and cell occupancy (Q10, R4), targeting, sequential firing by initiative (R2, R3).
-- [ ] Unit tests: determinism, side resolution, end conditions, reinforcements, bonuses.
-- [ ] `BuildFleetFormation` service: the officer turns the provided ships into single-type squadrons and a formation (D3).
-- [ ] **Balance harness, as early as possible** (validate the fun before investing in visuals): a CLI command that runs N simulations of composition A against composition B. It reports win rates, **battle duration in turns and minutes** (D1), and dominant compositions.
+- [x] Draft first values for the new ship stats (R12), including **roles** (D4): see [`ship-stats.md`](ship-stats.md). Validated, and implemented in `config/game/battle_ship_types.yaml` (`BattleShipTypeRegistry`, `BattleShipTypeConfiguration`).
+- [x] Hex grid primitives: axial coordinates, distance, neighbours, super-hex clusters, rotation. Pure PHP, unit-tested (`Ares/Domain/Model/Battle/Grid/`).
+- [x] Model `BattleFleet` (formation + cluster anchor + orientation), `BattleSquadron` (single ship type, cell), `BattleState`, `TurnResult` and `BattleEvent` (`Ares/Domain/Model/Battle/`). Sides are an integer per fleet.
+- [x] `ResolveBattleSides` service (Q2, Q3, R1) and its unit tests (`Ares/Domain/Service/Battle/`), with `ColorFactionHostility` (`Ares/Application/Battle/`). When a faction is friendly to several sides, it joins the oldest one (provisional).
+- [x] `BattleEngine::resolveTurn` with a seeded RNG (`Ares/Domain/Service/Battle/`, steps in `Engine/`): placement of joining fleets (Q9), fleet and squadron movement with cell occupancy (Q10, R4), targeting, sequential fire by initiative (R2, R3, R9 option b).
+- [x] Unit tests: determinism, side resolution, end conditions, reinforcements, fleet area, cell occupancy, mirror fairness, bonuses, experience.
+- [x] Officer XP from damage dealt and taken, weighted by the importance of the battle (D6): `ComputeBattleExperience`.
+- [x] Combat bonuses per fleet (`BattleBonuses`: attack, defense, speed percentages by ship class); faction bonuses from `factions.yaml` (`GetFactionBattleBonuses`).
+- [x] `BuildFleetFormation` service: the officer turns the provided ships into single-type squadrons and a formation (D3).
+- [x] **Balance harness, as early as possible** (validate the fun before investing in visuals): a CLI command that runs N simulations of composition A against composition B. It reports win rates, **battle duration in turns and minutes** (D1), and dominant compositions.
+
+**First harness results** (2026-10-04, 40 battles each; `app:ares:simulate-battles`):
+
+| Matchup | Result | Median duration |
+|---|---|---|
+| 100 light fighters vs 50 bombers | fighters 90% | 50 s |
+| 50 bombers vs 4 destroyers | bombers 100% | 40 s |
+| 4 destroyers vs 150 light fighters | destroyers 100%, no losses | 2 min 20 |
+| Mixed mid-size fleet, mirror | 55 / 45 (fair within noise) | 3 min |
+| Two big mixed fleets | the fleet with bombers wins 95% | 1 min 30 |
+
+Takeaways:
+- **Durations are far below the D1 target.** Big battles last 1–5 minutes, which leaves no time for reinforcements. The damage scale (or life) needs to go down a lot.
+- **Counters are very hard.** Light fighters do about 1 damage to a destroyer per shot (logarithmic damage formula), and bombers dominate heavy ships. This is readable, but may be too binary.
+- **A movement bias was found and fixed:** a fixed neighbour order gave the first deployed fleet 65% wins in mirror battles. Ties are now broken at random from the turn seed.
+
+**Duration tuning** (2026-10-04, provisional values in `src/Modules/Ares/Resource/config/config.yml`):
+
+- **Finding:** without a limit, durations do not grow with fleet size (1–2 min from 100 to 1,500 PEV), because firepower and life grow together. A global factor alone cannot meet D1.
+- **Two levers added:**
+  - `ares.battle.durability_factor`: multiplies the life of every ship. It sets the base duration.
+  - `ares.battle.max_firing_squadrons_per_fleet`: at most N squadrons of a **fleet** fire per round. Squadrons left out accumulate their initiative, so heavy ships still fire (checked: cruisers and destroyers fire as often as without the cap). The firepower of big fleets saturates, so **big battles last longer**.
+  - The cap is per fleet rather than per side, so that each reinforcement still adds firepower (G2). It could later depend on the officer level, as one of the size maluses officers mitigate (Q13).
+- **Values chosen: durability 3, cap 2** (median durations over 30 battles):
+
+| Battle | Without levers | Durability 3, cap 2 |
+|---|---|---|
+| Small (~100 PEV per side) | 2.0 min | 1.7 min |
+| Small mixed (~200 PEV) | 1.2 min | 2.2 min |
+| Medium (~600 PEV) | 1.5 min | 5.3 min |
+| Big (~1,500 PEV) | 1.5 min | 7.3 min |
+| Big, line ships (~1,650 PEV) | 2.3 min | 11.2 min |
+| Medium mirror, 2 fleets per side | – | 9–11 min; a reinforcement arriving at turn 30 (5 min) still wins 100% |
+
+- **Still to address:**
+  - Small battles cannot go below about 1.5 min: the approach phase (squadrons moving to contact) sets a floor.
+  - Range-1 line ships (*Corvette lourde*) rarely fire against escorts and artillery: they are outranged.
+  - Damage and life values remain the legacy ones; durability only scales them.
+
+**Experience and bonuses** (2026-10-04):
+
+- **Experience formula:** `(damage dealt + damage taken) / durability × experience_per_damage (2) × importance`.
+  - Importance = enemy strength ÷ own strength, where strength = PEV × (officer level + 1), summed over every enemy fleet, and capped at 3.
+  - Dividing by durability means tuning battle durations does not change experience.
+  - Order of magnitude: about 31,000 XP for a medium battle (~600 PEV per side), close to the legacy formula (630 PEV × 50).
+  - ⚠️ The legacy importance formula, `enemyPEV × (ownLevel + 1) / (enemyLevel + 1)`, gives *less* experience against a higher-level officer. The new one follows the stated intent instead: a stronger opponent earns more.
+  - ⚠️ Consequence of D6 to keep in mind: in a battle between two fleets, A's damage dealt is B's damage taken, so **both officers earn the same experience whatever the outcome**. Only the importance differs. Winning is not rewarded as such.
+- **Bonuses:** attack uses the shooting fleet's bonuses, defense and dodge use the target fleet's bonuses. Cruisers get the destroyer class bonuses, and the faction defense bonus is applied once. These were three legacy bugs.
+  - Harness check: a mirror battle between Kalankar (defense +5%) and Valkar (speed +10%, heavy ships' defense −5%) ends 62 / 38.
+  - Technology bonuses for the live game will be mapped from `PlayerBonus` in Phase 7. The simulator accepts explicit per-class bonuses.
+- **Officer level** only weighs in the experience for now. Its effect on combat (size maluses, traits) comes in Phase 5.
 
 ### Phase 2: simulator v2
 
-- [ ] Simulator setup: several fleets per side, each with a faction, an officer level and the ships provided. The formation is shown as built by the officer (D3).
+- [ ] **Formation editor** (D9): the player places single-type squadrons on the composition grid (hexagon of radius 2, 19 cells), front line at the top. A "fill automatically" action uses `BuildFleetFormation` as a suggestion.
+  - Display convention: the editor shows the front at the top. The engine stores formations with the front facing east, so the editor rotates the view; the stored offsets keep the engine convention.
+  - Validation of player formations: `ValidateFormation` (cells within the grid, one squadron per cell, squadron size within the type's limit).
+- [ ] Simulator setup: several fleets per side, each with a faction, an officer level and its formation.
 - [ ] Per fleet: "joins at turn N".
 - [ ] "Run" computes the whole battle on the server and returns the event log as JSON.
 - [ ] A basic viewer that replays turns as a list or table with play, pause and speed controls.
@@ -323,7 +383,8 @@ Each phase ends in a usable, tested state. Game-facing phases (6+) need explicit
 
 ### Phase 7: integration in the game (requires approval)
 
-- [ ] Fleet screen on the planet: the player assigns ships and the officer arranges them (D3). Composition is locked once the fleet leaves. How much the player can influence the formation is to be decided.
+- [ ] Fleet screen on the planet: the player composes the fleet with the formation editor (D9), using the ships of the planet's hangar. Composition is locked once the fleet leaves.
+- [ ] NPC (rebel) fleets get their formation from `BuildFleetFormation`.
 - [ ] Hook travel arrival into battle creation and joining (Q3, Q9, R7), including NPCs (Q5). Remove `FightManager`, `LiveReport` and the legacy `Report`.
 - [ ] Remove "squadrons = officer level" (Q13); new XP rules (Q14).
 - [ ] Data migration: existing mixed squadrons (`ship0`…`ship11`) are split into single-type squadrons, and lines become formations.
@@ -357,3 +418,8 @@ Each phase ends in a usable, tested state. Game-facing phases (6+) need explicit
 | 2026-10-04 | XP from damage dealt and taken, weighted by the importance formula (D6). | Ship losses already deter farming through defeat. |
 | 2026-10-04 | A second battle at the same planet waits for the first to end (D7). Faction spectators to be tested (D8). Interest curve to be designed later (D5). | Simplicity; social value. |
 | 2026-10-04 | Method: validate the fun with the balance harness before investing in visualisation. | Prototype the riskiest part first (Schell). |
+| 2026-10-04 | Bombers are a new ship type. While the system is simulator-only, battle ship types live in `battle_ship_types.yaml`, separate from `ShipCategory`, so the live game is untouched. | Adding a 13th ShipCategory would break the 12-column squadrons and many loops. |
+| 2026-10-04 | Big ships stay alone in their squadron. Composition grid radius 2 (19 squadrons max) for now. Range counted in fine cells. | Intrinsic value of big ships; test small fleets first. |
+| 2026-10-04 | Battle durations are tuned with two levers: a ship durability factor (3) and a cap on squadrons firing per round **per fleet** (2), with accumulated initiative. Provisional values. | Durations must grow with fleet size (D1); per fleet keeps reinforcements meaningful (G2). |
+| 2026-10-04 | Officer XP = (damage dealt + taken) ÷ durability × 2 × importance (relative strength, capped at 3). Bonuses apply per fleet: attacker's for attack, target's for defense and dodge; cruisers included; faction defense bonus applied once. | D6; fixes three legacy combat bugs. |
+| 2026-10-04 | Players compose their formations themselves (D9, community poll). `BuildFleetFormation` is kept as a suggestion and for NPC fleets. | Player preference; makes composition choices readable. |

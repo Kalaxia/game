@@ -123,6 +123,7 @@ symfony console tailwind:build --watch                # when working on UI
 make consume_async                                    # messenger:consume async
 make consume_game_scheduler                           # messenger:consume scheduler_game
 make test
+symfony console app:ares:simulate-battles --a=LightFighter:50,Corvette:14 --b=Bomber:25 --runs=100   # balance harness of the new battle system
 vendor/bin/php-cs-fixer fix
 vendor/bin/phpstan analyse
 ```

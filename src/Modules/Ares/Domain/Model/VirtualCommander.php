@@ -11,9 +11,9 @@ class VirtualCommander implements CommanderInterface
 {
 	public function __construct(
 		public ?int $id,
-		public string $name,
-		public int $level,
-		public Color $faction,
+		public ?string $name,
+		public ?int $level,
+		public ?Color $faction,
 		/**
 		 * @var list<Squadron>
 		 */

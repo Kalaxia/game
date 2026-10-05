@@ -1,0 +1,128 @@
+# Combat profiles of the ship types for the new battle system (combat simulator only for now).
+# See docs/fleet-combat/ship-stats.md for the meaning of each stat and how the values were derived.
+#
+# Types linked to a `ship_category` take their base stats (class, pev, life, defense, speed, attack)
+# from config/game/ship_categories.yaml. Types without a ship category (e.g. the bomber) define them here.
+battle_ship_types:
+    LightFighter:
+        ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::LightFighter->value
+        role: interceptor
+        squadron_size: 50
+        movement: 3
+        initiative: 195
+        range: 1
+        preferred_targets: [0, 1]
+
+    Fighter:
+        ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::Fighter->value
+        role: interceptor
+        squadron_size: 33
+        movement: 3
+        initiative: 185
+        range: 1
+        preferred_targets: [0, 1]
+
+    HeavyFighter:
+        ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::HeavyFighter->value
+        role: interceptor
+        squadron_size: 33
+        movement: 3
+        initiative: 195
+        range: 1
+        preferred_targets: [0, 1]
+
+    Bomber:
+        # New ship type: no ship category yet, it will be added to the game in Phase 7
+        role: bomber
+        class: 0
+        pev: 4
+        life: 40
+        defense: 4
+        speed: 170
+        attack: [60]
+        squadron_size: 25
+        movement: 2
+        initiative: 170
+        range: 1
+        preferred_targets: [3, 2]
+
+    LightCorvette:
+        ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::LightCorvette->value
+        role: escort
+        squadron_size: 20
+        movement: 3
+        initiative: 190
+        range: 2
+        preferred_targets: [0, 1]
+
+    Corvette:
+        ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::Corvette->value
+        role: line
+        squadron_size: 14
+        movement: 2
+        initiative: 165
+        range: 1
+        preferred_targets: [1, 2]
+
+    HeavyCorvette:
+        ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::HeavyCorvette->value
+        role: escort
+        squadron_size: 11
+        movement: 2
+        initiative: 145
+        range: 2
+        preferred_targets: [0, 1]
+
+    LightFrigate:
+        ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::LightFrigate->value
+        role: line
+        squadron_size: 4
+        movement: 1
+        initiative: 100
+        range: 2
+        preferred_targets: [1, 2]
+
+    Frigate:
+        ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::Frigate->value
+        role: artillery
+        squadron_size: 2
+        movement: 1
+        initiative: 90
+        range: 3
+        preferred_targets: [3, 2]
+
+    Destroyer:
+        ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::Destroyer->value
+        role: line
+        squadron_size: 1
+        movement: 1
+        initiative: 88
+        range: 2
+        preferred_targets: [2, 3]
+
+    HeavyDestroyer:
+        ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::HeavyDestroyer->value
+        role: artillery
+        squadron_size: 1
+        movement: 1
+        initiative: 75
+        range: 4
+        preferred_targets: [1, 0]
+
+    Cruiser:
+        ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::Cruiser->value
+        role: capital
+        squadron_size: 1
+        movement: 1
+        initiative: 80
+        range: 3
+        preferred_targets: [3, 2]
+
+    HeavyCruiser:
+        ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::HeavyCruiser->value
+        role: capital
+        squadron_size: 1
+        movement: 1
+        initiative: 75
+        range: 3
+        preferred_targets: [3, 2]

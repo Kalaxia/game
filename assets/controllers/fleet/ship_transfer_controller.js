@@ -3,10 +3,10 @@ import {Controller} from "@hotwired/stimulus";
 export default class extends Controller
 {
 	static outlets = ['fleet--squadron'];
-	static targets = ['base', 'squadron'];
+	static targets = ['source', 'squadron'];
 	static values = {
 		squadronUpdateUrl: String,
-		base: String,
+		source: String,
 		manufactureMaxStorableShipPoints: Number,
 		shipyardMaxStorableShipPoints: Number,
 		shipPevs: Array,
@@ -16,16 +16,17 @@ export default class extends Controller
 		super.initialize();
 
 		this.timer = null;
+		this.onSquadronSelection = () => this._updateAllTiles();
 	}
 
 	connect()
 	{
-		this.application.element.addEventListener('fleet:squadron-selection', () => this._updateAllTiles());
+		this.application.element.addEventListener('fleet:squadron-selection', this.onSquadronSelection);
 	}
 
 	disconnect()
 	{
-		this.application.element.removeEventListener('fleet:squadron-selection');
+		this.application.element.removeEventListener('fleet:squadron-selection', this.onSquadronSelection);
 	}
 
 	transfer(event) {
@@ -38,7 +39,7 @@ export default class extends Controller
 
 		const originTile = event.currentTarget;
 		const originTileQuantityElement = originTile.querySelector('.quantity');
-		let originTileQuantity = parseInt(originTileQuantityElement.innerText);
+		let originTileQuantity = this._getQuantity(originTileQuantityElement);
 
 		if (originTileQuantity === 0) {
 			console.warn('The desired tile has no ships left to transfer');
@@ -47,16 +48,18 @@ export default class extends Controller
 		}
 
 		const shipIdentifier = originTile.dataset.shipId;
-		const targetSide = (originTile.dataset.side === 'base') ? 'squadron' : 'base';
+		const targetSide = (originTile.dataset.side === 'source') ? 'squadron' : 'source';
 		const targetTile = this._getTileByIdentifierAndSide(targetSide, shipIdentifier);
 		const targetTileQuantityElement = targetTile.querySelector('.quantity');
-		let targetTileQuantity = parseInt(targetTileQuantityElement.innerText);
+		let targetTileQuantity = this._getQuantity(targetTileQuantityElement);
 
-		const desiredQuantity = this._getDesiredQuantity(event, originTileQuantity);
-		const desiredQuantityPevs = desiredQuantity * this.shipPevsValue[shipIdentifier];
-		const availableSpace = targetSide === 'base' ? this._getHangarAvailableSpace(shipIdentifier) : this._getSquadronAvailableSpace();
+		const shipPev = this.shipPevsValue[shipIdentifier];
+		const availableSpace = targetSide === 'source' ? this._getHangarAvailableSpace(shipIdentifier) : this._getSquadronAvailableSpace();
+		// An infinite source can only fill the space available in the target
+		const maxQuantity = Math.min(originTileQuantity, Math.floor(availableSpace / shipPev));
+		const desiredQuantity = this._getDesiredQuantity(event, maxQuantity);
 
-		if (desiredQuantityPevs > availableSpace) {
+		if (desiredQuantity === 0) {
 			console.warn('Not enough space to transfer the ships. Remaining space : %d', availableSpace);
 
 			return;
@@ -107,32 +110,41 @@ export default class extends Controller
 
 	_getManufactureAvailableSpace()
 	{
-		return this.manufactureMaxStorableShipPointsValue - this.baseTargets.reduce((acc, element) => {
-			const shipId = element.dataset.shipId;
-			if (shipId < 6) {
-				acc += parseInt(element.querySelector('.quantity').innerText) * this.shipPevsValue[shipId];
-
-				return acc;
-			}
-			return acc;
-		}, 0);
+		return this._getSourceAvailableSpace(this.manufactureMaxStorableShipPointsValue, shipId => shipId < 6);
 	}
 
 	_getShipyardAvailableSpace()
 	{
-		return this.shipyardMaxStorableShipPointsValue - this.baseTargets.reduce((acc, element) => {
-			const shipId = element.dataset.shipId;
-			if (shipId >= 6) {
-				acc += parseInt(element.querySelector('.quantity').innerText) * this.shipPevsValue[shipId];
+		return this._getSourceAvailableSpace(this.shipyardMaxStorableShipPointsValue, shipId => shipId >= 6);
+	}
 
-				return acc;
-			}
-			return acc;
-		}, 0);
+	_getSourceAvailableSpace(maxStorableShipPoints, isInDock)
+	{
+		const tiles = this.sourceTargets.filter(element => isInDock(parseInt(element.dataset.shipId)));
+
+		if (tiles.some(element => 'infinite' in element.querySelector('.quantity').dataset)) {
+			return Infinity;
+		}
+
+		return maxStorableShipPoints - tiles.reduce(
+			(acc, element) => acc + parseInt(element.querySelector('.quantity').innerText) * this.shipPevsValue[element.dataset.shipId],
+			0,
+		);
+	}
+
+	_getQuantity(quantityElement)
+	{
+		return ('infinite' in quantityElement.dataset)
+			? Infinity
+			: parseInt(quantityElement.innerText);
 	}
 
 	_updateTile(tile, quantityElement, quantity)
 	{
+		if (quantity === Infinity) {
+			return;
+		}
+
 		quantityElement.innerText = quantity;
 
 		if (quantity === 0) {
@@ -167,7 +179,7 @@ export default class extends Controller
 			},
 			credentials: 'include',
 			body: JSON.stringify({
-				base_id: this.baseValue,
+				base_id: this.sourceValue,
 				army: squadron.ships,
 			}),
 		});

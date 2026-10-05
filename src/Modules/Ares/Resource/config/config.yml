@@ -12,6 +12,17 @@ parameters:
 
     ares.loot_limit: 5000
     ares.coeff.loot: 275
+
+    # New battle system (docs/fleet-combat/plan.md)
+    ares.battle.turn_duration: '%env(int:BATTLE_TURN_DURATION)%'
+    ares.battle.battlefield_size: 5
+    ares.battle.fleet_area_radius: 4
+    ares.battle.formation_radius: 2
+    # Tuned with app:ares:simulate-battles to reach the duration targets of D1 (see docs/fleet-combat/plan.md)
+    ares.battle.durability_factor: 3.0
+    ares.battle.max_firing_squadrons_per_fleet: 2
+    # Officer experience per point of damage dealt or taken, before the importance weighting (D6)
+    ares.battle.experience_per_damage: 2.0
     
 services:
     _defaults:
@@ -28,6 +39,18 @@ services:
             - '../../Message'
             - '../../Model'
             - '../../Resource'
+
+    App\Modules\Ares\Domain\Service\Battle\BuildFleetFormation:
+        arguments:
+            $compositionRadius: '%ares.battle.formation_radius%'
+
+    App\Modules\Ares\Domain\Service\Battle\ValidateFormation:
+        arguments:
+            $compositionRadius: '%ares.battle.formation_radius%'
+
+    App\Modules\Ares\Domain\Service\Battle\ComputeBattleExperience:
+        arguments:
+            $experiencePerDamage: '%ares.battle.experience_per_damage%'
 
     App\Modules\Ares\Manager\ConquestManager:
         arguments:

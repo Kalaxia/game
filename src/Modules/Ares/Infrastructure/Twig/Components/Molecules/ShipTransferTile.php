@@ -15,4 +15,5 @@ class ShipTransferTile
 	public int $identifier;
 	public int $quantity;
 	public string $side;
+	public bool $isInfinite = false;
 }

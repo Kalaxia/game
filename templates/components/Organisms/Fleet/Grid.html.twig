@@ -1,0 +1,17 @@
+<div {{ attributes }} class="w-full">
+	<div class="fleet-grid w-fit flex flex-col gap-2 mx-auto h-[250px] overflow-y-none overflow-x-auto">
+		{% for y in range(1, 5) %}
+			<div class="flex gap-x-1 -mb-[18px]" style="margin-left: {{ 26 * y }}px">
+				{% for x in range(1, 21 - y) %}
+					{% set selected = x == this.selectedX and y == this.selectedY %}
+					<twig:FleetGridPosition
+						class="hover:bg-light{{ faction }} {{ selected ? ('bg-medium' ~ faction) : '' }}"
+						:key="x ~ '-' ~ y"
+						:x="x"
+						:y="y"
+						:data-selected="selected" />
+				{% endfor %}
+			</div>
+		{% endfor %}
+	</div>
+</div>

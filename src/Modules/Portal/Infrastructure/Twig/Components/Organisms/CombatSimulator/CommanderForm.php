@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Portal\Infrastructure\Twig\Components\Organisms\CombatSimulator;
 
+use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Domain\Model\VirtualCommander;
 use App\Modules\Ares\Infrastructure\Form\VirtualCommanderType;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
@@ -32,10 +33,17 @@ class CommanderForm extends AbstractController
 
 	#[LiveProp]
 	public ?VirtualCommander $initialFormData = null;
+	/** @var ShipCategory[] */
+	public array $shipCategories = [];
 
 	protected function instantiateForm(): FormInterface
 	{
 		return $this->createForm(VirtualCommanderType::class, $this->initialFormData);
+	}
+
+	public function mount(): void
+	{
+		$this->shipCategories = ShipCategory::cases();
 	}
 
 	#[LiveListener('beginUpdate')]
