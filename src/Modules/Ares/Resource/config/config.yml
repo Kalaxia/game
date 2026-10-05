@@ -14,6 +14,7 @@ parameters:
     ares.coeff.loot: 275
 
     # New battle system (docs/fleet-combat/plan.md)
+    env(BATTLE_TURN_DURATION): '10'
     ares.battle.turn_duration: '%env(int:BATTLE_TURN_DURATION)%'
     ares.battle.battlefield_size: 5
     ares.battle.fleet_area_radius: 4

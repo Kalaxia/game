@@ -34,7 +34,7 @@ class ValidateFormationTest extends BattleTestCase
 		$violations = (new ValidateFormation())([new FormationSlot(self::shipType('Corvette'), 5, new Hex(3, 0))]);
 
 		static::assertCount(1, $violations);
-		static::assertStringContainsString('outside', $violations[0]);
+		static::assertStringContainsString('outside', (string) $violations[0]);
 	}
 
 	public function testTwoSquadronsOnTheSameCellAreRejected(): void
@@ -45,7 +45,7 @@ class ValidateFormationTest extends BattleTestCase
 		]);
 
 		static::assertCount(1, $violations);
-		static::assertStringContainsString('more than one squadron', $violations[0]);
+		static::assertStringContainsString('more than one squadron', (string) $violations[0]);
 	}
 
 	public function testSquadronLargerThanItsTypeAllowsIsRejected(): void
@@ -54,7 +54,7 @@ class ValidateFormationTest extends BattleTestCase
 		$violations = (new ValidateFormation())([new FormationSlot(self::shipType('Cruiser'), 2, Hex::origin())]);
 
 		static::assertCount(1, $violations);
-		static::assertStringContainsString('1 to 1 ships', $violations[0]);
+		static::assertStringContainsString('1 to 1 ships', (string) $violations[0]);
 	}
 
 	public function testEmptyFormationIsRejected(): void

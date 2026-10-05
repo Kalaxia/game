@@ -38,6 +38,8 @@ security:
         - { path: ^/login/*, roles: PUBLIC_ACCESS }
         - { path: ^/registration/*, roles: PUBLIC_ACCESS }
         - { path: ^/combat-simulator/*, roles: PUBLIC_ACCESS }
+        # Live components of the combat simulator only work on the visitor's session
+        - { path: ^/_components/Simulator, roles: PUBLIC_ACCESS }
         - { path: ^/*, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

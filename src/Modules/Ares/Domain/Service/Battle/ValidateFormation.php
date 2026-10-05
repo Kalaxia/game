@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Ares\Domain\Service\Battle;
 
 use App\Modules\Ares\Domain\Model\Battle\FormationSlot;
+use App\Modules\Ares\Domain\Model\Battle\FormationViolation;
 use App\Modules\Ares\Domain\Model\Battle\Grid\Hex;
 
 /**
@@ -23,7 +24,7 @@ readonly class ValidateFormation
 	/**
 	 * @param list<FormationSlot> $formation
 	 *
-	 * @return list<string> violations, empty when the formation is valid
+	 * @return list<FormationViolation> empty when the formation is valid
 	 */
 	public function __invoke(array $formation): array
 	{
@@ -31,29 +32,28 @@ readonly class ValidateFormation
 		$occupiedCells = [];
 
 		if ([] === $formation) {
-			$violations[] = 'The formation has no squadron';
+			$violations[] = new FormationViolation(FormationViolation::EMPTY);
 		}
 
 		foreach ($formation as $slot) {
 			$cell = $slot->offset->toKey();
 
 			if (Hex::origin()->distanceTo($slot->offset) > $this->compositionRadius) {
-				$violations[] = sprintf('Cell %s is outside the formation grid', $cell);
+				$violations[] = new FormationViolation(FormationViolation::OUTSIDE_GRID, ['cell' => $cell]);
 			}
 
 			if (isset($occupiedCells[$cell])) {
-				$violations[] = sprintf('Cell %s holds more than one squadron', $cell);
+				$violations[] = new FormationViolation(FormationViolation::CELL_TAKEN, ['cell' => $cell]);
 			}
 			$occupiedCells[$cell] = true;
 
 			if ($slot->ships < 1 || $slot->ships > $slot->type->squadronSize) {
-				$violations[] = sprintf(
-					'A %s squadron holds 1 to %d ships, %d given on cell %s',
-					$slot->type->identifier,
-					$slot->type->squadronSize,
-					$slot->ships,
-					$cell,
-				);
+				$violations[] = new FormationViolation(FormationViolation::SQUADRON_SIZE, [
+					'type' => $slot->type->identifier,
+					'max' => $slot->type->squadronSize,
+					'ships' => $slot->ships,
+					'cell' => $cell,
+				]);
 			}
 		}
 

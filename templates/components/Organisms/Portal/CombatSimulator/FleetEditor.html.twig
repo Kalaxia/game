@@ -1,0 +1,146 @@
+{% set input_class = 'block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6' %}
+{% set label_class = 'block text-sm/6 font-medium text-white' %}
+{% set grid = this.gridDimensions %}
+{% set role_classes = {
+	interceptor: 'bg-sky-700',
+	bomber: 'bg-rose-700',
+	escort: 'bg-teal-700',
+	line: 'bg-amber-700',
+	artillery: 'bg-violet-700',
+	capital: 'bg-orange-800',
+} %}
+
+<div {{ attributes }} class="flex flex-col gap-6 pb-6">
+	{% if errors is not empty %}
+		<div class="rounded-md bg-red-950/60 border border-red-800 p-4 text-sm text-red-200">
+			<ul class="list-disc pl-5 space-y-1">
+				{% for error in errors %}
+					<li>{{ error }}</li>
+				{% endfor %}
+			</ul>
+		</div>
+	{% endif %}
+
+	<div class="grid grid-cols-2 gap-4 lg:grid-cols-5">
+		<div class="col-span-2 lg:col-span-1">
+			<label for="fleet-name" class="{{ label_class }}">Nom</label>
+			<input id="fleet-name" type="text" data-model="name" value="{{ name }}" placeholder="Flotte de l’Œil" autocomplete="off" data-1p-ignore class="mt-2 {{ input_class }}" />
+		</div>
+		<div>
+			<label for="fleet-side" class="{{ label_class }}">Camp</label>
+			<select id="fleet-side" data-model="side" class="mt-2 {{ input_class }}">
+				<option value="0" {{ side == 0 ? 'selected' }}>Camp A</option>
+				<option value="1" {{ side == 1 ? 'selected' }}>Camp B</option>
+			</select>
+		</div>
+		<div>
+			<label for="fleet-faction" class="{{ label_class }}">Faction</label>
+			<select id="fleet-faction" data-model="faction" class="mt-2 {{ input_class }}">
+				{% for identifier in this.factions %}
+					<option value="{{ identifier }}" {{ faction == identifier ? 'selected' }}>
+						{{ identifier == 0 ? 'Aucune (sans bonus)' : ('factions.' ~ identifier ~ '.name.official')|trans }}
+					</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div>
+			<label for="fleet-officer-level" class="{{ label_class }}">Niveau de l’officier</label>
+			<input id="fleet-officer-level" type="number" min="1" max="{{ this.maxOfficerLevel }}" data-model="officerLevel" value="{{ officerLevel }}" class="mt-2 {{ input_class }}" />
+		</div>
+		<div>
+			<label for="fleet-arrival-turn" class="{{ label_class }}">Arrivée au tour</label>
+			<input id="fleet-arrival-turn" type="number" min="1" data-model="arrivalTurn" value="{{ arrivalTurn }}" class="mt-2 {{ input_class }}" />
+		</div>
+	</div>
+
+	<div class="flex items-center">
+		<div aria-hidden="true" class="w-full border-t border-white/15"></div>
+		<span class="px-2 text-sm text-gray-400 whitespace-nowrap">Composition de la flotte</span>
+		<div aria-hidden="true" class="w-full border-t border-white/15"></div>
+	</div>
+
+	<div class="flex flex-col gap-8 lg:flex-row">
+		<div class="lg:w-1/2">
+			<p class="text-sm text-gray-400">
+				Choisissez un type de vaisseau, puis cliquez sur une case de la formation pour y placer une escadrille.
+				Une escadrille ne contient qu’un seul type de vaisseau.
+			</p>
+
+			<fieldset class="mt-4 grid grid-cols-1 gap-1 sm:grid-cols-2">
+				<legend class="sr-only">Type de vaisseau</legend>
+				{% for type in this.shipTypes %}
+					<label class="flex items-center gap-2 rounded-md px-2 py-1 text-sm cursor-pointer hover:bg-white/5 {{ selectedType == type.identifier ? 'bg-white/10 ring-1 ring-white/20' }}">
+						<input type="radio" name="selected-type" value="{{ type.identifier }}" data-model="selectedType" {{ selectedType == type.identifier ? 'checked' }} class="sr-only" />
+						<span class="size-3 rounded-sm {{ role_classes[type.role.value] }}" aria-hidden="true"></span>
+						<span class="grow">{{ this.shipTypeName(type.identifier) }}</span>
+						<span class="text-xs text-gray-400" title="Vaisseaux par escadrille">×{{ type.squadronSize }}</span>
+					</label>
+				{% endfor %}
+			</fieldset>
+
+			<div class="mt-4 flex items-end gap-4">
+				<div>
+					<label for="squadron-ships" class="{{ label_class }}">Vaisseaux par escadrille</label>
+					<input id="squadron-ships" type="number" min="0" data-model="squadronShips" value="{{ squadronShips }}" class="mt-2 w-32 {{ input_class }}" />
+				</div>
+				<p class="pb-2 text-xs text-gray-400">0 : escadrille complète</p>
+			</div>
+
+			<ul class="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400">
+				{% for role, class in role_classes %}
+					<li class="flex items-center gap-1"><span class="size-2 rounded-sm {{ class }}"></span>{{ ('combat_simulator.roles.' ~ role)|trans }}</li>
+				{% endfor %}
+			</ul>
+		</div>
+
+		<div class="flex flex-col items-center lg:w-1/2">
+			<div class="mb-3 inline-flex rounded-md ring-1 ring-white/20 text-sm" role="radiogroup" aria-label="Outil">
+				{% for value, label in {place: 'Placer', remove: 'Retirer'} %}
+					<label class="cursor-pointer px-3 py-1 first:rounded-l-md last:rounded-r-md {{ tool == value ? 'bg-white/15 text-white' : 'text-gray-400 hover:text-white' }}">
+						<input type="radio" name="tool" value="{{ value }}" data-model="tool" {{ tool == value ? 'checked' }} class="sr-only" />
+						{{ label }}
+					</label>
+				{% endfor %}
+			</div>
+			<p class="mb-2 text-xs uppercase tracking-wide text-gray-400">▲ Ligne de front</p>
+			<div class="relative" style="width: {{ grid.width }}px; height: {{ grid.height }}px">
+				{% for cell in this.cells %}
+					{% set slot = cell.slot %}
+					{% set slot_type = slot ? this.shipTypes[slot.type] : null %}
+					<button type="button"
+						class="hex-flat absolute flex flex-col items-center justify-center text-center leading-tight text-white transition-colors {{ slot_type ? role_classes[slot_type.role.value] ~ ' hover:brightness-125' : 'bg-gray-700 hover:bg-gray-600' }}"
+						style="left: {{ cell.left }}px; top: {{ cell.top }}px; width: {{ grid.cell_width }}px; height: {{ grid.cell_height }}px"
+						title="{{ slot_type ? this.shipTypeName(slot.type) ~ ' × ' ~ slot.ships : 'Case libre' }}"
+						data-action="live#action"
+						data-live-action-param="clickCell"
+						data-live-q-param="{{ cell.q }}"
+						data-live-r-param="{{ cell.r }}"
+					>
+						{% if slot_type %}
+							<span class="text-sm font-semibold">{{ slot.ships }}</span>
+							<span class="max-w-12 truncate text-[10px]">{{ this.shipTypeName(slot.type) }}</span>
+						{% endif %}
+					</button>
+				{% endfor %}
+			</div>
+			<p class="mt-3 text-xs text-gray-400">
+				{{ formation|length }} / {{ this.cells|length }} escadrilles · {{ this.totalPev }} PEV
+			</p>
+		</div>
+	</div>
+
+	<div class="flex flex-wrap items-center gap-3">
+		<twig:Button type="button" data-action="live#action" data-live-action-param="save">
+			Enregistrer la flotte
+		</twig:Button>
+		<button type="button" data-action="live#action" data-live-action-param="autoArrange" class="rounded-md px-3 py-2 text-sm text-gray-200 ring-1 ring-white/20 hover:bg-white/10">
+			Réorganiser automatiquement
+		</button>
+		<button type="button" data-action="live#action" data-live-action-param="clear" class="rounded-md px-3 py-2 text-sm text-gray-200 ring-1 ring-white/20 hover:bg-white/10">
+			Vider la formation
+		</button>
+		<button type="button" data-action="ui--modal#toggle" class="ml-auto rounded-md px-3 py-2 text-sm text-gray-400 hover:text-white">
+			Fermer
+		</button>
+	</div>
+</div>

@@ -85,6 +85,7 @@ Modules are halfway through a migration from a legacy layout to a DDD/hexagonal 
 - **Timed events** (travel arrival, end of a building/ship/tech queue…) are Messenger messages dispatched with a delay. The handler (e.g. `Ares/Handler/CommanderTravelHandler`) resolves the event when it arrives.
 - A message goes to the `async` or `async_high_priority` transport depending on whether it implements `AsyncMessage` or `AsyncHighPriorityMessage`. In tests, both transports are `in-memory://`.
 - Server time settings come from env vars: `SERVER_START_TIME`, `SERVER_SEGMENT_SHIFT`, `SERVER_TIME_MODE`.
+- The project loads a compiled `.env.local.php`, which takes precedence over `.env`. Give every new env var a default with an `env(NAME)` parameter, or run `composer dump-env dev`.
 
 ## Front-end conventions
 
@@ -95,6 +96,12 @@ Modules are halfway through a migration from a legacy layout to a DDD/hexagonal 
 - Pages are under `templates/pages/`, layouts under `templates/layouts/`. Older partials remain in `templates/{atoms,molecules,blocks}` and lowercase `templates/components/<feature>/`.
 - Styling is Tailwind utility classes. Custom CSS goes in `assets/styles/app.css`.
 - Translations: `translations/messages+intl-icu.fr.yaml`. The game UI is in **French**.
+- **Compiled assets:** the local setup keeps compiled assets in `public/assets` (gitignored). When that directory exists, Symfony serves these frozen files even in dev, so changes to `assets/` (Stimulus controllers, CSS) and new Tailwind classes in templates are invisible until a rebuild. After any front-end change, run in the container:
+  ```bash
+  php bin/console tailwind:build
+  php bin/console asset-map:compile
+  ```
+  Symptom of stale assets: a new Stimulus controller does nothing (missing from the compiled `controllers-*.js`), or new classes have no effect.
 
 ## Code conventions
 

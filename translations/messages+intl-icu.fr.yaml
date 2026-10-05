@@ -451,6 +451,25 @@ ship_categories:
             }
         description: 'Le croiseur lourd est le type prédominant de croiseur de la galaxie de l’Œil. Conçu par le vieil Empire pour mettre un terme à la rébellion des périodes de troubles, il est le vaisseau de combat le plus massif du chantier de ligne. En effet, sa construction nécessite énormément de matériel et de main-d’œuvre. De plus, le croiseur lourd est piloté par un équipage de plus de 300 personnes. <br /><br />Cet appareil, très gros, est difficile à manœuvrer dans les combats de mêlée. Cependant il est d’une efficacité redoutable en dernière ligne de vos escadrilles.'
 
+combat_simulator:
+    roles:
+        interceptor: 'Intercepteur'
+        bomber: 'Bombardier'
+        escort: 'Escorte'
+        line: 'Ligne'
+        artillery: 'Artillerie'
+        capital: 'Capital'
+    formation_violations:
+        empty: 'La formation ne contient aucune escadrille.'
+        outside_grid: 'La case {cell} est en dehors de la grille de formation.'
+        cell_taken: 'La case {cell} contient plusieurs escadrilles.'
+        squadron_size: 'Une escadrille de type {type} contient de 1 à {max} vaisseaux ({ships} sur la case {cell}).'
+
+# Ship types of the new battle system that have no ship category yet (combat simulator)
+battle_ship_types:
+    Bomber:
+        name: 'Bombardier'
+
 galaxy:
     systems:
         types:

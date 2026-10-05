@@ -1,7 +1,7 @@
 # Fleet combat redesign: work plan
 
 **Branch:** `feature/fleet-composition`
-**Status:** Phase 1 done (2026-10-04). Phase 2 (simulator v2) next. The design described here is a target, not the current behaviour. For current rules, see [`docs/gameplay.md` §9–11](../gameplay.md#9-military-ships-commanders-fleets).
+**Status:** Phase 2 done and checked in the browser by the maintainer (2026-10-05). Phase 3 (hex visualisation) next. The design described here is a target, not the current behaviour. For current rules, see [`docs/gameplay.md` §9–11](../gameplay.md#9-military-ships-commanders-fleets).
 
 This file is the single source of truth for the fleet and combat redesign. Update it whenever a decision is made: answer the open question, add an entry to the decision log, and move the work items forward.
 
@@ -346,13 +346,25 @@ Takeaways:
 
 ### Phase 2: simulator v2
 
-- [ ] **Formation editor** (D9): the player places single-type squadrons on the composition grid (hexagon of radius 2, 19 cells), front line at the top. A "fill automatically" action uses `BuildFleetFormation` as a suggestion.
+- [x] **Formation editor** (D9), the `SimulatorFleetEditor` Live Component:
+  - the player places single-type squadrons on the composition grid (hexagon of radius 2, 19 cells), front line at the top, with a "place / remove" tool;
+  - the squadron size is chosen per placement (full squadron by default);
+  - "Réorganiser automatiquement" uses `BuildFleetFormation` as a suggestion;
+  - errors (fields and `ValidateFormation` violations) are displayed in French.
   - Display convention: the editor shows the front at the top. The engine stores formations with the front facing east, so the editor rotates the view; the stored offsets keep the engine convention.
-  - Validation of player formations: `ValidateFormation` (cells within the grid, one squadron per cell, squadron size within the type's limit).
-- [ ] Simulator setup: several fleets per side, each with a faction, an officer level and its formation.
-- [ ] Per fleet: "joins at turn N".
-- [ ] "Run" computes the whole battle on the server and returns the event log as JSON.
-- [ ] A basic viewer that replays turns as a list or table with play, pause and speed controls.
+- [x] Simulator setup: several fleets per side, each with a name, a faction (combat bonuses), an officer level and an arrival turn. Fleets are listed by side (`SimulatorFleetsList`: edit, duplicate, remove) and kept in the session as plain arrays (`SimulatedFleetStorage`).
+- [x] Per fleet: arrival turn, to simulate reinforcements.
+- [x] "Lancer la simulation" (`POST /combat-simulator/run`): computes the whole battle on the server and returns the event log as JSON, with ship type names and officer experience. An optional seed replays the same battle.
+- [x] A basic viewer (Stimulus `combat-simulator--replay`):
+  - a summary: winner, duration, seed, remaining PEV and XP per fleet;
+  - a turn player with first / previous / play-pause / next / last, a slider and four speeds (up to real time);
+  - the state of each fleet at the chosen turn;
+  - the events of the turn in French.
+- Verified end to end over HTTP against the dev server, the viewer logic in Node on a real battle, then in the browser by the maintainer (after recompiling the stale `public/assets`, see AGENTS.md).
+- Also fixed:
+  - Live components under `/_components` required authentication, so the public simulator could not work for anonymous visitors. Access is now public for `Simulator*` components only (`config/packages/security.yaml`).
+  - `BATTLE_TURN_DURATION` has a default value, because the project loads a compiled `.env.local.php`.
+- Left in place, unused: the previous `SimulatorCommanderForm` / `SimulatorCommandersList` components, `VirtualCommanderType` and the `FleetGrid` prototype. They contain uncommitted work of the maintainer, who will remove them.
 
 ### Phase 3: hex visualisation
 

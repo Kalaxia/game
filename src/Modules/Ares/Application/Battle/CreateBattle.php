@@ -48,7 +48,7 @@ readonly class CreateBattle
 	 * Each fleet gets the combat bonuses of its faction, plus optional extra bonuses (e.g. technologies),
 	 * given as percentages by ship class value: [class => ['attack' => 10, 'defense' => 5, 'speed' => 0]].
 	 *
-	 * @param list<array{name: string, side: int, faction: int, officer_level?: int, arrival_turn?: int, formation?: list<array{type: string, ships: int, q: int, r: int}>, ships?: array<string, int>, bonuses?: array<int, array{attack?: int, defense?: int, speed?: int}>}> $fleets
+	 * @param list<array{identifier?: string, name: string, side: int, faction: int, officer_level?: int, arrival_turn?: int, formation?: list<array{type: string, ships: int, q: int, r: int}>, ships?: array<string, int>, bonuses?: array<int, array{attack?: int, defense?: int, speed?: int}>}> $fleets
 	 *
 	 * @throws \DomainException when a formation is invalid
 	 */
@@ -60,7 +60,7 @@ readonly class CreateBattle
 			seed: $seed,
 			fleets: array_map(
 				fn (array $fleet, int $index) => new BattleFleet(
-					identifier: sprintf('fleet-%d', $index),
+					identifier: $fleet['identifier'] ?? sprintf('fleet-%d', $index),
 					name: $fleet['name'],
 					faction: $fleet['faction'],
 					side: $fleet['side'],
@@ -98,7 +98,7 @@ readonly class CreateBattle
 		);
 
 		if ([] !== ($violations = ($this->validateFormation)($formation))) {
-			throw new \DomainException(sprintf('Invalid formation for fleet %s: %s', $fleet['name'], implode('; ', $violations)));
+			throw new \DomainException(sprintf('Invalid formation for fleet %s: %s', $fleet['name'], implode('; ', array_map('strval', $violations))));
 		}
 
 		return $formation;

@@ -14,4 +14,9 @@
 		aspect-ratio: cos(30deg);
 		clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
 	}
+
+	/* Flat-top hexagon, as used by the combat simulator formation grid */
+	.hex-flat {
+		clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+	}
 }
