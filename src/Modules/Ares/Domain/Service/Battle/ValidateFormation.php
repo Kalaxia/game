@@ -7,6 +7,7 @@ namespace App\Modules\Ares\Domain\Service\Battle;
 use App\Modules\Ares\Domain\Model\Battle\FormationSlot;
 use App\Modules\Ares\Domain\Model\Battle\FormationViolation;
 use App\Modules\Ares\Domain\Model\Battle\Grid\Hex;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Checks a formation composed by a player (D9).
@@ -17,6 +18,7 @@ use App\Modules\Ares\Domain\Model\Battle\Grid\Hex;
 readonly class ValidateFormation
 {
 	public function __construct(
+		#[Autowire('%ares.battle.formation_radius%')]
 		private int $compositionRadius = 2,
 	) {
 	}

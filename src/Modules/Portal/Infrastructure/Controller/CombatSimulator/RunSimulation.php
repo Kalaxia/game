@@ -9,6 +9,7 @@ use App\Modules\Ares\Application\Battle\CreateBattle;
 use App\Modules\Ares\Application\Battle\GetBattleShipTypeName;
 use App\Modules\Ares\Domain\Model\Battle\TurnResult;
 use App\Modules\Ares\Domain\Service\Battle\BattleEngine;
+use App\Modules\Ares\Domain\Service\Battle\BuildBattleReport;
 use App\Modules\Ares\Domain\Service\Battle\ComputeBattleExperience;
 use App\Modules\Portal\Infrastructure\CombatSimulator\SimulatedFleetStorage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,6 +36,7 @@ class RunSimulation extends AbstractController
 		CreateBattle $createBattle,
 		BattleEngine $battleEngine,
 		ComputeBattleExperience $computeBattleExperience,
+		BuildBattleReport $buildBattleReport,
 		BattleShipTypeRegistry $battleShipTypeRegistry,
 		GetBattleShipTypeName $getBattleShipTypeName,
 		TranslatorInterface $translator,
@@ -66,6 +68,7 @@ class RunSimulation extends AbstractController
 		}
 
 		$turns = $battleEngine->resolveBattle($state);
+		$experience = $computeBattleExperience($state);
 
 		$shipTypes = [];
 		foreach ($battleShipTypeRegistry->all() as $identifier => $type) {
@@ -105,8 +108,9 @@ class RunSimulation extends AbstractController
 			'result' => [
 				'winning_side' => $state->winningSide,
 				'turns' => $state->turn,
-				'experience' => $computeBattleExperience($state),
+				'experience' => $experience,
 			],
+			'report' => $buildBattleReport($state, $turns, $experience)->toArray(),
 		]);
 	}
 }

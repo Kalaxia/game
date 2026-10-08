@@ -1,7 +1,7 @@
 # Fleet combat redesign: work plan
 
 **Branch:** `feature/fleet-composition`
-**Status:** Phase 3 done (2026-10-05), pending the maintainer's check. Phase 4 (rich report and replay) next. The design described here is a target, not the current behaviour. For current rules, see [`docs/gameplay.md` §9–11](../gameplay.md#9-military-ships-commanders-fleets).
+**Status:** Phase 4 done (2026-10-08). Phase 5 (advanced combat rules) next. The design described here is a target, not the current behaviour. For current rules, see [`docs/gameplay.md` §9–11](../gameplay.md#9-military-ships-commanders-fleets).
 
 This file is the single source of truth for the fleet and combat redesign. Update it whenever a decision is made: answer the open question, add an entry to the decision log, and move the work items forward.
 
@@ -446,8 +446,18 @@ Takeaways:
 
 ### Phase 4: rich report and replay
 
-- [ ] A post-battle report built from the event log (Q16).
-- [ ] The same viewer used for replays.
+- [x] A post-battle report built from the event log (Q16): `BuildBattleReport` (`Ares/Domain/Service/Battle/`), `BattleReport` and `SquadronReport` (`Ares/Domain/Model/Battle/Report/`).
+  - It only reads the events (plus ship types and remaining ships from the state), so it can be rebuilt from a stored battle log in Phase 6 and 7.
+  - **By side:** PEV lost out of PEV engaged, ships lost, damage dealt.
+  - **By fleet:** ships engaged / remaining / lost by type, damage dealt and taken, ships destroyed by target type, officer experience, combat bonuses applied, arrival and destruction turns.
+  - **By squadron:** damage dealt and taken, kills, shots and hits (accuracy), remaining ships, destruction turn.
+  - **Key moments:** first blood, deadliest action, reinforcements, destroyed fleets, most valuable squadron, and the turning point (the turn from which the eventual winner kept the lead in remaining PEV after another side had led).
+- [x] Report display in the simulator (`battle_report_view.js`):
+  - an overview by side with the key moments, under the result;
+  - each key moment has a "Tour N" button that jumps the replay to that turn and scrolls to the battlefield;
+  - details by fleet (collapsible, faction colours) and the top 5 squadrons by damage, under the replay.
+- [x] The same viewer is used for replays. Sharing a report and replaying a stored battle need persistence: Phase 6 (stored turn log) and Q17 (sharing, later).
+- Verified: report figures match the engine counters (unit tests), and the display and turn links were checked in the browser pane on a real 3-fleet battle.
 
 ### Phase 5: advanced combat rules (simulator first)
 
@@ -511,3 +521,4 @@ Takeaways:
 | 2026-10-05 | D4 amended: every squadron may enter another fleet's area. Fleets arriving on the same turn are oriented toward each other before deploying; the replay starts with a deployment step showing the formations as composed. | Maintainer's multi-fleet tests. |
 | 2026-10-05 | A turn holds turn_duration / action_duration actions (10 by default), shared in turn among the fleets, replacing the per-fleet firing cap. Durability retuned to 5. | Continuous animation in real-time playback; durations kept. |
 | 2026-10-05 | Faster pace: action duration 0.4 s (25 actions per turn), durability 6, shorter animations. Battle durations no longer grow with fleet size; to be restored by the Phase 5 size maluses. | The animation felt slow. |
+| 2026-10-08 | Post-battle report built from the event log only (BuildBattleReport), with key moments linked to the replay. | Q16; reusable for stored battles. |

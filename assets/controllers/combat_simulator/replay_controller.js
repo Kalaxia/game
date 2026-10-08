@@ -1,5 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import { BattlefieldView, factionColor } from './battlefield_view.js';
+import { BattleReportView } from './battle_report_view.js';
 
 /**
  * Runs a combat simulation on the server and replays its event log turn by turn,
@@ -110,6 +111,16 @@ export default class extends Controller
 	next() { this._goTo(this.currentTurn + 1, true); }
 	last() { this._goTo(this.battle.turns.length); }
 
+	/**
+	 * Jumps the replay to a turn mentioned in the report, and brings the battlefield into view.
+	 */
+	showTurn(event)
+	{
+		this.pause();
+		this._goTo(event.params.turn);
+		this.outputTarget.querySelector('[data-replay-battlefield]').scrollIntoView({ behavior: 'smooth', block: 'center' });
+	}
+
 	zoomOut()
 	{
 		this.view.zoomTo(null);
@@ -218,6 +229,14 @@ export default class extends Controller
 			? 'Aucun vainqueur'
 			: `Victoire du camp ${this._sideName(battle.result.winning_side)}`;
 
+		const report = new BattleReportView(battle, {
+			escape: text => this._escape(text),
+			sideName: side => this._sideName(side),
+			fleetName: fleetId => this._fleetName(fleetId),
+			squadronName: squadronId => this._squadronName(squadronId),
+			typeName: type => this._typeName(type),
+		});
+
 		this.outputTarget.innerHTML = `
 			<div class="rounded-lg bg-gray-800 p-4">
 				<div class="flex flex-wrap items-baseline gap-x-6 gap-y-2">
@@ -230,21 +249,7 @@ export default class extends Controller
 						<button type="button" class="ml-2 underline hover:text-white" data-action="combat-simulator--replay#reuseSeed">réutiliser</button>
 					</p>
 				</div>
-				<table class="mt-4 w-full text-left text-sm">
-					<thead class="text-xs text-gray-400">
-						<tr><th class="py-1">Flotte</th><th>Camp</th><th>PEV restants</th><th>Expérience de l’officier</th></tr>
-					</thead>
-					<tbody>
-						${battle.fleets.map(fleet => `
-							<tr class="border-t border-white/10">
-								<td class="py-1">${this._escape(fleet.name)}</td>
-								<td>${this._sideName(fleet.side)}</td>
-								<td>${this._fleetPev(fleet.id, this.snapshots.length - 1)} / ${this._fleetPev(fleet.id, this.snapshots.length - 1, true)}</td>
-								<td>${(battle.result.experience[fleet.id] ?? 0).toLocaleString('fr-FR')} XP</td>
-							</tr>
-						`).join('')}
-					</tbody>
-				</table>
+				${report.renderOverview()}
 			</div>
 
 			<div class="mt-6 rounded-lg bg-gray-800 p-4">
@@ -270,6 +275,8 @@ export default class extends Controller
 					</div>
 				</div>
 			</div>
+
+			${report.renderDetails()}
 		`;
 
 		this.view?.destroy();

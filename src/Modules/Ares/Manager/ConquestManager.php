@@ -23,6 +23,7 @@ use App\Modules\Hermes\Manager\NotificationManager;
 use App\Modules\Zeus\Manager\PlayerBonusManager;
 use App\Modules\Zeus\Model\Player;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 readonly class ConquestManager
@@ -40,7 +41,9 @@ readonly class ConquestManager
 		private EntityManagerInterface $entityManager,
 		private EventDispatcherInterface $eventDispatcher,
 		private NotificationManager $notificationManager,
+		#[Autowire('%ares.coeff.colonization_cost%')]
 		private int $colonizationCost,
+		#[Autowire('%ares.coeff.conquest_cost%')]
 		private int $conquestCost,
 	) {
 	}

@@ -6,6 +6,7 @@ namespace App\Modules\Ares\Domain\Service\Battle;
 
 use App\Modules\Ares\Domain\Model\Battle\BattleFleet;
 use App\Modules\Ares\Domain\Model\Battle\BattleState;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Officer experience earned in a battle (D6).
@@ -23,6 +24,7 @@ readonly class ComputeBattleExperience
 	private const float MAX_IMPORTANCE = 3.0;
 
 	public function __construct(
+		#[Autowire('%ares.battle.experience_per_damage%')]
 		private float $experiencePerDamage = 2.0,
 	) {
 	}

@@ -8,6 +8,7 @@ use App\Modules\Ares\Domain\Model\Battle\BattleShipType;
 use App\Modules\Ares\Domain\Model\Battle\FormationSlot;
 use App\Modules\Ares\Domain\Model\Battle\Grid\Hex;
 use App\Modules\Ares\Domain\Model\Battle\ShipRole;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Arranges ships automatically into single-type squadrons and a formation.
@@ -29,6 +30,7 @@ readonly class BuildFleetFormation
 	];
 
 	public function __construct(
+		#[Autowire('%ares.battle.formation_radius%')]
 		private int $compositionRadius = 2,
 	) {
 	}
