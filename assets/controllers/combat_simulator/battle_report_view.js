@@ -47,7 +47,7 @@ export class BattleReportView
 							data-action="combat-simulator--replay#showTurn"
 							data-combat-simulator--replay-turn-param="${highlight.turn}"
 							title="Revoir ce tour">Tour ${highlight.turn}</button>
-						<span>${escape(this._describeHighlight(highlight))}</span>
+						<span>${escape(this.describeHighlight(highlight))}</span>
 					</li>
 				`).join('') || '<li class="text-gray-500">Aucun moment marquant.</li>'}
 			</ol>
@@ -151,7 +151,7 @@ export class BattleReportView
 		`;
 	}
 
-	_describeHighlight(highlight)
+	describeHighlight(highlight)
 	{
 		const { sideName, fleetName, squadronName } = this.helpers;
 		const ships = count => `${count} vaisseau${count > 1 ? 'x' : ''}`;

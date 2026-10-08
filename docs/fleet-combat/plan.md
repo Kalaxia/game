@@ -1,7 +1,7 @@
 # Fleet combat redesign: work plan
 
 **Branch:** `feature/fleet-composition`
-**Status:** Phase 5 in progress: size maluses, engagement delay, morale, weapon patterns and officer traits done (2026-10-08). The skimmable replay (D5) remains. The design described here is a target, not the current behaviour. For current rules, see [`docs/gameplay.md` §9–11](../gameplay.md#9-military-ships-commanders-fleets).
+**Status:** Phase 5 done (2026-10-08): size maluses, engagement delay, morale, weapon patterns, officer traits and a skimmable replay. Next: Phase 6. The design described here is a target, not the current behaviour. For current rules, see [`docs/gameplay.md` §9–11](../gameplay.md#9-military-ships-commanders-fleets).
 
 This file is the single source of truth for the fleet and combat redesign. Update it whenever a decision is made: answer the open question, add an entry to the decision log, and move the work items forward.
 
@@ -179,7 +179,7 @@ These decisions **override** the earlier answers where they conflict.
   - ~~The officer composes the formation.~~ **Superseded by D9** (community poll): players compose their formations themselves.
   - The officer-built formation (`BuildFleetFormation`) is kept as a **suggestion**: a "fill automatically" action in the editor. It also builds the formations of NPC fleets.
 - **D4. Each ship type has one or two clear roles.** ~~Only fighters and bombers can move onto another fleet's grid.~~ **Amended on 2026-10-05: every squadron may enter another fleet's area**, so that heavy ships of a fleet arriving behind an engaged enemy can reach it. Roles still drive targeting and formation.
-- **D5. Interest curve: to design later.** Battles need highlights (opening, reinforcements, routs, turning point), and replays need to be skimmable (timeline, summary, MVP). Not designed yet; noted as a risk.
+- **D5. Interest curve.** Battles need highlights (opening, reinforcements, routs, turning point), and replays need to be skimmable (timeline, summary, MVP). First version done in Phase 5: key moments and MVP in the report (Phase 4), plus a timeline and fast-forwarded calm turns in the replay.
 - **D6. Experience.**
   - Damage dealt **and taken** both give XP (Q14 stands). Losing ships is already punishment enough against farming through defeat.
   - XP is weighted by the **importance formula** (relative strength of the opponent), as today.
@@ -538,7 +538,12 @@ Takeaways:
     | Prudent | 38% |
 
   - Agressif and Tacticien may be strong; the negative traits do their job. Situational traits need multi-fleet scenarios to be judged.
-- [ ] Battle highlights and a skimmable replay (D5): partly covered by the Phase 4 key moments; a timeline remains to be designed.
+- [x] **Skimmable replay** (D5), on top of the Phase 4 key moments and most valuable squadron:
+  - a **timeline** (`battle_timeline_view.js`) replaces the turn slider: remaining PEV of every fleet over the turns, side A above the axis and side B below, stacked by fleet in faction colours. Who leads, reinforcements, routs and calm phases are visible at a glance;
+  - the key moments are markers (◆) under the timeline, with their description as a tooltip; clicking a marker, clicking or dragging on the chart, or the arrow keys seek the replay; a cursor shows the current turn;
+  - "moment clé précédent / suivant" buttons;
+  - **calm turns** (no ship lost, no fleet event: moves, missed shots, engagement delay) play four times faster, an option on by default ("Accélérer les tours calmes").
+  - Checked in the browser pane on a battle with an engagement delay: turns 2 to 11 are calm, the reinforcement and the collapse of the defender show on the chart.
 
 **Calibration** (2026-10-08, 20 battles each, durability 6, 25 actions per turn):
 - With morale loss 1.5 per percent lost and outnumbered penalty 2, nearly every battle ended in a flight within a few turns (a medium mirror lasted 2.3 min).
@@ -618,3 +623,4 @@ Takeaways:
 | 2026-10-08 | Morale also rises with the enemy PEV destroyed (victory_factor 0.5); loss factor raised to 1.2 to keep meaningful retreats. | Maintainer's request; symmetry between losses and successes. |
 | 2026-10-08 | Weapon patterns implemented with free turning: only minimum range, area damage and split fire restrict fire for now. Corvette lourde range 2. Traits next: 1 to 3, chosen in the simulator, random in the game, revealed by spying. | Maintainer's answers to content-proposal.md. |
 | 2026-10-08 | Officer traits implemented (12 traits, up to 3, chosen in the simulator). Agressif only affects movement targeting; Chasseur de capitaux only redirects heavy hitters in range. | Balance harness: the first versions won 0% and 23% of mirrors. |
+| 2026-10-08 | Skimmable replay: timeline of forces with key-moment markers, key-moment navigation, calm turns played four times faster. Phase 5 done. | D5 interest curve. |

@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 import { BattlefieldView, factionColor } from './battlefield_view.js';
 import { BattleReportView } from './battle_report_view.js';
+import { BattleTimelineView } from './battle_timeline_view.js';
 
 /**
  * Runs a combat simulation on the server and replays its event log turn by turn,
@@ -9,6 +10,9 @@ import { BattleReportView } from './battle_report_view.js';
  * The state of every squadron and fleet is rebuilt from the events, so that any turn can be displayed.
  * Moving forward by one turn is animated; jumping to a turn displays its final state.
  * Step 0 is the deployment: the fleets present from the start, in their formation as composed.
+ *
+ * To skim a long battle (D5): a timeline of the forces with the key moments, buttons to jump between
+ * key moments, and an option to play calm turns (no ship lost, no fleet event) four times faster.
  */
 export default class extends Controller
 {
@@ -32,12 +36,15 @@ export default class extends Controller
 		this.timer = null;
 		this.speed = 0;
 		this.view = null;
+		this.timeline = null;
+		this.fastCalmTurns = true;
 	}
 
 	disconnect()
 	{
 		this.pause();
 		this.view?.destroy();
+		this.timeline?.destroy();
 	}
 
 	async run()
@@ -83,8 +90,7 @@ export default class extends Controller
 			this.currentTurn = 0;
 		}
 
-		const delay = this._turnDelay();
-		this.timer = setInterval(() => {
+		const step = () => {
 			if (this.currentTurn >= this.battle.turns.length) {
 				this.pause();
 
@@ -92,13 +98,15 @@ export default class extends Controller
 			}
 			this.currentTurn++;
 			this._renderTurn(true);
-		}, delay);
+			this.timer = setTimeout(step, this._turnDelay(this.currentTurn));
+		};
+		this.timer = setTimeout(step, this._turnDelay(this.currentTurn + 1));
 		this._renderControls();
 	}
 
 	pause()
 	{
-		clearInterval(this.timer);
+		clearTimeout(this.timer);
 		this.timer = null;
 
 		if (this.battle !== null) {
@@ -110,6 +118,28 @@ export default class extends Controller
 	previous() { this._goTo(this.currentTurn - 1); }
 	next() { this._goTo(this.currentTurn + 1, true); }
 	last() { this._goTo(this.battle.turns.length); }
+
+	previousMoment()
+	{
+		const turn = this._momentTurns().filter(turn => turn < this.currentTurn).pop();
+		this._goTo(turn ?? 0);
+	}
+
+	nextMoment()
+	{
+		const turn = this._momentTurns().find(turn => turn > this.currentTurn);
+		this._goTo(turn ?? this.battle.turns.length);
+	}
+
+	toggleFastCalmTurns(event)
+	{
+		this.fastCalmTurns = event.currentTarget.checked;
+
+		if (this.timer !== null) {
+			this.pause();
+			this.play();
+		}
+	}
 
 	/**
 	 * Jumps the replay to a turn mentioned in the report, and brings the battlefield into view.
@@ -124,11 +154,6 @@ export default class extends Controller
 	zoomOut()
 	{
 		this.view.zoomTo(null);
-	}
-
-	seek(event)
-	{
-		this._goTo(parseInt(event.currentTarget.value, 10));
 	}
 
 	changeSpeed(event)
@@ -155,9 +180,34 @@ export default class extends Controller
 		this._renderTurn(animated && isNextTurn);
 	}
 
-	_turnDelay()
+	/**
+	 * Playback delay of a turn; calm turns go four times faster when the option is on.
+	 */
+	_turnDelay(turn = this.currentTurn)
 	{
-		return this.constructor.SPEEDS[this.speed].delay ?? this.battle.turn_duration * 1000;
+		const delay = this.constructor.SPEEDS[this.speed].delay ?? this.battle.turn_duration * 1000;
+
+		return this.fastCalmTurns && this._isCalm(turn) ? delay / 4 : delay;
+	}
+
+	/**
+	 * A calm turn has no ship lost and no fleet event: only moves and missed or harmless shots.
+	 */
+	_isCalm(turn)
+	{
+		const events = this.battle.turns[turn - 1]?.events;
+
+		if (events === undefined) {
+			return false;
+		}
+
+		return events.every(event => ['squadron_moved', 'fleet_moved', 'morale_updated'].includes(event.type)
+			|| (['squadron_fired', 'squadron_splashed'].includes(event.type) && event.kills === 0));
+	}
+
+	_momentTurns()
+	{
+		return [...new Set(this.battle.report.highlights.map(highlight => highlight.turn))].sort((a, b) => a - b);
 	}
 
 	/**
@@ -276,7 +326,8 @@ export default class extends Controller
 			</div>
 
 			<div class="mt-6 rounded-lg bg-gray-800 p-4">
-				<div class="flex flex-wrap items-center gap-3" data-replay-controls></div>
+				<div data-replay-timeline></div>
+				<div class="mt-3 flex flex-wrap items-center gap-3" data-replay-controls></div>
 
 				<div class="mt-4">
 					<div class="mb-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-400">
@@ -310,6 +361,16 @@ export default class extends Controller
 			describeSquadron: (id, squadron) => this._describeSquadron(id, squadron),
 		});
 
+		this.timeline?.destroy();
+		this.timeline = new BattleTimelineView(this.outputTarget.querySelector('[data-replay-timeline]'), battle, this.snapshots, {
+			onSeek: turn => {
+				this.pause();
+				this._goTo(turn);
+			},
+			describeHighlight: highlight => report.describeHighlight(highlight),
+			escape: text => this._escape(text),
+		});
+
 		this._renderTurn();
 	}
 
@@ -319,6 +380,7 @@ export default class extends Controller
 		this._renderFleets();
 		this._renderEvents();
 		this._renderSummary();
+		this.timeline.setTurn(this.currentTurn);
 
 		const events = this.battle.turns[this.currentTurn - 1]?.events ?? [];
 		if (animated) {
@@ -397,11 +459,16 @@ export default class extends Controller
 			${button('togglePlay', this.timer === null ? '▶ Lecture' : '⏸ Pause', 'Lecture / pause')}
 			${button('next', '▶', 'Tour suivant')}
 			${button('last', '⏭', 'Dernier tour')}
-			<input type="range" min="0" max="${total}" value="${this.currentTurn}" class="grow" aria-label="Tour" data-action="input->combat-simulator--replay#seek" />
-			<span class="w-36 text-sm text-gray-300">${this.currentTurn === 0 ? 'Déploiement' : `Tour ${this.currentTurn} / ${total}`} · ${this._formatDuration(this.currentTurn * this.battle.turn_duration)}</span>
+			${button('previousMoment', '◆ ◀', 'Moment clé précédent')}
+			${button('nextMoment', '▶ ◆', 'Moment clé suivant')}
+			<span class="grow text-sm text-gray-300">${this.currentTurn === 0 ? 'Déploiement' : `Tour ${this.currentTurn} / ${total}`} · ${this._formatDuration(this.currentTurn * this.battle.turn_duration)}</span>
 			<select class="rounded-md bg-white/5 px-2 py-1 text-sm" aria-label="Vitesse" data-action="combat-simulator--replay#changeSpeed">
 				${this.constructor.SPEEDS.map((speed, index) => `<option value="${index}" ${index === this.speed ? 'selected' : ''}>${speed.label}</option>`).join('')}
 			</select>
+			<label class="flex items-center gap-1.5 text-sm text-gray-300" title="Les tours sans perte ni événement de flotte défilent quatre fois plus vite">
+				<input type="checkbox" ${this.fastCalmTurns ? 'checked' : ''} data-action="combat-simulator--replay#toggleFastCalmTurns" />
+				Accélérer les tours calmes
+			</label>
 		`;
 	}
 
