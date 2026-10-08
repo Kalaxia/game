@@ -95,6 +95,12 @@ Modules are halfway through a migration from a legacy layout to a DDD/hexagonal 
 - Interactive UI should use **Live Components** (`#[LiveProp]`, `#[LiveAction]`, `#[LiveListener]` + `emit`) rather than custom JS. Only add Stimulus controllers (`assets/controllers/`) for purely client-side behaviour.
 - Pages are under `templates/pages/`, layouts under `templates/layouts/`. Older partials remain in `templates/{atoms,molecules,blocks}` and lowercase `templates/components/<feature>/`.
 - Styling is Tailwind utility classes. Custom CSS goes in `assets/styles/app.css`.
+- **Art direction: the faction colour dominates.**
+  - The colour of the player's faction is the dominant colour of the interface.
+  - On screens showing several factions (battles, maps, rankings), the faction colour is what tells the player who owns an element: squadrons, shots, fleet areas, labels.
+  - Use the faction colour variables from `assets/styles/faction_colors/all.css` (`--color-light-N`, `--color-medium-N`, `--color-dark-N`, and the matching `text-/bg-/border-` classes), not ad-hoc palettes.
+  - Do not introduce other colour codes for categories (e.g. ship roles): ship types will be identified by **pictograms**. Until they exist, use text (labels, tooltips).
+  - Keep text readable on light faction colours (e.g. Falkirr yellow) with a dark outline or shadow.
 - Translations: `translations/messages+intl-icu.fr.yaml`. The game UI is in **French**.
 - **Compiled assets:** the local setup keeps compiled assets in `public/assets` (gitignored). When that directory exists, Symfony serves these frozen files even in dev, so changes to `assets/` (Stimulus controllers, CSS) and new Tailwind classes in templates are invisible until a rebuild. After any front-end change, run in the container:
   ```bash
