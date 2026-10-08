@@ -19,9 +19,11 @@ use Random\Randomizer;
  * Attack uses the bonuses of the shooting fleet, defense and speed those of the target's fleet.
  * When the target is destroyed, the remaining shots go to the next target in range.
  *
- * The number of squadrons of a fleet firing in a round can be capped, so that the firepower of big
- * fleets saturates and big battles last longer (D1), while each reinforcement still adds firepower (G2). Squadrons left out accumulate their initiative,
- * so that every squadron eventually fires (R9).
+ * A turn holds a limited number of actions (one action = one squadron firing), derived from the real
+ * duration of a turn so that its animation is continuous. Actions are shared in turn among the fleets
+ * able to fire, so that big battles last longer (D1) while each reinforcement brings its side more
+ * actions (G2). Within a fleet, the squadron with the highest initiative acts first; squadrons left
+ * out accumulate their initiative, so that every squadron eventually fires (R9).
  */
 readonly class ResolveFire
 {
@@ -88,7 +90,7 @@ readonly class ResolveFire
 	 */
 	private function selectFiringSquadrons(BattleState $state, array $squadrons): array
 	{
-		if (null === $state->maxFiringSquadronsPerFleet) {
+		if (null === $state->maxActionsPerTurn) {
 			return $squadrons;
 		}
 
@@ -96,27 +98,46 @@ readonly class ResolveFire
 			$squadrons,
 			fn (BattleSquadron $squadron) => !$squadron->isDestroyed() && null !== ($this->selectTarget)($state, $squadron, true),
 		));
-		usort(
-			$candidates,
-			fn (BattleSquadron $a, BattleSquadron $b) => ($b->type->initiative + $b->waitingInitiative) <=> ($a->type->initiative + $a->waitingInitiative),
-		);
+		usort($candidates, fn (BattleSquadron $a, BattleSquadron $b) => $this->getPriority($b) <=> $this->getPriority($a));
 
+		// Queues of candidates by fleet, fleets ordered by their most urgent squadron
+		$queues = [];
+		foreach ($candidates as $squadron) {
+			$queues[$squadron->getFleet()->identifier][] = $squadron;
+		}
+
+		// Actions are handed out in turn to each fleet
 		$firingSquadrons = [];
-		$firingCountByFleet = [];
+		while (count($firingSquadrons) < $state->maxActionsPerTurn && [] !== $queues) {
+			foreach (array_keys($queues) as $fleet) {
+				if (count($firingSquadrons) >= $state->maxActionsPerTurn) {
+					break;
+				}
+
+				$firingSquadrons[] = array_shift($queues[$fleet]);
+				if ([] === $queues[$fleet]) {
+					unset($queues[$fleet]);
+				}
+			}
+		}
+
+		// Chosen squadrons fire in order of priority
+		usort($firingSquadrons, fn (BattleSquadron $a, BattleSquadron $b) => $this->getPriority($b) <=> $this->getPriority($a));
 
 		foreach ($candidates as $squadron) {
-			$fleet = $squadron->getFleet()->identifier;
-
-			if (($firingCountByFleet[$fleet] ?? 0) < $state->maxFiringSquadronsPerFleet) {
-				$firingCountByFleet[$fleet] = ($firingCountByFleet[$fleet] ?? 0) + 1;
+			if (in_array($squadron, $firingSquadrons, true)) {
 				$squadron->waitingInitiative = 0;
-				$firingSquadrons[] = $squadron;
 			} else {
 				$squadron->waitingInitiative += $squadron->type->initiative;
 			}
 		}
 
 		return $firingSquadrons;
+	}
+
+	private function getPriority(BattleSquadron $squadron): int
+	{
+		return $squadron->type->initiative + $squadron->waitingInitiative;
 	}
 
 	/**

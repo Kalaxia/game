@@ -1,14 +1,7 @@
 {% set input_class = 'block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6' %}
 {% set label_class = 'block text-sm/6 font-medium text-white' %}
 {% set grid = this.gridDimensions %}
-{% set role_classes = {
-	interceptor: 'bg-sky-700',
-	bomber: 'bg-rose-700',
-	escort: 'bg-teal-700',
-	line: 'bg-amber-700',
-	artillery: 'bg-violet-700',
-	capital: 'bg-orange-800',
-} %}
+{# Art direction: the faction colour is the dominant colour of the fleet (see AGENTS.md) #}
 
 <div {{ attributes }} class="flex flex-col gap-6 pb-6">
 	{% if errors is not empty %}
@@ -71,8 +64,8 @@
 				{% for type in this.shipTypes %}
 					<label class="flex items-center gap-2 rounded-md px-2 py-1 text-sm cursor-pointer hover:bg-white/5 {{ selectedType == type.identifier ? 'bg-white/10 ring-1 ring-white/20' }}">
 						<input type="radio" name="selected-type" value="{{ type.identifier }}" data-model="selectedType" {{ selectedType == type.identifier ? 'checked' }} class="sr-only" />
-						<span class="size-3 rounded-sm {{ role_classes[type.role.value] }}" aria-hidden="true"></span>
 						<span class="grow">{{ this.shipTypeName(type.identifier) }}</span>
+						<span class="text-xs text-gray-500">{{ ('combat_simulator.roles.' ~ type.role.value)|trans }}</span>
 						<span class="text-xs text-gray-400" title="Vaisseaux par escadrille">×{{ type.squadronSize }}</span>
 					</label>
 				{% endfor %}
@@ -86,11 +79,6 @@
 				<p class="pb-2 text-xs text-gray-400">0 : escadrille complète</p>
 			</div>
 
-			<ul class="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400">
-				{% for role, class in role_classes %}
-					<li class="flex items-center gap-1"><span class="size-2 rounded-sm {{ class }}"></span>{{ ('combat_simulator.roles.' ~ role)|trans }}</li>
-				{% endfor %}
-			</ul>
 		</div>
 
 		<div class="flex flex-col items-center lg:w-1/2">
@@ -108,8 +96,8 @@
 					{% set slot = cell.slot %}
 					{% set slot_type = slot ? this.shipTypes[slot.type] : null %}
 					<button type="button"
-						class="hex-flat absolute flex flex-col items-center justify-center text-center leading-tight text-white transition-colors {{ slot_type ? role_classes[slot_type.role.value] ~ ' hover:brightness-125' : 'bg-gray-700 hover:bg-gray-600' }}"
-						style="left: {{ cell.left }}px; top: {{ cell.top }}px; width: {{ grid.cell_width }}px; height: {{ grid.cell_height }}px"
+						class="hex-flat absolute flex flex-col items-center justify-center text-center leading-tight text-white transition-colors {{ slot_type ? 'hover:brightness-125' : 'bg-gray-700 hover:bg-gray-600' }}"
+						style="left: {{ cell.left }}px; top: {{ cell.top }}px; width: {{ grid.cell_width }}px; height: {{ grid.cell_height }}px;{% if slot_type %} background: var(--color-medium-{{ faction }}); text-shadow: 0 0 3px rgb(0 0 0 / .9);{% endif %}"
 						title="{{ slot_type ? this.shipTypeName(slot.type) ~ ' × ' ~ slot.ships : 'Case libre' }}"
 						data-action="live#action"
 						data-live-action-param="clickCell"

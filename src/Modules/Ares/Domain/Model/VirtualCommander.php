@@ -19,6 +19,5 @@ class VirtualCommander implements CommanderInterface
 		 */
 		public array $army = [],
 	) {
-
 	}
 }

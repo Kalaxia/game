@@ -8,7 +8,7 @@ The first values are **derived from the current stats**, so that today's balance
 
 | Stat | Meaning | Derived from |
 |---|---|---|
-| `role` | Behaviour of the squadron: target preferences, positioning, whether it can leave its fleet's area (D4). | Ship design, current attack profile. |
+| `role` | Behaviour of the squadron: target preferences and position in the automatic formation (D4). Every squadron may enter another fleet's area since 2026-10-05. | Ship design, current attack profile. |
 | `squadronSize` | Maximum number of ships in a squadron of this type (R2). | `floor(100 / pev)`, which keeps today's 100-PEV squadron. |
 | `movement` | Fine cells a squadron can move per turn (R4). | `speed`: ≥ 180 → 3, 140–179 → 2, ≤ 100 → 1. |
 | `initiative` | Order of action within a round (R3); higher acts first. | `speed`, so the same order as today's dodge ranking. |
@@ -17,14 +17,14 @@ The first values are **derived from the current stats**, so that today's balance
 
 ## Proposed roles
 
-| Role | Behaviour | Can leave its fleet's area |
-|---|---|---|
-| **Interceptor** | Hunts fighters and bombers. Screens its fleet. | yes |
-| **Bomber** | Goes for heavy ships and avoids fighters. | yes |
-| **Escort** | Anti-fighter screen with many small shots. Stays close to the heavy ships. | no |
-| **Line** | Durable brawler of the front line. Engages whatever is in front of it. | no |
-| **Artillery** | Long range, stays behind the line, targets big ships. | no |
-| **Capital** | Heavy all-rounder. Center of the formation. | no |
+| Role | Behaviour |
+|---|---|
+| **Interceptor** | Hunts fighters and bombers. Screens its fleet. |
+| **Bomber** | Goes for heavy ships and avoids fighters. |
+| **Escort** | Anti-fighter screen with many small shots. Stays close to the heavy ships. |
+| **Line** | Durable brawler of the front line. Engages whatever is in front of it. |
+| **Artillery** | Long range, stays behind the line, targets big ships. |
+| **Capital** | Heavy all-rounder. Center of the formation. |
 
 ## Proposed values
 

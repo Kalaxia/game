@@ -53,7 +53,7 @@ abstract class BattleTestCase extends TestCase
 	/**
 	 * @param list<BattleFleet> $fleets
 	 */
-	protected static function battle(array $fleets, int $seed = 42, float $durabilityFactor = 1.0, ?int $maxFiringSquadronsPerFleet = null): BattleState
+	protected static function battle(array $fleets, int $seed = 42, float $durabilityFactor = 1.0, ?int $maxActionsPerTurn = null): BattleState
 	{
 		return new BattleState(
 			grid: new ClusteredHexGrid(4),
@@ -61,7 +61,7 @@ abstract class BattleTestCase extends TestCase
 			seed: $seed,
 			fleets: $fleets,
 			durabilityFactor: $durabilityFactor,
-			maxFiringSquadronsPerFleet: $maxFiringSquadronsPerFleet,
+			maxActionsPerTurn: $maxActionsPerTurn,
 		);
 	}
 

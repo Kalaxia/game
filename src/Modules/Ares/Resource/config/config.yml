@@ -20,8 +20,10 @@ parameters:
     ares.battle.fleet_area_radius: 4
     ares.battle.formation_radius: 2
     # Tuned with app:ares:simulate-battles to reach the duration targets of D1 (see docs/fleet-combat/plan.md)
-    ares.battle.durability_factor: 3.0
-    ares.battle.max_firing_squadrons_per_fleet: 2
+    ares.battle.durability_factor: 6.0
+    # Real time taken by one action (a squadron firing): a turn holds turn_duration / action_duration actions,
+    # shared among the fleets, so that the animation of a turn is continuous
+    ares.battle.action_duration: 0.4
     # Officer experience per point of damage dealt or taken, before the importance weighting (D6)
     ares.battle.experience_per_damage: 2.0
     

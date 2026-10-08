@@ -21,6 +21,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 readonly class CreateBattle
 {
 	private BuildFleetFormation $buildFleetFormation;
+	private ?int $maxActionsPerTurn;
 	private ValidateFormation $validateFormation;
 
 	public function __construct(
@@ -34,9 +35,13 @@ readonly class CreateBattle
 		int $formationRadius,
 		#[Autowire('%ares.battle.durability_factor%')]
 		private float $durabilityFactor = 1.0,
-		#[Autowire('%ares.battle.max_firing_squadrons_per_fleet%')]
-		private ?int $maxFiringSquadronsPerFleet = null,
+		#[Autowire('%ares.battle.turn_duration%')]
+		int $turnDuration = 10,
+		#[Autowire('%ares.battle.action_duration%')]
+		?float $actionDuration = null,
 	) {
+		// As many actions as can be animated one after another during the real duration of a turn
+		$this->maxActionsPerTurn = null !== $actionDuration ? max(1, (int) floor($turnDuration / $actionDuration)) : null;
 		$this->buildFleetFormation = new BuildFleetFormation($formationRadius);
 		$this->validateFormation = new ValidateFormation($formationRadius);
 	}
@@ -73,7 +78,7 @@ readonly class CreateBattle
 				array_keys($fleets),
 			),
 			durabilityFactor: $this->durabilityFactor,
-			maxFiringSquadronsPerFleet: $this->maxFiringSquadronsPerFleet,
+			maxActionsPerTurn: $this->maxActionsPerTurn,
 		);
 	}
 

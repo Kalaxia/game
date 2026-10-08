@@ -1,7 +1,7 @@
 # Fleet combat redesign: work plan
 
 **Branch:** `feature/fleet-composition`
-**Status:** Phase 2 done and checked in the browser by the maintainer (2026-10-05). Phase 3 (hex visualisation) next. The design described here is a target, not the current behaviour. For current rules, see [`docs/gameplay.md` §9–11](../gameplay.md#9-military-ships-commanders-fleets).
+**Status:** Phase 3 done (2026-10-05), pending the maintainer's check. Phase 4 (rich report and replay) next. The design described here is a target, not the current behaviour. For current rules, see [`docs/gameplay.md` §9–11](../gameplay.md#9-military-ships-commanders-fleets).
 
 This file is the single source of truth for the fleet and combat redesign. Update it whenever a decision is made: answer the open question, add an entry to the decision log, and move the work items forward.
 
@@ -178,7 +178,7 @@ These decisions **override** the earlier answers where they conflict.
 - **D3. Combat stays idle, as in Asylamba.** The player cannot act during a battle.
   - ~~The officer composes the formation.~~ **Superseded by D9** (community poll): players compose their formations themselves.
   - The officer-built formation (`BuildFleetFormation`) is kept as a **suggestion**: a "fill automatically" action in the editor. It also builds the formations of NPC fleets.
-- **D4. Each ship type has one or two clear roles.** Only **fighters and bombers** can move onto another fleet's grid, to flank or harass. Every other squadron stays within its own fleet's area.
+- **D4. Each ship type has one or two clear roles.** ~~Only fighters and bombers can move onto another fleet's grid.~~ **Amended on 2026-10-05: every squadron may enter another fleet's area**, so that heavy ships of a fleet arriving behind an engaged enemy can reach it. Roles still drive targeting and formation.
 - **D5. Interest curve: to design later.** Battles need highlights (opening, reinforcements, routs, turning point), and replays need to be skimmable (timeline, summary, MVP). Not designed yet; noted as a risk.
 - **D6. Experience.**
   - Damage dealt **and taken** both give XP (Q14 stands). Losing ships is already punishment enough against farming through defeat.
@@ -313,7 +313,7 @@ Takeaways:
 - **Finding:** without a limit, durations do not grow with fleet size (1–2 min from 100 to 1,500 PEV), because firepower and life grow together. A global factor alone cannot meet D1.
 - **Two levers added:**
   - `ares.battle.durability_factor`: multiplies the life of every ship. It sets the base duration.
-  - `ares.battle.max_firing_squadrons_per_fleet`: at most N squadrons of a **fleet** fire per round. Squadrons left out accumulate their initiative, so heavy ships still fire (checked: cruisers and destroyers fire as often as without the cap). The firepower of big fleets saturates, so **big battles last longer**.
+  - `ares.battle.max_firing_squadrons_per_fleet (replaced by ares.battle.action_duration on 2026-10-05)`: at most N squadrons of a **fleet** fire per round. Squadrons left out accumulate their initiative, so heavy ships still fire (checked: cruisers and destroyers fire as often as without the cap). The firepower of big fleets saturates, so **big battles last longer**.
   - The cap is per fleet rather than per side, so that each reinforcement still adds firepower (G2). It could later depend on the officer level, as one of the size maluses officers mitigate (Q13).
 - **Values chosen: durability 3, cap 2** (median durations over 30 battles):
 
@@ -368,10 +368,81 @@ Takeaways:
 
 ### Phase 3: hex visualisation
 
-- [ ] Battlefield view (zoom 1): 5×5 hex grid, fleets, movement.
-- [ ] Fleet view (zoom 2): squadrons, their ship counts, losses.
-- [ ] Per-turn animations: firing lines from shooter to target, hit and miss feedback, destroyed squadrons, joining fleets.
-- [ ] A readability layer (P5): hover details, damage numbers, a per-turn summary.
+- [x] Battlefield view (zoom 1): the 5×5 fleet areas drawn as hexagonal clusters of fine cells, tinted with the faction colour of the fleet standing there, with fleet names coloured by side. `BattlefieldView` (`assets/controllers/combat_simulator/battlefield_view.js`), SVG.
+- [x] Fleet view (zoom 2): click a fleet area or one of its squadrons to zoom on it (animated view box), "Vue d'ensemble" to zoom out. Squadrons are hexagons in their **faction colours** (medium fill, light outline), showing their ship count. *(Role colours replaced by faction colours on 2026-10-05, see the art direction in AGENTS.md; ship pictograms to come.)*
+- [x] Per-turn animations, when playing or stepping forward one turn:
+  - arrivals fade in, squadrons glide to their new cell;
+  - each shot is drawn in firing order as a line from shooter to target, in the shooter's side colour;
+  - floating damage numbers ("raté" for misses), the target flashes and its ship count drops;
+  - destroyed squadrons fade out.
+  - Jumping to a turn shows its final state with that turn's shots as faint lines.
+- [x] Readability layer:
+  - squadron tooltips: type, ships left / initial, fleet, side, role, life per ship;
+  - a per-turn summary: damage dealt and ships lost by each side;
+  - a legend of side and role colours.
+- `fleet_moved` events now carry the translation and the squadrons moved, and the run response includes the grid geometry and ship life.
+- Verified in the browser pane with a local harness loading the real modules, compiled CSS and a real battle. The pane cannot open `https://kalaxia.local` because of its self-signed certificate.
+- Known limits:
+  - a squadron moving onto another fleet's area is shown on that area, while its fleet's tint stays on its own area;
+  - shots between adjacent squadrons are short and can be hard to see at the battlefield zoom;
+  - no fleet ever moved in the test battles, because fleets deploy in contact, so the `fleet_moved` animation is only covered by its unit test.
+
+**Movement fixes after the maintainer's multi-fleet test** (2026-10-05):
+
+- **Symptom:** a fleet that had beaten its opponent waited for its allies to finish their fight instead of joining it, although free fronts existed.
+- **Causes:**
+  - Being next to an enemy fleet counted as "in contact", even when every enemy squadron faced another front, out of reach of the fleet's line squadrons, which cannot leave their area (D4).
+  - Squadrons moved greedily toward their target and got stuck against the edge of their area.
+  - Destroyed fleets kept holding their area, so the free front was not free.
+- **New rules:**
+  - A fleet is engaged when an enemy squadron is within its squadrons' range from the edge of its area. Otherwise it searches (breadth-first, around the other fleets) for the free area closest to the enemy squadrons and moves one area toward it each turn (`MoveFleets`).
+  - Squadrons explore the cells they may enter and head for the closest cell in range of their preferred target, else in range of any enemy, else as close as possible to their target (`MoveSquadrons`). Ties are broken at random from the turn seed.
+  - Destroyed fleets free their area. A fleet destroyed on its arrival turn is now reported in the event log.
+- **Viewer navigation:** the battlefield can be dragged to move around and zoomed with the mouse wheel around the cursor. A click right after a drag does not zoom on a fleet.
+
+**Second round of fixes** (2026-10-05):
+
+- **D4 amended: every squadron may enter another fleet's area.** Before, the heavy ships of a fleet arriving behind an engaged enemy stayed out of reach. A fleet still moves its whole area toward the closest free front when none of its squadrons can reach an enemy from its area, which keeps the formation together and brings slow ships forward.
+- **Formations are kept as composed at deployment.** Fleets arriving on the same turn are all placed first, then oriented toward each other and deployed. Before, the first one faced the battlefield centre and turned around within the turn.
+- **The viewer shows the formation as composed:**
+  - a "Déploiement" step 0 shows the fleets present from the start, before any movement;
+  - on the arrival turn of a reinforcement, its squadrons appear on their formation cells before moving.
+
+**Actions per turn derived from the real turn duration** (2026-10-05, maintainer's real-time test):
+
+- **Goal:** during real-time playback (one turn = `BATTLE_TURN_DURATION`, 10 s), animations must be continuous. The playback speed chosen in the viewer does not change the rules.
+- **Rule:** a turn holds `turn_duration / action_duration` actions, i.e. 10 actions with `ares.battle.action_duration: 1.0`. One action is one squadron firing.
+  - Actions are handed out in turn to the fleets able to fire. Within a fleet, the squadron with the highest priority (initiative + accumulated initiative) acts. Squadrons left out accumulate initiative (R9).
+  - This replaces the cap of 2 firing squadrons per fleet. With a fixed budget per turn, battles with more fleets last longer (D1), and a reinforcement still gives its side more actions (G2).
+- **Viewer:** the animation of a turn fills the whole turn (95%), arrivals and movements take at most 1.5 s each, and the shots are spread over the rest. Checked in real time: 10 shots, one every 0.75 s, each line lasting 1.5 s.
+- **Retuning:** `ares.battle.durability_factor` goes from 3 to 5, to keep balanced battles at the durations validated before. Median durations over 20 battles:
+
+| Battle | Durability 5, 10 actions/turn |
+|---|---|
+| Small (~100 PEV per side) | 1.5 min |
+| Small mixed (~200 PEV) | 2.7 min |
+| Medium, unbalanced (~600 PEV) | 3.5 min |
+| Big (~1,500 PEV) | 4.7 min |
+| Medium mirror, 1 v 1 | 10.3 min |
+| Medium mirror, 2 v 2 | 12.7 min |
+| Medium mirror 1 v 1, B reinforced at turn 30 | 6.3 min, B wins 100% |
+
+**Faster pace** (2026-10-05, the maintainer found the animation too slow):
+
+- `ares.battle.action_duration` goes from 1.0 to **0.4 s**, i.e. **25 actions per 10-second turn**. `ares.battle.durability_factor` goes from 5 to **6**.
+- Viewer: movements take at most 0.8 s, arrivals at most 1 s, and each shot line at most 0.7 s.
+- Checked in real time: 15 actions in a turn, one every 0.55 s, the first one 0.8 s into the turn.
+- ⚠️ **Trade-off for D1:** with 25 actions, the budget only binds in very big battles, because small and medium ones rarely have 25 squadrons in range. Big battles no longer last longer than medium ones, and 2 v 2 lasts about as long as 1 v 1. The fleet-size maluses of Phase 5 are expected to restore this scaling.
+
+| Battle (durability 6, 25 actions/turn) | Median duration |
+|---|---|
+| Small (~100 PEV per side) | 1.5 min |
+| Small mixed (~200 PEV) | 2.5 min |
+| Medium, unbalanced (~600 PEV) | 3.2 min |
+| Big (~1,500 PEV) | 3.2 min |
+| Medium mirror, 1 v 1 | 11.5 min |
+| Medium mirror, 2 v 2 | 10.3 min |
+| Medium mirror 1 v 1, B reinforced at turn 30 | 6.7 min, B wins 100% |
 
 ### Phase 4: rich report and replay
 
@@ -435,3 +506,8 @@ Takeaways:
 | 2026-10-04 | Battle durations are tuned with two levers: a ship durability factor (3) and a cap on squadrons firing per round **per fleet** (2), with accumulated initiative. Provisional values. | Durations must grow with fleet size (D1); per fleet keeps reinforcements meaningful (G2). |
 | 2026-10-04 | Officer XP = (damage dealt + taken) ÷ durability × 2 × importance (relative strength, capped at 3). Bonuses apply per fleet: attacker's for attack, target's for defense and dodge; cruisers included; faction defense bonus applied once. | D6; fixes three legacy combat bugs. |
 | 2026-10-04 | Players compose their formations themselves (D9, community poll). `BuildFleetFormation` is kept as a suggestion and for NPC fleets. | Player preference; makes composition choices readable. |
+| 2026-10-05 | Art direction: the faction colour is the dominant colour and identifies ownership; squadrons, shots, fleet areas and labels use faction colours. Ship roles lose their colour code; ship types will get pictograms. | Visual feeling of "forces of a faction"; recorded in AGENTS.md. |
+| 2026-10-05 | A fleet is engaged when enemy squadrons are within reach of its area, not merely when an enemy fleet is adjacent; otherwise it heads for the closest free front. Squadrons use pathfinding to reach firing positions. Destroyed fleets free their area. | Victorious fleets now help their allies (maintainer's multi-fleet test). |
+| 2026-10-05 | D4 amended: every squadron may enter another fleet's area. Fleets arriving on the same turn are oriented toward each other before deploying; the replay starts with a deployment step showing the formations as composed. | Maintainer's multi-fleet tests. |
+| 2026-10-05 | A turn holds turn_duration / action_duration actions (10 by default), shared in turn among the fleets, replacing the per-fleet firing cap. Durability retuned to 5. | Continuous animation in real-time playback; durations kept. |
+| 2026-10-05 | Faster pace: action duration 0.4 s (25 actions per turn), durability 6, shorter animations. Battle durations no longer grow with fleet size; to be restored by the Phase 5 size maluses. | The animation felt slow. |

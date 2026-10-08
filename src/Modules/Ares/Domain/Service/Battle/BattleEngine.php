@@ -39,16 +39,17 @@ readonly class BattleEngine
 
 		++$state->turn;
 		$randomizer = new Randomizer(new Mt19937($this->getTurnSeed($state)));
-		$activeFleetsBefore = $state->getActiveFleets();
 
 		$events = ($this->deployFleets)($state);
-		$events = [...$events, ...($this->moveFleets)($state)];
+		$events = [...$events, ...($this->moveFleets)($state, $randomizer)];
 		$squadrons = $this->sortByInitiative($state->getActiveSquadrons(), $randomizer);
 		$events = [...$events, ...($this->moveSquadrons)($state, $squadrons, $randomizer)];
 		$events = [...$events, ...($this->resolveFire)($state, $squadrons, $randomizer)];
 
-		foreach ($activeFleetsBefore as $fleet) {
-			if ($fleet->isDestroyed()) {
+		// Including fleets destroyed on the turn they arrived
+		foreach ($state->getDeployedFleets() as $fleet) {
+			if ($fleet->isDestroyed() && !$fleet->isDestructionReported) {
+				$fleet->isDestructionReported = true;
 				$events[] = BattleEvent::fleetDestroyed($fleet);
 			}
 		}

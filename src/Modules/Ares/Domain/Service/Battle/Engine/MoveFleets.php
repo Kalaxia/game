@@ -6,100 +6,182 @@ namespace App\Modules\Ares\Domain\Service\Battle\Engine;
 
 use App\Modules\Ares\Domain\Model\Battle\BattleEvent;
 use App\Modules\Ares\Domain\Model\Battle\BattleFleet;
+use App\Modules\Ares\Domain\Model\Battle\BattleSquadron;
 use App\Modules\Ares\Domain\Model\Battle\BattleState;
 use App\Modules\Ares\Domain\Model\Battle\Grid\Hex;
+use Random\Randomizer;
 
 /**
- * Fleets out of contact with the enemy move one cluster closer to the nearest enemy fleet,
- * if the cluster is free. Otherwise they wait (Q10).
+ * Fleets that cannot reach any enemy squadron move toward the closest free front (Q10).
+ *
+ * A fleet is engaged when an enemy squadron stands within the range of its squadrons from the edge
+ * of its area. Being next to an enemy fleet is not enough, its squadrons may all face another front.
+ * Squadrons can move into other areas, but moving the whole area keeps the formation together
+ * and brings slow heavy ships to the front.
+ *
+ * Otherwise, the fleet looks for the free area closest to the enemy squadrons, going around the other
+ * fleets, and moves one area toward it each turn.
  */
 readonly class MoveFleets
 {
 	/**
 	 * @return list<BattleEvent>
 	 */
-	public function __invoke(BattleState $state): array
+	public function __invoke(BattleState $state, ?Randomizer $randomizer = null): array
 	{
 		$events = [];
 
 		foreach ($state->getActiveFleets() as $fleet) {
-			$enemyClusters = array_map(fn (BattleFleet $enemy) => $enemy->cluster, $state->getEnemyFleets($fleet->side));
+			$enemySquadrons = $state->getEnemySquadrons($fleet->side);
+			$reach = $this->getReach($fleet);
 
-			if ([] === $enemyClusters || 1 >= $this->getMinDistance($fleet->cluster, $enemyClusters)) {
+			if ([] === $enemySquadrons || null === $reach) {
 				continue;
 			}
 
-			$destination = $this->findDestination($state, $fleet, $enemyClusters);
+			$currentDistance = $this->getDistanceToEnemies($state, $fleet->cluster, $enemySquadrons);
 
-			if (null === $destination) {
+			if ($currentDistance <= $reach) {
+				continue;
+			}
+
+			$step = $this->findNextStep($state, $fleet, $enemySquadrons, $currentDistance, $randomizer);
+
+			if (null === $step || !$this->canMoveTo($state, $fleet, $step)) {
 				continue;
 			}
 
 			$from = $fleet->cluster;
-			$this->move($state, $fleet, $destination);
-			$events[] = BattleEvent::fleetMoved($fleet, $from);
+			[$translation, $squadrons] = $this->move($state, $fleet, $step);
+			$events[] = BattleEvent::fleetMoved($fleet, $from, $translation, $squadrons);
 		}
 
 		return $events;
 	}
 
 	/**
-	 * @param list<Hex> $enemyClusters
+	 * Longest range of the fleet's squadrons, null when it has none left.
 	 */
-	private function findDestination(BattleState $state, BattleFleet $fleet, array $enemyClusters): ?Hex
+	private function getReach(BattleFleet $fleet): ?int
 	{
-		$currentDistance = $this->getMinDistance($fleet->cluster, $enemyClusters);
+		$ranges = array_map(fn (BattleSquadron $squadron) => $squadron->type->range, $fleet->getActiveSquadrons());
+
+		return [] === $ranges ? null : max($ranges);
+	}
+
+	/**
+	 * Distance between the edge of an area and the closest enemy squadron.
+	 *
+	 * @param list<BattleSquadron> $enemySquadrons
+	 */
+	private function getDistanceToEnemies(BattleState $state, Hex $cluster, array $enemySquadrons): int
+	{
+		$center = $state->grid->clusterCenter($cluster);
+
+		return max(0, min(array_map(
+			fn (BattleSquadron $enemy) => $center->distanceTo($enemy->cell),
+			$enemySquadrons,
+		)) - $state->grid->clusterRadius);
+	}
+
+	/**
+	 * Breadth-first search through the free areas, toward the one closest to the enemy squadrons.
+	 *
+	 * @param list<BattleSquadron> $enemySquadrons
+	 */
+	private function findNextStep(BattleState $state, BattleFleet $fleet, array $enemySquadrons, int $currentDistance, ?Randomizer $randomizer): ?Hex
+	{
+		$start = $fleet->cluster;
+		$firstSteps = [$start->toKey() => null];
+		$queue = [$start];
 		$best = null;
 		$bestDistance = $currentDistance;
 
-		foreach ($fleet->cluster->neighbours() as $cluster) {
-			if (!$state->isClusterOnBattlefield($cluster) || null !== $state->getFleetOnCluster($cluster)) {
-				continue;
+		while ([] !== $queue) {
+			$cluster = array_shift($queue);
+			$neighbours = $cluster->neighbours();
+			// Equally good paths are picked at random: a fixed order would favour one direction
+			if (null !== $randomizer) {
+				$neighbours = $randomizer->shuffleArray($neighbours);
 			}
 
-			// Squadrons roaming in this cluster block the way
-			foreach ($state->grid->clusterCells($cluster) as $cell) {
-				if (!$state->isCellFree($cell)) {
-					continue 2;
+			foreach ($neighbours as $neighbour) {
+				if (array_key_exists($neighbour->toKey(), $firstSteps) || !$this->isFreeArea($state, $neighbour)) {
+					continue;
 				}
-			}
 
-			$distance = $this->getMinDistance($cluster, $enemyClusters);
+				$firstSteps[$neighbour->toKey()] = $firstSteps[$cluster->toKey()] ?? $neighbour;
+				$queue[] = $neighbour;
 
-			if ($distance < $bestDistance) {
-				$best = $cluster;
-				$bestDistance = $distance;
+				$distance = $this->getDistanceToEnemies($state, $neighbour, $enemySquadrons);
+				// Breadth-first order: the first area found at a given distance is also the closest to reach
+				if ($distance < $bestDistance) {
+					$best = $neighbour;
+					$bestDistance = $distance;
+				}
 			}
 		}
 
-		return $best;
+		return null !== $best ? $firstSteps[$best->toKey()] : null;
 	}
 
-	private function move(BattleState $state, BattleFleet $fleet, Hex $destination): void
+	private function isFreeArea(BattleState $state, Hex $cluster): bool
 	{
-		$translation = $state->grid->clusterCenter($destination)->subtract($state->grid->clusterCenter($fleet->cluster));
+		return $state->isClusterOnBattlefield($cluster) && null === $state->getFleetOnCluster($cluster);
+	}
+
+	/**
+	 * The squadrons moving with the fleet need free cells in the destination area.
+	 */
+	private function canMoveTo(BattleState $state, BattleFleet $fleet, Hex $destination): bool
+	{
+		$translation = $this->getTranslation($state, $fleet, $destination);
+
+		foreach ($this->getSquadronsInArea($state, $fleet) as $squadron) {
+			$occupant = $state->getSquadronAt($squadron->cell->add($translation));
+
+			if (null !== $occupant && $occupant->getFleet() !== $fleet) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * @return array{Hex, list<BattleSquadron>} translation of the fleet area and squadrons moved with it
+	 */
+	private function move(BattleState $state, BattleFleet $fleet, Hex $destination): array
+	{
+		$translation = $this->getTranslation($state, $fleet, $destination);
 		// Squadrons roaming outside the fleet area stay where they are
-		$squadrons = array_filter(
-			$fleet->getActiveSquadrons(),
-			fn ($squadron) => $state->grid->clusterOf($squadron->cell)->equals($fleet->cluster),
-		);
+		$squadrons = $this->getSquadronsInArea($state, $fleet);
 
 		foreach ($squadrons as $squadron) {
 			$state->removeSquadron($squadron);
 		}
 		foreach ($squadrons as $squadron) {
-			$squadron->cell = $squadron->cell->add($translation);
-			$state->placeSquadron($squadron, $squadron->cell);
+			$state->placeSquadron($squadron, $squadron->cell->add($translation));
 		}
 
 		$fleet->cluster = $destination;
+
+		return [$translation, $squadrons];
+	}
+
+	private function getTranslation(BattleState $state, BattleFleet $fleet, Hex $destination): Hex
+	{
+		return $state->grid->clusterCenter($destination)->subtract($state->grid->clusterCenter($fleet->cluster));
 	}
 
 	/**
-	 * @param list<Hex> $clusters
+	 * @return list<BattleSquadron>
 	 */
-	private function getMinDistance(Hex $cluster, array $clusters): int
+	private function getSquadronsInArea(BattleState $state, BattleFleet $fleet): array
 	{
-		return min(array_map(fn (Hex $other) => $cluster->distanceTo($other), $clusters));
+		return array_values(array_filter(
+			$fleet->getActiveSquadrons(),
+			fn (BattleSquadron $squadron) => $state->grid->clusterOf($squadron->cell)->equals($fleet->cluster),
+		));
 	}
 }

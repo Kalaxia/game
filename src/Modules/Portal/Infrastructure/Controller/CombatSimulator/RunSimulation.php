@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Computes a whole battle between the simulated fleets and returns its event log, replayed by the browser.
@@ -36,6 +37,7 @@ class RunSimulation extends AbstractController
 		ComputeBattleExperience $computeBattleExperience,
 		BattleShipTypeRegistry $battleShipTypeRegistry,
 		GetBattleShipTypeName $getBattleShipTypeName,
+		TranslatorInterface $translator,
 		#[Autowire('%ares.battle.turn_duration%')]
 		int $turnDuration,
 	): JsonResponse {
@@ -78,14 +80,26 @@ class RunSimulation extends AbstractController
 		return new JsonResponse([
 			'seed' => $seed,
 			'turn_duration' => $turnDuration,
+			'grid' => [
+				'cluster_radius' => $state->grid->clusterRadius,
+				'battlefield_size' => $state->battlefieldSize,
+			],
 			'fleets' => array_map(fn (array $fleet) => [
 				'id' => $fleet['id'],
 				'name' => $fleet['name'],
 				'side' => $fleet['side'],
 				'faction' => $fleet['faction'],
+				'faction_name' => 0 === $fleet['faction'] ? 'Sans faction' : $translator->trans(sprintf('factions.%d.name.official', $fleet['faction'])),
 				'officer_level' => $fleet['officer_level'],
 				'arrival_turn' => $fleet['arrival_turn'],
 			], $fleets),
+			'squadron_life' => array_merge([], ...array_map(
+				fn ($fleet) => array_combine(
+					array_map(fn ($squadron) => $squadron->identifier, $fleet->squadrons),
+					array_map(fn ($squadron) => $squadron->maxShipLife, $fleet->squadrons),
+				),
+				$state->getDeployedFleets(),
+			)),
 			'ship_types' => $shipTypes,
 			'turns' => array_map(fn (TurnResult $turn) => $turn->toArray(), $turns),
 			'result' => [

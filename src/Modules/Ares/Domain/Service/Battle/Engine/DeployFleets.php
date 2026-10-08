@@ -16,6 +16,9 @@ use App\Modules\Ares\Domain\Model\Battle\Grid\HexDirection;
  *
  * A fleet takes the free cluster closest to an enemy fleet, in contact if possible. Without enemies,
  * it gathers near its allies, or at the center of the battlefield. Its formation faces the closest enemy.
+ *
+ * Fleets arriving on the same turn are all placed first, then oriented and deployed, so that each one
+ * faces the enemies arriving with it and keeps its formation as composed.
  */
 readonly class DeployFleets
 {
@@ -25,18 +28,24 @@ readonly class DeployFleets
 	public function __invoke(BattleState $state): array
 	{
 		$events = [];
+		/** @var list<array{BattleFleet, Hex}> $arrivals */
+		$arrivals = [];
 
 		foreach ($state->fleets as $fleet) {
 			if ($fleet->isDeployed() || $fleet->arrivalTurn > $state->turn) {
 				continue;
 			}
 
-			if (null === ($cluster = $this->findCluster($state, $fleet))) {
+			if (null === ($cluster = $this->findCluster($state, $fleet, $arrivals))) {
 				// The battlefield is full: the fleet waits for a free cluster
 				continue;
 			}
 
-			$this->deploy($state, $fleet, $cluster);
+			$arrivals[] = [$fleet, $cluster];
+		}
+
+		foreach ($arrivals as [$fleet, $cluster]) {
+			$this->deploy($state, $fleet, $cluster, $arrivals);
 			$events[] = BattleEvent::fleetJoined($fleet);
 		}
 
@@ -57,7 +66,7 @@ readonly class DeployFleets
 				continue;
 			}
 
-			$orientation = $this->getOrientation($state, $fleet);
+			$orientation = $this->getOrientation($state, $fleet, array_map(fn (BattleFleet $enemy) => $enemy->cluster, $state->getEnemyFleets($fleet->side)));
 			$rotation = $orientation->value - $fleet->orientation->value;
 			$center = $state->grid->clusterCenter($fleet->cluster);
 			$clusterCells = $state->grid->clusterCells($fleet->cluster);
@@ -90,13 +99,20 @@ readonly class DeployFleets
 		return $events;
 	}
 
-	private function findCluster(BattleState $state, BattleFleet $fleet): ?Hex
+	/**
+	 * @param list<array{BattleFleet, Hex}> $arrivals fleets already placed this turn
+	 */
+	private function findCluster(BattleState $state, BattleFleet $fleet, array $arrivals): ?Hex
 	{
-		$enemyClusters = array_map(fn (BattleFleet $enemy) => $enemy->cluster, $state->getEnemyFleets($fleet->side));
-		$allyClusters = array_map(
-			fn (BattleFleet $ally) => $ally->cluster,
-			array_filter($state->getActiveFleets(), fn (BattleFleet $ally) => $ally->side === $fleet->side),
-		);
+		$enemyClusters = $this->getEnemyClusters($state, $fleet, $arrivals);
+		$allyClusters = [
+			...array_map(
+				fn (BattleFleet $ally) => $ally->cluster,
+				array_values(array_filter($state->getActiveFleets(), fn (BattleFleet $ally) => $ally->side === $fleet->side)),
+			),
+			...array_map(fn (array $arrival) => $arrival[1], array_values(array_filter($arrivals, fn (array $arrival) => $arrival[0]->side === $fleet->side))),
+		];
+		$takenClusters = array_map(fn (array $arrival) => $arrival[1]->toKey(), $arrivals);
 		$center = $state->getBattlefieldCenter();
 		$best = null;
 		$bestScore = null;
@@ -105,7 +121,7 @@ readonly class DeployFleets
 			for ($r = 0; $r < $state->battlefieldSize; ++$r) {
 				$cluster = new Hex($q, $r);
 
-				if (null !== $state->getFleetOnCluster($cluster)) {
+				if (null !== $state->getFleetOnCluster($cluster) || in_array($cluster->toKey(), $takenClusters, true)) {
 					continue;
 				}
 
@@ -125,11 +141,15 @@ readonly class DeployFleets
 		return $best;
 	}
 
-	private function deploy(BattleState $state, BattleFleet $fleet, Hex $cluster): void
+	/**
+	 * @param list<array{BattleFleet, Hex}> $arrivals fleets arriving this turn
+	 */
+	private function deploy(BattleState $state, BattleFleet $fleet, Hex $cluster, array $arrivals): void
 	{
+		$enemyClusters = $this->getEnemyClusters($state, $fleet, $arrivals);
 		$fleet->cluster = $cluster;
-		$fleet->orientation = $this->getOrientation($state, $fleet);
-		$fleet->hasFacedEnemy = [] !== $state->getEnemyFleets($fleet->side);
+		$fleet->orientation = $this->getOrientation($state, $fleet, $enemyClusters);
+		$fleet->hasFacedEnemy = [] !== $enemyClusters;
 		$center = $state->grid->clusterCenter($cluster);
 		$clusterCells = $state->grid->clusterCells($cluster);
 
@@ -154,10 +174,28 @@ readonly class DeployFleets
 		}
 	}
 
-	private function getOrientation(BattleState $state, BattleFleet $fleet): HexDirection
+	/**
+	 * Fleets and arrivals of the other sides.
+	 *
+	 * @param list<array{BattleFleet, Hex}> $arrivals
+	 *
+	 * @return list<Hex>
+	 */
+	private function getEnemyClusters(BattleState $state, BattleFleet $fleet, array $arrivals): array
+	{
+		return [
+			...array_map(fn (BattleFleet $enemy) => $enemy->cluster, $state->getEnemyFleets($fleet->side)),
+			...array_map(fn (array $arrival) => $arrival[1], array_values(array_filter($arrivals, fn (array $arrival) => $arrival[0]->side !== $fleet->side))),
+		];
+	}
+
+	/**
+	 * @param list<Hex> $enemyClusters
+	 */
+	private function getOrientation(BattleState $state, BattleFleet $fleet, array $enemyClusters): HexDirection
 	{
 		$center = $state->grid->clusterCenter($fleet->cluster);
-		$targets = array_map(fn (BattleFleet $enemy) => $state->grid->clusterCenter($enemy->cluster), $state->getEnemyFleets($fleet->side));
+		$targets = array_map(fn (Hex $cluster) => $state->grid->clusterCenter($cluster), $enemyClusters);
 
 		if ([] === $targets) {
 			$targets = [$state->grid->clusterCenter($state->getBattlefieldCenter())];

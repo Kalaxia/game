@@ -21,12 +21,4 @@ enum ShipRole: string
 	case Artillery = 'artillery';
 	/** Heavy all-rounder, center of the formation */
 	case Capital = 'capital';
-
-	/**
-	 * Only fighters and bombers may move onto another fleet's area (D4).
-	 */
-	public function canLeaveFleetArea(): bool
-	{
-		return in_array($this, [self::Interceptor, self::Bomber], true);
-	}
 }

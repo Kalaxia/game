@@ -44,12 +44,17 @@ final readonly class BattleEvent
 		]);
 	}
 
-	public static function fleetMoved(BattleFleet $fleet, Hex $from): self
+	/**
+	 * @param list<BattleSquadron> $squadrons squadrons moved along with the fleet area
+	 */
+	public static function fleetMoved(BattleFleet $fleet, Hex $from, Hex $translation, array $squadrons): self
 	{
 		return new self(self::FLEET_MOVED, [
 			'fleet' => $fleet->identifier,
 			'from' => self::hex($from),
 			'to' => self::hex($fleet->cluster),
+			'translation' => self::hex($translation),
+			'squadrons' => array_map(fn (BattleSquadron $squadron) => $squadron->identifier, $squadrons),
 		]);
 	}
 

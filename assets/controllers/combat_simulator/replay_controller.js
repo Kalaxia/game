@@ -1,9 +1,13 @@
 import { Controller } from '@hotwired/stimulus';
+import { BattlefieldView, factionColor } from './battlefield_view.js';
 
 /**
- * Runs a combat simulation on the server and replays its event log turn by turn.
+ * Runs a combat simulation on the server and replays its event log turn by turn,
+ * on the hex battlefield (BattlefieldView) and as a list of events.
  *
- * The state of every squadron is rebuilt from the events, so that any turn can be displayed.
+ * The state of every squadron and fleet is rebuilt from the events, so that any turn can be displayed.
+ * Moving forward by one turn is animated; jumping to a turn displays its final state.
+ * Step 0 is the deployment: the fleets present from the start, in their formation as composed.
  */
 export default class extends Controller
 {
@@ -26,11 +30,13 @@ export default class extends Controller
 		this.currentTurn = 0;
 		this.timer = null;
 		this.speed = 0;
+		this.view = null;
 	}
 
 	disconnect()
 	{
 		this.pause();
+		this.view?.destroy();
 	}
 
 	async run()
@@ -55,7 +61,7 @@ export default class extends Controller
 
 			this.battle = data;
 			this.snapshots = this._buildSnapshots(data);
-			this.currentTurn = data.turns.length > 0 ? 1 : 0;
+			this.currentTurn = 0;
 			this._render();
 		} catch (error) {
 			this.errorTarget.textContent = error.message;
@@ -73,10 +79,10 @@ export default class extends Controller
 	play()
 	{
 		if (this.currentTurn >= this.battle.turns.length) {
-			this.currentTurn = 1;
+			this.currentTurn = 0;
 		}
 
-		const delay = this.constructor.SPEEDS[this.speed].delay ?? this.battle.turn_duration * 1000;
+		const delay = this._turnDelay();
 		this.timer = setInterval(() => {
 			if (this.currentTurn >= this.battle.turns.length) {
 				this.pause();
@@ -84,7 +90,7 @@ export default class extends Controller
 				return;
 			}
 			this.currentTurn++;
-			this._renderTurn();
+			this._renderTurn(true);
 		}, delay);
 		this._renderControls();
 	}
@@ -99,10 +105,15 @@ export default class extends Controller
 		}
 	}
 
-	first() { this._goTo(1); }
+	first() { this._goTo(0); }
 	previous() { this._goTo(this.currentTurn - 1); }
-	next() { this._goTo(this.currentTurn + 1); }
+	next() { this._goTo(this.currentTurn + 1, true); }
 	last() { this._goTo(this.battle.turns.length); }
+
+	zoomOut()
+	{
+		this.view.zoomTo(null);
+	}
 
 	seek(event)
 	{
@@ -124,45 +135,80 @@ export default class extends Controller
 		this.seedTarget.value = this.battle.seed;
 	}
 
-	_goTo(turn)
+	_goTo(turn, animated = false)
 	{
-		this.currentTurn = Math.max(1, Math.min(turn, this.battle.turns.length));
-		this._renderTurn();
+		const target = Math.max(0, Math.min(turn, this.battle.turns.length));
+		const isNextTurn = target === this.currentTurn + 1;
+
+		this.currentTurn = target;
+		this._renderTurn(animated && isNextTurn);
+	}
+
+	_turnDelay()
+	{
+		return this.constructor.SPEEDS[this.speed].delay ?? this.battle.turn_duration * 1000;
 	}
 
 	/**
-	 * State of every squadron after each turn: snapshots[n] is the state at the end of turn n.
+	 * State after each turn: snapshots[n] is the state at the end of turn n.
+	 * snapshots[0] is the deployment of the fleets present from the start, before any movement.
+	 * Each snapshot holds the squadrons (fleet, type, ships, cell) and the fleets (cluster).
 	 */
 	_buildSnapshots(data)
 	{
-		const squadrons = {};
-		const snapshots = [structuredClone(squadrons)];
+		const state = { squadrons: {}, fleets: {} };
+		const firstTurnEvents = data.turns[0]?.events ?? [];
+		const deployment = { squadrons: {}, fleets: {} };
+
+		for (const event of firstTurnEvents.filter(event => event.type === 'fleet_joined')) {
+			this._applyEvent(deployment, event);
+		}
+
+		const snapshots = [structuredClone(deployment)];
 
 		for (const turn of data.turns) {
 			for (const event of turn.events) {
-				switch (event.type) {
-					case 'fleet_joined':
-						for (const squadron of event.squadrons) {
-							squadrons[squadron.squadron] = {
-								fleet: event.fleet,
-								type: squadron.type,
-								ships: squadron.ships,
-								initialShips: squadron.ships,
-							};
-						}
-						break;
-					case 'squadron_fired':
-						squadrons[event.target].ships -= event.kills;
-						break;
-					case 'squadron_destroyed':
-						squadrons[event.squadron].ships = 0;
-						break;
-				}
+				this._applyEvent(state, event);
 			}
-			snapshots.push(structuredClone(squadrons));
+			snapshots.push(structuredClone(state));
 		}
 
 		return snapshots;
+	}
+
+	_applyEvent(state, event)
+	{
+		switch (event.type) {
+
+			case 'fleet_joined':
+				state.fleets[event.fleet] = { cluster: event.cluster };
+				for (const squadron of event.squadrons) {
+					state.squadrons[squadron.squadron] = {
+						fleet: event.fleet,
+						type: squadron.type,
+						ships: squadron.ships,
+						initialShips: squadron.ships,
+						cell: squadron.cell,
+					};
+				}
+				break;
+			case 'fleet_moved':
+				state.fleets[event.fleet].cluster = event.to;
+				for (const id of event.squadrons) {
+					const cell = state.squadrons[id].cell;
+					state.squadrons[id].cell = { q: cell.q + event.translation.q, r: cell.r + event.translation.r };
+				}
+				break;
+			case 'squadron_moved':
+				state.squadrons[event.squadron].cell = event.to;
+				break;
+			case 'squadron_fired':
+				state.squadrons[event.target].ships -= event.kills;
+				break;
+			case 'squadron_destroyed':
+				state.squadrons[event.squadron].ships = 0;
+				break;
+		}
 	}
 
 	_render()
@@ -203,24 +249,105 @@ export default class extends Controller
 
 			<div class="mt-6 rounded-lg bg-gray-800 p-4">
 				<div class="flex flex-wrap items-center gap-3" data-replay-controls></div>
+
+				<div class="mt-4">
+					<div class="mb-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-400">
+						<span>Cliquez sur une flotte pour voir ses escadrilles · faites glisser pour vous déplacer · molette pour zoomer</span>
+						<button type="button" class="hidden rounded-md px-2 py-1 text-gray-200 ring-1 ring-white/20 hover:bg-white/10" data-replay-zoom-out data-action="combat-simulator--replay#zoomOut">Vue d’ensemble</button>
+						<span class="ml-auto flex flex-wrap gap-x-3 gap-y-1">
+							${this._factionsInBattle().map(fleet => `<span class="flex items-center gap-1"><span class="inline-block size-2.5 rounded-sm border" style="background: ${factionColor(fleet.faction, 'medium')}; border-color: ${factionColor(fleet.faction, 'light')}"></span>${this._escape(fleet.faction_name)}</span>`).join('')}
+						</span>
+					</div>
+					<div data-replay-battlefield></div>
+				</div>
+
 				<div class="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2">
 					<div data-replay-fleets></div>
 					<div>
-						<h3 class="text-sm font-semibold text-gray-300">Événements du tour</h3>
+						<h3 class="text-sm font-semibold text-gray-300">Tour <span data-replay-turn-number></span></h3>
+						<p class="mt-1 text-xs text-gray-400" data-replay-summary></p>
 						<ol class="mt-2 max-h-96 space-y-1 overflow-y-auto text-sm" data-replay-events></ol>
 					</div>
 				</div>
 			</div>
 		`;
 
+		this.view?.destroy();
+		this.view = new BattlefieldView(this.outputTarget.querySelector('[data-replay-battlefield]'), battle, {
+			onZoomChange: isZoomed => {
+				this.outputTarget.querySelector('[data-replay-zoom-out]').classList.toggle('hidden', !isZoomed);
+			},
+			describeSquadron: (id, squadron) => this._describeSquadron(id, squadron),
+		});
+
 		this._renderTurn();
 	}
 
-	_renderTurn()
+	_renderTurn(animated = false)
 	{
 		this._renderControls();
 		this._renderFleets();
 		this._renderEvents();
+		this._renderSummary();
+
+		const events = this.battle.turns[this.currentTurn - 1]?.events ?? [];
+		if (animated) {
+			// The animation fills the whole turn, so that real-time playback is continuous
+			this.view.animateTurn(this.snapshots[this.currentTurn - 1], this.snapshots[this.currentTurn], events, this._turnDelay() * 0.95);
+		} else {
+			this.view.render(this.snapshots[this.currentTurn], events);
+		}
+	}
+
+	_renderSummary()
+	{
+		const events = this.battle.turns[this.currentTurn - 1]?.events ?? [];
+		const sideOf = squadronId => {
+			const squadron = this.snapshots[this.snapshots.length - 1].squadrons[squadronId];
+
+			return this.battle.fleets.find(fleet => fleet.id === squadron?.fleet)?.side;
+		};
+		const damage = [0, 0];
+		const losses = [0, 0];
+
+		for (const event of events.filter(event => event.type === 'squadron_fired')) {
+			damage[sideOf(event.attacker)] += event.damage;
+			losses[sideOf(event.target)] += event.kills;
+		}
+
+		this.outputTarget.querySelector('[data-replay-turn-number]').textContent = this.currentTurn === 0 ? '0 (déploiement)' : this.currentTurn;
+		this.outputTarget.querySelector('[data-replay-summary]').textContent = [0, 1]
+			.map(side => `Camp ${this._sideName(side)} : ${damage[side].toLocaleString('fr-FR')} dégâts infligés, ${losses[side]} vaisseau${losses[side] > 1 ? 'x' : ''} perdu${losses[side] > 1 ? 's' : ''}`)
+			.join(' · ');
+	}
+
+	_describeSquadron(id, squadron)
+	{
+		const fleet = this.battle.fleets.find(f => f.id === squadron.fleet);
+		const life = this.battle.squadron_life[id];
+
+		return [
+			`${this._typeName(squadron.type)} × ${squadron.ships} / ${squadron.initialShips}`,
+			`${fleet.name} (camp ${this._sideName(fleet.side)})`,
+			`${this._roleName(this.battle.ship_types[squadron.type].role)}${life ? ` · ${life.toLocaleString('fr-FR')} PV par vaisseau` : ''}`,
+		].join('\n');
+	}
+
+	_factionsInBattle()
+	{
+		return this.battle.fleets.filter((fleet, index, fleets) => fleets.findIndex(other => other.faction === fleet.faction) === index);
+	}
+
+	_roleName(role)
+	{
+		return {
+			interceptor: 'Intercepteur',
+			bomber: 'Bombardier',
+			escort: 'Escorte',
+			line: 'Ligne',
+			artillery: 'Artillerie',
+			capital: 'Capital',
+		}[role] ?? role;
 	}
 
 	_renderControls()
@@ -237,8 +364,8 @@ export default class extends Controller
 			${button('togglePlay', this.timer === null ? '▶ Lecture' : '⏸ Pause', 'Lecture / pause')}
 			${button('next', '▶', 'Tour suivant')}
 			${button('last', '⏭', 'Dernier tour')}
-			<input type="range" min="1" max="${total}" value="${this.currentTurn}" class="grow" aria-label="Tour" data-action="input->combat-simulator--replay#seek" />
-			<span class="w-36 text-sm text-gray-300">Tour ${this.currentTurn} / ${total} · ${this._formatDuration(this.currentTurn * this.battle.turn_duration)}</span>
+			<input type="range" min="0" max="${total}" value="${this.currentTurn}" class="grow" aria-label="Tour" data-action="input->combat-simulator--replay#seek" />
+			<span class="w-36 text-sm text-gray-300">${this.currentTurn === 0 ? 'Déploiement' : `Tour ${this.currentTurn} / ${total}`} · ${this._formatDuration(this.currentTurn * this.battle.turn_duration)}</span>
 			<select class="rounded-md bg-white/5 px-2 py-1 text-sm" aria-label="Vitesse" data-action="combat-simulator--replay#changeSpeed">
 				${this.constructor.SPEEDS.map((speed, index) => `<option value="${index}" ${index === this.speed ? 'selected' : ''}>${speed.label}</option>`).join('')}
 			</select>
@@ -254,7 +381,7 @@ export default class extends Controller
 			<h3 class="text-sm font-semibold text-gray-300 ${side === 1 ? 'mt-4' : ''}">Camp ${this._sideName(side)}</h3>
 			<ul class="mt-2 space-y-3">
 				${this.battle.fleets.filter(fleet => fleet.side === side).map(fleet => {
-					const squadrons = Object.values(snapshot).filter(squadron => squadron.fleet === fleet.id);
+					const squadrons = Object.values(snapshot.squadrons).filter(squadron => squadron.fleet === fleet.id);
 					const pev = this._fleetPev(fleet.id, this.currentTurn);
 					const initialPev = this._fleetPev(fleet.id, this.currentTurn, true);
 					const ratio = initialPev > 0 ? Math.round(pev / initialPev * 100) : 0;
@@ -314,6 +441,10 @@ export default class extends Controller
 			}
 		}
 
+		if (this.currentTurn === 0) {
+			lines.push(['text-gray-400', 'Déploiement des flottes présentes dès le début, dans leur formation. Lancez la lecture pour commencer la bataille.']);
+		}
+
 		if (squadronMoves > 0) {
 			lines.unshift(['text-gray-400', `${squadronMoves} escadrille${squadronMoves > 1 ? 's se déplacent' : ' se déplace'}.`]);
 		}
@@ -338,14 +469,14 @@ export default class extends Controller
 
 	_fleetPev(fleetId, turn, initial = false)
 	{
-		return Object.values(this.snapshots[turn])
+		return Object.values(this.snapshots[turn].squadrons)
 			.filter(squadron => squadron.fleet === fleetId)
 			.reduce((total, squadron) => total + (initial ? squadron.initialShips : squadron.ships) * this.battle.ship_types[squadron.type].pev, 0);
 	}
 
 	_squadronName(squadronId)
 	{
-		const squadron = this.snapshots[this.snapshots.length - 1][squadronId];
+		const squadron = this.snapshots[this.snapshots.length - 1].squadrons[squadronId];
 
 		return squadron ? `${this._typeName(squadron.type)} (${this._fleetName(squadron.fleet)})` : squadronId;
 	}

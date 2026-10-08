@@ -92,27 +92,48 @@ class BattleEngineTest extends BattleTestCase
 		static::assertContains('late', $this->getFleetsJoined($engine->resolveTurn($state)));
 	}
 
-	public function testOnlyFightersAndBombersLeaveTheirFleetArea(): void
+	public function testFormationIsKeptAsComposedWhenDeployed(): void
 	{
-		$fleets = [
-			self::fleet('a', 0, ['Destroyer' => 3, 'LightFighter' => 50, 'Bomber' => 25]),
-			self::fleet('b', 1, ['Destroyer' => 3, 'Cruiser' => 3]),
-		];
-		$state = self::battle($fleets);
-		$engine = new BattleEngine();
+		// Both fleets arrive on the same turn: each one must face the other from the start
+		$a = self::fleet('a', 0, ['Corvette' => 28, 'Destroyer' => 2, 'Frigate' => 4]);
+		$b = self::fleet('b', 1, ['LightFighter' => 50, 'Cruiser' => 1]);
+		$state = self::battle([$a, $b]);
 
-		for ($i = 0; $i < 10 && !$state->isOver; ++$i) {
-			$engine->resolveTurn($state);
+		$turn = (new BattleEngine())->resolveTurn($state);
 
-			foreach ($state->getActiveSquadrons() as $squadron) {
-				if (!$squadron->type->role->canLeaveFleetArea()) {
-					static::assertTrue(
-						$state->grid->clusterOf($squadron->cell)->equals($squadron->getFleet()->cluster),
-						sprintf('Squadron %s left its fleet area', $squadron->identifier),
-					);
-				}
+		static::assertSame($a->orientation->opposite(), $b->orientation);
+		foreach ($turn->events as $event) {
+			if (BattleEvent::FLEET_JOINED !== $event->type) {
+				continue;
+			}
+
+			$fleet = 'a' === $event->payload['fleet'] ? $a : $b;
+			$center = $state->grid->clusterCenter($fleet->cluster);
+
+			foreach ($event->payload['squadrons'] as $index => $squadron) {
+				$expected = $center->add($fleet->formation[$index]->offset->rotate($fleet->orientation->value));
+
+				static::assertSame(['q' => $expected->q, 'r' => $expected->r], $squadron['cell'], sprintf('Squadron %s left its formation cell', $squadron['squadron']));
 			}
 		}
+	}
+
+	public function testHeavyShipsStrikeTheRearOfAnEngagedFleet(): void
+	{
+		// The reinforcement arrives behind b, already engaged with a: its destroyers must reach b's squadrons
+		$reinforcement = self::fleet('c', 0, ['Destroyer' => 6], arrivalTurn: 4);
+		$state = self::battle([
+			self::fleet('a', 0, ['Destroyer' => 8]),
+			self::fleet('b', 1, ['Destroyer' => 8]),
+			$reinforcement,
+		], durabilityFactor: 3.0, maxActionsPerTurn: 6);
+		$engine = new BattleEngine();
+
+		for ($i = 0; $i < 25 && !$state->isOver; ++$i) {
+			$engine->resolveTurn($state);
+		}
+
+		static::assertGreaterThan(0, $reinforcement->damageDealt);
 	}
 
 	public function testNoTwoSquadronsShareACell(): void
@@ -161,13 +182,14 @@ class BattleEngineTest extends BattleTestCase
 		static::assertSame(3000, $fleet->squadrons[0]->leadShipLife);
 	}
 
-	public function testFiringSquadronsAreCappedPerFleet(): void
+	public function testActionsPerTurnAreCappedAndShared(): void
 	{
 		$state = self::battle([
 			self::fleet('a', 0, ['Destroyer' => 6]),
 			self::fleet('b', 1, ['Destroyer' => 6]),
-		], maxFiringSquadronsPerFleet: 2);
+		], maxActionsPerTurn: 4);
 		$engine = new BattleEngine();
+		$sharedTurns = 0;
 
 		while (!$state->isOver) {
 			$firingByFleet = [];
@@ -177,17 +199,21 @@ class BattleEngineTest extends BattleTestCase
 				}
 			}
 
-			foreach ($firingByFleet as $squadrons) {
-				static::assertLessThanOrEqual(2, count($squadrons));
+			static::assertLessThanOrEqual(4, array_sum(array_map('count', $firingByFleet)));
+			// Actions are handed out in turn: a fleet only gets more than its share when the other cannot use it
+			if (2 === count($firingByFleet['a'] ?? []) && 2 === count($firingByFleet['b'] ?? [])) {
+				++$sharedTurns;
 			}
 		}
+
+		static::assertGreaterThan(0, $sharedTurns);
 	}
 
 	public function testSquadronsLeftOutEventuallyFire(): void
 	{
 		// Light fighters have a much higher initiative than the cruiser: the cruiser must still fire thanks to the initiative it accumulates
 		$attacker = self::fleet('a', 0, ['LightFighter' => 100, 'Cruiser' => 1]);
-		$state = self::battle([$attacker, self::fleet('b', 1, ['Destroyer' => 10])], durabilityFactor: 5.0, maxFiringSquadronsPerFleet: 2);
+		$state = self::battle([$attacker, self::fleet('b', 1, ['Destroyer' => 10])], durabilityFactor: 5.0, maxActionsPerTurn: 6);
 		$engine = new BattleEngine();
 		$cruiserFired = false;
 
@@ -228,6 +254,69 @@ class BattleEngineTest extends BattleTestCase
 
 		// The shooter's own bonuses must not change the target's defense: a sturdier target takes less damage
 		static::assertGreaterThan($play(200), $play(0));
+	}
+
+	public function testVictoriousFleetGoesToHelpItsAllies(): void
+	{
+		// a2 quickly destroys b2, then must reach b1, still fighting a1, instead of waiting
+		$a2 = self::fleet('a2', 0, ['Destroyer' => 8]);
+		$state = self::battle([
+			self::fleet('a1', 0, ['Destroyer' => 8]),
+			self::fleet('b1', 1, ['Destroyer' => 8]),
+			$a2,
+			self::fleet('b2', 1, ['LightFrigate' => 4]),
+		], durabilityFactor: 3.0, maxActionsPerTurn: 6);
+		$engine = new BattleEngine();
+		$b2DestroyedAt = null;
+		$a2FiredOnB1 = false;
+
+		while (!$state->isOver) {
+			$turn = $engine->resolveTurn($state);
+
+			foreach ($turn->events as $event) {
+				if (BattleEvent::FLEET_DESTROYED === $event->type && 'b2' === $event->payload['fleet']) {
+					$b2DestroyedAt = $turn->turn;
+				}
+				if (null !== $b2DestroyedAt && BattleEvent::SQUADRON_FIRED === $event->type
+					&& str_starts_with($event->payload['attacker'], 'a2') && str_starts_with($event->payload['target'], 'b1')) {
+					$a2FiredOnB1 = true;
+				}
+			}
+		}
+
+		static::assertNotNull($b2DestroyedAt, 'The destruction of b2 must be reported');
+		static::assertTrue($a2FiredOnB1);
+		static::assertGreaterThan(0, $a2->damageDealt);
+	}
+
+	public function testDestroyedFleetFreesItsArea(): void
+	{
+		$weak = self::fleet('weak', 1, ['LightFighter' => 1]);
+		$state = self::battle([self::fleet('strong', 0, ['HeavyCorvette' => 44]), $weak, self::fleet('late', 1, ['Corvette' => 1], arrivalTurn: 50)]);
+		$engine = new BattleEngine();
+
+		while (!$weak->isDestroyed()) {
+			$engine->resolveTurn($state);
+		}
+
+		static::assertNull($state->getFleetOnCluster($weak->cluster));
+	}
+
+	public function testFleetDestroyedOnItsArrivalTurnIsReported(): void
+	{
+		$state = self::battle([self::fleet('strong', 0, ['HeavyCorvette' => 44]), self::fleet('doomed', 1, ['LightFighter' => 1], arrivalTurn: 3)]);
+		$engine = new BattleEngine();
+		$reported = [];
+
+		while (!$state->isOver) {
+			foreach ($engine->resolveTurn($state)->events as $event) {
+				if (BattleEvent::FLEET_DESTROYED === $event->type) {
+					$reported[] = $event->payload['fleet'];
+				}
+			}
+		}
+
+		static::assertSame(['doomed'], $reported);
 	}
 
 	public function testDamageIsAccountedForExperience(): void

@@ -18,6 +18,8 @@ class BattleFleet
 	public HexDirection $orientation = HexDirection::East;
 	/** Whether the formation has been turned toward an enemy yet */
 	public bool $hasFacedEnemy = false;
+	/** Whether the destruction of the fleet has already been reported in the event log */
+	public bool $isDestructionReported = false;
 	public int $damageDealt = 0;
 	public int $damageTaken = 0;
 

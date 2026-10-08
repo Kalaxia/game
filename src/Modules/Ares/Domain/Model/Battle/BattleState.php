@@ -32,8 +32,8 @@ class BattleState
 		public readonly int $maxTurns = 500,
 		/** Multiplies the life of every ship, to tune the duration of battles (D1) */
 		public readonly float $durabilityFactor = 1.0,
-		/** Maximum number of squadrons of a fleet firing in a round, null for no limit (R9) */
-		public readonly ?int $maxFiringSquadronsPerFleet = null,
+		/** Number of squadron actions (fire) per turn, shared among the fleets, null for no limit (R9) */
+		public readonly ?int $maxActionsPerTurn = null,
 	) {
 	}
 
@@ -60,9 +60,12 @@ class BattleState
 		return new Hex($middle, $middle);
 	}
 
+	/**
+	 * Fleet standing on a cluster. Destroyed fleets free their cluster.
+	 */
 	public function getFleetOnCluster(Hex $cluster): ?BattleFleet
 	{
-		foreach ($this->getDeployedFleets() as $fleet) {
+		foreach ($this->getActiveFleets() as $fleet) {
 			if ($fleet->cluster->equals($cluster)) {
 				return $fleet;
 			}

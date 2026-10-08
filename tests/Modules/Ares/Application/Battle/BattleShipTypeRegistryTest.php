@@ -45,7 +45,6 @@ class BattleShipTypeRegistryTest extends TestCase
 
 		static::assertNull($bomber->shipCategory);
 		static::assertSame(ShipRole::Bomber, $bomber->role);
-		static::assertTrue($bomber->role->canLeaveFleetArea());
 		static::assertSame([ShipClass::Destroyer, ShipClass::Frigate], $bomber->preferredTargets);
 	}
 

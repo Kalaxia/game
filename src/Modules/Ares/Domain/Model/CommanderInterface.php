@@ -6,5 +6,4 @@ namespace App\Modules\Ares\Domain\Model;
 
 interface CommanderInterface
 {
-
 }
