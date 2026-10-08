@@ -7,6 +7,7 @@ namespace App\Modules\Ares\Application\Battle;
 use App\Modules\Ares\Domain\Model\Battle\BattleShipType;
 use App\Modules\Ares\Domain\Model\Battle\ShipClass;
 use App\Modules\Ares\Domain\Model\Battle\ShipRole;
+use App\Modules\Ares\Domain\Model\Battle\WeaponPattern;
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
@@ -74,6 +75,10 @@ class BattleShipTypeRegistry
 			initiative: $stats['initiative'],
 			range: $stats['range'],
 			preferredTargets: array_map(fn (int $class) => ShipClass::from($class), $stats['preferred_targets'] ?? []),
+			patterns: array_map(fn (string $pattern) => WeaponPattern::from($pattern), $stats['patterns'] ?? [WeaponPattern::Close->value]),
+			minRange: $stats['min_range'] ?? 1,
+			splashRatio: (float) ($stats['splash_ratio'] ?? 0.0),
+			splitFire: $stats['split_fire'] ?? false,
 		);
 	}
 }

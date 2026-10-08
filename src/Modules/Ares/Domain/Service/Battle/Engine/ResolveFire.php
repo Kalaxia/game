@@ -7,6 +7,8 @@ namespace App\Modules\Ares\Domain\Service\Battle\Engine;
 use App\Modules\Ares\Domain\Model\Battle\BattleEvent;
 use App\Modules\Ares\Domain\Model\Battle\BattleSquadron;
 use App\Modules\Ares\Domain\Model\Battle\BattleState;
+use App\Modules\Ares\Domain\Model\Battle\OfficerTrait;
+use App\Modules\Ares\Domain\Model\Battle\OfficerTraitEffects;
 use Random\Randomizer;
 
 /**
@@ -24,6 +26,9 @@ use Random\Randomizer;
  * able to fire, so that big battles last longer (D1) while each reinforcement brings its side more
  * actions (G2). Within a fleet, the squadron with the highest initiative acts first; squadrons left
  * out accumulate their initiative, so that every squadron eventually fires (R9).
+ *
+ * Only engaged fleets fire (D12). The fleet-size malus (D10) lowers the shooters' rate of fire
+ * and the targets' dodge.
  */
 readonly class ResolveFire
 {
@@ -43,6 +48,8 @@ readonly class ResolveFire
 	{
 		$events = [];
 
+		$squadrons = array_values(array_filter($squadrons, fn (BattleSquadron $squadron) => $squadron->getFleet()->canFire()));
+
 		foreach ($this->selectFiringSquadrons($state, $squadrons) as $squadron) {
 			if ($squadron->isDestroyed()) {
 				continue;
@@ -50,37 +57,117 @@ readonly class ResolveFire
 
 			$shots = $this->getShots($squadron);
 
+			// Split fire: half of the shots for the best target, the other half for the second best (Q12)
+			$targets = $squadron->type->splitFire ? array_slice($this->selectTarget->getCandidates($state, $squadron, true), 0, 2) : [];
+			if (2 === count($targets)) {
+				$firstHalf = array_splice($shots, 0, (int) ceil(count($shots) / 2));
+				$this->fireVolley($state, $squadron, $targets[0], $firstHalf, $randomizer, $events);
+				$shots = [...$firstHalf, ...$shots];
+
+				if (!$targets[1]->isDestroyed()) {
+					$this->fireVolley($state, $squadron, $targets[1], $shots, $randomizer, $events);
+				}
+			}
+
 			while ([] !== $shots && null !== ($target = ($this->selectTarget)($state, $squadron, true))) {
-				[$fired, $hits, $damage, $kills] = [0, 0, 0, 0];
-
-				while ([] !== $shots && !$target->isDestroyed()) {
-					$attack = $squadron->getFleet()->bonuses->applyToAttack($squadron->type->class, array_shift($shots));
-					$targetBonuses = $target->getFleet()->bonuses;
-					++$fired;
-
-					if ($randomizer->getInt(0, (int) round($targetBonuses->applyToSpeed($target->type->class, $target->type->speed))) > self::DODGE_THRESHOLD) {
-						continue;
-					}
-
-					++$hits;
-					$defense = $targetBonuses->applyToDefense($target->type->class, $target->type->defense);
-					$effectiveDamage = min($this->computeDamage($attack, $defense), $target->leadShipLife);
-					$kills += $target->receiveDamage($effectiveDamage);
-					$damage += $effectiveDamage;
-				}
-
-				$squadron->getFleet()->damageDealt += $damage;
-				$target->getFleet()->damageTaken += $damage;
-				$events[] = BattleEvent::squadronFired($squadron, $target, $fired, $hits, $damage, $kills);
-
-				if ($target->isDestroyed()) {
-					$state->removeSquadron($target);
-					$events[] = BattleEvent::squadronDestroyed($target);
-				}
+				$this->fireVolley($state, $squadron, $target, $shots, $randomizer, $events);
 			}
 		}
 
 		return $events;
+	}
+
+	/**
+	 * Fires shots at a target until they run out or the target is destroyed. Area weapons also hit
+	 * the squadrons next to the target, allies included (Q12).
+	 *
+	 * @param list<int>         $shots  remaining shots, consumed
+	 * @param list<BattleEvent> $events
+	 */
+	private function fireVolley(BattleState $state, BattleSquadron $squadron, BattleSquadron $target, array &$shots, Randomizer $randomizer, array &$events): void
+	{
+		[$fired, $hits, $damage, $kills] = [0, 0, 0, 0];
+		/** @var array<string, array{BattleSquadron, int, int}> $splashed damage and kills by squadron hit by area damage */
+		$splashed = [];
+
+		while ([] !== $shots && !$target->isDestroyed()) {
+			$attack = $squadron->getFleet()->bonuses->applyToAttack($squadron->type->class, array_shift($shots))
+				* OfficerTraitEffects::getAttackFactor($squadron->getFleet());
+			$targetBonuses = $target->getFleet()->bonuses;
+			++$fired;
+
+			$targetSpeed = $targetBonuses->applyToSpeed($target->type->class, $target->type->speed)
+				* (1 - $target->getFleet()->sizeMalus)
+				* OfficerTraitEffects::getDodgeFactor($target->getFleet());
+			if ($randomizer->getInt(0, (int) round($targetSpeed)) > self::DODGE_THRESHOLD) {
+				continue;
+			}
+
+			++$hits;
+			$defense = $targetBonuses->applyToDefense($target->type->class, $target->type->defense)
+				* OfficerTraitEffects::getDefenseFactor($state, $target->getFleet());
+			$rawDamage = (int) ceil($this->computeDamage($attack, $defense) * OfficerTraitEffects::getDamageFactor($state, $squadron, $target));
+			$effectiveDamage = min($rawDamage, $target->leadShipLife);
+			$kills += $target->receiveDamage($effectiveDamage);
+			$damage += $effectiveDamage;
+
+			if ($squadron->type->splashRatio > 0) {
+				$this->splash($state, $squadron, $target, (int) ceil($effectiveDamage * $squadron->type->splashRatio), $splashed);
+			}
+		}
+
+		$this->account($squadron, $target, $damage, $kills);
+		$events[] = BattleEvent::squadronFired($squadron, $target, $fired, $hits, $damage, $kills);
+		$this->removeIfDestroyed($state, $target, $events);
+
+		foreach ($splashed as [$victim, $splashDamage, $splashKills]) {
+			$this->account($squadron, $victim, $splashDamage, $splashKills);
+			$events[] = BattleEvent::squadronSplashed($squadron, $victim, $splashDamage, $splashKills);
+			$this->removeIfDestroyed($state, $victim, $events);
+		}
+	}
+
+	/**
+	 * @param array<string, array{BattleSquadron, int, int}> $splashed
+	 */
+	private function splash(BattleState $state, BattleSquadron $squadron, BattleSquadron $target, int $damage, array &$splashed): void
+	{
+		foreach ($target->cell->neighbours() as $cell) {
+			$victim = $state->getSquadronAt($cell);
+
+			if (null === $victim || $victim === $squadron || $victim->isDestroyed()) {
+				continue;
+			}
+
+			$effectiveDamage = min($damage, $victim->leadShipLife);
+			$kills = $victim->receiveDamage($effectiveDamage);
+			[, $previousDamage, $previousKills] = $splashed[$victim->identifier] ?? [$victim, 0, 0];
+			$splashed[$victim->identifier] = [$victim, $previousDamage + $effectiveDamage, $previousKills + $kills];
+		}
+	}
+
+	/**
+	 * Damage and kills count for the shooter only against enemies: hitting allies brings nothing.
+	 */
+	private function account(BattleSquadron $squadron, BattleSquadron $victim, int $damage, int $kills): void
+	{
+		$victim->getFleet()->damageTaken += $damage;
+
+		if ($victim->getFleet()->side !== $squadron->getFleet()->side) {
+			$squadron->getFleet()->damageDealt += $damage;
+			$squadron->getFleet()->pevDestroyed += $kills * $victim->type->pev;
+		}
+	}
+
+	/**
+	 * @param list<BattleEvent> $events
+	 */
+	private function removeIfDestroyed(BattleState $state, BattleSquadron $squadron, array &$events): void
+	{
+		if ($squadron->isDestroyed() && $state->getSquadronAt($squadron->cell) === $squadron) {
+			$state->removeSquadron($squadron);
+			$events[] = BattleEvent::squadronDestroyed($squadron);
+		}
 	}
 
 	/**
@@ -100,11 +187,12 @@ readonly class ResolveFire
 		));
 		usort($candidates, fn (BattleSquadron $a, BattleSquadron $b) => $this->getPriority($b) <=> $this->getPriority($a));
 
-		// Queues of candidates by fleet, fleets ordered by their most urgent squadron
+		// Queues of candidates by fleet, fleets ordered by their most urgent squadron; tacticians are served first (Q13)
 		$queues = [];
 		foreach ($candidates as $squadron) {
 			$queues[$squadron->getFleet()->identifier][] = $squadron;
 		}
+		uksort($queues, fn (string $a, string $b) => (int) $queues[$b][0]->getFleet()->hasTrait(OfficerTrait::Tactician) <=> (int) $queues[$a][0]->getFleet()->hasTrait(OfficerTrait::Tactician));
 
 		// Actions are handed out in turn to each fleet
 		$firingSquadrons = [];
@@ -128,7 +216,7 @@ readonly class ResolveFire
 			if (in_array($squadron, $firingSquadrons, true)) {
 				$squadron->waitingInitiative = 0;
 			} else {
-				$squadron->waitingInitiative += $squadron->type->initiative;
+				$squadron->waitingInitiative += $squadron->getInitiative();
 			}
 		}
 
@@ -137,7 +225,7 @@ readonly class ResolveFire
 
 	private function getPriority(BattleSquadron $squadron): int
 	{
-		return $squadron->type->initiative + $squadron->waitingInitiative;
+		return $squadron->getInitiative() + $squadron->waitingInitiative;
 	}
 
 	/**
@@ -145,7 +233,11 @@ readonly class ResolveFire
 	 */
 	private function getShots(BattleSquadron $squadron): array
 	{
-		return array_merge([], ...array_fill(0, $squadron->ships, $squadron->type->attack));
+		$shots = array_merge([], ...array_fill(0, $squadron->ships, $squadron->type->attack));
+		// A disorganised fleet fires less (D10)
+		$count = (int) ceil(count($shots) * (1 - $squadron->getFleet()->sizeMalus));
+
+		return array_slice($shots, 0, max(1, $count));
 	}
 
 	private function computeDamage(float $attack, float $defense): int

@@ -37,7 +37,7 @@ Class: 0 fighter, 1 corvette, 2 frigate, 3 destroyer/cruiser.
 | 2 | Chasseur multi-tourelles | 0 | 3 | 195 | Interceptor | 33 | 3 | 195 | 1 | fighters → corvettes |
 | – | **Bombardier** (new) | 0 | 4 | 170 | Bomber | 25 | 2 | 170 | 1 | destroyers → frigates |
 | 3 | Corvette légère | 1 | 5 | 190 | Escort | 20 | 3 | 190 | 2 | fighters → corvettes |
-| 4 | Corvette lourde | 1 | 7 | 165 | Line | 14 | 2 | 165 | 1 | corvettes → frigates |
+| 4 | Corvette lourde | 1 | 7 | 165 | Line | 14 | 2 | 165 | 2 *(1 until 2026-10-08)* | corvettes → frigates |
 | 5 | Corvette multi-tourelles | 1 | 9 | 145 | Escort | 11 | 2 | 145 | 2 | fighters → corvettes |
 | 6 | Frégate d'attaque | 2 | 23 | 100 | Line | 4 | 1 | 100 | 2 | corvettes → frigates |
 | 7 | Frégate ionique | 2 | 45 | 90 | Artillery | 2 | 1 | 90 | 3 | destroyers → frigates |

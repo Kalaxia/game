@@ -41,6 +41,18 @@ class BattleSquadron
 		return 0 === $this->ships;
 	}
 
+	/**
+	 * Initiative of the ship type, lowered by the fleet-size malus (D10) and changed by the officer traits (Q13).
+	 */
+	public function getInitiative(): int
+	{
+		if (null === $this->fleet) {
+			return $this->type->initiative;
+		}
+
+		return (int) round($this->type->initiative * (1 - $this->fleet->sizeMalus) * OfficerTraitEffects::getInitiativeFactor($this->fleet));
+	}
+
 	public function getPev(): int
 	{
 		return $this->ships * $this->type->pev;

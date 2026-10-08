@@ -6,6 +6,7 @@ namespace App\Modules\Ares\Domain\Model\Battle;
 
 use App\Modules\Ares\Domain\Model\Battle\Grid\ClusteredHexGrid;
 use App\Modules\Ares\Domain\Model\Battle\Grid\Hex;
+use App\Modules\Ares\Domain\Model\Battle\Rules\BattleRules;
 
 /**
  * Complete state of a battle between two turns.
@@ -18,6 +19,10 @@ class BattleState
 	public int $turn = 0;
 	public bool $isOver = false;
 	public ?int $winningSide = null;
+	/** Turn from which fleets fire, null while the engagement has not started (D11) */
+	public ?int $engagedAtTurn = null;
+	/** Turn from which the engagement has been delayed, null when it was not */
+	public ?int $engagementDelayedAtTurn = null;
 	/** @var array<string, BattleSquadron> squadrons by cell key */
 	private array $occupancy = [];
 
@@ -34,6 +39,7 @@ class BattleState
 		public readonly float $durabilityFactor = 1.0,
 		/** Number of squadron actions (fire) per turn, shared among the fleets, null for no limit (R9) */
 		public readonly ?int $maxActionsPerTurn = null,
+		public readonly BattleRules $rules = new BattleRules(),
 	) {
 	}
 
@@ -115,7 +121,7 @@ class BattleState
 	 */
 	public function getActiveFleets(): array
 	{
-		return array_values(array_filter($this->getDeployedFleets(), fn (BattleFleet $fleet) => !$fleet->isDestroyed()));
+		return array_values(array_filter($this->getDeployedFleets(), fn (BattleFleet $fleet) => !$fleet->isDestroyed() && !$fleet->hasFled()));
 	}
 
 	/**
@@ -155,7 +161,7 @@ class BattleState
 		$sides = [];
 
 		foreach ($this->fleets as $fleet) {
-			if (!$fleet->isDeployed() || !$fleet->isDestroyed()) {
+			if (!$fleet->isDeployed() || (!$fleet->isDestroyed() && !$fleet->hasFled())) {
 				$sides[$fleet->side] = true;
 			}
 		}

@@ -20,6 +20,14 @@
 								· officier niveau {{ fleet.officer_level }}
 								· {{ fleet.arrival_turn == 1 ? 'présente dès le début' : 'arrive au tour ' ~ fleet.arrival_turn }}
 							</p>
+							{% if fleet.traits is defined and fleet.traits is not empty %}
+								<p class="mt-1 text-xs text-gray-400">
+									Traits :
+									{% for trait in fleet.traits %}
+										<span title="{{ ('combat_simulator.traits.' ~ trait ~ '.description')|trans }}" class="text-gray-200">{{ ('combat_simulator.traits.' ~ trait ~ '.name')|trans }}</span>{{ not loop.last ? ', ' }}
+									{% endfor %}
+								</p>
+							{% endif %}
 							<p class="mt-2 text-xs text-gray-300">
 								{% for name, quantity in this.ships(fleet) %}
 									{{ quantity }} {{ name }}{{ not loop.last ? ', ' }}

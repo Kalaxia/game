@@ -16,6 +16,9 @@ final readonly class BattleReport
 	public const string HIGHLIGHT_FLEET_DESTROYED = 'fleet_destroyed';
 	public const string HIGHLIGHT_TURNING_POINT = 'turning_point';
 	public const string HIGHLIGHT_MOST_VALUABLE_SQUADRON = 'most_valuable_squadron';
+	public const string HIGHLIGHT_ENGAGEMENT_DELAYED = 'engagement_delayed';
+	public const string HIGHLIGHT_FLEET_WITHDREW = 'fleet_withdrew';
+	public const string HIGHLIGHT_FLEET_FLED = 'fleet_fled';
 
 	/**
 	 * @param array<int, array{initial_pev: int, lost_pev: int, ships_lost: int, damage_dealt: int}> $sides      by side

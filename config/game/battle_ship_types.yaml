@@ -1,6 +1,9 @@
 # Combat profiles of the ship types for the new battle system (combat simulator only for now).
 # See docs/fleet-combat/ship-stats.md for the meaning of each stat and how the values were derived.
 #
+# Weapon patterns (Q12): see docs/fleet-combat/content-proposal.md. Squadrons turn freely, so only
+# min_range, splash_ratio and split_fire restrict fire for now.
+#
 # Types linked to a `ship_category` take their base stats (class, pev, life, defense, speed, attack)
 # from config/game/ship_categories.yaml. Types without a ship category (e.g. the bomber) define them here.
 battle_ship_types:
@@ -12,6 +15,7 @@ battle_ship_types:
         initiative: 195
         range: 1
         preferred_targets: [0, 1]
+        patterns: [close]
 
     Fighter:
         ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::Fighter->value
@@ -21,6 +25,7 @@ battle_ship_types:
         initiative: 185
         range: 1
         preferred_targets: [0, 1]
+        patterns: [close]
 
     HeavyFighter:
         ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::HeavyFighter->value
@@ -30,6 +35,8 @@ battle_ship_types:
         initiative: 195
         range: 1
         preferred_targets: [0, 1]
+        patterns: [close]
+        split_fire: true
 
     Bomber:
         # New ship type: no ship category yet, it will be added to the game in Phase 7
@@ -45,6 +52,7 @@ battle_ship_types:
         initiative: 170
         range: 1
         preferred_targets: [3, 2]
+        patterns: [frontal_cone]
 
     LightCorvette:
         ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::LightCorvette->value
@@ -54,6 +62,7 @@ battle_ship_types:
         initiative: 190
         range: 2
         preferred_targets: [0, 1]
+        patterns: [broadside]
 
     Corvette:
         ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::Corvette->value
@@ -61,8 +70,10 @@ battle_ship_types:
         squadron_size: 14
         movement: 2
         initiative: 165
-        range: 1
+        # Range 2 since 2026-10-08: with range 1 it was outranged and rarely fired
+        range: 2
         preferred_targets: [1, 2]
+        patterns: [frontal_cone]
 
     HeavyCorvette:
         ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::HeavyCorvette->value
@@ -72,6 +83,7 @@ battle_ship_types:
         initiative: 145
         range: 2
         preferred_targets: [0, 1]
+        patterns: [broadside, close]
 
     LightFrigate:
         ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::LightFrigate->value
@@ -81,6 +93,7 @@ battle_ship_types:
         initiative: 100
         range: 2
         preferred_targets: [1, 2]
+        patterns: [frontal_cone]
 
     Frigate:
         ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::Frigate->value
@@ -90,6 +103,8 @@ battle_ship_types:
         initiative: 90
         range: 3
         preferred_targets: [3, 2]
+        patterns: [ring]
+        min_range: 2
 
     Destroyer:
         ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::Destroyer->value
@@ -99,6 +114,7 @@ battle_ship_types:
         initiative: 88
         range: 2
         preferred_targets: [2, 3]
+        patterns: [frontal_cone]
 
     HeavyDestroyer:
         ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::HeavyDestroyer->value
@@ -108,6 +124,9 @@ battle_ship_types:
         initiative: 75
         range: 4
         preferred_targets: [1, 0]
+        patterns: [area]
+        min_range: 2
+        splash_ratio: 0.5
 
     Cruiser:
         ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::Cruiser->value
@@ -117,6 +136,7 @@ battle_ship_types:
         initiative: 80
         range: 3
         preferred_targets: [3, 2]
+        patterns: [frontal_cone, close]
 
     HeavyCruiser:
         ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::HeavyCruiser->value
@@ -126,3 +146,4 @@ battle_ship_types:
         initiative: 75
         range: 3
         preferred_targets: [3, 2]
+        patterns: [frontal_cone, broadside]

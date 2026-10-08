@@ -8,6 +8,7 @@ use App\Modules\Ares\Domain\Model\Battle\BattleEvent;
 use App\Modules\Ares\Domain\Model\Battle\BattleFleet;
 use App\Modules\Ares\Domain\Model\Battle\BattleSquadron;
 use App\Modules\Ares\Domain\Model\Battle\BattleState;
+use App\Modules\Ares\Domain\Model\Battle\FleetStatus;
 use App\Modules\Ares\Domain\Model\Battle\Grid\Hex;
 use Random\Randomizer;
 
@@ -21,6 +22,9 @@ use Random\Randomizer;
  *
  * Otherwise, the fleet looks for the free area closest to the enemy squadrons, going around the other
  * fleets, and moves one area toward it each turn.
+ *
+ * A withdrawn fleet (D12) moves instead toward a free area next to an engaged allied fleet, as far as
+ * possible from the enemy. A fleeing fleet does not move.
  */
 readonly class MoveFleets
 {
@@ -35,17 +39,19 @@ readonly class MoveFleets
 			$enemySquadrons = $state->getEnemySquadrons($fleet->side);
 			$reach = $this->getReach($fleet);
 
-			if ([] === $enemySquadrons || null === $reach) {
+			if ([] === $enemySquadrons || null === $reach || FleetStatus::Fleeing === $fleet->status) {
 				continue;
 			}
 
 			$currentDistance = $this->getDistanceToEnemies($state, $fleet->cluster, $enemySquadrons);
 
-			if ($currentDistance <= $reach) {
+			if (FleetStatus::Withdrawn === $fleet->status) {
+				$step = $this->findRefugeStep($state, $fleet, $enemySquadrons, $currentDistance, $randomizer);
+			} elseif ($currentDistance <= $reach) {
 				continue;
+			} else {
+				$step = $this->findNextStep($state, $fleet, $enemySquadrons, $currentDistance, $randomizer);
 			}
-
-			$step = $this->findNextStep($state, $fleet, $enemySquadrons, $currentDistance, $randomizer);
 
 			if (null === $step || !$this->canMoveTo($state, $fleet, $step)) {
 				continue;
@@ -125,6 +131,50 @@ readonly class MoveFleets
 		return null !== $best ? $firstSteps[$best->toKey()] : null;
 	}
 
+	/**
+	 * Breadth-first search through the free areas, toward the area next to an engaged ally that is
+	 * the farthest from the enemy squadrons.
+	 *
+	 * @param list<BattleSquadron> $enemySquadrons
+	 */
+	private function findRefugeStep(BattleState $state, BattleFleet $fleet, array $enemySquadrons, int $currentDistance, ?Randomizer $randomizer): ?Hex
+	{
+		$allyClusters = array_map(
+			fn (BattleFleet $ally) => $ally->cluster,
+			array_values(array_filter($state->getActiveFleets(), fn (BattleFleet $ally) => $ally !== $fleet && $ally->side === $fleet->side && $ally->canFire())),
+		);
+		$isRefuge = fn (Hex $cluster) => [] !== array_filter($allyClusters, fn (Hex $ally) => 1 === $ally->distanceTo($cluster));
+
+		$start = $fleet->cluster;
+		$firstSteps = [$start->toKey() => null];
+		$queue = [$start];
+		$best = null;
+		// Staying is fine when the fleet already stands next to an ally
+		$bestDistance = $isRefuge($start) ? $currentDistance : -1;
+
+		while ([] !== $queue) {
+			$cluster = array_shift($queue);
+			$neighbours = null !== $randomizer ? $randomizer->shuffleArray($cluster->neighbours()) : $cluster->neighbours();
+
+			foreach ($neighbours as $neighbour) {
+				if (array_key_exists($neighbour->toKey(), $firstSteps) || !$this->isFreeArea($state, $neighbour)) {
+					continue;
+				}
+
+				$firstSteps[$neighbour->toKey()] = $firstSteps[$cluster->toKey()] ?? $neighbour;
+				$queue[] = $neighbour;
+
+				$distance = $this->getDistanceToEnemies($state, $neighbour, $enemySquadrons);
+				if ($isRefuge($neighbour) && $distance > $bestDistance) {
+					$best = $neighbour;
+					$bestDistance = $distance;
+				}
+			}
+		}
+
+		return null !== $best ? $firstSteps[$best->toKey()] : null;
+	}
+
 	private function isFreeArea(BattleState $state, Hex $cluster): bool
 	{
 		return $state->isClusterOnBattlefield($cluster) && null === $state->getFleetOnCluster($cluster);
@@ -136,11 +186,13 @@ readonly class MoveFleets
 	private function canMoveTo(BattleState $state, BattleFleet $fleet, Hex $destination): bool
 	{
 		$translation = $this->getTranslation($state, $fleet, $destination);
+		$movingSquadrons = $this->getSquadronsInArea($state, $fleet);
 
-		foreach ($this->getSquadronsInArea($state, $fleet) as $squadron) {
+		foreach ($movingSquadrons as $squadron) {
 			$occupant = $state->getSquadronAt($squadron->cell->add($translation));
 
-			if (null !== $occupant && $occupant->getFleet() !== $fleet) {
+			// Only the squadrons moving along free their cell: any other one blocks, even of the same fleet
+			if (null !== $occupant && !in_array($occupant, $movingSquadrons, true)) {
 				return false;
 			}
 		}

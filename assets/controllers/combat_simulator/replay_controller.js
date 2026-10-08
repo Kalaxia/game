@@ -214,10 +214,33 @@ export default class extends Controller
 				state.squadrons[event.squadron].cell = event.to;
 				break;
 			case 'squadron_fired':
+			case 'squadron_splashed':
 				state.squadrons[event.target].ships -= event.kills;
 				break;
 			case 'squadron_destroyed':
 				state.squadrons[event.squadron].ships = 0;
+				break;
+			case 'fleet_withdrew':
+				state.fleets[event.fleet].status = 'withdrawn';
+				break;
+			case 'fleet_remobilised':
+				state.fleets[event.fleet].status = 'engaged';
+				break;
+			case 'fleet_fleeing':
+				state.fleets[event.fleet].status = 'fleeing';
+				break;
+			case 'fleet_fled':
+				state.fleets[event.fleet].status = 'fled';
+				for (const id of event.squadrons) {
+					state.squadrons[id].fled = true;
+				}
+				break;
+			case 'morale_updated':
+				for (const [fleetId, morale] of Object.entries(event.morale)) {
+					if (state.fleets[fleetId]) {
+						state.fleets[fleetId].morale = morale;
+					}
+				}
 				break;
 		}
 	}
@@ -317,8 +340,11 @@ export default class extends Controller
 		const damage = [0, 0];
 		const losses = [0, 0];
 
-		for (const event of events.filter(event => event.type === 'squadron_fired')) {
-			damage[sideOf(event.attacker)] += event.damage;
+		for (const event of events.filter(event => ['squadron_fired', 'squadron_splashed'].includes(event.type))) {
+			// Area damage on allies is not counted as damage dealt
+			if (sideOf(event.attacker) !== sideOf(event.target)) {
+				damage[sideOf(event.attacker)] += event.damage;
+			}
 			losses[sideOf(event.target)] += event.kills;
 		}
 
@@ -392,9 +418,12 @@ export default class extends Controller
 					const pev = this._fleetPev(fleet.id, this.currentTurn);
 					const initialPev = this._fleetPev(fleet.id, this.currentTurn, true);
 					const ratio = initialPev > 0 ? Math.round(pev / initialPev * 100) : 0;
+					const fleetState = snapshot.fleets[fleet.id] ?? {};
+					const behaviour = { withdrawn: ' · en repli', fleeing: ' · en fuite', fled: ' · a quitté la bataille' }[fleetState.status] ?? '';
+					const morale = fleetState.morale !== undefined && pev > 0 && fleetState.status !== 'fled' ? ` · moral ${fleetState.morale}` : '';
 					const status = squadrons.length === 0
 						? `arrive au tour ${fleet.arrival_turn}`
-						: (pev === 0 ? 'détruite' : `${pev} / ${initialPev} PEV`);
+						: (pev === 0 ? 'détruite' : `${pev} / ${initialPev} PEV${morale}${behaviour}`);
 
 					return `
 						<li class="rounded-md bg-black/20 p-3">
@@ -402,6 +431,7 @@ export default class extends Controller
 								<span class="font-medium">${this._escape(fleet.name)}</span>
 								<span class="text-xs text-gray-400">${status}</span>
 							</div>
+							${(fleet.traits ?? []).length > 0 ? `<p class="mt-1 text-xs text-gray-400">${fleet.traits.map(trait => `<span title="${this._escape(trait.description)}">${this._escape(trait.name)}</span>`).join(', ')}</p>` : ''}
 							<div class="mt-2 h-1.5 rounded bg-white/10"><div class="h-1.5 rounded bg-medium${fleet.faction || 1}" style="width: ${ratio}%"></div></div>
 							<ul class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-300">
 								${this._shipsByType(squadrons).map(([type, ships, initial]) => `
@@ -436,11 +466,32 @@ export default class extends Controller
 				case 'squadron_fired':
 					lines.push(['text-gray-200', `${this._squadronName(event.attacker)} tire sur ${this._squadronName(event.target)} : ${event.hits}/${event.shots} tirs au but, ${event.damage.toLocaleString('fr-FR')} dégâts${event.kills > 0 ? `, ${event.kills} vaisseau${event.kills > 1 ? 'x' : ''} détruit${event.kills > 1 ? 's' : ''}` : ''}.`]);
 					break;
+				case 'squadron_splashed':
+					lines.push(['text-gray-400', `Les explosions de ${this._squadronName(event.attacker)} touchent ${this._squadronName(event.target)} : ${event.damage.toLocaleString('fr-FR')} dégâts${event.kills > 0 ? `, ${event.kills} vaisseau${event.kills > 1 ? 'x' : ''} détruit${event.kills > 1 ? 's' : ''}` : ''}.`]);
+					break;
 				case 'squadron_destroyed':
 					lines.push(['text-red-300', `${this._squadronName(event.squadron)} est anéantie.`]);
 					break;
 				case 'fleet_destroyed':
 					lines.push(['text-red-400 font-semibold', `La flotte ${this._fleetName(event.fleet)} est détruite.`]);
+					break;
+				case 'engagement_delayed':
+					lines.push(['text-amber-200', `Les attaquants, en infériorité, retardent l’engagement, au plus tard jusqu’au tour ${event.until_turn} : personne ne tire.`]);
+					break;
+				case 'engagement_started':
+					lines.push(['text-amber-200', 'L’engagement commence.']);
+					break;
+				case 'fleet_withdrew':
+					lines.push(['text-orange-300', `${this._fleetName(event.fleet)} se replie derrière ses alliés (moral ${event.morale}).`]);
+					break;
+				case 'fleet_remobilised':
+					lines.push(['text-sky-300', `${this._fleetName(event.fleet)} reprend le combat (moral ${event.morale}).`]);
+					break;
+				case 'fleet_fleeing':
+					lines.push(['text-orange-400 font-semibold', `${this._fleetName(event.fleet)} prend la fuite (moral ${event.morale}) et reste exposée quelques tours.`]);
+					break;
+				case 'fleet_fled':
+					lines.push(['text-orange-400 font-semibold', `${this._fleetName(event.fleet)} quitte la bataille avec ses vaisseaux restants.`]);
 					break;
 				case 'battle_ended':
 					lines.push(['text-amber-300 font-semibold', event.winning_side === null ? 'Fin de la bataille, sans vainqueur.' : `Fin de la bataille : victoire du camp ${this._sideName(event.winning_side)}.`]);

@@ -19,7 +19,7 @@ use App\Modules\Ares\Domain\Model\Battle\TurnResult;
  * The battle state gives the ship types and the remaining ships.
  *
  * Key moments: first blood, deadliest action, most valuable squadron, reinforcements, destroyed fleets,
- * and the turning point, i.e. the turn from which the winning side kept the lead in remaining PEV
+ * engagement delay, withdrawals and flights (D11, D12), and the turning point, i.e. the turn from which the winning side kept the lead in remaining PEV
  * after another side had led.
  */
 readonly class BuildBattleReport
@@ -40,6 +40,8 @@ readonly class BuildBattleReport
 		$squadrons = [];
 		$joinedAt = [];
 		$destroyedAt = [];
+		$fledAt = [];
+		$morale = [];
 		$killsByType = [];
 		$highlights = [];
 		$deadliestAction = null;
@@ -92,8 +94,41 @@ readonly class BuildBattleReport
 						}
 						break;
 
+					case BattleEvent::SQUADRON_SPLASHED:
+						$attacker = $squadrons[$payload['attacker']];
+						$victim = $squadrons[$payload['target']];
+						$victim->damageTaken += $payload['damage'];
+						$victim->remainingShips -= $payload['kills'];
+						$victimSide = $fleetsById[$victim->fleet]->side;
+						$sideLostPev[$victimSide] = ($sideLostPev[$victimSide] ?? 0) + $payload['kills'] * $types[$victim->squadron]->pev;
+
+						// Area damage on allies brings nothing to the shooter
+						if ($victimSide !== $fleetsById[$attacker->fleet]->side) {
+							$attacker->damageDealt += $payload['damage'];
+							$attacker->kills += $payload['kills'];
+							$killsByType[$attacker->fleet][$victim->type] = ($killsByType[$attacker->fleet][$victim->type] ?? 0) + $payload['kills'];
+						}
+						break;
+
 					case BattleEvent::SQUADRON_DESTROYED:
 						$squadrons[$payload['squadron']]->destroyedAtTurn = $turn->turn;
+						break;
+
+					case BattleEvent::ENGAGEMENT_DELAYED:
+						$highlights[] = ['type' => BattleReport::HIGHLIGHT_ENGAGEMENT_DELAYED, 'turn' => $turn->turn, 'until_turn' => $payload['until_turn']];
+						break;
+
+					case BattleEvent::FLEET_WITHDREW:
+						$highlights[] = ['type' => BattleReport::HIGHLIGHT_FLEET_WITHDREW, 'turn' => $turn->turn, 'fleet' => $payload['fleet']];
+						break;
+
+					case BattleEvent::FLEET_FLED:
+						$fledAt[$payload['fleet']] = $turn->turn;
+						$highlights[] = ['type' => BattleReport::HIGHLIGHT_FLEET_FLED, 'turn' => $turn->turn, 'fleet' => $payload['fleet']];
+						break;
+
+					case BattleEvent::MORALE_UPDATED:
+						$morale = $payload['morale'] + $morale;
 						break;
 
 					case BattleEvent::FLEET_DESTROYED:
@@ -124,7 +159,13 @@ readonly class BuildBattleReport
 			winningSide: $state->winningSide,
 			sides: $this->summarizeSides($state, $squadrons, $sideInitialPev, $sideLostPev),
 			fleets: array_map(
-				fn (BattleFleet $fleet) => $this->summarizeFleet($fleet, $squadrons, $types, $killsByType[$fleet->identifier] ?? [], $joinedAt[$fleet->identifier] ?? null, $destroyedAt[$fleet->identifier] ?? null, $experience[$fleet->identifier] ?? 0),
+				fn (BattleFleet $fleet) => [
+					...$this->summarizeFleet($fleet, $squadrons, $types, $killsByType[$fleet->identifier] ?? [], $joinedAt[$fleet->identifier] ?? null, $destroyedAt[$fleet->identifier] ?? null, $experience[$fleet->identifier] ?? 0),
+					'fled_at_turn' => $fledAt[$fleet->identifier] ?? null,
+					'final_status' => $fleet->status->value,
+					'final_morale' => $morale[$fleet->identifier] ?? null,
+					'traits' => array_map(fn ($trait) => $trait->value, $fleet->traits),
+				],
 				$state->fleets,
 			),
 			squadrons: array_values($squadrons),

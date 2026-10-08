@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
  *     faction: int,
  *     officer_level: int,
  *     arrival_turn: int,
+ *     traits?: list<string>,
  *     formation: list<array{type: string, ships: int, q: int, r: int}>,
  * }
  */

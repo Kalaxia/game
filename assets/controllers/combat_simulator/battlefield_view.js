@@ -80,7 +80,17 @@ export class BattlefieldView
 		const holdDuration = Object.keys(deploymentCells).length > 0 ? Math.round(Math.min(duration * 0.3, 1000)) : 0;
 		const moveDuration = Math.round(Math.min(duration * 0.25, 800));
 		const firingWindow = duration - holdDuration - moveDuration - duration * 0.05;
-		const fireEvents = turnEvents.filter(event => event.type === 'squadron_fired' || event.type === 'squadron_destroyed');
+		// Area damage and destructions are shown along with the shot that caused them
+		const fireEvents = turnEvents.filter(event => event.type === 'squadron_fired');
+		const followUps = new Map();
+		let lastShot = null;
+		for (const event of turnEvents) {
+			if (event.type === 'squadron_fired') {
+				lastShot = event;
+			} else if (['squadron_splashed', 'squadron_destroyed'].includes(event.type) && lastShot !== null) {
+				followUps.set(lastShot, [...(followUps.get(lastShot) ?? []), event]);
+			}
+		}
 		const step = fireEvents.length > 0 ? firingWindow / fireEvents.length : 0;
 		const ships = Object.fromEntries(Object.entries(start.squadrons).map(([id, squadron]) => [id, squadron.ships]));
 
@@ -95,13 +105,20 @@ export class BattlefieldView
 
 		fireEvents.forEach((event, index) => {
 			this._later(() => {
-				if (event.type === 'squadron_fired') {
-					ships[event.target] = Math.max(0, ships[event.target] - event.kills);
-					// Brief shots: each one overlaps the next without lingering
-					this._drawShot(snapshot, event, Math.min(Math.max(step * 2, 250), 700));
-					this._setShips(event.target, ships[event.target]);
-				} else {
-					this._fadeOut(event.squadron);
+				ships[event.target] = Math.max(0, ships[event.target] - event.kills);
+				// Brief shots: each one overlaps the next without lingering
+				const shotDuration = Math.min(Math.max(step * 2, 250), 700);
+				this._drawShot(snapshot, event, shotDuration);
+				this._setShips(event.target, ships[event.target]);
+
+				for (const followUp of followUps.get(event) ?? []) {
+					if (followUp.type === 'squadron_splashed') {
+						ships[followUp.target] = Math.max(0, ships[followUp.target] - followUp.kills);
+						this._drawDamage(snapshot, followUp.target, followUp.damage, shotDuration, '#fb923c');
+						this._setShips(followUp.target, ships[followUp.target]);
+					} else {
+						this._fadeOut(followUp.squadron);
+					}
 				}
 			}, holdDuration + moveDuration + index * step);
 		});
@@ -281,7 +298,7 @@ export class BattlefieldView
 
 			node.group.style.transitionDuration = animated ? `${duration}ms` : '0ms';
 			node.group.style.transform = `translate(${x}px, ${y}px)`;
-			node.group.style.opacity = squadron.ships > 0 && !squadron.joining ? '1' : '0';
+			node.group.style.opacity = squadron.ships > 0 && !squadron.joining && !squadron.fled ? this._squadronOpacity(snapshot, squadron) : '0';
 			node.text.textContent = squadron.ships;
 			node.title.textContent = this.describeSquadron(id, squadron);
 		}
@@ -296,6 +313,14 @@ export class BattlefieldView
 		this._renderFleets(snapshot);
 	}
 
+	/**
+	 * Withdrawn and fleeing fleets are dimmed: they no longer fire.
+	 */
+	_squadronOpacity(snapshot, squadron)
+	{
+		return ['withdrawn', 'fleeing'].includes(snapshot.fleets[squadron.fleet]?.status) ? '0.55' : '1';
+	}
+
 	_renderFleets(snapshot)
 	{
 		for (const node of Object.values(this.clusterNodes)) {
@@ -305,7 +330,7 @@ export class BattlefieldView
 
 		for (const [fleetId, fleetState] of Object.entries(snapshot.fleets)) {
 			const fleet = this.battle.fleets.find(f => f.id === fleetId);
-			const alive = Object.values(snapshot.squadrons).some(s => s.fleet === fleetId && s.ships > 0);
+			const alive = fleetState.status !== 'fled' && Object.values(snapshot.squadrons).some(s => s.fleet === fleetId && s.ships > 0);
 			const node = this.clusterNodes[`${fleetState.cluster.q},${fleetState.cluster.r}`];
 
 			if (!node || !alive) {
@@ -317,7 +342,8 @@ export class BattlefieldView
 			const center = this._pixel(this._clusterCenter(fleetState.cluster));
 			const offset = CELL_SIZE * 1.5 * (this.radius + 0.6);
 			const label = this._element('text', { class: 'fleet-label', x: center.x, y: center.y - offset, 'text-anchor': 'middle' });
-			label.textContent = `${fleet.name} (${fleet.side === 0 ? 'A' : 'B'})`;
+			const behaviour = { withdrawn: ' · repli', fleeing: ' · fuite' }[fleetState.status] ?? '';
+			label.textContent = `${fleet.name} (${fleet.side === 0 ? 'A' : 'B'})${behaviour}`;
 			label.style.fill = highlightColor(fleet.faction, 45);
 			this.labelLayer.appendChild(label);
 		}
@@ -380,6 +406,26 @@ export class BattlefieldView
 			fill: event.hits === 0 ? '#9ca3af' : '#fde047',
 		});
 		label.textContent = event.hits === 0 ? 'raté' : `-${event.damage.toLocaleString('fr-FR')}`;
+		this.effectLayer.appendChild(label);
+		label.animate(
+			[{ transform: 'translateY(0)', opacity: 1 }, { transform: `translateY(-${CELL_SIZE}px)`, opacity: 0 }],
+			{ duration: duration * 1.5, fill: 'forwards' },
+		).finished.then(() => label.remove()).catch(() => {});
+	}
+
+	/**
+	 * Floating damage number over a squadron, e.g. for area damage.
+	 */
+	_drawDamage(snapshot, squadronId, damage, duration, color)
+	{
+		const squadron = snapshot.squadrons[squadronId];
+		if (!squadron) {
+			return;
+		}
+
+		const { x, y } = this._pixel(squadron.cell);
+		const label = this._element('text', { class: 'damage', x, y: y - CELL_SIZE, 'text-anchor': 'middle', fill: color });
+		label.textContent = `-${damage.toLocaleString('fr-FR')}`;
 		this.effectLayer.appendChild(label);
 		label.animate(
 			[{ transform: 'translateY(0)', opacity: 1 }, { transform: `translateY(-${CELL_SIZE}px)`, opacity: 0 }],

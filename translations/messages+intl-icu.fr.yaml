@@ -459,6 +459,43 @@ combat_simulator:
         line: 'Ligne'
         artillery: 'Artillerie'
         capital: 'Capital'
+    traits:
+        aggressive:
+            name: 'Agressif'
+            description: '+10 % d’initiative. Se replie à 20 de moral au lieu de 30. Ses escadrilles foncent sur l’ennemi le plus proche, tout en tirant sur leurs cibles de prédilection à portée.'
+        cautious:
+            name: 'Prudent'
+            description: 'Se replie à 40 de moral au lieu de 30. +15 % d’esquive en repli ou en fuite. Exposé 1 tour au lieu de 2 en fuyant.'
+        tenacious:
+            name: 'Tenace'
+            description: 'Pertes de moral réduites de 25 %.'
+        charismatic:
+            name: 'Charismatique'
+            description: 'Les flottes alliées voisines regagnent 2 points de moral de plus par tour.'
+        logistician:
+            name: 'Logisticien'
+            description: 'Capacité de commandement +20 %.'
+        tactician:
+            name: 'Tacticien'
+            description: 'Sa flotte est servie en premier lors de la répartition des actions.'
+        capital_hunter:
+            name: 'Chasseur de capitaux'
+            description: 'À portée, ses bombardiers, son artillerie et ses vaisseaux capitaux tirent en priorité sur les destroyers et croiseurs. Toute sa flotte leur inflige +10 % de dégâts.'
+        defender:
+            name: 'Défenseur'
+            description: '+10 % de défense quand son camp défend l’orbite.'
+        reckless:
+            name: 'Imprudent'
+            description: '+10 % d’attaque, −10 % d’esquive.'
+        indecisive:
+            name: 'Indécis'
+            description: '−15 % d’initiative. Reprend le combat à 60 de moral au lieu de 50.'
+        butcher:
+            name: 'Boucher'
+            description: '+10 % de dégâts contre les flottes déjà engagées par ses alliés. Récupère deux fois moins de moral près de ses alliés, qui le craignent.'
+        veteran:
+            name: 'Vétéran'
+            description: 'L’infériorité numérique ne fait jamais descendre son moral sous 20.'
     formation_violations:
         empty: 'La formation ne contient aucune escadrille.'
         outside_grid: 'La case {cell} est en dehors de la grille de formation.'

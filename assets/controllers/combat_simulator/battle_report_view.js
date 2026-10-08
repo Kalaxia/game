@@ -73,9 +73,17 @@ export class BattleReportView
 	{
 		const { escape, sideName, fleetName, typeName } = this.helpers;
 		const info = this.battle.fleets.find(f => f.id === fleet.fleet);
-		const status = fleet.joined_at_turn === null
-			? 'n’est jamais arrivée'
-			: (fleet.destroyed_at_turn !== null ? `détruite au tour ${fleet.destroyed_at_turn}` : `${this._number(fleet.remaining_pev)} / ${this._number(fleet.initial_pev)} PEV restants`);
+		let status = `${this._number(fleet.remaining_pev)} / ${this._number(fleet.initial_pev)} PEV restants`;
+		if (fleet.joined_at_turn === null) {
+			status = 'n’est jamais arrivée';
+		} else if (fleet.destroyed_at_turn !== null) {
+			status = `détruite au tour ${fleet.destroyed_at_turn}`;
+		} else if (fleet.fled_at_turn !== null) {
+			status = `en fuite au tour ${fleet.fled_at_turn}, ${this._number(fleet.remaining_pev)} / ${this._number(fleet.initial_pev)} PEV sauvés`;
+		}
+		if (fleet.final_morale !== null && fleet.destroyed_at_turn === null) {
+			status += ` · moral final ${fleet.final_morale}`;
+		}
 		const kills = Object.entries(fleet.kills_by_type).filter(([, count]) => count > 0);
 
 		return `
@@ -105,6 +113,8 @@ export class BattleReportView
 						<dd>${kills.length === 0 ? 'aucun' : kills.map(([type, count]) => `${count} ${escape(typeName(type))}`).join(', ')}</dd>
 						<dt class="text-gray-400">Expérience de l’officier</dt><dd>${this._number(fleet.experience)} XP</dd>
 						<dt class="text-gray-400">Bonus de combat</dt><dd>${escape(this._describeBonuses(fleet.bonuses))}</dd>
+						<dt class="text-gray-400">Traits de l’officier</dt>
+						<dd>${(info?.traits ?? []).length === 0 ? 'aucun' : info.traits.map(trait => `<span title="${escape(trait.description)}">${escape(trait.name)}</span>`).join(', ')}</dd>
 					</dl>
 				</div>
 			</details>
@@ -157,6 +167,12 @@ export class BattleReportView
 				return `La flotte ${fleetName(highlight.fleet)} est détruite.`;
 			case 'turning_point':
 				return `Tournant de la bataille : le camp ${sideName(highlight.side)} prend l’avantage pour de bon.`;
+			case 'engagement_delayed':
+				return `Les attaquants, en infériorité, retardent l’engagement, au plus tard jusqu’au tour ${highlight.until_turn}.`;
+			case 'fleet_withdrew':
+				return `${fleetName(highlight.fleet)} se replie, à bout de moral.`;
+			case 'fleet_fled':
+				return `${fleetName(highlight.fleet)} prend la fuite et quitte la bataille.`;
 			case 'most_valuable_squadron':
 				return `Escadrille la plus efficace : ${squadronName(highlight.squadron)}, avec ${this._number(highlight.damage)} dégâts et ${ships(highlight.kills)} détruits.`;
 			default:

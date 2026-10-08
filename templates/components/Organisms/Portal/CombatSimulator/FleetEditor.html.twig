@@ -46,6 +46,34 @@
 		</div>
 	</div>
 
+	<div>
+		<p class="{{ label_class }}">
+			Traits de l’officier
+			<span class="font-normal text-gray-400">({{ traits|length }} / {{ this.maxTraits }})</span>
+		</p>
+		<div class="mt-2 flex flex-wrap gap-2">
+			{% for trait in this.availableTraits %}
+				{% set selected = trait.value in traits %}
+				<button type="button"
+					data-action="live#action"
+					data-live-action-param="toggleTrait"
+					data-live-trait-param="{{ trait.value }}"
+					title="{{ ('combat_simulator.traits.' ~ trait.value ~ '.description')|trans }}"
+					aria-pressed="{{ selected ? 'true' : 'false' }}"
+					class="rounded-full px-3 py-1 text-xs ring-1 {{ selected ? 'bg-white/15 text-white ring-white/60' : 'text-gray-400 ring-white/15 hover:text-white' }} {{ not selected and traits|length >= this.maxTraits ? 'opacity-40 cursor-not-allowed' }}">
+					{{ ('combat_simulator.traits.' ~ trait.value ~ '.name')|trans }}
+				</button>
+			{% endfor %}
+		</div>
+		{% if traits is not empty %}
+			<ul class="mt-2 space-y-0.5 text-xs text-gray-400">
+				{% for trait in traits %}
+					<li><span class="text-gray-200">{{ ('combat_simulator.traits.' ~ trait ~ '.name')|trans }}</span> : {{ ('combat_simulator.traits.' ~ trait ~ '.description')|trans }}</li>
+				{% endfor %}
+			</ul>
+		{% endif %}
+	</div>
+
 	<div class="flex items-center">
 		<div aria-hidden="true" class="w-full border-t border-white/15"></div>
 		<span class="px-2 text-sm text-gray-400 whitespace-nowrap">Composition de la flotte</span>

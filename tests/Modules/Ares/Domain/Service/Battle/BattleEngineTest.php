@@ -319,6 +319,32 @@ class BattleEngineTest extends BattleTestCase
 		static::assertSame(['doomed'], $reported);
 	}
 
+	public function testFleetDoesNotMoveOntoItsOwnSquadronsLeftOutsideItsArea(): void
+	{
+		// Regression: with morale, retreats and roaming squadrons, a moving fleet area used to land on
+		// a squadron of the same fleet standing outside the area
+		$engine = new BattleEngine();
+		foreach ([3, 7, 11, 19, 23] as $seed) {
+			$state = new \App\Modules\Ares\Domain\Model\Battle\BattleState(
+				grid: new \App\Modules\Ares\Domain\Model\Battle\Grid\ClusteredHexGrid(4),
+				battlefieldSize: 5,
+				seed: $seed,
+				fleets: [
+					self::fleet('a1', 0, ['LightFighter' => 100, 'Corvette' => 28, 'LightFrigate' => 8, 'Destroyer' => 2]),
+					self::fleet('a2', 0, ['LightFighter' => 100, 'Corvette' => 28, 'LightFrigate' => 8, 'Destroyer' => 2]),
+					self::fleet('b1', 1, ['LightFighter' => 100, 'Corvette' => 28, 'LightFrigate' => 8, 'Destroyer' => 2]),
+					self::fleet('b2', 1, ['LightFighter' => 100, 'Corvette' => 28, 'LightFrigate' => 8, 'Destroyer' => 2]),
+				],
+				durabilityFactor: 6.0,
+				maxActionsPerTurn: 25,
+				rules: new \App\Modules\Ares\Domain\Model\Battle\Rules\BattleRules(morale: new \App\Modules\Ares\Domain\Model\Battle\Rules\MoraleRules(lossFactor: 1.5)),
+			);
+
+			$engine->resolveBattle($state);
+			static::assertTrue($state->isOver);
+		}
+	}
+
 	public function testDamageIsAccountedForExperience(): void
 	{
 		$a = self::fleet('a', 0, ['Corvette' => 14]);

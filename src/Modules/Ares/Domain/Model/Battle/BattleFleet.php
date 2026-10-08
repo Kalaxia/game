@@ -22,10 +22,19 @@ class BattleFleet
 	public bool $isDestructionReported = false;
 	public int $damageDealt = 0;
 	public int $damageTaken = 0;
+	/** PEV of the enemy ships destroyed by the fleet */
+	public int $pevDestroyed = 0;
+	/** Disorganisation due to the fleet size, between 0 and 1 (D10) */
+	public float $sizeMalus = 0.0;
+	/** Between 0 and 100 (D12) */
+	public float $morale = 100.0;
+	public FleetStatus $status = FleetStatus::Engaged;
+	public ?int $fleeingSinceTurn = null;
 
 	/**
 	 * @param list<FormationSlot>  $formation squadrons to deploy, positioned relative to the cluster center, front facing east
 	 * @param list<BattleSquadron> $squadrons squadrons on the battle grid once deployed
+	 * @param list<OfficerTrait>   $traits    traits of the officer (Q13)
 	 */
 	public function __construct(
 		public readonly string $identifier,
@@ -38,7 +47,16 @@ class BattleFleet
 		public readonly int $arrivalTurn = 1,
 		public array $squadrons = [],
 		public readonly BattleBonuses $bonuses = new BattleBonuses(),
+		public readonly array $traits = [],
 	) {
+		if (count($traits) > OfficerTrait::MAX_PER_OFFICER) {
+			throw new \InvalidArgumentException(sprintf('An officer has at most %d traits', OfficerTrait::MAX_PER_OFFICER));
+		}
+	}
+
+	public function hasTrait(OfficerTrait $trait): bool
+	{
+		return in_array($trait, $this->traits, true);
 	}
 
 	public function isDeployed(): bool
@@ -49,6 +67,19 @@ class BattleFleet
 	public function isDestroyed(): bool
 	{
 		return $this->isDeployed() && [] === $this->getActiveSquadrons();
+	}
+
+	public function hasFled(): bool
+	{
+		return FleetStatus::Fled === $this->status;
+	}
+
+	/**
+	 * Only engaged fleets fire: withdrawn and fleeing ones do not (D12).
+	 */
+	public function canFire(): bool
+	{
+		return FleetStatus::Engaged === $this->status;
 	}
 
 	public function isPendingArrival(int $turn): bool

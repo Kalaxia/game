@@ -7,18 +7,22 @@ namespace App\Modules\Ares\Domain\Service\Battle;
 use App\Modules\Ares\Domain\Model\Battle\BattleEvent;
 use App\Modules\Ares\Domain\Model\Battle\BattleSquadron;
 use App\Modules\Ares\Domain\Model\Battle\BattleState;
+use App\Modules\Ares\Domain\Model\Battle\OfficerTraitEffects;
 use App\Modules\Ares\Domain\Model\Battle\TurnResult;
+use App\Modules\Ares\Domain\Service\Battle\Engine\CheckEngagement;
 use App\Modules\Ares\Domain\Service\Battle\Engine\DeployFleets;
 use App\Modules\Ares\Domain\Service\Battle\Engine\MoveFleets;
 use App\Modules\Ares\Domain\Service\Battle\Engine\MoveSquadrons;
 use App\Modules\Ares\Domain\Service\Battle\Engine\ResolveFire;
+use App\Modules\Ares\Domain\Service\Battle\Engine\UpdateMorale;
 use Random\Engine\Mt19937;
 use Random\Randomizer;
 
 /**
  * Resolves a battle turn by turn (see docs/fleet-combat/plan.md).
  *
- * A turn is: arrival of fleets, fleet movement, squadron movement, then fire in initiative order.
+ * A turn is: arrival of fleets, fleet-size maluses, fleet movement, squadron movement, fire in initiative
+ * order (unless the engagement is delayed), then morale and retreats.
  * The engine is deterministic for a given battle seed, so a battle can be replayed exactly.
  */
 readonly class BattleEngine
@@ -28,6 +32,8 @@ readonly class BattleEngine
 		private MoveFleets $moveFleets = new MoveFleets(),
 		private MoveSquadrons $moveSquadrons = new MoveSquadrons(),
 		private ResolveFire $resolveFire = new ResolveFire(),
+		private CheckEngagement $checkEngagement = new CheckEngagement(),
+		private UpdateMorale $updateMorale = new UpdateMorale(),
 	) {
 	}
 
@@ -41,10 +47,21 @@ readonly class BattleEngine
 		$randomizer = new Randomizer(new Mt19937($this->getTurnSeed($state)));
 
 		$events = ($this->deployFleets)($state);
+		$this->updateSizeMaluses($state);
 		$events = [...$events, ...($this->moveFleets)($state, $randomizer)];
 		$squadrons = $this->sortByInitiative($state->getActiveSquadrons(), $randomizer);
 		$events = [...$events, ...($this->moveSquadrons)($state, $squadrons, $randomizer)];
-		$events = [...$events, ...($this->resolveFire)($state, $squadrons, $randomizer)];
+
+		$pevAtTurnStart = [];
+		$pevDestroyedAtTurnStart = [];
+		foreach ($state->getActiveFleets() as $fleet) {
+			$pevAtTurnStart[$fleet->identifier] = $fleet->getPev();
+			$pevDestroyedAtTurnStart[$fleet->identifier] = $fleet->pevDestroyed;
+		}
+
+		if (($this->checkEngagement)($state, $events)) {
+			$events = [...$events, ...($this->resolveFire)($state, $squadrons, $randomizer)];
+		}
 
 		// Including fleets destroyed on the turn they arrived
 		foreach ($state->getDeployedFleets() as $fleet) {
@@ -53,6 +70,8 @@ readonly class BattleEngine
 				$events[] = BattleEvent::fleetDestroyed($fleet);
 			}
 		}
+
+		$events = [...$events, ...($this->updateMorale)($state, $pevAtTurnStart, $pevDestroyedAtTurnStart)];
 
 		$remainingSides = $state->getRemainingSides();
 		if (count($remainingSides) <= 1 || $state->turn >= $state->maxTurns) {
@@ -88,9 +107,24 @@ readonly class BattleEngine
 	private function sortByInitiative(array $squadrons, Randomizer $randomizer): array
 	{
 		$squadrons = $randomizer->shuffleArray($squadrons);
-		usort($squadrons, fn (BattleSquadron $a, BattleSquadron $b) => $b->type->initiative <=> $a->type->initiative);
+		usort($squadrons, fn (BattleSquadron $a, BattleSquadron $b) => $b->getInitiative() <=> $a->getInitiative());
 
 		return $squadrons;
+	}
+
+	/**
+	 * Fleets beyond their officer's command capacity are disorganised (D10). The malus follows the
+	 * current PEV of the fleet, so it fades as the fleet loses ships.
+	 */
+	private function updateSizeMaluses(BattleState $state): void
+	{
+		if (null === ($rules = $state->rules->command)) {
+			return;
+		}
+
+		foreach ($state->getActiveFleets() as $fleet) {
+			$fleet->sizeMalus = $rules->getMalus($fleet->getPev(), $fleet->officerLevel, OfficerTraitEffects::getCommandCapacityFactor($fleet));
+		}
 	}
 
 	private function getTurnSeed(BattleState $state): int

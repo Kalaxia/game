@@ -10,6 +10,7 @@ use App\Modules\Ares\Domain\Model\Battle\BattleShipType;
 use App\Modules\Ares\Domain\Model\Battle\FormationSlot;
 use App\Modules\Ares\Domain\Model\Battle\FormationViolation;
 use App\Modules\Ares\Domain\Model\Battle\Grid\Hex;
+use App\Modules\Ares\Domain\Model\Battle\OfficerTrait;
 use App\Modules\Ares\Domain\Service\Battle\BuildFleetFormation;
 use App\Modules\Ares\Domain\Service\Battle\ValidateFormation;
 use App\Modules\Portal\Infrastructure\CombatSimulator\SimulatedFleetStorage;
@@ -54,6 +55,9 @@ final class FleetEditor
 	public int $officerLevel = 1;
 	#[LiveProp(writable: true)]
 	public int $arrivalTurn = 1;
+	/** @var list<string> officer traits (Q13), chosen by the player in the simulator */
+	#[LiveProp]
+	public array $traits = [];
 	/** @var list<array{type: string, ships: int, q: int, r: int}> */
 	#[LiveProp]
 	public array $formation = [];
@@ -94,6 +98,7 @@ final class FleetEditor
 		$this->faction = 0;
 		$this->officerLevel = 1;
 		$this->arrivalTurn = 1;
+		$this->traits = [];
 		$this->formation = [];
 		$this->errors = [];
 
@@ -113,6 +118,7 @@ final class FleetEditor
 		$this->faction = $fleet['faction'];
 		$this->officerLevel = $fleet['officer_level'];
 		$this->arrivalTurn = $fleet['arrival_turn'];
+		$this->traits = $fleet['traits'] ?? [];
 		$this->formation = $fleet['formation'];
 		$this->errors = [];
 
@@ -203,6 +209,7 @@ final class FleetEditor
 			'faction' => $this->faction,
 			'officer_level' => $this->officerLevel,
 			'arrival_turn' => $this->arrivalTurn,
+			'traits' => $this->traits,
 			'formation' => $this->formation,
 		]);
 
@@ -274,6 +281,40 @@ final class FleetEditor
 			fn (array $slot) => $slot['ships'] * $this->battleShipTypeRegistry->get($slot['type'])->pev,
 			$this->formation,
 		));
+	}
+
+	/**
+	 * Adds a trait to the officer, or removes it when already chosen. An officer has at most 3 traits.
+	 */
+	#[LiveAction]
+	public function toggleTrait(#[LiveArg] string $trait): void
+	{
+		if (null === OfficerTrait::tryFrom($trait)) {
+			return;
+		}
+
+		if (in_array($trait, $this->traits, true)) {
+			$this->traits = array_values(array_diff($this->traits, [$trait]));
+
+			return;
+		}
+
+		if (count($this->traits) < OfficerTrait::MAX_PER_OFFICER) {
+			$this->traits[] = $trait;
+		}
+	}
+
+	/**
+	 * @return list<OfficerTrait>
+	 */
+	public function getAvailableTraits(): array
+	{
+		return OfficerTrait::cases();
+	}
+
+	public function getMaxTraits(): int
+	{
+		return OfficerTrait::MAX_PER_OFFICER;
 	}
 
 	public function getMaxOfficerLevel(): int

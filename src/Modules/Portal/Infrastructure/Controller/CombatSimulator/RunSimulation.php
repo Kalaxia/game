@@ -61,6 +61,7 @@ class RunSimulation extends AbstractController
 				'faction' => $fleet['faction'],
 				'officer_level' => $fleet['officer_level'],
 				'arrival_turn' => $fleet['arrival_turn'],
+				'traits' => $fleet['traits'] ?? [],
 				'formation' => $fleet['formation'],
 			], $fleets), $seed);
 		} catch (\DomainException $exception) {
@@ -95,6 +96,11 @@ class RunSimulation extends AbstractController
 				'faction_name' => 0 === $fleet['faction'] ? 'Sans faction' : $translator->trans(sprintf('factions.%d.name.official', $fleet['faction'])),
 				'officer_level' => $fleet['officer_level'],
 				'arrival_turn' => $fleet['arrival_turn'],
+				'traits' => array_map(fn (string $trait) => [
+					'trait' => $trait,
+					'name' => $translator->trans(sprintf('combat_simulator.traits.%s.name', $trait)),
+					'description' => $translator->trans(sprintf('combat_simulator.traits.%s.description', $trait)),
+				], $fleet['traits'] ?? []),
 			], $fleets),
 			'squadron_life' => array_merge([], ...array_map(
 				fn ($fleet) => array_combine(

@@ -1665,6 +1665,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     movement?: int|Param,
  *     initiative?: int|Param,
  *     range?: int|Param,
+ *     patterns?: list<"close"|"frontal_cone"|"broadside"|"ring"|"area"|Param>,
+ *     min_range?: int|Param,
+ *     splash_ratio?: float|Param,
+ *     split_fire?: bool|Param,
  *     preferred_targets?: list<0|1|2|3|Param>,
  * }>
  * @psalm-type ConfigType = array{

@@ -17,7 +17,15 @@ final readonly class BattleEvent
 	public const string SQUADRON_MOVED = 'squadron_moved';
 	public const string SQUADRON_FIRED = 'squadron_fired';
 	public const string SQUADRON_DESTROYED = 'squadron_destroyed';
+	public const string SQUADRON_SPLASHED = 'squadron_splashed';
 	public const string BATTLE_ENDED = 'battle_ended';
+	public const string ENGAGEMENT_DELAYED = 'engagement_delayed';
+	public const string ENGAGEMENT_STARTED = 'engagement_started';
+	public const string FLEET_WITHDREW = 'fleet_withdrew';
+	public const string FLEET_REMOBILISED = 'fleet_remobilised';
+	public const string FLEET_FLEEING = 'fleet_fleeing';
+	public const string FLEET_FLED = 'fleet_fled';
+	public const string MORALE_UPDATED = 'morale_updated';
 
 	/**
 	 * @param array<string, mixed> $payload
@@ -84,9 +92,71 @@ final readonly class BattleEvent
 		]);
 	}
 
+	/**
+	 * Area damage of a shot, dealt to a squadron next to the target (Q12).
+	 */
+	public static function squadronSplashed(BattleSquadron $attacker, BattleSquadron $victim, int $damage, int $kills): self
+	{
+		return new self(self::SQUADRON_SPLASHED, [
+			'attacker' => $attacker->identifier,
+			'target' => $victim->identifier,
+			'damage' => $damage,
+			'kills' => $kills,
+		]);
+	}
+
 	public static function squadronDestroyed(BattleSquadron $squadron): self
 	{
 		return new self(self::SQUADRON_DESTROYED, ['squadron' => $squadron->identifier]);
+	}
+
+	public static function engagementDelayed(int $untilTurn): self
+	{
+		return new self(self::ENGAGEMENT_DELAYED, ['until_turn' => $untilTurn]);
+	}
+
+	public static function engagementStarted(): self
+	{
+		return new self(self::ENGAGEMENT_STARTED, []);
+	}
+
+	public static function fleetWithdrew(BattleFleet $fleet): self
+	{
+		return new self(self::FLEET_WITHDREW, ['fleet' => $fleet->identifier, 'morale' => (int) round($fleet->morale)]);
+	}
+
+	public static function fleetRemobilised(BattleFleet $fleet): self
+	{
+		return new self(self::FLEET_REMOBILISED, ['fleet' => $fleet->identifier, 'morale' => (int) round($fleet->morale)]);
+	}
+
+	public static function fleetFleeing(BattleFleet $fleet): self
+	{
+		return new self(self::FLEET_FLEEING, ['fleet' => $fleet->identifier, 'morale' => (int) round($fleet->morale)]);
+	}
+
+	/**
+	 * The fleet leaves the battle with its surviving squadrons.
+	 */
+	public static function fleetFled(BattleFleet $fleet): self
+	{
+		return new self(self::FLEET_FLED, [
+			'fleet' => $fleet->identifier,
+			'squadrons' => array_map(fn (BattleSquadron $squadron) => $squadron->identifier, $fleet->getActiveSquadrons()),
+		]);
+	}
+
+	/**
+	 * @param list<BattleFleet> $fleets
+	 */
+	public static function moraleUpdated(array $fleets): self
+	{
+		$morale = [];
+		foreach ($fleets as $fleet) {
+			$morale[$fleet->identifier] = (int) round($fleet->morale);
+		}
+
+		return new self(self::MORALE_UPDATED, ['morale' => $morale]);
 	}
 
 	public static function battleEnded(?int $winningSide): self

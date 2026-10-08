@@ -10,6 +10,8 @@ use App\Modules\Ares\Domain\Model\Battle\BattleState;
 use App\Modules\Ares\Domain\Model\Battle\FormationSlot;
 use App\Modules\Ares\Domain\Model\Battle\Grid\ClusteredHexGrid;
 use App\Modules\Ares\Domain\Model\Battle\Grid\Hex;
+use App\Modules\Ares\Domain\Model\Battle\OfficerTrait;
+use App\Modules\Ares\Domain\Model\Battle\Rules\BattleRules;
 use App\Modules\Ares\Domain\Model\Battle\ShipClass;
 use App\Modules\Ares\Domain\Service\Battle\BuildFleetFormation;
 use App\Modules\Ares\Domain\Service\Battle\ValidateFormation;
@@ -39,6 +41,8 @@ readonly class CreateBattle
 		int $turnDuration = 10,
 		#[Autowire('%ares.battle.action_duration%')]
 		?float $actionDuration = null,
+		/** Fleet-size maluses, engagement delay and morale (D10 to D12); none when null */
+		private ?GetBattleRules $getBattleRules = null,
 	) {
 		// As many actions as can be animated one after another during the real duration of a turn
 		$this->maxActionsPerTurn = null !== $actionDuration ? max(1, (int) floor($turnDuration / $actionDuration)) : null;
@@ -53,7 +57,7 @@ readonly class CreateBattle
 	 * Each fleet gets the combat bonuses of its faction, plus optional extra bonuses (e.g. technologies),
 	 * given as percentages by ship class value: [class => ['attack' => 10, 'defense' => 5, 'speed' => 0]].
 	 *
-	 * @param list<array{identifier?: string, name: string, side: int, faction: int, officer_level?: int, arrival_turn?: int, formation?: list<array{type: string, ships: int, q: int, r: int}>, ships?: array<string, int>, bonuses?: array<int, array{attack?: int, defense?: int, speed?: int}>}> $fleets
+	 * @param list<array{identifier?: string, name: string, side: int, faction: int, officer_level?: int, arrival_turn?: int, traits?: list<string>, formation?: list<array{type: string, ships: int, q: int, r: int}>, ships?: array<string, int>, bonuses?: array<int, array{attack?: int, defense?: int, speed?: int}>}> $fleets
 	 *
 	 * @throws \DomainException when a formation is invalid
 	 */
@@ -73,12 +77,15 @@ readonly class CreateBattle
 					formation: $this->getFormation($fleet),
 					arrivalTurn: $fleet['arrival_turn'] ?? 1,
 					bonuses: $this->getBonuses($fleet),
+					traits: array_map(fn (string $trait) => OfficerTrait::from($trait), $fleet['traits'] ?? []),
 				),
 				$fleets,
 				array_keys($fleets),
 			),
 			durabilityFactor: $this->durabilityFactor,
 			maxActionsPerTurn: $this->maxActionsPerTurn,
+			// In the simulator, side A is in orbit and side B attacks
+			rules: null !== $this->getBattleRules ? ($this->getBattleRules)(defendingSide: 0) : new BattleRules(),
 		);
 	}
 

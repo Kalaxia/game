@@ -7,6 +7,7 @@ namespace App\Modules\Ares\Domain\Service\Battle\Engine;
 use App\Modules\Ares\Domain\Model\Battle\BattleEvent;
 use App\Modules\Ares\Domain\Model\Battle\BattleSquadron;
 use App\Modules\Ares\Domain\Model\Battle\BattleState;
+use App\Modules\Ares\Domain\Model\Battle\FleetStatus;
 use App\Modules\Ares\Domain\Model\Battle\Grid\Hex;
 use Random\Randomizer;
 
@@ -36,7 +37,27 @@ readonly class MoveSquadrons
 		$events = [];
 
 		foreach ($squadrons as $squadron) {
-			if ($squadron->isDestroyed() || null !== ($this->selectTarget)($state, $squadron, true)) {
+			$status = $squadron->getFleet()->status;
+
+			if ($squadron->isDestroyed() || FleetStatus::Fleeing === $status) {
+				continue;
+			}
+
+			// A withdrawn fleet gathers its squadrons in its area (D12)
+			if (FleetStatus::Withdrawn === $status) {
+				$path = $this->findPathToOwnArea($state, $squadron, $randomizer);
+				if ([] !== $path) {
+					$from = $squadron->cell;
+					foreach (array_slice($path, 0, $squadron->type->movement) as $cell) {
+						$state->placeSquadron($squadron, $cell);
+					}
+					$events[] = BattleEvent::squadronMoved($squadron, $from);
+				}
+
+				continue;
+			}
+
+			if (null !== ($this->selectTarget)($state, $squadron, true)) {
 				continue;
 			}
 
@@ -70,12 +91,11 @@ readonly class MoveSquadrons
 	private function findPath(BattleState $state, BattleSquadron $squadron, BattleSquadron $target, Randomizer $randomizer): array
 	{
 		$start = $squadron->cell;
-		$range = $squadron->type->range;
 		$cellsInRangeOfEnemies = $this->getCellsInRangeOfEnemies($state, $squadron);
 		$previous = [$start->toKey() => null];
 		$queue = [$start];
 		$best = $start;
-		$bestScore = $this->score($start, $target, $cellsInRangeOfEnemies, $range);
+		$bestScore = $this->score($squadron, $start, $target, $cellsInRangeOfEnemies);
 
 		// Breadth-first: the first cell in range of the target is the closest one, no need to explore further
 		while ([] !== $queue && [0, 0] !== $bestScore) {
@@ -88,7 +108,7 @@ readonly class MoveSquadrons
 
 				$previous[$neighbour->toKey()] = $cell;
 				$queue[] = $neighbour;
-				$score = $this->score($neighbour, $target, $cellsInRangeOfEnemies, $range);
+				$score = $this->score($squadron, $neighbour, $target, $cellsInRangeOfEnemies);
 
 				// Breadth-first order: among equal scores, the first cell found is the closest
 				if ($score < $bestScore) {
@@ -111,11 +131,11 @@ readonly class MoveSquadrons
 	 *
 	 * @return array{int, int} lower is better
 	 */
-	private function score(Hex $cell, BattleSquadron $target, array $cellsInRangeOfEnemies, int $range): array
+	private function score(BattleSquadron $squadron, Hex $cell, BattleSquadron $target, array $cellsInRangeOfEnemies): array
 	{
 		$targetDistance = $cell->distanceTo($target->cell);
 
-		if ($targetDistance <= $range) {
+		if ($squadron->type->isInRange($targetDistance)) {
 			return [0, 0];
 		}
 
@@ -123,7 +143,12 @@ readonly class MoveSquadrons
 			return [1, 0];
 		}
 
-		return [2, $targetDistance];
+		// Out of range: too far, or too close for artillery with a minimum range
+		$gap = $targetDistance > $squadron->type->range
+			? $targetDistance - $squadron->type->range
+			: $squadron->type->minRange - $targetDistance;
+
+		return [2, $gap];
 	}
 
 	/**
@@ -137,11 +162,56 @@ readonly class MoveSquadrons
 
 		foreach ($state->getEnemySquadrons($squadron->getFleet()->side) as $enemy) {
 			foreach ($enemy->cell->range($squadron->type->range) as $cell) {
-				$cells[$cell->toKey()] = true;
+				if ($cell->distanceTo($enemy->cell) >= $squadron->type->minRange) {
+					$cells[$cell->toKey()] = true;
+				}
 			}
 		}
 
 		return $cells;
+	}
+
+	/**
+	 * Shortest path back into the fleet's area, empty when the squadron already stands in it.
+	 *
+	 * @return list<Hex>
+	 */
+	private function findPathToOwnArea(BattleState $state, BattleSquadron $squadron, Randomizer $randomizer): array
+	{
+		$area = $squadron->getFleet()->cluster;
+		$start = $squadron->cell;
+
+		if ($state->grid->clusterOf($start)->equals($area)) {
+			return [];
+		}
+
+		$previous = [$start->toKey() => null];
+		$queue = [$start];
+
+		while ([] !== $queue) {
+			$cell = array_shift($queue);
+
+			foreach ($randomizer->shuffleArray($cell->neighbours()) as $neighbour) {
+				if (array_key_exists($neighbour->toKey(), $previous) || !$this->canEnter($state, $squadron, $neighbour)) {
+					continue;
+				}
+
+				$previous[$neighbour->toKey()] = $cell;
+
+				if ($state->grid->clusterOf($neighbour)->equals($area)) {
+					$path = [];
+					for ($current = $neighbour; !$current->equals($start); $current = $previous[$current->toKey()]) {
+						$path[] = $current;
+					}
+
+					return array_reverse($path);
+				}
+
+				$queue[] = $neighbour;
+			}
+		}
+
+		return [];
 	}
 
 	private function canEnter(BattleState $state, BattleSquadron $squadron, Hex $cell): bool

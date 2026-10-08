@@ -1,7 +1,7 @@
 # Fleet combat redesign: work plan
 
 **Branch:** `feature/fleet-composition`
-**Status:** Phase 4 done (2026-10-08). Phase 5 (advanced combat rules) next. The design described here is a target, not the current behaviour. For current rules, see [`docs/gameplay.md` §9–11](../gameplay.md#9-military-ships-commanders-fleets).
+**Status:** Phase 5 in progress: size maluses, engagement delay, morale, weapon patterns and officer traits done (2026-10-08). The skimmable replay (D5) remains. The design described here is a target, not the current behaviour. For current rules, see [`docs/gameplay.md` §9–11](../gameplay.md#9-military-ships-commanders-fleets).
 
 This file is the single source of truth for the fleet and combat redesign. Update it whenever a decision is made: answer the open question, add an entry to the decision log, and move the work items forward.
 
@@ -192,6 +192,24 @@ These decisions **override** the earlier answers where they conflict.
   - `BuildFleetFormation` stays as a suggestion ("fill automatically") and for NPC fleets.
   - The engine is unchanged: it already takes a list of formation slots, whatever their source.
   - Readability risk (§5.8) is reduced: the player's choices map directly to positions on the battlefield.
+
+### 5.9 Phase 5 decisions (2026-10-08)
+
+- **D10. Fleet-size maluses** (Q13, D2):
+  - An officer has a command capacity in PEV, growing with their level.
+  - Beyond it, the fleet suffers a malus that grows with the excess. It lowers its squadrons' **initiative**, **dodge** and **rate of fire** (fewer shots per action: disorganisation).
+  - The malus follows the fleet's current PEV, so it fades as the fleet loses ships.
+  - Oversized fleets are penalised, and big battles last longer (D1).
+- **D11. Engagement delay** (D1):
+  - When the attacking side arrives with less than half the defending side's PEV, nobody fires for 3 minutes. Fleets can still deploy and move, and reinforcements can arrive.
+  - The delay ends early as soon as the balance is restored.
+  - In the simulator, side A defends (fleets already in orbit) and side B attacks.
+- **D12. Morale and retreat, first version** (Q7, R5):
+  - **Morale** goes from 0 to 100. It drops with the PEV a fleet loses and while its side is outnumbered, and slowly recovers when the fleet takes no losses, faster next to allies.
+  - **Below 30: withdrawal.** The fleet withdraws behind allied fleets if there are any. It stops firing and can remobilise above 50.
+  - **Below 15, or with no ally to cover it: flight.** The fleet stops fighting, stays exposed for 2 turns (the enemy fires freely), then leaves the battle with its surviving ships.
+  - Values to be calibrated during balancing.
+- **D13. Weapon patterns (Q12) and officer traits (Q13):** content to be proposed in a document and validated by the maintainer before any code.
 
 ### 5.8 Known design risks
 
@@ -461,12 +479,85 @@ Takeaways:
 
 ### Phase 5: advanced combat rules (simulator first)
 
-- [ ] Morale and the two kinds of retreat (Q7, R5).
-- [ ] Weapon patterns and range, squadron auto-positioning (Q11, Q12).
-- [ ] Fleet-size maluses, measured in PEV and mitigated by officer level (Q13, D2).
-- [ ] Engagement delay when a fleet arrives outnumbered (D1).
-- [ ] Battle highlights and a skimmable replay (D5).
-- [ ] Officer traits (Q13).
+- [x] **Fleet-size maluses** (D10):
+  - command capacity = 300 PEV + 100 per officer level;
+  - beyond it, initiative, dodge and rate of fire drop by 0.5 × the excess ratio, at most −50%;
+  - the malus follows the fleet's current PEV.
+  - Code: `CommandRules`, applied in `BattleEngine`, `ResolveFire`, `BattleSquadron::getInitiative`.
+- [x] **Engagement delay** (D11):
+  - when the attackers have less than half the defenders' PEV, nobody fires for 180 s (18 turns); fleets still deploy and move;
+  - the delay ends as soon as reinforcements restore the ratio;
+  - in the simulator, side A defends;
+  - events `engagement_delayed` and `engagement_started`.
+  - Code: `EngagementRules`, `CheckEngagement`.
+- [x] **Morale and retreat** (D12):
+  - **Morale changes:**
+    - minus 0.85 per percent of the fleet's PEV lost in a turn;
+    - minus up to 2 × 0.75 per turn while outnumbered;
+    - plus 1 per turn without losses, plus 2 more next to an ally.
+  - **Thresholds:**
+    - below 30, withdrawal behind an engaged ally (or flight without one); a withdrawn fleet does not fire, gathers its squadrons, moves next to an ally far from the enemy, and remobilises at 50;
+    - below 15, flight: exposed for 2 turns, then the fleet leaves with its survivors.
+  - Code: `MoraleRules`, `UpdateMorale`, `FleetStatus`.
+- [x] **Viewer and report:**
+  - new events in French;
+  - withdrawn and fleeing squadrons are dimmed, fleet labels show "repli" or "fuite";
+  - morale is shown in the fleet panel;
+  - key moments for engagement delay, withdrawals and flights;
+  - final status and morale by fleet.
+- [x] Rules are configured in `src/Modules/Ares/Resource/config/config.yml` (`ares.battle.command`, `.engagement`, `.morale`) and built by `GetBattleRules`. In the engine, `BattleRules` holds nullable rules (null = disabled).
+- [x] **Weapon patterns** (Q12, D13), validated and implemented on 2026-10-08, with **free turning**.
+  - Each ship type has `patterns`, `min_range`, `splash_ratio` and `split_fire` in `battle_ship_types.yaml`.
+  - Effective today: minimum range (artillery steps back to fire), area damage (50% to neighbours, allies included), split fire (Chasseur multi-tourelles).
+  - The frontal cone and broadside directions will only matter if turning gets a cost.
+  - Corvette lourde: range 2.
+  - Code: `WeaponPattern`, `BattleShipType::isInRange`, `SelectTarget::getCandidates`, `ResolveFire::fireVolley`/`splash`, event `squadron_splashed`. Shown in the viewer as orange damage numbers and in the report.
+  - Measured:
+    - medium mirror 1 v 1 down to 8 min, a consequence of the Corvette lourde reaching range 2;
+    - no side bias, 45/55 over 100 battles in 1 v 1 and in 2 v 2;
+    - missile artillery with destroyers beats a packed corvette formation every time, even without area damage: area damage only shortens it by about 2 turns.
+- [x] **Officer traits** (Q13, D13), implemented on 2026-10-08.
+  - 12 traits, 1 to 3 per officer (`OfficerTrait`, `BattleFleet::$traits`). Every effect lives in `OfficerTraitEffects`, which the engine asks for initiative, command capacity, targeting, fire order, attack, dodge, defence, damage and morale.
+  - Simulator: the player picks up to 3 traits per fleet (chips in the fleet editor). Traits are shown in the fleet list, the replay fleet panel and the report.
+  - Not done yet (Phase 7): random traits in the game, acquisition by level and events, reveal by spying.
+  - Adjustments after measurement:
+    - **Agressif** first ignored target preferences entirely and won 0% of mirrors (shots wasted on the wrong counters). Now only its *movement* goes for the closest enemy; in range it fires on its preferred targets.
+    - **Chasseur de capitaux** first sent every squadron after heavy ships (23%). Now only bombers, artillery and capital ships switch to destroyers and cruisers, and only in range; movement is unchanged. The +10% damage applies to the whole fleet.
+  - Measured (medium mirror 1 v 1, level-3 officers, 60 battles, one trait on side A; baseline 45%):
+
+    | Trait | Win rate A |
+    |---|---|
+    | Agressif | 68% |
+    | Tacticien | 63% |
+    | Imprudent | 61% |
+    | Logisticien | 58% |
+    | Chasseur de capitaux | 51% |
+    | Défenseur | 48% |
+    | Tenace, Charismatique, Boucher, Vétéran | 45% (no effect in a 1 v 1 mirror: they need losses, allies or outnumbering) |
+    | Indécis | 40% |
+    | Prudent | 38% |
+
+  - Agressif and Tacticien may be strong; the negative traits do their job. Situational traits need multi-fleet scenarios to be judged.
+- [ ] Battle highlights and a skimmable replay (D5): partly covered by the Phase 4 key moments; a timeline remains to be designed.
+
+**Calibration** (2026-10-08, 20 battles each, durability 6, 25 actions per turn):
+- With morale loss 1.5 per percent lost and outnumbered penalty 2, nearly every battle ended in a flight within a few turns (a medium mirror lasted 2.3 min).
+- With 0.6 or less, nobody ever fled.
+- The values kept are 0.85 and 0.75:
+  - in decisive battles, the loser often flees at the end and saves part of its ships;
+  - balanced battles go on (medium mirror 1 v 1: 11.3 min, 1 flight in 20 battles);
+  - withdrawals appear in multi-fleet battles;
+  - an outnumbered attack is delayed until its reinforcement arrives.
+- **Size maluses weigh heavily:** a ~2,000 PEV fleet led by a level-1 officer, which used to beat two medium fleets every time, now always loses (malus capped at −50%). Officer levels in the game will soften this.
+
+**Morale gain from enemy losses** (2026-10-08, maintainer's request):
+- **Rule:** morale rises by 0.5 per percent of the fleet's initial PEV destroyed among the enemies in a turn (`victory_factor`).
+- **Effect alone:** with the gain only, flights almost vanished, because the losing fleet still destroys a few enemies, which offsets its losses.
+- **Recalibration:** the loss factor goes from 0.85 to **1.2**.
+  - Losers of decisive battles flee in 13 to 20 battles out of 20.
+  - Balanced battles go on (medium mirror 1 v 1: 11.3 min, 1 flight in 20 battles; 2 v 2: 10 min with some withdrawals).
+  - Durations are unchanged.
+- **Bug found while measuring:** moving a fleet area could land on a squadron of the same fleet standing outside the area ("cell already occupied"). Fixed: only the squadrons moving along free their cells.
 
 ### Phase 6: real-time engine (still off the live game)
 
@@ -522,3 +613,8 @@ Takeaways:
 | 2026-10-05 | A turn holds turn_duration / action_duration actions (10 by default), shared in turn among the fleets, replacing the per-fleet firing cap. Durability retuned to 5. | Continuous animation in real-time playback; durations kept. |
 | 2026-10-05 | Faster pace: action duration 0.4 s (25 actions per turn), durability 6, shorter animations. Battle durations no longer grow with fleet size; to be restored by the Phase 5 size maluses. | The animation felt slow. |
 | 2026-10-08 | Post-battle report built from the event log only (BuildBattleReport), with key moments linked to the replay. | Q16; reusable for stored battles. |
+| 2026-10-08 | Phase 5 decisions: fleet-size maluses on initiative, dodge and rate of fire (D10); engagement delay when the attacker is outnumbered (D11); morale with withdrawal then flight (D12); weapon patterns and traits proposed in a document first (D13). | Maintainer's answers. |
+| 2026-10-08 | Phase 5 rules implemented and calibrated: morale loss 0.85 per percent lost, outnumbered penalty 0.75, engagement delay 180 s below a 0.5 force ratio, command capacity 300 + 100 per level. | Balance harness runs. |
+| 2026-10-08 | Morale also rises with the enemy PEV destroyed (victory_factor 0.5); loss factor raised to 1.2 to keep meaningful retreats. | Maintainer's request; symmetry between losses and successes. |
+| 2026-10-08 | Weapon patterns implemented with free turning: only minimum range, area damage and split fire restrict fire for now. Corvette lourde range 2. Traits next: 1 to 3, chosen in the simulator, random in the game, revealed by spying. | Maintainer's answers to content-proposal.md. |
+| 2026-10-08 | Officer traits implemented (12 traits, up to 3, chosen in the simulator). Agressif only affects movement targeting; Chasseur de capitaux only redirects heavy hitters in range. | Balance harness: the first versions won 0% and 23% of mirrors. |

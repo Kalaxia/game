@@ -15,8 +15,9 @@ use App\Modules\Ares\Domain\Model\ShipCategory;
 final readonly class BattleShipType
 {
 	/**
-	 * @param list<int>       $attack           damage of each shot fired per round
-	 * @param list<ShipClass> $preferredTargets ship classes targeted first, in order
+	 * @param list<int>           $attack           damage of each shot fired per round
+	 * @param list<ShipClass>     $preferredTargets ship classes targeted first, in order
+	 * @param list<WeaponPattern> $patterns         cells the weapons can hit (Q12)
 	 */
 	public function __construct(
 		public string $identifier,
@@ -33,6 +34,18 @@ final readonly class BattleShipType
 		public int $initiative,
 		public int $range,
 		public array $preferredTargets,
+		public array $patterns = [WeaponPattern::Close],
+		/** Targets closer than this cannot be hit (artillery) */
+		public int $minRange = 1,
+		/** Share of each hit's damage dealt to the squadrons next to the target, 0 for none */
+		public float $splashRatio = 0.0,
+		/** Whether the shots are shared between two targets */
+		public bool $splitFire = false,
 	) {
+	}
+
+	public function isInRange(int $distance): bool
+	{
+		return $distance >= $this->minRange && $distance <= $this->range;
 	}
 }
