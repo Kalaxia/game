@@ -13,12 +13,17 @@ import { BattleTimelineView } from './battle_timeline_view.js';
  *
  * To skim a long battle (D5): a timeline of the forces with the key moments, buttons to jump between
  * key moments, and an option to play calm turns (no ship lost, no fleet event) four times faster.
+ *
+ * In real-time mode (Phase 6), the server resolves a turn every turn duration and pushes it through
+ * Mercure: the viewer follows the last turn unless the player went back in the replay, and the player
+ * can send reinforcements. After (re)connecting, the battle so far is fetched to catch up.
  */
 export default class extends Controller
 {
-	static targets = ['seed', 'runButton', 'error', 'output'];
+	static targets = ['seed', 'runButton', 'liveButton', 'error', 'output'];
 	static values = {
 		runUrl: String,
+		liveUrl: String,
 	};
 
 	static SPEEDS = [
@@ -38,45 +43,52 @@ export default class extends Controller
 		this.view = null;
 		this.timeline = null;
 		this.fastCalmTurns = true;
+		this.live = null;
+		this.eventSource = null;
 	}
 
 	disconnect()
 	{
 		this.pause();
+		this._closeLive();
 		this.view?.destroy();
 		this.timeline?.destroy();
 	}
 
 	async run()
 	{
-		this.pause();
-		this.errorTarget.classList.add('hidden');
-		this.runButtonTarget.disabled = true;
+		await this._start(this.runUrlValue);
+	}
 
-		try {
-			const seed = parseInt(this.seedTarget.value, 10);
-			const response = await fetch(this.runUrlValue, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify(Number.isInteger(seed) ? { seed } : {}),
-			});
-			const data = await response.json();
+	async runLive()
+	{
+		const data = await this._start(this.liveUrlValue);
 
-			if (!response.ok) {
-				throw new Error(data.error ?? 'La simulation a échoué.');
-			}
-
-			this.battle = data;
-			this.snapshots = this._buildSnapshots(data);
-			this.currentTurn = 0;
-			this._render();
-		} catch (error) {
-			this.errorTarget.textContent = error.message;
-			this.errorTarget.classList.remove('hidden');
-		} finally {
-			this.runButtonTarget.disabled = false;
+		if (data?.live) {
+			this._subscribe();
 		}
+	}
+
+	/**
+	 * Sends the selected simulator fleet into the running battle.
+	 */
+	async sendReinforcement()
+	{
+		const fleet = this.outputTarget.querySelector('[data-live-reinforcement-fleet]').value;
+		const travelTurns = parseInt(this.outputTarget.querySelector('[data-live-reinforcement-turns]').value, 10) || 0;
+		const feedback = this.outputTarget.querySelector('[data-live-reinforcement-feedback]');
+		const response = await fetch(`${this.liveUrlValue}/${this.live.id}/reinforcements`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+			credentials: 'include',
+			body: JSON.stringify({ fleet, travel_turns: travelTurns }),
+		});
+		const data = await response.json();
+		const name = this.live.reinforcements.find(candidate => candidate.id === fleet)?.name ?? '';
+
+		feedback.textContent = response.ok
+			? `${name} arrive ${data.travel_turns === 0 ? 'au prochain tour' : `dans ${data.travel_turns + 1} tours`}.`
+			: (data.error ?? 'Le renfort n’a pas pu être envoyé.');
 	}
 
 	togglePlay()
@@ -171,6 +183,150 @@ export default class extends Controller
 		this.seedTarget.value = this.battle.seed;
 	}
 
+	async _start(url)
+	{
+		this.pause();
+		this._closeLive();
+		this.errorTarget.classList.add('hidden');
+		this.runButtonTarget.disabled = true;
+		this.liveButtonTarget.disabled = true;
+
+		try {
+			const seed = parseInt(this.seedTarget.value, 10);
+			const response = await fetch(url, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify(Number.isInteger(seed) ? { seed } : {}),
+			});
+			const data = await response.json();
+
+			if (!response.ok) {
+				throw new Error(data.error ?? 'La simulation a échoué.');
+			}
+
+			this._load(data, 0);
+
+			return data;
+		} catch (error) {
+			this.errorTarget.textContent = error.message;
+			this.errorTarget.classList.remove('hidden');
+
+			return null;
+		} finally {
+			this.runButtonTarget.disabled = false;
+			this.liveButtonTarget.disabled = false;
+		}
+	}
+
+	_load(data, turn)
+	{
+		this.battle = data;
+		this.live = data.live ?? null;
+		this.snapshots = this._buildSnapshots(data);
+		this.currentTurn = Math.min(turn, data.turns.length);
+		this._render();
+	}
+
+	/**
+	 * Follows the live updates of the battle. The battle so far is fetched on every (re)connection,
+	 * in case turns were resolved meanwhile.
+	 */
+	_subscribe()
+	{
+		const url = new URL(this.live.hub_url);
+		url.searchParams.append('topic', this.live.topic);
+
+		this.eventSource = new EventSource(url, { withCredentials: true });
+		this.eventSource.onopen = () => this._catchUp();
+		this.eventSource.onmessage = event => this._receive(JSON.parse(event.data));
+	}
+
+	_closeLive()
+	{
+		this.eventSource?.close();
+		this.eventSource = null;
+	}
+
+	async _catchUp()
+	{
+		const response = await fetch(`${this.liveUrlValue}/${this.live.id}`, { headers: { 'Accept': 'application/json' }, credentials: 'include' });
+
+		if (!response.ok || this.battle?.live?.id !== this.live.id) {
+			return;
+		}
+
+		const data = await response.json();
+		const following = this._isFollowing();
+
+		if (data.turns.length > this.battle.turns.length || data.result) {
+			this._load(data, following ? data.turns.length : this.currentTurn);
+		}
+		if (data.live.is_over) {
+			this._closeLive();
+		}
+	}
+
+	/**
+	 * A turn pushed by the server: the fleets that joined during it, and the result once the battle is over.
+	 */
+	_receive(update)
+	{
+		const expected = this.battle.turns.length + 1;
+
+		if (update.turn.turn < expected) {
+			return;
+		}
+		if (update.turn.turn > expected) {
+			this._catchUp();
+
+			return;
+		}
+
+		const following = this._isFollowing();
+
+		for (const fleet of update.fleets) {
+			if (!this.battle.fleets.some(known => known.id === fleet.id)) {
+				this.battle.fleets.push(fleet);
+			}
+		}
+		Object.assign(this.battle.squadron_life, update.squadron_life);
+		this.battle.turns.push(update.turn);
+		this.snapshots = this._buildSnapshots(this.battle);
+
+		if (update.result) {
+			this.battle.result = update.result;
+			this.battle.report = update.report;
+			this.live.is_over = true;
+			this._closeLive();
+			if (following) {
+				this.currentTurn = this.battle.turns.length - 1;
+			}
+			this._render();
+			if (following) {
+				this.next();
+			}
+
+			return;
+		}
+
+		this._renderLiveStatus();
+		this._renderTimeline();
+		if (following) {
+			this.next();
+		} else {
+			this._renderControls();
+		}
+	}
+
+	/**
+	 * The viewer follows the battle when it shows the last turn received and is not replaying.
+	 */
+	_isFollowing()
+	{
+		return this.timer === null && this.currentTurn >= this.battle.turns.length;
+	}
+
 	_goTo(turn, animated = false)
 	{
 		const target = Math.max(0, Math.min(turn, this.battle.turns.length));
@@ -207,7 +363,7 @@ export default class extends Controller
 
 	_momentTurns()
 	{
-		return [...new Set(this.battle.report.highlights.map(highlight => highlight.turn))].sort((a, b) => a - b);
+		return [...new Set((this.battle.report?.highlights ?? []).map(highlight => highlight.turn))].sort((a, b) => a - b);
 	}
 
 	/**
@@ -298,9 +454,10 @@ export default class extends Controller
 	_render()
 	{
 		const battle = this.battle;
-		const winner = battle.result.winning_side === null
-			? 'Aucun vainqueur'
-			: `Victoire du camp ${this._sideName(battle.result.winning_side)}`;
+		const isRunning = !battle.result;
+		const winner = isRunning
+			? 'Bataille en cours'
+			: (battle.result.winning_side === null ? 'Aucun vainqueur' : `Victoire du camp ${this._sideName(battle.result.winning_side)}`);
 
 		const report = new BattleReportView(battle, {
 			escape: text => this._escape(text),
@@ -313,16 +470,17 @@ export default class extends Controller
 		this.outputTarget.innerHTML = `
 			<div class="rounded-lg bg-gray-800 p-4">
 				<div class="flex flex-wrap items-baseline gap-x-6 gap-y-2">
-					<p class="text-lg font-semibold">${this._escape(winner)}</p>
-					<p class="text-sm text-gray-400">
-						${battle.result.turns} tours · ${this._formatDuration(battle.result.turns * battle.turn_duration)} de bataille
+					<p class="flex items-center gap-2 text-lg font-semibold">
+						${isRunning ? '<span class="inline-block size-2.5 animate-pulse rounded-full bg-white" aria-hidden="true"></span>' : ''}
+						${this._escape(winner)}
 					</p>
+					<p class="text-sm text-gray-400" data-replay-live-status></p>
 					<p class="ml-auto text-sm text-gray-400">
 						Graine ${battle.seed}
 						<button type="button" class="ml-2 underline hover:text-white" data-action="combat-simulator--replay#reuseSeed">réutiliser</button>
 					</p>
 				</div>
-				${report.renderOverview()}
+				${isRunning ? this._renderReinforcementForm() : report.renderOverview()}
 			</div>
 
 			<div class="mt-6 rounded-lg bg-gray-800 p-4">
@@ -350,7 +508,7 @@ export default class extends Controller
 				</div>
 			</div>
 
-			${report.renderDetails()}
+			${isRunning ? '' : report.renderDetails()}
 		`;
 
 		this.view?.destroy();
@@ -361,17 +519,61 @@ export default class extends Controller
 			describeSquadron: (id, squadron) => this._describeSquadron(id, squadron),
 		});
 
+		this.report = report;
+		this._renderLiveStatus();
+		this._renderTimeline();
+
+		this._renderTurn();
+	}
+
+	_renderTimeline()
+	{
 		this.timeline?.destroy();
-		this.timeline = new BattleTimelineView(this.outputTarget.querySelector('[data-replay-timeline]'), battle, this.snapshots, {
+		this.timeline = new BattleTimelineView(this.outputTarget.querySelector('[data-replay-timeline]'), this.battle, this.snapshots, {
 			onSeek: turn => {
 				this.pause();
 				this._goTo(turn);
 			},
-			describeHighlight: highlight => report.describeHighlight(highlight),
+			describeHighlight: highlight => this.report.describeHighlight(highlight),
 			escape: text => this._escape(text),
 		});
+		this.timeline.setTurn(this.currentTurn);
+	}
 
-		this._renderTurn();
+	_renderLiveStatus()
+	{
+		const turns = this.battle.result?.turns ?? this.battle.turns.length;
+		const status = `${turns} tour${turns > 1 ? 's' : ''} · ${this._formatDuration(turns * this.battle.turn_duration)} de bataille`;
+
+		this.outputTarget.querySelector('[data-replay-live-status]').textContent = this.battle.result
+			? status
+			: `${status} · un tour toutes les ${this.battle.turn_duration} s`;
+	}
+
+	_renderReinforcementForm()
+	{
+		const fleets = this.live?.reinforcements ?? [];
+
+		if (fleets.length === 0) {
+			return '';
+		}
+
+		return `
+			<div class="mt-4 flex flex-wrap items-end gap-3 text-sm">
+				<label class="flex flex-col gap-1 text-xs text-gray-400">
+					Envoyer en renfort
+					<select class="rounded-md bg-white/5 px-2 py-1 text-sm text-white" data-live-reinforcement-fleet>
+						${fleets.map(fleet => `<option value="${this._escape(fleet.id)}">${this._escape(fleet.name)} (camp ${this._sideName(fleet.side)})</option>`).join('')}
+					</select>
+				</label>
+				<label class="flex flex-col gap-1 text-xs text-gray-400">
+					Trajet (tours)
+					<input type="number" min="0" max="30" value="0" class="w-20 rounded-md bg-white/5 px-2 py-1 text-sm text-white" data-live-reinforcement-turns />
+				</label>
+				<button type="button" class="rounded-md px-3 py-1.5 ring-1 ring-white/30 hover:bg-white/10" data-action="combat-simulator--replay#sendReinforcement">Envoyer</button>
+				<p class="text-xs text-gray-300" data-live-reinforcement-feedback aria-live="polite"></p>
+			</div>
+		`;
 	}
 
 	_renderTurn(animated = false)

@@ -150,7 +150,7 @@ export class BattleTimelineView
 	{
 		const groups = new Map();
 
-		for (const highlight of this.battle.report.highlights) {
+		for (const highlight of this.battle.report?.highlights ?? []) {
 			groups.set(highlight.turn, [...(groups.get(highlight.turn) ?? []), highlight]);
 		}
 

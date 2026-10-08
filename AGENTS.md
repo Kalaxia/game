@@ -85,6 +85,7 @@ Modules are halfway through a migration from a legacy layout to a DDD/hexagonal 
 - **Timed events** (travel arrival, end of a building/ship/tech queue…) are Messenger messages dispatched with a delay. The handler (e.g. `Ares/Handler/CommanderTravelHandler`) resolves the event when it arrives.
 - A message goes to the `async` or `async_high_priority` transport depending on whether it implements `AsyncMessage` or `AsyncHighPriorityMessage`. In tests, both transports are `in-memory://`.
 - Server time settings come from env vars: `SERVER_START_TIME`, `SERVER_SEGMENT_SHIFT`, `SERVER_TIME_MODE`.
+- **Real-time battles** (new combat system): `Ares/Application/Battle/StartBattle` stores a `Battle` and its ticker (`ResolveBattleTurnMessage`) resolves a turn every `BATTLE_TURN_DURATION` seconds, pushing it through private Mercure updates. After adding or changing a message handler, restart the workers (`php bin/console messenger:stop-workers`) so that they load the new code.
 - The project loads a compiled `.env.local.php`, which takes precedence over `.env`. Give every new env var a default with an `env(NAME)` parameter, or run `composer dump-env dev`.
 
 ## Front-end conventions

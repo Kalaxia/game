@@ -36,6 +36,19 @@ final readonly class BattleEvent
 	) {
 	}
 
+	/**
+	 * Restores an event stored with toArray().
+	 *
+	 * @param array<string, mixed> $data
+	 */
+	public static function fromArray(array $data): self
+	{
+		$type = $data['type'];
+		unset($data['type']);
+
+		return new self($type, $data);
+	}
+
 	public static function fleetJoined(BattleFleet $fleet): self
 	{
 		return new self(self::FLEET_JOINED, [

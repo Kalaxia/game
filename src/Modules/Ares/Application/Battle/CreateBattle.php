@@ -67,25 +67,33 @@ readonly class CreateBattle
 			grid: new ClusteredHexGrid($this->fleetAreaRadius),
 			battlefieldSize: $this->battlefieldSize,
 			seed: $seed,
-			fleets: array_map(
-				fn (array $fleet, int $index) => new BattleFleet(
-					identifier: $fleet['identifier'] ?? sprintf('fleet-%d', $index),
-					name: $fleet['name'],
-					faction: $fleet['faction'],
-					side: $fleet['side'],
-					officerLevel: $fleet['officer_level'] ?? 1,
-					formation: $this->getFormation($fleet),
-					arrivalTurn: $fleet['arrival_turn'] ?? 1,
-					bonuses: $this->getBonuses($fleet),
-					traits: array_map(fn (string $trait) => OfficerTrait::from($trait), $fleet['traits'] ?? []),
-				),
-				$fleets,
-				array_keys($fleets),
-			),
+			fleets: array_map($this->createFleet(...), $fleets, array_keys($fleets)),
 			durabilityFactor: $this->durabilityFactor,
 			maxActionsPerTurn: $this->maxActionsPerTurn,
 			// In the simulator, side A is in orbit and side B attacks
 			rules: null !== $this->getBattleRules ? ($this->getBattleRules)(defendingSide: 0) : new BattleRules(),
+		);
+	}
+
+	/**
+	 * Builds one fleet, given as described in __invoke(). Also used for a fleet joining a running battle.
+	 *
+	 * @param array{identifier?: string, name: string, side: int, faction: int, officer_level?: int, arrival_turn?: int, traits?: list<string>, formation?: list<array{type: string, ships: int, q: int, r: int}>, ships?: array<string, int>, bonuses?: array<int, array{attack?: int, defense?: int, speed?: int}>} $fleet
+	 *
+	 * @throws \DomainException when the formation is invalid
+	 */
+	public function createFleet(array $fleet, int $index = 0): BattleFleet
+	{
+		return new BattleFleet(
+			identifier: $fleet['identifier'] ?? sprintf('fleet-%d', $index),
+			name: $fleet['name'],
+			faction: $fleet['faction'],
+			side: $fleet['side'],
+			officerLevel: $fleet['officer_level'] ?? 1,
+			formation: $this->getFormation($fleet),
+			arrivalTurn: $fleet['arrival_turn'] ?? 1,
+			bonuses: $this->getBonuses($fleet),
+			traits: array_map(fn (string $trait) => OfficerTrait::from($trait), $fleet['traits'] ?? []),
 		);
 	}
 

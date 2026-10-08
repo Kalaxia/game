@@ -1,7 +1,7 @@
 # Fleet combat redesign: work plan
 
 **Branch:** `feature/fleet-composition`
-**Status:** Phase 5 done (2026-10-08): size maluses, engagement delay, morale, weapon patterns, officer traits and a skimmable replay. Next: Phase 6. The design described here is a target, not the current behaviour. For current rules, see [`docs/gameplay.md` §9–11](../gameplay.md#9-military-ships-commanders-fleets).
+**Status:** Phase 6 done (2026-10-08): battles run in real time on the server, turn by turn, and are pushed live to the simulator. Next: Phase 7 (integration in the game, requires approval). The design described here is a target, not the current behaviour. For current rules, see [`docs/gameplay.md` §9–11](../gameplay.md#9-military-ships-commanders-fleets).
 
 This file is the single source of truth for the fleet and combat redesign. Update it whenever a decision is made: answer the open question, add an entry to the decision log, and move the work items forward.
 
@@ -566,9 +566,22 @@ Takeaways:
 
 ### Phase 6: real-time engine (still off the live game)
 
-- [ ] Persist `Battle` (Doctrine) plus the turn log.
-- [ ] `BattleTurnMessage` ticker driven by `BATTLE_TURN_DURATION`, a lock per battle, Mercure publishing restricted to participants.
-- [ ] A live viewer in the simulator: a "real-time" mode with timed reinforcements.
+- [x] **Storage:** `Battle` (table `battle`) and `BattleTurn` (table `battle_turn`, one row per resolved turn with its events as JSON), mapped in `config/doctrine/ares_battle/`, migration `Version20261008200000`.
+  - The state between two turns is a PHP serialization of the `BattleState` object graph (~20 KB for a medium battle). It is O(1) to load, unlike re-simulating every turn from the start.
+  - ⚠️ A battle running during a deployment that changes the engine model may not be restorable; battles last minutes to an hour, so this is accepted for now. The turn log stays readable whatever happens.
+- [x] **Ticker:** `ResolveBattleTurnMessage(battleId, turn)` on the high-priority transport, handled by `ResolveBattleTurnHandler`:
+  - `StartBattle` stores the battle and resolves turn 1 at once, so that the deployment shows immediately;
+  - each turn is due at start + (turn − 1) × `BATTLE_TURN_DURATION`: slow turns do not shift the following ones (checked: 11 turns in exactly 100 s);
+  - the turn number makes the message idempotent, and a Redis lock per battle (`BattleLock`) serialises turns and arrivals;
+  - the ticker stops when the battle is over (`endedAt`, `winningSide`).
+- [x] **Arrivals during the battle:** `JoinBattle` adds a fleet arriving at the next turn (Q9); `JoinBattleMessage` does the same after a delay (end of a travel). `CreateBattle::createFleet` builds the fleet.
+- [x] **Live push:** `MercureBattleUpdatePublisher` publishes each turn as a **private** update on `/battles/{id}`, with the fleets that joined during it, and the result and report at the end. Only subscribers holding a Mercure cookie for this topic receive it (Q17). A failed publication is logged and does not stop the battle.
+- [x] **Simulator, "Lancer en temps réel":** `POST /combat-simulator/live` starts the battle; `GET /combat-simulator/live/{id}` returns it so far and sets the Mercure cookie; `POST /combat-simulator/live/{id}/reinforcements` sends a simulator fleet, after an optional travel of N turns. Battles are reserved to the session that started them.
+  - The viewer follows the last turn, unless the player went back in the replay; it catches up from the server after every (re)connection or missed turn; the report appears at the end.
+  - Fleets with a later arrival turn are known from the start, like a fleet whose travel ends at a known time.
+- [x] `PresentBattle` (Ares infrastructure) builds the data of the viewer for the instant simulation, the live battle and each pushed turn.
+- [x] Tests: `RealTimeBattleTest` (state storage, idempotent ticker, turn scheduling, arrivals, end). Checked end to end against the Docker stack: worker, RabbitMQ delays, Mercure private updates (turns 1 to 4 received), reinforcement deployed at the next turn, battle of another session refused (404).
+- Not done: a watchdog restarting a ticker whose message was lost (worker crash between saving a turn and scheduling the next one); faction spectators (D8).
 
 ### Phase 7: integration in the game (requires approval)
 
@@ -624,3 +637,4 @@ Takeaways:
 | 2026-10-08 | Weapon patterns implemented with free turning: only minimum range, area damage and split fire restrict fire for now. Corvette lourde range 2. Traits next: 1 to 3, chosen in the simulator, random in the game, revealed by spying. | Maintainer's answers to content-proposal.md. |
 | 2026-10-08 | Officer traits implemented (12 traits, up to 3, chosen in the simulator). Agressif only affects movement targeting; Chasseur de capitaux only redirects heavy hitters in range. | Balance harness: the first versions won 0% and 23% of mirrors. |
 | 2026-10-08 | Skimmable replay: timeline of forces with key-moment markers, key-moment navigation, calm turns played four times faster. Phase 5 done. | D5 interest curve. |
+| 2026-10-08 | Real-time battles: state stored as a serialized BattleState plus a turn log; ticker scheduled on due times with an idempotent message and a lock per battle; private Mercure updates; live mode with reinforcements in the simulator. Phase 6 done. | O(1) turn resolution; participants only (Q17). |

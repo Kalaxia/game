@@ -68,6 +68,27 @@ readonly class SimulatedFleetStorage
 	}
 
 	/**
+	 * Description of a simulated fleet for CreateBattle.
+	 *
+	 * @param SimulatedFleet $fleet
+	 *
+	 * @return array{identifier: string, name: string, side: int, faction: int, officer_level: int, arrival_turn: int, traits: list<string>, formation: list<array{type: string, ships: int, q: int, r: int}>}
+	 */
+	public static function toBattleFleet(array $fleet): array
+	{
+		return [
+			'identifier' => $fleet['id'],
+			'name' => $fleet['name'],
+			'side' => $fleet['side'],
+			'faction' => $fleet['faction'],
+			'officer_level' => $fleet['officer_level'],
+			'arrival_turn' => $fleet['arrival_turn'],
+			'traits' => $fleet['traits'] ?? [],
+			'formation' => $fleet['formation'],
+		];
+	}
+
+	/**
 	 * @param list<SimulatedFleet> $fleets
 	 */
 	private function store(array $fleets): void

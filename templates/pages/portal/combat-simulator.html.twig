@@ -16,6 +16,7 @@
 		<section class="mt-12"
 			data-controller="combat-simulator--replay"
 			data-combat-simulator--replay-run-url-value="{{ path('combat_simulator_run') }}"
+			data-combat-simulator--replay-live-url-value="{{ path('combat_simulator_live_start') }}"
 			aria-labelledby="simulation-title">
 			<div class="flex flex-wrap items-end gap-4">
 				<h2 id="simulation-title" class="text-lg font-semibold">Simulation</h2>
@@ -28,6 +29,11 @@
 					<twig:Button type="button" data-action="combat-simulator--replay#run" data-combat-simulator--replay-target="runButton">
 						Lancer la simulation
 					</twig:Button>
+					<button type="button" data-action="combat-simulator--replay#runLive" data-combat-simulator--replay-target="liveButton"
+						title="Le serveur résout un tour toutes les {{ battle_turn_duration }} secondes, comme en jeu. Vous pouvez envoyer des renforts pendant la bataille."
+						class="rounded-md px-3 py-2 text-sm font-semibold text-white ring-1 ring-white/30 hover:bg-white/10 disabled:opacity-50">
+						Lancer en temps réel
+					</button>
 				</div>
 			</div>
 
