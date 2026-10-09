@@ -68,7 +68,7 @@ readonly class PlayerCreditUpdateHandler
 		$bases = $this->planetRepository->getPlayerPlanets($player);
 		$commanders = $this->commanderRepository->getPlayerCommanders(
 			$player,
-			[Commander::AFFECTED, Commander::MOVING],
+			[Commander::AFFECTED, Commander::MOVING, Commander::IN_BATTLE],
 			['c.experience' => 'DESC', 'c.statement' => 'ASC'],
 		);
 		$initialCredits = $player->credit;

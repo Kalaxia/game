@@ -14,12 +14,6 @@ readonly class GetSquadronPev
 
 	public function __invoke(Squadron $squadron): int
 	{
-		$pev = 0;
-
-		foreach ($squadron->getShips() as $shipNumber => $quantity) {
-			$pev += ($this->getShipCategoriesConfiguration)($shipNumber, 'pev') * $quantity;
-		}
-
-		return $pev;
+		return ($this->getShipCategoriesConfiguration)($squadron->shipCategory, 'pev') * $squadron->ships;
 	}
 }

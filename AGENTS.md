@@ -10,7 +10,7 @@ Guide for AI agents working on **Kalaxia**. It is a multiplayer, browser-based s
 - **Currencies:** credits belong to the player, and resources are a single generic stock per planet.
 - **Planets:** a planet has 9 active buildings (generator, refinery, two shipyards, technosphere, commercial platform, storage, recycling, spatioport). Its base type (colony, commercial, military, capital) caps building levels. A player can hold at most 15 planets.
 - **Research:** two layers. University sciences are funded with credits every cycle, and technologies are researched in the technosphere queue.
-- **Military:** there are 12 ship types. Commanders have one squadron per level, each up to 100 PEV, arranged on battle lines. Combat is automatic and round-based between commanders, with line activation, dodging and log-scaled damage. There is no planetary defence.
+- **Military:** there are 12 ship types. An officer's fleet is made of single-type squadrons placed by the player on a hexagonal formation grid; beyond the officer's command capacity the fleet is disorganised. Battles are automatic and run in real time, turn by turn, in orbit of a planet; arriving fleets join them, morale drives withdrawals and flights, and officers have traits. There is no planetary defence.
 - **Missions:** move, loot, colonise, conquer. Spying is paid in credits and countered by anti-spy investment.
 - **Factions:** 5 factions with bonuses, each with a senate, a government, laws, and elections, divine designation or coups depending on its regime. Diplomacy is done through laws. Sector control gives tax income and victory points; the first faction to 2000 points wins.
 
@@ -48,7 +48,7 @@ All game code lives in `src/Modules/<Module>/` under the namespace `App\Modules\
 
 | Module | Domain |
 |---|---|
-| **Ares** | War: commanders, fleets/squadrons, ships, combat (fight handlers, reports), movements, conquest, loot. The combat simulator uses `VirtualCommander`. |
+| **Ares** | War: commanders, fleets/squadrons, ships, battles (engine in `Domain/Service/Battle`, real-time storage and ticker in `Application/Battle`, game integration in `Application/Mission`), movements, conquest, loot. |
 | **Artemis** | Espionage: spy reports. |
 | **Athena** | Planet economy: buildings & building queues, ship queues, commercial routes, trade/transactions, recycling, taxes. |
 | **Atlas** | Rankings (player and faction). |

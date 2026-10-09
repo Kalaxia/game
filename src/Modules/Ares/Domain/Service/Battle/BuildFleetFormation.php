@@ -36,6 +36,14 @@ readonly class BuildFleetFormation
 	}
 
 	/**
+	 * Number of squadrons a formation holds.
+	 */
+	public function getCapacity(): int
+	{
+		return count($this->getCellsFromFront());
+	}
+
+	/**
 	 * @param list<array{BattleShipType, int}> $ships ship types and quantities provided by the player
 	 *
 	 * @return list<FormationSlot>

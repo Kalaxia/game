@@ -17,7 +17,14 @@
 		<many-to-one field="destinationPlace" target-entity="App\Modules\Galaxy\Domain\Entity\Planet">
 			<join-column nullable="true" />
 		</many-to-one>
-		<one-to-many field="squadrons" target-entity="App\Modules\Ares\Model\Squadron" mapped-by="commander" />
+		<one-to-many field="squadrons" target-entity="App\Modules\Ares\Model\Squadron" mapped-by="commander" orphan-removal="true">
+			<cascade>
+				<cascade-persist />
+			</cascade>
+		</one-to-many>
+		<many-to-one field="battle" target-entity="App\Modules\Ares\Domain\Model\Battle\Battle">
+			<join-column nullable="true" on-delete="SET NULL" />
+		</many-to-one>
 
 		<field name="name" column="name" type="string" length="45" />
 		<field name="comment" column="comment" type="text" nullable="true" />
@@ -67,6 +74,11 @@
 			<options>
 				<option name="unsigned">true</option>
 				<option name="default">0</option>
+			</options>
+		</field>
+		<field name="traits" type="json">
+			<options>
+				<option name="default">[]</option>
 			</options>
 		</field>
 		<field name="travelType" column="travelType" type="smallint" enum-type="App\Modules\Ares\Domain\Model\CommanderMission" nullable="true">

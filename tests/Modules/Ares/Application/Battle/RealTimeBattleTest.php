@@ -20,6 +20,9 @@ use App\Modules\Ares\Domain\Model\Battle\TurnResult;
 use App\Modules\Ares\Domain\Repository\BattleRepositoryInterface;
 use App\Modules\Ares\Domain\Repository\BattleTurnRepositoryInterface;
 use App\Modules\Ares\Domain\Service\Battle\BattleEngine;
+use App\Modules\Demeter\Model\Color;
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Zeus\Model\Player;
 use App\Tests\Modules\Ares\Domain\Service\Battle\BattleTestCase;
 use Symfony\Component\Clock\MockClock;
 use Symfony\Component\Lock\LockFactory;
@@ -220,7 +223,10 @@ class RealTimeBattleTest extends BattleTestCase
 	 */
 	private function dispatchedTurns(): array
 	{
-		return array_map(fn (Envelope $envelope) => $envelope->getMessage()->turn, $this->dispatched);
+		return array_values(array_map(
+			fn (Envelope $envelope) => $envelope->getMessage()->turn,
+			array_filter($this->dispatched, fn (Envelope $envelope) => $envelope->getMessage() instanceof ResolveBattleTurnMessage),
+		));
 	}
 
 	private function lastDelay(): ?int
@@ -240,6 +246,26 @@ class InMemoryBattleRepository implements BattleRepositoryInterface
 	public function get(Uuid $id): ?Battle
 	{
 		return $this->battles[$id->toRfc4122()] ?? null;
+	}
+
+	public function getRunningBattleAt(Planet $planet): ?Battle
+	{
+		return array_find($this->battles, fn (Battle $battle) => $battle->place === $planet && !$battle->isOver());
+	}
+
+	public function getPlayerBattles(Player $player, int $limit = 50): array
+	{
+		return [];
+	}
+
+	public function getPlayerBattlesAt(Player $player, array $placeIds): array
+	{
+		return [];
+	}
+
+	public function getFactionBattles(Color $faction, int $limit = 20): array
+	{
+		return [];
 	}
 
 	public function save(object $entity): void

@@ -13,6 +13,7 @@ use App\Modules\Ares\Domain\Model\Battle\Grid\Hex;
 use App\Modules\Ares\Domain\Model\Battle\OfficerTrait;
 use App\Modules\Ares\Domain\Service\Battle\BuildFleetFormation;
 use App\Modules\Ares\Domain\Service\Battle\ValidateFormation;
+use App\Modules\Ares\Infrastructure\Twig\FormationGrid;
 use App\Modules\Portal\Infrastructure\CombatSimulator\SimulatedFleetStorage;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Uid\Uuid;
@@ -27,9 +28,6 @@ use Symfony\UX\LiveComponent\DefaultActionTrait;
 
 /**
  * Composition of a simulated fleet: officer, side, arrival turn and formation (D9).
- *
- * The formation grid is displayed with the front line at the top. Offsets are stored with the engine
- * convention (front facing east), so the display rotates the grid by a quarter turn.
  */
 #[AsLiveComponent(
 	name: 'SimulatorFleetEditor',
@@ -218,27 +216,13 @@ final class FleetEditor
 	}
 
 	/**
-	 * Cells of the formation grid with their display position, the front line at the top.
-	 *
 	 * @return list<array{q: int, r: int, left: float, top: float, slot: array{type: string, ships: int, q: int, r: int}|null}>
 	 */
 	public function getCells(): array
 	{
-		$cells = [];
-		$offset = sqrt(3) * self::CELL_SIZE * $this->formationRadius;
-
-		foreach (Hex::origin()->range($this->formationRadius) as $hex) {
-			$cells[] = [
-				'q' => $hex->q,
-				'r' => $hex->r,
-				// Pointy-top layout rotated by a quarter turn, so that the east (front) points up
-				'left' => 1.5 * self::CELL_SIZE * ($hex->r + $this->formationRadius),
-				'top' => $offset - sqrt(3) * self::CELL_SIZE * ($hex->q + $hex->r / 2),
-				'slot' => array_find($this->formation, fn (array $slot) => $slot['q'] === $hex->q && $slot['r'] === $hex->r),
-			];
-		}
-
-		return $cells;
+		return (new FormationGrid($this->formationRadius, self::CELL_SIZE))->getCells(
+			fn (int $q, int $r) => array_find($this->formation, fn (array $slot) => $slot['q'] === $q && $slot['r'] === $r),
+		);
 	}
 
 	/**
@@ -246,12 +230,7 @@ final class FleetEditor
 	 */
 	public function getGridDimensions(): array
 	{
-		return [
-			'width' => 1.5 * self::CELL_SIZE * 2 * $this->formationRadius + 2 * self::CELL_SIZE,
-			'height' => sqrt(3) * self::CELL_SIZE * (2 * $this->formationRadius + 1),
-			'cell_width' => 2 * self::CELL_SIZE,
-			'cell_height' => sqrt(3) * self::CELL_SIZE,
-		];
+		return (new FormationGrid($this->formationRadius, self::CELL_SIZE))->getDimensions();
 	}
 
 	/**

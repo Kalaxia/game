@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Athena\Infrastructure\Controller\Financial;
 
-use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Domain\Service\CalculateFleetCost;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
@@ -27,7 +26,6 @@ class ViewInvestments extends AbstractController
 {
 	public function __construct(
 		private readonly BonusApplierInterface $bonusApplier,
-		private readonly CommanderArmyHandler $commanderArmyHandler,
 		private readonly CommercialRouteRepositoryInterface $commercialRouteRepository,
 		private readonly PopulationTaxHandler $populationTaxHandler,
 		private readonly GetShipCategoriesConfiguration $getShipCategoriesConfiguration,
@@ -49,7 +47,7 @@ class ViewInvestments extends AbstractController
 
 		$commanders = $commanderRepository->getPlayerCommanders(
 			$currentPlayer,
-			[Commander::AFFECTED, Commander::MOVING],
+			[Commander::AFFECTED, Commander::MOVING, Commander::IN_BATTLE],
 			['c.base' => 'ASC'],
 		);
 
@@ -64,7 +62,6 @@ class ViewInvestments extends AbstractController
 				if (!isset($carry[$commanderBaseId])) {
 					$carry[$commanderBaseId] = [];
 				}
-				$this->commanderArmyHandler->setArmy($commander);
 				$carry[$commanderBaseId][] = $commander;
 
 				return $carry;

@@ -2,7 +2,7 @@
 
 namespace App\Modules\Ares\Infrastructure\Validator\Commander;
 
-use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
+use App\Modules\Ares\Domain\Service\GetCommanderPev;
 use App\Modules\Ares\Infrastructure\Validator\DTO\HasCommander;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 class HasShipsValidator extends ConstraintValidator
 {
 	public function __construct(
-		private readonly CommanderArmyHandler $commanderArmyHandler,
+		private readonly GetCommanderPev $getCommanderPev,
 	) {
 	}
 
@@ -28,7 +28,7 @@ class HasShipsValidator extends ConstraintValidator
 
 		$commander = $value->getCommander();
 
-		if (0 === $this->commanderArmyHandler->getPev($commander)) {
+		if (0 === ($this->getCommanderPev)($commander)) {
 			$this->context
 				->buildViolation('Vous devez affecter au moins un vaisseau à votre officier.')
 				->addViolation();

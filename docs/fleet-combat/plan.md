@@ -1,7 +1,7 @@
 # Fleet combat redesign: work plan
 
 **Branch:** `feature/fleet-composition`
-**Status:** Phase 6 done (2026-10-08): battles run in real time on the server, turn by turn, and are pushed live to the simulator. Next: Phase 7 (integration in the game, requires approval). The design described here is a target, not the current behaviour. For current rules, see [`docs/gameplay.md` §9–11](../gameplay.md#9-military-ships-commanders-fleets).
+**Status:** Phase 7 done (2026-10-09): battles run in the game. Remaining: faction spectators (D8, optional) and a longer balancing pass with real players. The design described here is a target, not the current behaviour. For current rules, see [`docs/gameplay.md` §9–11](../gameplay.md#9-military-ships-commanders-fleets).
 
 This file is the single source of truth for the fleet and combat redesign. Update it whenever a decision is made: answer the open question, add an entry to the decision log, and move the work items forward.
 
@@ -210,6 +210,20 @@ These decisions **override** the earlier answers where they conflict.
   - **Below 15, or with no ally to cover it: flight.** The fleet stops fighting, stays exposed for 2 turns (the enemy fires freely), then leaves the battle with its surviving ships.
   - Values to be calibrated during balancing.
 - **D13. Weapon patterns (Q12) and officer traits (Q13):** content to be proposed in a document and validated by the maintainer before any code.
+
+### 5.10 Phase 7 decisions (2026-10-09)
+
+- **D14. A mission designates the enemy.** A fleet sent to loot or conquer always fights the owner of the target planet, even when their factions are neutral to each other. Other fleets present follow Q2.
+- **D15. Fate of a fleet after a battle:**
+  - destroyed: the officer dies;
+  - fled: an attacker goes back to its base with its survivors and its mission is abandoned; a defender stays at its base;
+  - the loot, conquest or colonisation only happens when the attacker's side wins and its fleet is still there (R7).
+- **D16. NPC planets** defend themselves with a rebel fleet generated on arrival with the legacy formula (danger, population), arranged by `BuildFleetFormation`. Its losses lower the danger of the planet, as before.
+- **D17. The Bomber is dropped for now:** simulations showed it too resistant to fighters and too strong against heavy ships.
+- **D18. Existing fleets** (mixed squadrons) are not converted: every ship goes back to the hangar of the fleet's base, and players compose new formations. Fleets on the move are brought back to their base.
+- **D19. Experience:** officer XP = (damage dealt + taken) × importance (D6), on the legacy level curve (2^level × 100), with a coefficient calibrated so that a medium battle earns about as much as a legacy fight. The progression may need more balancing.
+- **D20. Officer traits in the game:** no trait at recruitment (players would dismiss officers until they get the trait they want). Traits are drawn at random at levels 5, 10 and 15, up to 3, and revealed to enemies by spying. Traits earned through events come later.
+- **D21. Legacy combat reports are deleted.**
 
 ### 5.8 Known design risks
 
@@ -583,17 +597,28 @@ Takeaways:
 - [x] Tests: `RealTimeBattleTest` (state storage, idempotent ticker, turn scheduling, arrivals, end). Checked end to end against the Docker stack: worker, RabbitMQ delays, Mercure private updates (turns 1 to 4 received), reinforcement deployed at the next turn, battle of another session refused (404).
 - Not done: a watchdog restarting a ticker whose message was lost (worker crash between saving a turn and scheduling the next one); faction spectators (D8).
 
-### Phase 7: integration in the game (requires approval)
+### Phase 7: integration in the game
 
-- [ ] Fleet screen on the planet: the player composes the fleet with the formation editor (D9), using the ships of the planet's hangar. Composition is locked once the fleet leaves.
-- [ ] NPC (rebel) fleets get their formation from `BuildFleetFormation`.
-- [ ] Hook travel arrival into battle creation and joining (Q3, Q9, R7), including NPCs (Q5). Remove `FightManager`, `LiveReport` and the legacy `Report`.
-- [ ] Remove "squadrons = officer level" (Q13); new XP rules (Q14).
-- [ ] Data migration: existing mixed squadrons (`ship0`…`ship11`) are split into single-type squadrons, and lines become formations.
-- [ ] Battle access for participants and the report and replay pages (Q15, Q17).
-- [ ] Battle queueing at a planet (D7).
+Decisions D14 to D21 (§5.10), 2026-10-09.
+
+- [x] **Fleet model and composition** (D9, D18):
+  - `Squadron` holds one ship category, a number of ships and a cell `(q, r)` of the formation grid; the legacy `ship0`…`ship11`, `position` and `lineCoord` are gone, with "squadrons = officer level" (Q13).
+  - Live component `FleetFormation` on the headquarters page: the player places squadrons with the ships of the hangar, removes or replaces them (ships go back to the hangar), or rearranges them automatically; it shows the PEV, the command capacity and the malus. Composition is locked unless the officer is in orbit of its base.
+  - Migration `Version20261009120000`: every ship of the legacy squadrons goes back to the hangar of its base, fleets on the move are brought back with their cargo, and the schema changes.
+- [x] **Bomber dropped** (D17), and `BattleShipTypeRegistry::getByCategory` maps the ship categories of the game to battle ship types.
+- [x] **Arrivals and battles** (`Ares/Application/Mission`):
+  - `ArriveAtPlanet` (from `CommanderTravelHandler`): joins the battle going on at the planet if the fleet is hostile to a side (Q2, Q3, Q9); otherwise starts a battle when it attacks a defended planet (D14); otherwise carries out its mission. Arrivals at a planet are serialised by a lock, so there is one battle per planet (Q1, D7): a newcomer either joins it or is not hostile and carries on.
+  - `PlanetBattle`: defenders are the owner's officers in orbit with ships, or a rebel fleet (`GenerateRebelFleet`, D16, capped to the 19 cells of a formation); fleet descriptions come from `DescribeCommanderFleet` (formation, traits, player bonuses from technologies, faction and laws).
+  - `ConcludePlanetBattleHandler` (on `BattleEndedMessage` from the ticker): losses applied squadron by squadron, XP (D19), fate of each officer (D15), missions of the winners (R7), danger of the rebels.
+  - `AccomplishMission`: loot, conquest, colonisation, change of base and return, with the legacy outcomes.
+  - Officers in battle have the statement IN_BATTLE: they keep their wages and upkeep, but cannot be sold or seized.
+- [x] **Progression:** XP calibrated (`experience_per_damage` 0.006: a balanced medium battle earns ~95 XP, a big one ~160, crushing a weak enemy almost nothing); traits drawn at levels 5, 10 and 15, none at recruitment (D20); traits shown in the headquarters and revealed by spying.
+- [x] **Reports and replay** (Q15, Q17, D21): battle page `/battles/{id}` for the participants (live, then report and replay, same viewer as the simulator); military archives, map and faction war data list battles; notifications at the start, on joining and at the end, and the mission notifications link to the battle. `FightManager`, `LiveReport`, the legacy `Report` and their pages are removed.
+- [x] Fixed on the way: defenders of player planets were never found (`getPlanetCommanders` with no statement filter matched nothing); a cancelled travel's first arrival message is ignored.
+- [x] Tests: rebel fleets (legacy values kept), trait draws and battle XP, sides of arriving fleets, conclusion of a battle (losses, death, mission, danger), fleet composition. Checked end to end against the Docker stack: an officer sent to loot a rebel planet started a battle on arrival, won it in 7 turns, looted 36,000 resources and went back; the planet danger fell to 0; the notifications were sent.
+- [x] `docs/gameplay.md` updated (§9 to §12, known issues).
 - [ ] Optional: live access for members of participant factions (D8).
-- [ ] Balancing pass using the Phase 1 harness, including duration targets (D1). Update `docs/gameplay.md`.
+- [ ] Balancing with real players (D1 duration targets, XP progression), and a watchdog for stuck battles.
 
 ## 9. Decision log
 
@@ -638,3 +663,5 @@ Takeaways:
 | 2026-10-08 | Officer traits implemented (12 traits, up to 3, chosen in the simulator). Agressif only affects movement targeting; Chasseur de capitaux only redirects heavy hitters in range. | Balance harness: the first versions won 0% and 23% of mirrors. |
 | 2026-10-08 | Skimmable replay: timeline of forces with key-moment markers, key-moment navigation, calm turns played four times faster. Phase 5 done. | D5 interest curve. |
 | 2026-10-08 | Real-time battles: state stored as a serialized BattleState plus a turn log; ticker scheduled on due times with an idempotent message and a lock per battle; private Mercure updates; live mode with reinforcements in the simulator. Phase 6 done. | O(1) turn resolution; participants only (Q17). |
+| 2026-10-09 | Phase 7 decisions: a mission designates the enemy (D14); fate of fleets after a battle (D15); rebel fleets generated on arrival (D16); Bomber dropped (D17); legacy fleets returned to the hangars (D18); XP calibration (D19); traits at levels 5, 10 and 15, none at recruitment (D20); legacy reports deleted (D21). | Maintainer's answers. |
+| 2026-10-09 | Phase 7 implemented: single-type squadrons composed from the hangar, battles started and joined on arrival, conclusion with losses, XP, deaths and missions, battle pages for participants, legacy combat and reports removed. XP coefficient 0.006. | Maintainer's go for Phase 7. |

@@ -26,7 +26,7 @@ final readonly class UnpaidFleetEvent implements NotificationEvent, TrackingEven
 			'ships_cost' => $this->playerFinancialReport->shipsCost,
 			'faction_id' => $this->playerFinancialReport->player->faction->identifier,
 			'army_ships' => $this->commander->getNbrShipByType(),
-			'army_size' => $this->commander->getSizeArmy(),
+			'army_size' => $this->commander->squadrons->count(),
 		];
 	}
 

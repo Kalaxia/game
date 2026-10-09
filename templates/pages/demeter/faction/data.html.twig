@@ -18,8 +18,7 @@
 			{{ include('components/Faction/data/trade/taxes.html.twig', {'label': 'Taxes à la vente', 'taxes': export_taxes}) }}
 		{% elseif 'war' == mode %}
 			{{ include('components/Faction/data/war/stats.html.twig') }}
-			{{ include('components/Faction/data/war/reports.html.twig', {'is_attack': true, 'reports': attack_reports}) }}
-			{{ include('components/Faction/data/war/reports.html.twig', {'is_attack': false, 'reports': defense_reports}) }}
+			{{ include('components/Faction/data/war/reports.html.twig', {'battles': faction_battles}) }}
 			{{ include('components/Faction/data/war/levels.html.twig') }}
 		{% elseif 'tactical' == mode %}
 			{{ include('components/Faction/data/tactical/map.html.twig') }}

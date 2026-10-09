@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Zeus\Application\Handler;
 
-use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Domain\Service\CalculateFleetCost;
@@ -24,7 +23,6 @@ readonly class ShipsWageHandler
 {
 	public function __construct(
 		private CalculateFleetCost $calculateFleetCost,
-		private CommanderArmyHandler $commanderArmyHandler,
 		private CommanderRepositoryInterface $commanderRepository,
 		private EventDispatcherInterface $eventDispatcher,
 		private TransactionRepositoryInterface $transactionRepository,
@@ -73,14 +71,16 @@ readonly class ShipsWageHandler
 	private function payForFleets(PlayerFinancialReport $playerFinancialReport, array $commanders, Player $rebelPlayer): void
 	{
 		foreach ($commanders as $commander) {
-			$this->commanderArmyHandler->setArmy($commander);
-
 			$ships = $commander->getNbrShipByType();
 
 			$cost = ($this->calculateFleetCost)($ships);
 
 			if ($playerFinancialReport->canAfford($cost)) {
 				$playerFinancialReport->shipsCost += $cost;
+				continue;
+			}
+			// A fleet is not sold in the middle of a battle
+			if ($commander->isInBattle()) {
 				continue;
 			}
 			// TODO investigate this WTF statement. Deserters could be rebel commanders (with faction quests to eliminate them).

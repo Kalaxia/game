@@ -1,22 +1,3 @@
-<twig:LayoutBox class="flex col-span-3">
-	<header class="text-sm w-1/4">
-		<p>
-			Ceci représente la composition de votre flotte.
-			Chaque carré montre une escadrille.
-			Vous pouvez remplir cette escadrille en cliquant dessus puis en cliquant sur un type de vaisseau dans les colonnes à droite.
-		</p>
-		<p class="mt-2">
-			La première colonne représente votre escadrille et la seconde votre hangar.
-		</p>
-		<p class="mt-2">
-			En pressant CTRL + clic (CMD + clic), vous pouvez transférer le maximum de vaisseaux possible.
-		</p>
-	</header>
-
-	{% if commander.isAffected %}
-		<section class="grow ml-8 flex justify-between">
-			<twig:CommanderSquadrons :commander="commander" />
-			<twig:ShipTransfer :commander="commander" />
-		</section>
-	{% endif %}
+<twig:LayoutBox class="col-span-3">
+	<twig:FleetFormation :commander="commander" />
 </twig:LayoutBox>

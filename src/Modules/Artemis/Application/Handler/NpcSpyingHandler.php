@@ -2,16 +2,16 @@
 
 namespace App\Modules\Artemis\Application\Handler;
 
-use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
-use App\Modules\Ares\Application\Handler\VirtualCommanderHandler;
+use App\Modules\Ares\Application\Battle\GenerateRebelFleet;
+use App\Modules\Ares\Domain\Model\ShipCategory;
+use App\Modules\Ares\Model\Commander;
 use App\Modules\Artemis\Model\SpyReport;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 
 readonly class NpcSpyingHandler extends SpyingHandler
 {
 	public function __construct(
-		private VirtualCommanderHandler $virtualCommanderHandler,
-		private CommanderArmyHandler $commanderArmyHandler,
+		private GenerateRebelFleet $generateRebelFleet,
 	) {
 	}
 
@@ -21,17 +21,15 @@ readonly class NpcSpyingHandler extends SpyingHandler
 
 		$spyReport->resources = $place->resourcesStorage;
 
-		// generate a commander for the place
-		$commander = $this->virtualCommanderHandler->createVirtualCommander($place);
-
+		// The rebel fleet that would defend the planet (D16)
 		$spyReport->commanders = [[
-			'name' => $commander->name,
-			'avatar' => $commander->avatar,
-			'level' => $commander->level,
-			'line' => $commander->line,
-			'statement' => $commander->statement,
-			'pev' => $this->commanderArmyHandler->getPev($commander),
-			'army' => $commander->getNbrShipByType(),
+			'name' => 'rebelle',
+			'avatar' => 't3-c4',
+			'level' => $this->generateRebelFleet->getLevel($place),
+			'traits' => [],
+			'statement' => Commander::AFFECTED,
+			'pev' => $this->generateRebelFleet->getPev($place),
+			'army' => array_replace(array_fill(0, count(ShipCategory::cases()), 0), $this->generateRebelFleet->getShips($place)),
 		]];
 	}
 

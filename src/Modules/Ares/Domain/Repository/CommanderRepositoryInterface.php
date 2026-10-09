@@ -2,6 +2,7 @@
 
 namespace App\Modules\Ares\Domain\Repository;
 
+use App\Modules\Ares\Domain\Model\Battle\Battle;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Galaxy\Domain\Entity\Planet;
@@ -12,6 +13,11 @@ use Symfony\Component\Uid\Uuid;
 
 interface CommanderRepositoryInterface extends EntityRepositoryInterface
 {
+	/**
+	 * @return list<Commander> officers taking part in the battle
+	 */
+	public function getBattleCommanders(Battle $battle): array;
+
 	public function get(Uuid $id): ?Commander;
 
 	/**

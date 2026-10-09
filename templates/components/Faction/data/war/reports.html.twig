@@ -1,35 +1,9 @@
 <div class="w-96">
 	<header>
-		{% if is_attack %}
-			<twig:H2 class="h-10">Derniers combats</twig:H2>
-		{% else %}
-			<div class="h-10"></div>
-		{% endif %}
-		<twig:H3>{{ is_attack ? 'Attaques' : 'Défenses' }}</twig:H3>
+		<twig:H2 class="h-10">Dernières batailles</twig:H2>
 	</header>
 
-	<section class="">
-		<div class="set-item">
-			{% for report in reports %}
-				{% set report_data = report.typeOfReport(faction.id) %}
-				{% set title = report_data[0] %}
-				{% set img = report_data[1] %}
-
-				<div class="item">
-					<div class="left">
-<!--						<img class="color{{ is_attack ? report.colorD : report.colorA }}" src="{{ asset('build/media/map/action/' ~ img) }}" alt="" />-->
-					</div>
-
-					<div class="center">
-						<strong>{{ title }}</strong>
-						par <a href="{{ path('embassy', {'player': report.rPlayerAttacker}) }}">{{ report.playerNameA }}</a>
-					</div>
-
-					{% if not report.is_legal %}
-						<span class="group-link"><a href="#" class="hb lt" title="cette attaque viole un traité">!</a></span>
-					{% endif %}
-				</div>
-			{% endfor %}
-		</div>
+	<section>
+		{{ include('components/fleet/battle_list.html.twig', {battles}) }}
 	</section>
 </div>

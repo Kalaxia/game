@@ -95,12 +95,14 @@
 	</div>
 
 	{% if place.type == enum('App\\Modules\\Galaxy\\Domain\\Enum\\PlaceType').Planet %}
-		{% set reports = combatReports|filter(r => r.place.id.equals(place.id)) %}
-		{% if reports|length > 0 %}
-			{% set report = reports|first %}
-			<div>
+		{% set place_battles = battles|filter(b => b.place is not null and b.place.id.equals(place.id)) %}
+		{% if place_battles|length > 0 %}
+			{% set battle = place_battles|first %}
+			<div class="px-2">
 				<em class="text-xs">
-					Dernier pillage {{ report.foughtAt|game_date|raw }}.
+					<a href="{{ path('battle_view', {id: battle.id}) }}" class="underline">
+						{{ battle.isOver ? 'Dernière bataille ' ~ (battle.startedAt|game_date|raw) : 'Bataille en cours' }}
+					</a>
 				</em>
 			</div>
 		{% endif %}

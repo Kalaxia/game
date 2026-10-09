@@ -13,13 +13,12 @@
 					{% endif %}
 				</h4>
 				<h5 class="text-sm">
-					{% if commander.line == 1 %}
-						1ère
-					{% else %}
-						2nde
+					{% if spyReport.hasSpottedCommanders and commander.traits is defined and commander.traits is not empty %}
+						{% for trait in commander.traits %}
+							<span title="{{ ('combat_simulator.traits.' ~ trait ~ '.description')|trans }}">{{ ('combat_simulator.traits.' ~ trait ~ '.name')|trans }}</span>{{ not loop.last ? ', ' }}
+						{% endfor %}
+						-
 					{% endif %}
-					ligne
-					-
 					{% if spyReport.hasSpottedPevs %}
 						{{ commander.pev }} Pev
 					{% else %}

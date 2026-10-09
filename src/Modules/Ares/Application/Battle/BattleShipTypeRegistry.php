@@ -32,6 +32,15 @@ class BattleShipTypeRegistry
 	) {
 	}
 
+	/**
+	 * Battle ship type of the ships built in the game under this category.
+	 */
+	public function getByCategory(ShipCategory $category): BattleShipType
+	{
+		return array_find($this->all(), fn (BattleShipType $type) => $type->shipCategory === $category)
+			?? throw new \InvalidArgumentException(sprintf('No battle ship type for ship category %s', $category->name));
+	}
+
 	public function get(string $identifier): BattleShipType
 	{
 		return $this->all()[$identifier]

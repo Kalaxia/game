@@ -129,6 +129,9 @@ class Propose extends AbstractController
 				if ($commander->isOnSale()) {
 					throw new ConflictHttpException('This commander is already on sale');
 				}
+				if ($commander->isInBattle()) {
+					throw new ConflictHttpException('This commander is in a battle');
+				}
 				$identifier = 0;
 				$commander->statement = Commander::ONSALE;
 				$commanderManager->emptySquadrons($commander);

@@ -6,6 +6,21 @@
 	<entity name="App\Modules\Ares\Domain\Model\Battle\Battle" table="battle">
 		<id name="id" column="id" type="uuid" />
 
+		<many-to-one field="place" target-entity="App\Modules\Galaxy\Domain\Entity\Planet">
+			<join-column nullable="true" on-delete="SET NULL" />
+		</many-to-one>
+
+		<many-to-many field="players" target-entity="App\Modules\Zeus\Model\Player">
+			<join-table name="battle_player">
+				<join-columns>
+					<join-column name="battle_id" on-delete="CASCADE" />
+				</join-columns>
+				<inverse-join-columns>
+					<join-column name="player_id" on-delete="CASCADE" />
+				</inverse-join-columns>
+			</join-table>
+		</many-to-many>
+
 		<field name="state" type="blob" />
 		<field name="turnDuration" type="smallint" />
 		<field name="startedAt" type="datetime_immutable" />

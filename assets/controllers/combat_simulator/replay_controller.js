@@ -17,6 +17,8 @@ import { BattleTimelineView } from './battle_timeline_view.js';
  * In real-time mode (Phase 6), the server resolves a turn every turn duration and pushes it through
  * Mercure: the viewer follows the last turn unless the player went back in the replay, and the player
  * can send reinforcements. After (re)connecting, the battle so far is fetched to catch up.
+ *
+ * With a battle URL (battle page of the game), the controller loads that battle at once and follows it.
  */
 export default class extends Controller
 {
@@ -24,6 +26,7 @@ export default class extends Controller
 	static values = {
 		runUrl: String,
 		liveUrl: String,
+		battleUrl: String,
 	};
 
 	static SPEEDS = [
@@ -45,6 +48,29 @@ export default class extends Controller
 		this.fastCalmTurns = true;
 		this.live = null;
 		this.eventSource = null;
+	}
+
+	async connect()
+	{
+		if (!this.hasBattleUrlValue) {
+			return;
+		}
+
+		const response = await fetch(this.battleUrlValue, { headers: { 'Accept': 'application/json' }, credentials: 'include' });
+		const data = await response.json();
+
+		if (!response.ok) {
+			this.errorTarget.textContent = data.error ?? 'La bataille est introuvable.';
+			this.errorTarget.classList.remove('hidden');
+
+			return;
+		}
+
+		// A battle going on is shown at its last turn, a finished one from its deployment
+		this._load(data, data.live?.is_over ? 0 : data.turns.length);
+		if (data.live && !data.live.is_over) {
+			this._subscribe();
+		}
 	}
 
 	disconnect()
@@ -180,7 +206,9 @@ export default class extends Controller
 
 	reuseSeed()
 	{
-		this.seedTarget.value = this.battle.seed;
+		if (this.hasSeedTarget) {
+			this.seedTarget.value = this.battle.seed;
+		}
 	}
 
 	async _start(url)
@@ -190,6 +218,7 @@ export default class extends Controller
 		this.errorTarget.classList.add('hidden');
 		this.runButtonTarget.disabled = true;
 		this.liveButtonTarget.disabled = true;
+
 
 		try {
 			const seed = parseInt(this.seedTarget.value, 10);
@@ -250,7 +279,8 @@ export default class extends Controller
 
 	async _catchUp()
 	{
-		const response = await fetch(`${this.liveUrlValue}/${this.live.id}`, { headers: { 'Accept': 'application/json' }, credentials: 'include' });
+		const url = this.hasBattleUrlValue ? this.battleUrlValue : `${this.liveUrlValue}/${this.live.id}`;
+		const response = await fetch(url, { headers: { 'Accept': 'application/json' }, credentials: 'include' });
 
 		if (!response.ok || this.battle?.live?.id !== this.live.id) {
 			return;
@@ -475,10 +505,10 @@ export default class extends Controller
 						${this._escape(winner)}
 					</p>
 					<p class="text-sm text-gray-400" data-replay-live-status></p>
-					<p class="ml-auto text-sm text-gray-400">
+					${this.hasSeedTarget ? `<p class="ml-auto text-sm text-gray-400">
 						Graine ${battle.seed}
 						<button type="button" class="ml-2 underline hover:text-white" data-action="combat-simulator--replay#reuseSeed">réutiliser</button>
-					</p>
+					</p>` : ''}
 				</div>
 				${isRunning ? this._renderReinforcementForm() : report.renderOverview()}
 			</div>

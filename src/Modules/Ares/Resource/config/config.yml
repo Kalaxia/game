@@ -46,8 +46,9 @@ parameters:
         flight_threshold: 15.0
         remobilisation_threshold: 50.0
         exposed_turns: 2
-    # Officer experience per point of damage dealt or taken, before the importance weighting (D6)
-    ares.battle.experience_per_damage: 2.0
+    # Officer experience per point of damage dealt or taken, before the importance weighting (D6).
+    # Calibrated on the legacy level curve (D19): a balanced medium battle earns about 95 XP, a big one about 160.
+    ares.battle.experience_per_damage: 0.006
     
 services:
     _defaults:

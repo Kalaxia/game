@@ -502,11 +502,6 @@ combat_simulator:
         cell_taken: 'La case {cell} contient plusieurs escadrilles.'
         squadron_size: 'Une escadrille de type {type} contient de 1 à {max} vaisseaux ({ships} sur la case {cell}).'
 
-# Ship types of the new battle system that have no ship category yet (combat simulator)
-battle_ship_types:
-    Bomber:
-        name: 'Bombardier'
-
 galaxy:
     systems:
         types:

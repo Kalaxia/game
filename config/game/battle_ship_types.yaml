@@ -38,22 +38,6 @@ battle_ship_types:
         patterns: [close]
         split_fire: true
 
-    Bomber:
-        # New ship type: no ship category yet, it will be added to the game in Phase 7
-        role: bomber
-        class: 0
-        pev: 4
-        life: 40
-        defense: 4
-        speed: 170
-        attack: [60]
-        squadron_size: 25
-        movement: 2
-        initiative: 170
-        range: 1
-        preferred_targets: [3, 2]
-        patterns: [frontal_cone]
-
     LightCorvette:
         ship_category: !php/enum App\Modules\Ares\Domain\Model\ShipCategory::LightCorvette->value
         role: escort

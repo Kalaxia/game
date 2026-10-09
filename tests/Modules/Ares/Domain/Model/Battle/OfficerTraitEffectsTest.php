@@ -117,12 +117,12 @@ class OfficerTraitEffectsTest extends BattleTestCase
 	public function testAggressiveOfficerIgnoresPreferences(): void
 	{
 		$state = self::state();
-		$bombers = self::place($state, self::officer([OfficerTrait::Aggressive], 'aggressive'), 'Bomber', 25, new Hex(10, 10));
+		$cruiser = self::place($state, self::officer([OfficerTrait::Aggressive], 'aggressive'), 'Cruiser', 1, new Hex(10, 10));
 		$closest = self::place($state, self::officer([], 'fighters', side: 1), 'LightFighter', 50, new Hex(11, 10));
 		self::place($state, self::officer([], 'destroyer', side: 1), 'Destroyer', 1, new Hex(12, 10));
 
-		// A bomber prefers destroyers, but an aggressive officer goes for the closest enemy
-		static::assertSame($closest, (new SelectTarget())->getCandidates($state, $bombers, false)[0]);
+		// A cruiser prefers destroyers, but an aggressive officer goes for the closest enemy
+		static::assertSame($closest, (new SelectTarget())->getCandidates($state, $cruiser, false)[0]);
 	}
 
 	public function testTacticianIsServedFirst(): void

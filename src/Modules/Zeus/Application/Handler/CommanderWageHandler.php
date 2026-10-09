@@ -26,7 +26,7 @@ readonly class CommanderWageHandler
 	{
 		$unpaidCommandersNames = [];
 		foreach ($commanders as $commander) {
-			if (!in_array($commander->statement, [Commander::AFFECTED, Commander::MOVING])) {
+			if (!in_array($commander->statement, [Commander::AFFECTED, Commander::MOVING, Commander::IN_BATTLE])) {
 				continue;
 			}
 
@@ -34,6 +34,10 @@ readonly class CommanderWageHandler
 
 			if ($playerFinancialReport->canAfford($commanderWage)) {
 				$playerFinancialReport->commandersWages += $commanderWage;
+				continue;
+			}
+			// An officer is not sold in the middle of a battle
+			if ($commander->isInBattle()) {
 				continue;
 			}
 			// TODO what to do with the commander when unable to pay ? Currently selling it

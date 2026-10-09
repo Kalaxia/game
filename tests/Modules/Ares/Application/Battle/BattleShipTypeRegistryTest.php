@@ -6,7 +6,6 @@ namespace App\Tests\Modules\Ares\Application\Battle;
 
 use App\Modules\Ares\Application\Battle\BattleShipTypeRegistry;
 use App\Modules\Ares\Domain\Model\Battle\ShipClass;
-use App\Modules\Ares\Domain\Model\Battle\ShipRole;
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Infrastructure\DependencyInjection\BattleShipTypeConfiguration;
 use App\Modules\Ares\Infrastructure\DependencyInjection\ShipCategoryConfiguration;
@@ -24,7 +23,6 @@ class BattleShipTypeRegistryTest extends TestCase
 
 		$linkedCategories = array_filter(array_map(fn ($type) => $type->shipCategory, $types));
 		static::assertCount(count(ShipCategory::cases()), $linkedCategories, 'Every ship category needs a battle ship type');
-		static::assertArrayHasKey('Bomber', $types);
 	}
 
 	public function testLinkedTypeTakesBaseStatsFromShipCategory(): void
@@ -39,13 +37,12 @@ class BattleShipTypeRegistryTest extends TestCase
 		static::assertSame([35, 35, 35, 35, 25, 10, 10], $destroyer->attack);
 	}
 
-	public function testBomberDefinesItsOwnBaseStats(): void
+	public function testTypeOfAShipCategory(): void
 	{
-		$bomber = $this->createRegistryFromProjectConfiguration()->get('Bomber');
+		$registry = $this->createRegistryFromProjectConfiguration();
 
-		static::assertNull($bomber->shipCategory);
-		static::assertSame(ShipRole::Bomber, $bomber->role);
-		static::assertSame([ShipClass::Destroyer, ShipClass::Frigate], $bomber->preferredTargets);
+		static::assertSame('HeavyCorvette', $registry->getByCategory(ShipCategory::HeavyCorvette)->identifier);
+		static::assertSame(ShipCategory::HeavyCorvette, $registry->getByCategory(ShipCategory::HeavyCorvette)->shipCategory);
 	}
 
 	public function testTypeWithoutCategoryMustDefineBaseStats(): void

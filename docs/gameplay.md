@@ -772,6 +772,7 @@ Code: `Ares/Model/Commander.php`.
 | 5 | RETIRED | Was moving when its base was lost |
 | 6 | ONSALE | On the market, or deserted after unpaid wages |
 | 7 | RESERVE | In the mess hall; no XP |
+| 8 | IN_BATTLE | Fighting in orbit of a planet; its fleet cannot be changed, sold or seized |
 
 **Recruitment** (`Ares/.../CreateCommander.php`):
 
@@ -790,9 +791,11 @@ Code: `Ares/Model/Commander.php`.
 iSchool × (1 + COMMANDER_INVEST% / 100) / 100, ± 5%
 ```
 
-**Battle XP:** `importance × 50` (§10.4).
+**Battle XP** (§10.4): `(damage dealt + damage taken) ÷ durability × 0.006 × importance`. A balanced medium battle earns about 95 XP, a big one about 160; crushing a much weaker enemy earns almost nothing. The player earns a hundredth of it.
 
-**Wages:** `200 × level` per cycle, while the commander is AFFECTED or MOVING.
+**Traits** (`OfficerTrait`): an officer draws a random trait at levels 5, 10 and 15, up to 3, never at recruitment. Traits change how the fleet fights (initiative, targeting, morale…; see `docs/fleet-combat/content-proposal.md` §2). Enemies discover them by spying.
+
+**Wages:** `200 × level` per cycle, while the commander is AFFECTED, MOVING or IN_BATTLE.
 
 **Actions:**
 
@@ -806,73 +809,44 @@ iSchool × (1 + COMMANDER_INVEST% / 100) / 100, ± 5%
 
 ### 9.3 Fleet composition
 
-- **Squadrons:** a commander has **as many squadrons as its level**. The practical cap is 17.
-- **Squadron content:** each squadron (`Ares/Model/Squadron.php`) stores a count for each of the 12 ship types, up to **100 PEV**.
-- **Battle lines:** each squadron position belongs to a line, given by `Commander::$LINECOORD`:
+Code: `Ares/Model/Squadron.php`, Live component `Ares/Infrastructure/Twig/Components/Organisms/FleetFormation.php` (headquarters page).
 
-  ```
-  [1,1,1,2,2, 1,2,3,3, 1,2,3,4,4, 2,3,4,5,5, ...]
-  ```
-
-  - Levels 1–3: every squadron is on line 1.
-  - Line 2 appears at level 4, line 3 at level 8, line 4 at level 13, line 5 at level 18.
-- **Hangar transfers** (`Ares/.../Fleet/UpdateSquadron.php`, `assets/controllers/fleet/ship_transfer_controller.js`):
-  - only for an AFFECTED commander at its base;
-  - click moves 1 ship, Shift+click 5, Ctrl+click all.
-- **In progress** (branch `feature/fleet-composition`):
-  - a 5-row hexagonal **fleet grid** with 20 to 16 cells per row (`FleetGrid`, `FleetGridPosition`);
-  - it is currently used only in the combat simulator and does not affect combat yet.
+- **Squadrons hold a single ship type** (`shipCategory`, `ships`) and stand on a cell `(q, r)` of a hexagonal **formation grid** of radius 2 (19 cells), the front line facing the enemy.
+- **Squadron size** depends on the ship type (`squadron_size` in `config/game/battle_ship_types.yaml`, e.g. 50 light fighters, 14 corvettes, 1 destroyer).
+- **Composition:** in orbit of its base (AFFECTED), the player picks a ship type and clicks a cell; the ships come from the hangar of the base, and removing or replacing a squadron puts them back. "Réorganiser automatiquement" arranges the squadrons by role (`BuildFleetFormation`). The composition is locked while the fleet travels or fights.
+- **Fleet size** is no longer capped by the officer level. Beyond the officer's **command capacity** (`300 + 100 × level` PEV, +20% for a Logistician), the fleet is disorganised: up to −50% initiative, dodge and rate of fire. The editor shows the capacity and the malus.
 
 ---
 
 ## 10. Combat
 
-Code: `Ares/Manager/FightManager.php`, `Ares/Application/Handler/Battle/{SquadronFightHandler,ShipFightHandler,ShipStatsHandler}.php`, `Ares/Application/Handler/{CommanderArmyHandler,FightImportanceHandler,CommanderExperienceHandler}.php`.
+Real-time battles, turn by turn. Full design and rules: `docs/fleet-combat/plan.md`. Code: `Ares/Domain/Service/Battle/BattleEngine.php` (rules), `Ares/Application/Battle/*` (storage and ticker), `Ares/Application/Mission/*` (game integration).
 
 ### 10.1 Who fights
 
-- **Only commanders fight.** There is no planetary or orbital defence.
-- **Defending a player planet:** its AFFECTED commanders defend.
-  - Loot: one defender picked at random.
-  - Conquest: every defender in turn.
-- **Unowned planet:** a **rebel virtual commander** is generated from the planet's danger and population (`Ares/Application/Handler/VirtualCommanderHandler.php`, squadron templates in `Galaxy/Resource/SquadronResource.php`).
-  - Level = `ceil(((maxDanger/5)×9 + population/12.5) / 10)`.
-  - The number of filled squadrons scales with `danger / maxDanger`.
-  - After the fight, danger is reduced in proportion to the PEV the rebel lost.
+- **Only fleets fight.** There is no planetary defence.
+- **A battle starts** when a fleet arrives to loot or conquer a planet that has defenders: the AFFECTED officers of the owner with ships, or the **rebels** of a planet without owner. A mission designates the enemy, even when the factions are neutral to each other.
+- **Rebel fleets** are generated on arrival with the legacy formula (`Ares/Application/Battle/GenerateRebelFleet.php`): officer level `ceil(((maxDanger/5)×9 + population/12.5) / 10)`, squadrons in proportion to `danger / maxDanger`, ships from `Galaxy/Resource/SquadronResource.php`, arranged in a formation.
+- **One battle per planet.** A fleet arriving while a battle goes on joins it at the next turn, whatever its mission, if it is hostile to a side: it takes the side of its faction, otherwise the first side it is not hostile to, or a new side if it is hostile to all (faction relations, plus the target of its mission). Otherwise it carries out its mission.
+- Participants receive a notification with a link to follow the battle live.
 
-### 10.2 Rounds and lines
+### 10.2 Turns
 
-- Each round has two halves: the **defender acts first**, then the attacker.
-- **Lines join over time:** a squadron fights (and can be targeted) only once `lineCoord × 3 ≤ currentLine`. `currentLine` starts at 3 and goes up by 1 each round.
-  - Line 1 fights from the first round.
-  - Line 2 joins at round 3, line 3 at round 6, and so on every 3 rounds.
-- The battle ends when one side has no ships left, or after 1000 rounds.
+- A turn is resolved every `BATTLE_TURN_DURATION` seconds (10 by default) by a Messenger ticker; the first one at once.
+- Battlefield of 5 × 5 fleet areas; each fleet keeps its formation. Fleets and squadrons move toward their targets, then squadrons fire in initiative order (25 actions per turn, shared among fleets).
+- Ship types have roles, preferred targets, ranges and weapon patterns (minimum range, area damage, split fire); faction and technology bonuses apply per ship class.
+- **Engagement delay:** an attack with less than half the defenders' strength waits up to 18 turns for reinforcements.
+- **Morale:** losses lower it, inflicting losses raises it. Below 30 a fleet withdraws behind its allies, below 15 it flees, exposed for 2 turns.
 
-### 10.3 Squadron and ship resolution
+### 10.3 Outcome
 
-- **Choosing a target:** a squadron keeps its target while that target has ships. Otherwise it picks a random enemy squadron on an active line.
-- **Exchanges are mutual:** A fires at B, then B immediately fires back at A.
-- **Each shot** in a ship's attack list:
-  1. **Picks a target:** a random living ship in the target squadron.
-  2. **Dodge:** the shot misses if `random_int(0, speed) > 80`. That is about 59% for fighters and 0% for ships with speed ≤ 80.
-  3. **Damage:** `ceil(ln(A/D + 1) × 4 × A)`, where A is the shot's attack and D the target's defence.
-  4. **Destruction:** a ship at 0 life or less is destroyed.
-- **Bonuses:** `stat × (1 + bonus%)` for attack, defence and speed, by ship class. Cruisers (10 and 11) get no class bonus. Ship life never gets a bonus.
-
-### 10.4 Outcome
-
-- **The loser's commander dies**, since all of its ships are gone.
-  - The winner's `victory` and the loser's `defeat` counters go up, and the winner's `palmares` goes up.
-- **Importance:** `floor(enemyPEV × (ownLevel + 1) / (enemyLevel + 1))`, using PEV at the start of the battle.
-  - Commander XP = `importance × 50`.
-  - Player XP = commander XP ÷ 100. The losing player also gets this.
-- **Report:** a `Report` is saved, built from `LiveReport`.
-  - `isLegal` is false when the two factions are at PEACE or ALLY. It is recorded only; nothing punishes an illegal attack.
-- **Combat simulator** (`/combat-simulator`, Portal) is **in progress**:
-  - virtual commanders are stored in the session;
-  - no fight is run yet.
-
----
+- The battle ends when no two hostile sides remain, or after 500 turns.
+- **Destroyed fleet:** the officer dies (`defeat` +1 for the player).
+- **Fled fleet:** an attacker goes back to its base with its survivors and abandons its mission; a defender stays at its base.
+- **Winning side:** every fleet keeps its surviving ships, `palmares` and `victory` +1; attackers then carry out their missions (loot, conquest, colonisation), in order of arrival.
+- **Rebels:** the danger of the planet falls in proportion to the strength they lost.
+- **Report and replay:** the battle page (`/battles/{id}`, participants only) shows it live, then its report (losses, damage, key moments, most valuable squadron) and a skimmable replay. The military archives list the player's battles.
+- **Combat simulator** (`/combat-simulator`): the same engine, instant or in real time.
 
 ## 11. Missions and travel
 
@@ -882,7 +856,7 @@ Code: `Ares/Infrastructure/Controller/Fleet/*`, `Ares/Handler/CommanderTravelHan
 
 - **Range:** at most **30** distance units, unless the target is in a sector owned by your own faction or an allied one.
 - **Missions** (`CommanderMission`): Move, Loot, Colo (colonisation or conquest), Back.
-- **Arrival:** each mission is resolved when a delayed `CommanderTravelMessage` fires.
+- **Arrival:** each mission is resolved when a delayed `CommanderTravelMessage` fires (`Ares/Application/Mission/ArriveAtPlanet.php`): it may first start or join a battle (§10.1). A message for an arrival that was cancelled or replaced is ignored.
 - **Returning (Back):** the commander becomes AFFECTED again, and any loot it carries is added to its base.
 - **Cancelling:** the commander turns around.
 - **Incoming attacks** (loot or colonisation) become visible to the defender when the fleet enters the defender's anti-spy radius (§12.2).
@@ -909,8 +883,8 @@ Code: `Travel/Domain/Service/CalculateTravelTime.php`.
 
 - **Allowed targets:** not your own faction or an ally, and not an active level-1 player.
 - **On arrival:**
-  - **Rebel planet:** fight the rebels; if the attacker wins, it loots.
-  - **Enemy player planet:** fight one random defender, or none if there is no defender; if the attacker wins, it loots.
+  - **Rebel planet:** battle against the rebels; if the attacker's side wins, it loots.
+  - **Enemy player planet:** battle against **all** the defenders in orbit, if any; if the attacker's side wins, it loots.
 - **Capacity:** `remaining PEV × 275 × (1 + 2 × SHIP_CONTAINER% / 100)`.
 - **Amount taken:**
   - from a player: up to `stock − 5000` (the last 5,000 resources are protected);
@@ -924,8 +898,8 @@ Code: `Travel/Domain/Service/CalculateTravelTime.php`.
   - an AFFECTED commander with ships.
 - **Price:** `current bases × 80,000` credits, paid when the fleet leaves and not refunded. Adranite gets −10%.
 - **On arrival:**
-  - fight the rebels;
-  - if the attacker wins, the planet becomes a colony named "colonie", with 2,000 resources, school and anti-spy investments of 500, and danger 0;
+  - battle against the rebels, if the planet still has any;
+  - if the attacker's side wins, the planet becomes a colony named "colonie", with 2,000 resources, school and anti-spy investments of 500, and danger 0;
   - the commander is based there.
 
 ### 11.6 Conquest
@@ -938,8 +912,8 @@ Code: `Travel/Domain/Service/CalculateTravelTime.php`.
   - the player can afford the price.
 - **Price:** `current planets × 150,000` credits. Adranite gets −10%.
 - **On arrival** (the target player must be above level 3):
-  - fight **every** AFFECTED defender in turn;
-  - if the attacker survives all of them, it takes the planet (`changeOwner`) and is based there.
+  - battle against **all** the defenders in orbit at once;
+  - if the attacker's side wins, it takes the planet (`changeOwner`) and is based there.
 
 ---
 
@@ -960,7 +934,7 @@ Code: `Artemis/*`, `Athena/.../Financial/UpdatePlanetInvestments.php`, `AntiSpyH
   | 10 | Resources |
   | 20 | Hangar |
   | 30 | Anti-spy |
-  | 40 | Commanders |
+  | 40 | Commanders and their traits |
   | 50 | Route income |
   | 60 | PEV |
   | 70 | Planet points |
@@ -1189,15 +1163,12 @@ These issues were found by reading the code and have not been checked at runtime
 
 ### Combat and military
 
-1. **(✔) Defenders are never found.** `CommanderRepository::getPlanetCommanders($planet)` defaults to `statements = []`, so `findBy(['statement' => []])` matches nothing. Calls that pass no filter (`LootManager`, `ConquestManager`, `PlanetManager::changeOwner`, `LeavePlanet`) therefore get no commanders. Consequences:
-   - loot and conquest never fight player defenders;
-   - commanders of a lost base are neither killed nor transferred.
-2. **The line counter is never reset.** `FightManager::$currentLine` is static and only reset in the constructor. Several fights in the same process (a worker, or the conquest loop) start with rear lines already active.
-3. **Defence and dodge use the wrong player's bonuses.** The target's defence and dodge speed are computed with the **attacker's** `PlayerBonus`.
-4. **Rebel squadrons are positioned wrongly.** They have no `lineCoord` or `position`, and `chooseEnemy` shuffles the Doctrine collection of the virtual commander, which is empty. Player squadrons may therefore never pick rebels as a target.
-5. **Cancel makes the return instant.** It computes the return arrival in the past, and does not unschedule the original message.
-6. **Missing checks:** `Loot` does not check that the commander is AFFECTED, and `AffectCommander` has no ownership check.
-7. **The squadron cap is inconsistent.** `Commander::getSquadron()` throws above index 16, while `setArmy` allows 25 squadrons. Cruisers get no class bonus.
+The legacy combat (`FightManager`, `LiveReport`, `Report`) was replaced by the battle engine in Phase 7 of the fleet combat redesign, which fixed its issues: defenders not found (empty statement filter), line counter never reset, defence and dodge computed with the attacker's bonuses, misplaced rebel squadrons, inconsistent squadron cap, cruisers without class bonus.
+
+1. **Cancel makes the return instant.** It computes the return arrival in the past. The original arrival message is now ignored, since the officer's arrival date changed.
+2. **Missing checks:** `Loot` does not check that the commander is AFFECTED, and `AffectCommander` has no ownership check.
+3. **A lost battle message blocks a battle.** If a worker crashes between saving a turn and scheduling the next one, the battle stays stuck and its officers stay IN_BATTLE (no watchdog yet).
+4. **Fleets composed in orbit during a battle do not join it.** Only the fleets present when it starts, and the arrivals, take part.
 
 ### Bonuses and prices
 
@@ -1235,7 +1206,7 @@ These issues were found by reading the code and have not been checked at runtime
 ### Legacy and unused
 
 29. **Config parameters overridden by constants:** `ares.coeff.move_*`, `ares.loot_limit`, `ares.coeff.loot`, `ares.commander.income_level`. Note the travel coefficient: 1000 in config vs 50000 in the code.
-30. **Unused constants and parameters:** `Planet::MAXCOMMANDERSTANDARD` / `MAXCOMMANDERMILITARY`, `Commander::MAXTRAVELTIME`, `galaxy.limit_conquest_sector`, `pam_coeftax`, the prestige constants in `Color`, `Report::fromLiveReport`.
+30. **Unused constants and parameters:** `Planet::MAXCOMMANDERSTANDARD` / `MAXCOMMANDERMILITARY`, `Commander::MAXTRAVELTIME`, `galaxy.limit_conquest_sector`, `pam_coeftax`, the prestige constants in `Color`.
 31. **Unused statuses and bonuses:** `PlayerStatement::Holiday` and `Banned` are never set. The bonuses `ANTISPY_INVEST`, `GRAVIT_MODULE` and `DOCK3_SPEED` are never read.
 32. **Dead legacy code:** `src/action/`, `src/script/`, `Hermes RoadMap`.
 33. **Stale delayed messages.** Cancelling a queue or market action does not reschedule the delayed Messenger messages (TODOs), so old messages may still fire.

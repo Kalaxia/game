@@ -1,12 +1,14 @@
 {% extends 'layouts/ares/fleet.html.twig' %}
 
 {% block content %}
-	<div class="grid grid-cols-4 gap-x-4">
-		{{ include('components/fleet/combat_reports.html.twig') }}
+	<twig:PageTitle>
+		Archives militaires
+	</twig:PageTitle>
 
-		{% if report is not null %}
-			{{ include('components/fleet/combat_report.html.twig', { report, report_attacker, report_defender }) }}
-			{{ include('components/fleet/manage_combat_report.html.twig', { report }) }}
-		{% endif %}
-	</div>
+	<twig:LayoutBox class="mt-4 max-w-3xl">
+		<p class="text-sm text-gray-300">Les batailles auxquelles vos officiers ont pris part, avec leur rapport et leur replay.</p>
+		<div class="mt-4">
+			{{ include('components/fleet/battle_list.html.twig', {battles}) }}
+		</div>
+	</twig:LayoutBox>
 {% endblock content %}

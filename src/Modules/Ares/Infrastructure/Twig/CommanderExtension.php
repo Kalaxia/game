@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Ares\Infrastructure\Twig;
 
-use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Application\Handler\CommanderExperienceHandler;
 use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Domain\Service\CalculateFleetCost;
+use App\Modules\Ares\Domain\Service\GetCommanderPev;
 use App\Modules\Ares\Domain\Service\GetSquadronPev;
 use App\Modules\Ares\Manager\CommanderManager;
 use App\Modules\Ares\Model\Commander;
@@ -23,7 +23,7 @@ class CommanderExtension extends AbstractExtension
 		private readonly CalculateFleetCost $calculateFleetCost,
 		private readonly CommanderManager $commanderManager,
 		private readonly CommanderExperienceHandler $commanderExperienceHandler,
-		private readonly CommanderArmyHandler $commanderArmyHandler,
+		private readonly GetCommanderPev $getCommanderPev,
 		private readonly GetSquadronPev $getSquadronPev,
 	) {
 	}
@@ -41,7 +41,7 @@ class CommanderExtension extends AbstractExtension
 			}),
 			new TwigFilter('commander_rank', fn (Commander $commander) => $this->getCommanderLevel($commander->level)),
 			new TwigFilter('pev', fn (Commander|Squadron $item) => match (get_class($item)) {
-				Commander::class => $this->commanderArmyHandler->getPev($item),
+				Commander::class => ($this->getCommanderPev)($item),
 				Squadron::class => ($this->getSquadronPev)($item),
 				default => throw new \LogicException(sprintf('Unknown item type %s', get_class($item))),
 			}),

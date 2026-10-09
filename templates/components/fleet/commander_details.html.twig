@@ -27,6 +27,8 @@
 				<span class="value">À quai</span>
 			{% elseif commander.isMoving %}
 				<span class="value">En mission</span>
+			{% elseif commander.isInBattle %}
+				<span class="value"><a href="{{ path('battle_view', {id: commander.battle.id}) }}" class="underline">En bataille</a></span>
 			{% else %}
 				<span class="value">Tombé au combat</span>
 			{% endif %}

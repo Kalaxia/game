@@ -6,6 +6,7 @@ namespace App\Modules\Ares\Application\Battle\Handler;
 
 use App\Modules\Ares\Application\Battle\BattleLock;
 use App\Modules\Ares\Application\Battle\BattleUpdatePublisherInterface;
+use App\Modules\Ares\Application\Battle\Message\BattleEndedMessage;
 use App\Modules\Ares\Application\Battle\Message\ResolveBattleTurnMessage;
 use App\Modules\Ares\Domain\Model\Battle\BattleTurn;
 use App\Modules\Ares\Domain\Repository\BattleRepositoryInterface;
@@ -63,7 +64,13 @@ readonly class ResolveBattleTurnHandler
 			return $battle;
 		});
 
-		if (null === $battle || $battle->isOver()) {
+		if (null === $battle) {
+			return;
+		}
+
+		if ($battle->isOver()) {
+			$this->messageBus->dispatch(new BattleEndedMessage($battle->id));
+
 			return;
 		}
 

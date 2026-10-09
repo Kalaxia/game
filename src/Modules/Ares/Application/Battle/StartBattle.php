@@ -8,6 +8,7 @@ use App\Modules\Ares\Application\Battle\Message\ResolveBattleTurnMessage;
 use App\Modules\Ares\Domain\Model\Battle\Battle;
 use App\Modules\Ares\Domain\Model\Battle\BattleState;
 use App\Modules\Ares\Domain\Repository\BattleRepositoryInterface;
+use App\Modules\Galaxy\Domain\Entity\Planet;
 use Psr\Clock\ClockInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -28,13 +29,14 @@ readonly class StartBattle
 	) {
 	}
 
-	public function __invoke(BattleState $state): Battle
+	public function __invoke(BattleState $state, ?Planet $place = null): Battle
 	{
 		$battle = new Battle(
 			id: Uuid::v7(),
 			state: $state,
 			turnDuration: $this->turnDuration,
 			startedAt: $this->clock->now(),
+			place: $place,
 		);
 
 		$this->battleRepository->save($battle);

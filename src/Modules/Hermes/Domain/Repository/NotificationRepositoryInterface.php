@@ -26,15 +26,6 @@ interface NotificationRepositoryInterface extends EntityRepositoryInterface
 	 */
 	public function getPlayerNotificationsByArchive(Player $player, bool $isArchived): array;
 
-	/**
-	 * @return list<Notification>
-	 */
-	public function getMultiCombatNotifications(
-		Player $commanderPlayer,
-		Player $placePlayer,
-		\DateTimeImmutable $arrivedAt,
-	): array;
-
 	public function removePlayerNotifications(Player $player): int;
 
 	public function cleanNotifications(int $readTimeout, int $unreadTimeout): int;

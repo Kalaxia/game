@@ -125,11 +125,12 @@ readonly class CreateBattle
 	}
 
 	/**
-	 * @param array{faction: int, bonuses?: array<int, array{attack?: int, defense?: int, speed?: int}>} $fleet
+	 * @param array{faction: int, faction_bonuses?: bool, bonuses?: array<int, array{attack?: int, defense?: int, speed?: int}>} $fleet
 	 */
 	private function getBonuses(array $fleet): BattleBonuses
 	{
-		$bonuses = ($this->getFactionBattleBonuses)($fleet['faction']);
+		// A player's bonuses already include those of their faction
+		$bonuses = ($fleet['faction_bonuses'] ?? true) ? ($this->getFactionBattleBonuses)($fleet['faction']) : new BattleBonuses();
 
 		foreach ($fleet['bonuses'] ?? [] as $class => $percentages) {
 			$bonuses = $bonuses->add(ShipClass::from($class), ...$percentages);

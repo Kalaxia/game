@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Ares\Domain\Model\Battle;
 
+use App\Modules\Galaxy\Domain\Entity\Planet;
+use App\Modules\Zeus\Model\Player;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -28,6 +32,10 @@ class Battle
 		public int $turn = 0,
 		public ?\DateTimeImmutable $endedAt = null,
 		public ?int $winningSide = null,
+		/** Planet in orbit of which the battle takes place, null in the combat simulator */
+		public ?Planet $place = null,
+		/** @var Collection<int, Player> players whose officers took part, or who own the planet (Q17) */
+		public Collection $players = new ArrayCollection(),
 	) {
 		$this->setState($state);
 	}
@@ -48,6 +56,18 @@ class Battle
 		$this->state = serialize($state);
 		$this->turn = $state->turn;
 		$this->winningSide = $state->winningSide;
+	}
+
+	public function addPlayer(Player $player): void
+	{
+		if (!$this->players->contains($player)) {
+			$this->players->add($player);
+		}
+	}
+
+	public function hasPlayer(Player $player): bool
+	{
+		return $this->players->exists(fn (int $key, Player $participant) => $participant->id === $player->id);
 	}
 
 	public function end(\DateTimeImmutable $endedAt): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Ares\Repository;
 
+use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Domain\Repository\SquadronRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Ares\Model\Squadron;
@@ -26,35 +27,34 @@ class SquadronRepository extends DoctrineRepository implements SquadronRepositor
 	{
 		$qb = $this->createQueryBuilder('s');
 
-		$qb
-			->select(
-				'SUM(s.ship0) AS nbs0',
-				'SUM(s.ship1) AS nbs1',
-				'SUM(s.ship2) AS nbs2',
-				'SUM(s.ship3) AS nbs3',
-				'SUM(s.ship4) AS nbs4',
-				'SUM(s.ship5) AS nbs5',
-				'SUM(s.ship6) AS nbs6',
-				'SUM(s.ship7) AS nbs7',
-				'SUM(s.ship8) AS nbs8',
-				'SUM(s.ship9) AS nbs9',
-				'SUM(s.ship10) AS nbs10',
-				'SUM(s.ship11) AS nbs11'
-			)
+		$rows = $qb
+			->select('s.shipCategory AS category', 'SUM(s.ships) AS ships')
 			->join('s.commander', 'c')
 			->join('c.player', 'p')
 			->where('p.faction = :faction')
-			->andWhere($qb->expr()->in('c.statement', [Commander::AFFECTED, Commander::MOVING]))
-			->setParameter('faction', $faction->id, UuidType::NAME);
+			->andWhere($qb->expr()->in('c.statement', [Commander::AFFECTED, Commander::MOVING, Commander::IN_BATTLE]))
+			->groupBy('s.shipCategory')
+			->setParameter('faction', $faction->id, UuidType::NAME)
+			->getQuery()
+			->getArrayResult();
 
-		return $qb->getQuery()->getSingleResult();
+		$stats = [];
+		foreach (ShipCategory::cases() as $category) {
+			$stats['nbs'.$category->value] = 0;
+		}
+		foreach ($rows as $row) {
+			$category = $row['category'] instanceof ShipCategory ? $row['category']->value : (int) $row['category'];
+			$stats['nbs'.$category] = (int) $row['ships'];
+		}
+
+		return $stats;
 	}
 
 	public function getCommanderSquadrons(Commander $commander): array
 	{
 		return $this->findBy(
 			['commander' => $commander],
-			orderBy: ['position' => 'ASC'],
+			orderBy: ['q' => 'ASC', 'r' => 'ASC'],
 		);
 	}
 }

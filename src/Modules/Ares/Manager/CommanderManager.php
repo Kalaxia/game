@@ -5,24 +5,15 @@ declare(strict_types=1);
 namespace App\Modules\Ares\Manager;
 
 use App\Classes\Library\DateTimeConverter;
-use App\Modules\Ares\Application\Factory\ReportFactory;
-use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Application\Handler\Movement\MoveFleet;
-use App\Modules\Ares\Application\Handler\VirtualCommanderHandler;
 use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
-use App\Modules\Ares\Domain\Repository\ReportRepositoryInterface;
 use App\Modules\Ares\Message\CommanderTravelMessage;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Ares\Model\LiveReport;
-use App\Modules\Ares\Model\Report;
 use App\Modules\Artemis\Application\Handler\AntiSpyHandler;
 use App\Modules\Galaxy\Domain\Entity\Planet;
 use App\Modules\Galaxy\Manager\PlaceManager;
-use App\Modules\Zeus\Manager\PlayerBonusManager;
 use App\Modules\Zeus\Model\Player;
-use App\Modules\Zeus\Model\PlayerBonus;
-use App\Modules\Zeus\Model\PlayerBonusId;
 use App\Shared\Application\Handler\DurationHandler;
 use App\Shared\Application\SchedulerInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,14 +27,8 @@ readonly class CommanderManager implements SchedulerInterface
 		private EntityManagerInterface $entityManager,
 		private CommanderRepositoryInterface $commanderRepository,
 		private MoveFleet $moveFleet,
-		private ReportRepositoryInterface $reportRepository,
-		private PlayerBonusManager $playerBonusManager,
 		private PlaceManager $placeManager,
 		private MessageBusInterface $messageBus,
-		private FightManager $fightManager,
-		private VirtualCommanderHandler $virtualCommanderHandler,
-		private CommanderArmyHandler $commanderArmyHandler,
-		private ReportFactory $reportFactory,
 	) {
 	}
 
@@ -81,18 +66,16 @@ readonly class CommanderManager implements SchedulerInterface
 		}
 	}
 
+	/**
+	 * Sends every ship of the fleet back to the hangar of its base, and dissolves its squadrons.
+	 */
 	public function emptySquadrons(Commander $commander): void
 	{
-		$this->commanderArmyHandler->setArmy($commander);
-		$planet = $commander->base;
-
-		$nbSquadrons = count($commander->squadronsIds);
-		for ($i = 0; $i < $nbSquadrons; ++$i) {
-			for ($j = 0; $j < 12; ++$j) {
-				$planet->addShips($j, $commander->getSquadron($i)->getShipQuantity($j));
-			}
-			$commander->getSquadron($i)->emptySquadron();
+		foreach ($commander->squadrons as $squadron) {
+			$commander->base->addShips($squadron->shipCategory, $squadron->ships);
 		}
+
+		$commander->squadrons->clear();
 	}
 
 	public function getPosition(Commander $commander, $x1, $y1, $x2, $y2): array
@@ -114,11 +97,8 @@ readonly class CommanderManager implements SchedulerInterface
 	public function uChangeBase(Commander $commander): void
 	{
 		$place = $commander->destinationPlace;
-		$placeCommanders = $this->commanderRepository->getPlanetCommanders($place);
 		// @WARNING check if this is the right property to use, originally rplanetId to Place
 		$commanderPlace = $commander->startPlace;
-		$player = $commander->player;
-		$playerBonus = $this->playerBonusManager->getBonusByPlayer($player);
 		// si la place et la flotte ont la même couleur
 		// on pose la flotte si il y a assez de place
 		// sinon on met la flotte dans les hangars
@@ -155,38 +135,5 @@ readonly class CommanderManager implements SchedulerInterface
 		$commander->startPlace = null;
 		$commander->destinationPlace = null;
 		$commander->statement = $statement;
-	}
-
-	public function lootAnEmptyPlace(Planet $place, Commander $commander, PlayerBonus $playerBonus): void
-	{
-		$bonus = $playerBonus->bonuses->get(PlayerBonusId::SHIP_CONTAINER);
-
-		$storage = $this->commanderArmyHandler->getPevToLoot($commander) * Commander::COEFFLOOT;
-		$storage += intval(round($storage * ((2 * $bonus) / 100)));
-
-		$resourcesLooted = ($storage > $place->resourcesStorage) ? $place->resourcesStorage : $storage;
-
-		$place->resourcesStorage -= $resourcesLooted;
-		$commander->resources = $resourcesLooted;
-
-		LiveReport::$resources = $resourcesLooted;
-	}
-
-	public function startFight(Planet $place, Commander $commander, ?Commander $enemyCommander = null): void
-	{
-		if (null === $enemyCommander) {
-			$enemyCommander = $this->virtualCommanderHandler->createVirtualCommander($place);
-		}
-		$this->fightManager->startFight($commander, $enemyCommander);
-	}
-
-	public function createReport(Planet $place): Report
-	{
-		$report = $this->reportFactory->create($place);
-
-		$this->reportRepository->save($report);
-		LiveReport::clear();
-
-		return $report;
 	}
 }

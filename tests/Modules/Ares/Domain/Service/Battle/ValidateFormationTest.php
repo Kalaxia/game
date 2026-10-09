@@ -16,7 +16,7 @@ class ValidateFormationTest extends BattleTestCase
 		$formation = [
 			new FormationSlot(self::shipType('Corvette'), 14, new Hex(2, 0)),
 			new FormationSlot(self::shipType('Cruiser'), 1, Hex::origin()),
-			new FormationSlot(self::shipType('Bomber'), 10, new Hex(-1, 2)),
+			new FormationSlot(self::shipType('HeavyFighter'), 10, new Hex(-1, 2)),
 		];
 
 		static::assertSame([], (new ValidateFormation())($formation));

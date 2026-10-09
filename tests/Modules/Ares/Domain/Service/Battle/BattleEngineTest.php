@@ -50,7 +50,7 @@ class BattleEngineTest extends BattleTestCase
 			fn (TurnResult $turn) => $turn->toArray(),
 			(new BattleEngine())->resolveBattle(self::battle([
 				self::fleet('a', 0, ['LightFighter' => 50, 'Corvette' => 14, 'Frigate' => 2]),
-				self::fleet('b', 1, ['Fighter' => 33, 'LightFrigate' => 8, 'Bomber' => 25]),
+				self::fleet('b', 1, ['Fighter' => 33, 'LightFrigate' => 8, 'HeavyFighter' => 25]),
 			], $seed)),
 		);
 
@@ -139,7 +139,7 @@ class BattleEngineTest extends BattleTestCase
 	public function testNoTwoSquadronsShareACell(): void
 	{
 		$state = self::battle([
-			self::fleet('a', 0, ['LightFighter' => 150, 'Bomber' => 50]),
+			self::fleet('a', 0, ['LightFighter' => 150, 'HeavyFighter' => 50]),
 			self::fleet('b', 1, ['Fighter' => 99, 'LightCorvette' => 40]),
 			self::fleet('c', 1, ['HeavyFighter' => 66], arrivalTurn: 2),
 		]);
