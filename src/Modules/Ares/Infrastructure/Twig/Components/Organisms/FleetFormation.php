@@ -178,6 +178,11 @@ final class FleetFormation
 		return ($this->getBattleShipTypeName)($this->battleShipTypeRegistry->getByCategory($category));
 	}
 
+	public function getPictogram(ShipCategory $category): string
+	{
+		return $this->battleShipTypeRegistry->getByCategory($category)->pictogram;
+	}
+
 	public function getPev(): int
 	{
 		return ($this->getCommanderPev)($this->commander);

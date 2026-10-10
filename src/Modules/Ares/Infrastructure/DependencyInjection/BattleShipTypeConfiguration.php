@@ -30,6 +30,8 @@ class BattleShipTypeConfiguration implements ConfigurationInterface
 				->end()
 				->children()
 					->integerNode('ship_category')->min(0)->max(count(ShipCategory::cases()) - 1)->end()
+					// File name, without extension, of the pictogram in assets/images/legacy/picto/ships/types
+					->scalarNode('pictogram')->isRequired()->cannotBeEmpty()->end()
 					->enumNode('role')->isRequired()->values(array_map(fn (ShipRole $role) => $role->value, ShipRole::cases()))->end()
 					->enumNode('class')->values(array_map(fn (ShipClass $class) => $class->value, ShipClass::cases()))->end()
 					->integerNode('pev')->min(1)->end()

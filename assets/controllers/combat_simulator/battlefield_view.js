@@ -8,8 +8,10 @@
  *
  * Art direction: the faction colour is the dominant colour and identifies who owns an element.
  * Squadrons, shots and fleet names use the faction colours (--color-medium-N, --color-light-N);
- * ship types will be identified by pictograms.
+ * ship types are identified by pictograms, which turn toward the closest enemy squadron.
  */
+import { CLASS_PICTOGRAMS, SHIP_PICTOGRAMS } from './ship_pictograms.js';
+
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const CELL_SIZE = 10;
 const SQRT3 = Math.sqrt(3);
@@ -190,7 +192,8 @@ export class BattlefieldView
 			<style>
 				.squadron { transition-property: transform, opacity; transition-timing-function: ease-in-out; }
 				[data-zoom="battlefield"] .squadron { cursor: zoom-in; }
-				.squadron text { font-size: 7px; font-weight: 700; fill: white; paint-order: stroke; stroke: rgba(0, 0, 0, .75); stroke-width: 1.6px; pointer-events: none; }
+				.squadron text { font-size: 3.6px; font-weight: 700; fill: white; paint-order: stroke; stroke: rgba(0, 0, 0, .75); stroke-width: 1px; pointer-events: none; }
+				.squadron .pictogram { transform-origin: 0 0; transition: transform 300ms ease-out; fill: white; paint-order: stroke; stroke: rgba(0, 0, 0, .7); stroke-width: 6px; stroke-linejoin: round; pointer-events: none; }
 				[data-zoom="battlefield"] .squadron text { display: none; }
 				.fleet-label { font-size: 14px; fill: white; paint-order: stroke; stroke: rgba(0, 0, 0, .8); stroke-width: 3px; pointer-events: none; }
 				[data-zoom="fleet"] .fleet-label { font-size: 6px; stroke-width: 1.5px; }
@@ -270,10 +273,13 @@ export class BattlefieldView
 			stroke: factionColor(fleet.faction, 'light'),
 			'stroke-width': 1.4,
 		});
-		const text = this._element('text', { 'text-anchor': 'middle', 'dominant-baseline': 'central' });
+		// Ship type pictogram above, number of ships below
+		const shipType = this.battle.ship_types[squadron.type];
+		const pictogram = this._pictogram(shipType?.pictogram ?? CLASS_PICTOGRAMS[shipType?.class]);
+		const text = this._element('text', { y: CELL_SIZE * 0.5, 'text-anchor': 'middle', 'dominant-baseline': 'central' });
 		const title = this._element('title');
 
-		group.append(hex, text, title);
+		group.append(hex, ...(pictogram ? [pictogram] : []), text, title);
 		// From the battlefield view, clicking a squadron zooms on the area of its fleet
 		group.addEventListener('click', () => {
 			const cluster = this.currentSnapshot?.fleets[squadron.fleet]?.cluster;
@@ -282,9 +288,59 @@ export class BattlefieldView
 			}
 		});
 		this.squadronLayer.appendChild(group);
-		this.squadronNodes[id] = { group, hex, text, title };
+		this.squadronNodes[id] = { group, hex, pictogram, text, title };
 
 		return this.squadronNodes[id];
+	}
+
+	/**
+	 * Pictogram of the ship class, scaled into the upper part of the squadron hexagon.
+	 */
+	_pictogram(name)
+	{
+		const shape = SHIP_PICTOGRAMS[name];
+		if (!shape) {
+			return null;
+		}
+
+		const wrapper = this._element('g', { class: 'pictogram' });
+		wrapper.appendChild(this._element(shape.tag, { [shape.attribute]: shape.value }));
+		this._orientPictogram(wrapper, 0);
+
+		return wrapper;
+	}
+
+	/**
+	 * Turns the pictogram around its center, in the upper part of the hexagon; 0° is nose up.
+	 */
+	_orientPictogram(pictogram, angle)
+	{
+		const size = CELL_SIZE * 0.85;
+		pictogram.style.transform = `translate(0px, ${-size * 0.22}px) rotate(${angle}deg) scale(${size / 64}) translate(-32px, -32px)`;
+	}
+
+	/**
+	 * Angle from a squadron to the closest enemy squadron still fighting, null when there is none.
+	 */
+	_angleToClosestEnemy(snapshot, id, squadron)
+	{
+		const side = this.battle.fleets.find(fleet => fleet.id === squadron.fleet)?.side;
+		const from = this._pixel(squadron.cell);
+		let closest = null;
+
+		for (const [otherId, other] of Object.entries(snapshot.squadrons)) {
+			if (otherId === id || other.ships <= 0 || other.fled || this.battle.fleets.find(fleet => fleet.id === other.fleet)?.side === side) {
+				continue;
+			}
+
+			const to = this._pixel(other.cell);
+			const distance = (to.x - from.x) ** 2 + (to.y - from.y) ** 2;
+			if (null === closest || distance < closest.distance) {
+				closest = { distance, angle: Math.atan2(to.y - from.y, to.x - from.x) * 180 / Math.PI + 90 };
+			}
+		}
+
+		return closest?.angle ?? null;
 	}
 
 	// State
@@ -301,6 +357,14 @@ export class BattlefieldView
 			node.group.style.opacity = squadron.ships > 0 && !squadron.joining && !squadron.fled ? this._squadronOpacity(snapshot, squadron) : '0';
 			node.text.textContent = squadron.ships;
 			node.title.textContent = this.describeSquadron(id, squadron);
+
+			const angle = node.pictogram ? this._angleToClosestEnemy(snapshot, id, squadron) : null;
+			if (null !== angle) {
+				// Shortest turn, so that the transition does not spin around
+				const previous = node.angle ?? angle;
+				node.angle = previous + ((((angle - previous) % 360) + 540) % 360 - 180);
+				this._orientPictogram(node.pictogram, node.angle);
+			}
 		}
 
 		// Squadrons not in the snapshot have not joined yet

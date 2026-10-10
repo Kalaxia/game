@@ -1654,6 +1654,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * }>
  * @psalm-type BattleShipTypesConfig = array<string, array{ // Default: []
  *     ship_category?: int|Param,
+ *     pictogram?: scalar|Param|null,
  *     role?: "interceptor"|"bomber"|"escort"|"line"|"artillery"|"capital"|Param,
  *     class?: 0|1|2|3|Param,
  *     pev?: int|Param,

@@ -141,7 +141,7 @@ readonly class PresentBattle
 	}
 
 	/**
-	 * @return array<string, array{name: string, role: string, class: int, pev: int}>
+	 * @return array<string, array{name: string, role: string, class: int, pev: int, pictogram: string}>
 	 */
 	private function getShipTypes(): array
 	{
@@ -153,6 +153,7 @@ readonly class PresentBattle
 				'role' => $type->role->value,
 				'class' => $type->class->value,
 				'pev' => $type->pev,
+				'pictogram' => $type->pictogram,
 			];
 		}
 

@@ -88,6 +88,7 @@ class BattleShipTypeRegistry
 			minRange: $stats['min_range'] ?? 1,
 			splashRatio: (float) ($stats['splash_ratio'] ?? 0.0),
 			splitFire: $stats['split_fire'] ?? false,
+			pictogram: $stats['pictogram'],
 		);
 	}
 }

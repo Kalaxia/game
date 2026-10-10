@@ -45,12 +45,19 @@ class BattleShipTypeRegistryTest extends TestCase
 		static::assertSame(ShipCategory::HeavyCorvette, $registry->getByCategory(ShipCategory::HeavyCorvette)->shipCategory);
 	}
 
+	public function testEveryTypeHasAnExistingPictogram(): void
+	{
+		foreach ($this->createRegistryFromProjectConfiguration()->all() as $type) {
+			static::assertFileExists(sprintf('%s/assets/images/legacy/picto/ships/types/%s.svg', dirname(__DIR__, 5), $type->pictogram), $type->identifier);
+		}
+	}
+
 	public function testTypeWithoutCategoryMustDefineBaseStats(): void
 	{
 		$this->expectException(InvalidConfigurationException::class);
 
 		(new Processor())->processConfiguration(new BattleShipTypeConfiguration(), [[
-			'Incomplete' => ['role' => 'line', 'squadron_size' => 1, 'movement' => 1, 'initiative' => 1, 'range' => 1],
+			'Incomplete' => ['role' => 'line', 'pictogram' => 'frigate', 'squadron_size' => 1, 'movement' => 1, 'initiative' => 1, 'range' => 1],
 		]]);
 	}
 

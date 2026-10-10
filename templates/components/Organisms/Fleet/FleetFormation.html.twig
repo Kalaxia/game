@@ -40,6 +40,7 @@
 					{% set selected = selectedCategory == ship_type.category.value %}
 					<label class="flex items-center gap-2 rounded-md px-2 py-1 cursor-pointer hover:bg-white/5 {{ selected ? 'bg-white/10 ring-1 ring-white/20' }} {{ ship_type.hangar == 0 ? 'opacity-50' }}">
 						<input type="radio" name="selected-category" value="{{ ship_type.category.value }}" data-model="selectedCategory" {{ selected ? 'checked' }} class="sr-only" />
+						{{ include('components/Atoms/Fleet/ship_pictogram.html.twig', {pictogram: ship_type.type.pictogram, class: 'size-4'}) }}
 						<span class="grow">{{ ship_type.name }}</span>
 						<span class="text-xs text-gray-500">{{ ('combat_simulator.roles.' ~ ship_type.type.role.value)|trans }}</span>
 						<span class="text-xs text-gray-300" title="Vaisseaux au hangar · par escadrille">{{ ship_type.hangar }} · ×{{ ship_type.type.squadronSize }}</span>
@@ -96,8 +97,8 @@
 					{% endif %}
 				>
 					{% if squadron %}
-						<span class="text-sm font-semibold">{{ squadron.ships }}</span>
-						<span class="max-w-12 truncate text-[10px]">{{ this.shipTypeName(squadron.shipCategory) }}</span>
+						{{ include('components/Atoms/Fleet/ship_pictogram.html.twig', {pictogram: this.pictogram(squadron.shipCategory), class: 'size-6'}) }}
+						<span class="text-xs font-semibold">{{ squadron.ships }}</span>
 					{% endif %}
 				</button>
 			{% endfor %}

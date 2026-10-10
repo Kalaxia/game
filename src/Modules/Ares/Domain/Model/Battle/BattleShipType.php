@@ -41,6 +41,8 @@ final readonly class BattleShipType
 		public float $splashRatio = 0.0,
 		/** Whether the shots are shared between two targets */
 		public bool $splitFire = false,
+		/** Pictogram identifying the type on the battlefield and in the formation editors */
+		public string $pictogram = 'fighter',
 	) {
 	}
 
