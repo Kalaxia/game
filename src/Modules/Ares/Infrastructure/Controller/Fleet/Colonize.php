@@ -2,10 +2,10 @@
 
 namespace App\Modules\Ares\Infrastructure\Controller\Fleet;
 
-use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Application\Handler\Movement\MoveFleet;
 use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
+use App\Modules\Ares\Domain\Service\GetCommanderPev;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Demeter\Domain\Repository\ColorRepositoryInterface;
 use App\Modules\Demeter\Domain\Service\Configuration\GetFactionsConfiguration;
@@ -38,7 +38,7 @@ class Colonize extends AbstractController
 		MoveFleet $moveFleet,
 		CurrentPlayerPlanetsRegistry $currentPlayerBasesRegistry,
 		CurrentPlayerBonusRegistry $currentPlayerBonusRegistry,
-		CommanderArmyHandler $commanderArmyHandler,
+		GetCommanderPev $getCommanderPev,
 		ColorRepositoryInterface $colorRepository,
 		CommanderRepositoryInterface $commanderRepository,
 		TechnologyRepositoryInterface $technologyRepository,
@@ -103,7 +103,7 @@ class Colonize extends AbstractController
 		if (!$currentPlayer->canAfford($price)) {
 			throw new ConflictHttpException('Vous n\'avez pas assez de crédits pour coloniser cette planète.');
 		}
-		if (0 === $commanderArmyHandler->getPev($commander)) {
+		if (0 === $getCommanderPev($commander)) {
 			throw new ConflictHttpException('Vous devez affecter au moins un vaisseau à votre officier.');
 		}
 		if (!$commander->isAffected()) {

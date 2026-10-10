@@ -1,7 +1,3 @@
-combat_reports:
-    resource: './ares/combat_reports.yaml'
-    prefix: /combat-reports
-
 fleets:
     resource: './ares/fleets.yaml'
     prefix: /fleets
@@ -29,8 +25,3 @@ fleet_archives:
 memorial:
     path: /memorial
     controller: App\Modules\Ares\Infrastructure\Controller\ViewMemorial
-
-update_fleet_squadron:
-    path: /api/fleets/{id}/squadrons/{squadronId}
-    methods: 'PATCH'
-    controller: App\Modules\Ares\Infrastructure\Controller\Fleet\UpdateSquadron

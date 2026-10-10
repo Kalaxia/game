@@ -20,11 +20,6 @@ class BaseTypeChoice
 		return PlaceResource::get($this->type, 'name');
 	}
 
-	public function getFleetQuantity(): int
-	{
-		return PlaceResource::get($this->type, 'l-line') + PlaceResource::get($this->type, 'r-line');
-	}
-
 	public function getTaxToll(): int
 	{
 		return intval(PlaceResource::get($this->type, 'tax') * 100);

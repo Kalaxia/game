@@ -1,0 +1,23 @@
+{# Battles linked to their report and replay. Expects `battles` (list of Battle). #}
+<ul role="list" class="divide-y divide-white/10">
+	{% for battle in battles %}
+		<li>
+			<a href="{{ path('battle_view', {id: battle.id}) }}" class="flex items-center justify-between gap-4 px-2 py-2 hover:bg-white/5">
+				<span>
+					<span class="font-medium">
+						{{ battle.place is null ? 'Bataille' : (battle.place.player is not null ? battle.place.name : 'Planète rebelle') }}
+					</span>
+					<span class="block text-xs text-gray-400">
+						{{ battle.startedAt|game_date|raw }}
+						· {{ battle.players|map(player => player.name)|join(', ') }}
+					</span>
+				</span>
+				<span class="shrink-0 text-xs {{ battle.isOver ? 'text-gray-400' : 'text-white' }}">
+					{{ battle.isOver ? battle.turn ~ ' tours' : 'en cours' }}
+				</span>
+			</a>
+		</li>
+	{% else %}
+		<li class="px-2 py-2 text-sm text-gray-400">Aucune bataille.</li>
+	{% endfor %}
+</ul>

@@ -1,0 +1,21 @@
+<doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+				  xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+				  xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+	<entity name="App\Modules\Ares\Domain\Model\Battle\BattleTurn" table="battle_turn">
+		<id name="id" column="id" type="uuid" />
+
+		<unique-constraints>
+			<unique-constraint name="battle_turn_unique" columns="battle_id,turn" />
+		</unique-constraints>
+
+		<many-to-one field="battle" target-entity="App\Modules\Ares\Domain\Model\Battle\Battle">
+			<join-column name="battle_id" nullable="false" on-delete="CASCADE" />
+		</many-to-one>
+
+		<field name="turn" type="smallint" />
+		<field name="events" type="json" />
+		<field name="resolvedAt" type="datetime_immutable" />
+	</entity>
+</doctrine-mapping>

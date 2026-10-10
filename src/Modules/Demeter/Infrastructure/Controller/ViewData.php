@@ -3,8 +3,8 @@
 namespace App\Modules\Demeter\Infrastructure\Controller;
 
 use App\Classes\Library\Format;
+use App\Modules\Ares\Domain\Repository\BattleRepositoryInterface;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
-use App\Modules\Ares\Domain\Repository\LiveReportRepositoryInterface;
 use App\Modules\Ares\Domain\Repository\SquadronRepositoryInterface;
 use App\Modules\Ares\Domain\Service\GetShipCategoriesConfiguration;
 use App\Modules\Ares\Model\Commander;
@@ -41,7 +41,7 @@ class ViewData extends AbstractController
 		CommanderRepositoryInterface $commanderRepository,
 		CommercialTaxRepositoryInterface $commercialTaxRepository,
 		CreditTransactionRepositoryInterface $creditTransactionRepository,
-		LiveReportRepositoryInterface $reportRepository,
+		BattleRepositoryInterface $battleRepository,
 		FactionRankingRepositoryInterface $factionRankingRepository,
 		GalaxyConfiguration $galaxyConfiguration,
 		SectorRepositoryInterface $sectorRepository,
@@ -101,8 +101,7 @@ class ViewData extends AbstractController
 			'commander_stats' => $commanderStats,
 			'fleet_stats' => $fleetStats,
 			'total_pev' => $totalPEV,
-			'attack_reports' => $reportRepository->getFactionAttackReports($faction),
-			'defense_reports' => $reportRepository->getFactionDefenseReports($faction),
+			'faction_battles' => $battleRepository->getFactionBattles($faction),
 			'sectors' => $sectors,
 			'map_scale' => 750 / $galaxyConfiguration->galaxy['size'],
 			'map_data_types' => $mapData['types'],

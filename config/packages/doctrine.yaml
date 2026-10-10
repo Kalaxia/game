@@ -15,6 +15,11 @@ doctrine:
                 type: 'xml'
                 dir: '%kernel.project_dir%/config/doctrine/ares'
                 prefix: 'App\Modules\Ares\Model'
+            AresBattle:
+                is_bundle: false
+                type: 'xml'
+                dir: '%kernel.project_dir%/config/doctrine/ares_battle'
+                prefix: 'App\Modules\Ares\Domain\Model\Battle'
             Artemis:
                 is_bundle: false
                 type: 'xml'

@@ -39,20 +39,7 @@ class AffectCommander extends AbstractController
 
 		$planet = $commander->base;
 
-		// checker si on a assez de place !!!!!
-		$nbrLine1 = $commanderRepository->countCommandersByLine($planet, 1);
-		$nbrLine2 = $commanderRepository->countCommandersByLine($planet, 2);
-
 		if ($commander->isInSchool() || $commander->isInReserve()) {
-			if ($nbrLine2 < PlaceResource::get($planet->typeOfBase, 'r-line')) {
-				$commander->line = 2;
-				$statement = 'de réserve';
-			} elseif ($nbrLine1 < PlaceResource::get($planet->typeOfBase, 'l-line')) {
-				$commander->line = 1;
-				$statement = 'active';
-			} else {
-				throw new \LogicException('Votre base a dépassé la capacité limite d\'officiers en activité');
-			}
 			$commander->assignedAt = new \DateTimeImmutable();
 			$commander->statement = Commander::AFFECTED;
 
@@ -60,7 +47,7 @@ class AffectCommander extends AbstractController
 
 			$eventDispatcher->dispatch(new AffectationEvent($commander, $currentPlayer));
 
-			$this->addFlash('success', sprintf('Votre officier %s a bien été affecté en force %s', $commander->name, $statement));
+			$this->addFlash('success', sprintf('Votre officier %s a bien été affecté en orbite', $commander->name));
 
 			return $this->redirectToRoute('fleet_headquarters', ['commander' => $commander->id]);
 		} elseif ($commander->isAffected()) {
@@ -82,6 +69,6 @@ class AffectCommander extends AbstractController
 
 			return $this->redirectToRoute('school');
 		}
-		throw new ConflictHttpException('Le status de votre officier ne peut pas être modifié');
+		throw new ConflictHttpException('Le statut de votre officier ne peut pas être modifié');
 	}
 }

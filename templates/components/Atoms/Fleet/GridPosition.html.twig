@@ -1,0 +1,9 @@
+<div {{ attributes.defaults({
+	class: 'fleet-grid-position bg-gray-500 cursor-pointer'
+}) }}
+	data-action="click->live#emit"
+	 data-live-event-param="gridPositionSelected"
+	 data-live-x-param="{{ this.x }}"
+	 data-live-y-param="{{ this.y }}">
+
+</div>

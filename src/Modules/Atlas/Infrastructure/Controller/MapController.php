@@ -3,8 +3,8 @@
 namespace App\Modules\Atlas\Infrastructure\Controller;
 
 use App\Classes\Container\Params;
+use App\Modules\Ares\Domain\Repository\BattleRepositoryInterface;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
-use App\Modules\Ares\Domain\Repository\ReportRepositoryInterface;
 use App\Modules\Ares\Manager\CommanderManager;
 use App\Modules\Ares\Manager\ConquestManager;
 use App\Modules\Ares\Model\Commander;
@@ -50,7 +50,7 @@ class MapController extends AbstractController
 		RecyclingMissionRepositoryInterface $recyclingMissionRepository,
 		GalaxyConfiguration $galaxyConfiguration,
 		SpyReportRepositoryInterface $spyReportRepository,
-		ReportRepositoryInterface $reportRepository,
+		BattleRepositoryInterface $battleRepository,
 	): Response {
 		$defaultPosition = $this->getDefaultPosition($request, $currentBase);
 		$selectedSystemData = [];
@@ -69,7 +69,7 @@ class MapController extends AbstractController
 				'technologies' => $technologyRepository->getPlayerTechnology($currentPlayer),
 				'recycling_missions' => $recyclingMissionRepository->getPlanetActiveMissions($currentBase),
 				'spy_reports' => $spyReportRepository->getSystemReports($currentPlayer, $placesIds),
-				'combat_reports' => $reportRepository->getAttackReportsByPlaces($currentPlayer, $placesIds),
+				'battles' => $battleRepository->getPlayerBattlesAt($currentPlayer, $placesIds),
 				'colonization_cost' => $conquestManager->getColonizationCost($currentPlayer, $basesCount),
 				'conquest_cost' => $conquestManager->getConquestCost($currentPlayer, $basesCount),
 			];
@@ -85,8 +85,7 @@ class MapController extends AbstractController
 			'commercial_routes' => $commercialRouteRepository->getAllPlayerRoutes($currentPlayer),
 			'local_commanders' => $commanderRepository->getPlanetCommanders(
 				$currentBase,
-				[Commander::AFFECTED, Commander::MOVING],
-				['line' => 'DESC'],
+				[Commander::AFFECTED, Commander::MOVING, Commander::IN_BATTLE],
 			),
 			'moving_commanders' => $movingCommanders,
 			'attacking_commanders' => array_merge(

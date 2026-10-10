@@ -175,7 +175,7 @@ class PlayerRankingRepository extends DoctrineRepository implements PlayerRankin
 			->join('sq', 'commander', 'c', 'c.id = sq.commander_id')
 			->join('c', 'player', 'p', 'p.id = c.player_id')
 			->where('c.statement IN (:statements)')
-			->setParameter('statements', [Commander::AFFECTED, Commander::MOVING], Types::SIMPLE_ARRAY)
+			->setParameter('statements', [Commander::AFFECTED, Commander::MOVING, Commander::IN_BATTLE], Types::SIMPLE_ARRAY)
 			->groupBy('p.id');
 
 		return $qb->executeQuery();

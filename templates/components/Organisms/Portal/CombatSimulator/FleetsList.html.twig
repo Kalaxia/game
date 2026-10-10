@@ -1,0 +1,67 @@
+<div {{ attributes }} class="grid grid-cols-1 gap-8 md:grid-cols-2">
+	{% for side, fleets in this.fleetsBySide %}
+		<section aria-labelledby="side-{{ side }}-title">
+			<h2 id="side-{{ side }}-title" class="text-lg font-semibold text-white">
+				Camp {{ side == 0 ? 'A' : 'B' }}
+			</h2>
+
+			<ul role="list" class="mt-4 flex flex-col gap-4">
+				{% for fleet in fleets %}
+					<li class="rounded-lg bg-gray-800 border-t-4 border-medium{{ fleet.faction }}">
+						<div class="p-4">
+							<div class="flex items-baseline justify-between gap-4">
+								<h3 class="truncate text-sm font-medium text-white">{{ fleet.name }}</h3>
+								<span class="shrink-0 text-xs text-gray-400">
+									{{ this.pev(fleet) }} PEV · {{ fleet.formation|length }} escadrilles
+								</span>
+							</div>
+							<p class="mt-1 text-xs text-gray-400">
+								{{ fleet.faction == 0 ? 'Sans faction' : ('factions.' ~ fleet.faction ~ '.name.official')|trans }}
+								· officier niveau {{ fleet.officer_level }}
+								· {{ fleet.arrival_turn == 1 ? 'présente dès le début' : 'arrive au tour ' ~ fleet.arrival_turn }}
+							</p>
+							{% if fleet.traits is defined and fleet.traits is not empty %}
+								<p class="mt-1 text-xs text-gray-400">
+									Traits :
+									{% for trait in fleet.traits %}
+										<span title="{{ ('combat_simulator.traits.' ~ trait ~ '.description')|trans }}" class="text-gray-200">{{ ('combat_simulator.traits.' ~ trait ~ '.name')|trans }}</span>{{ not loop.last ? ', ' }}
+									{% endfor %}
+								</p>
+							{% endif %}
+							<p class="mt-2 text-xs text-gray-300">
+								{% for name, quantity in this.ships(fleet) %}
+									{{ quantity }} {{ name }}{{ not loop.last ? ', ' }}
+								{% endfor %}
+							</p>
+						</div>
+						<div class="flex divide-x divide-white/10 border-t border-white/10 text-sm text-white">
+							<button type="button"
+								data-action="live#emit"
+								data-live-event-param="editSimulatedFleet"
+								data-live-fleet-id-param="{{ fleet.id }}"
+								class="flex-1 py-2 hover:bg-white/5">
+								Modifier
+							</button>
+							<button type="button" {{ live_action('duplicate', {fleetId: fleet.id}) }} class="flex-1 py-2 hover:bg-white/5">
+								Dupliquer
+							</button>
+							<button type="button" {{ live_action('remove', {fleetId: fleet.id}) }} class="flex-1 py-2 hover:bg-white/5">
+								Supprimer
+							</button>
+						</div>
+					</li>
+				{% endfor %}
+
+				<li>
+					<button type="button"
+						data-action="live#emit"
+						data-live-event-param="newSimulatedFleet"
+						data-live-side-param="{{ side }}"
+						class="block w-full rounded-lg border-2 border-dashed border-white/15 p-6 text-center text-sm font-semibold text-white hover:border-white/25">
+						Ajouter une flotte au camp {{ side == 0 ? 'A' : 'B' }}
+					</button>
+				</li>
+			</ul>
+		</section>
+	{% endfor %}
+</div>

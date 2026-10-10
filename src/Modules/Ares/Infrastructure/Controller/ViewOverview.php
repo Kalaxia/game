@@ -43,7 +43,7 @@ class ViewOverview extends AbstractController
 		// commander manager : yours
 		$commanders = $this->commanderRepository->getPlayerCommanders(
 			$currentPlayer,
-			[Commander::AFFECTED, Commander::MOVING],
+			[Commander::AFFECTED, Commander::MOVING, Commander::IN_BATTLE],
 			['c.base' => 'DESC'],
 		);
 

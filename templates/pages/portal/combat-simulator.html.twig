@@ -1,0 +1,56 @@
+{% extends 'layouts/portal.html.twig' %}
+
+{% block body %}
+	<twig:PortalHeader />
+
+	<main class="mx-auto max-w-7xl mt-24 px-4 pb-24 text-white" data-controller="ui--modal">
+		<p>
+			Composez vos flottes, répartissez-les en deux camps et faites-les s’affronter.
+			Les flottes arrivant plus tard dans la bataille servent de renforts.
+		</p>
+
+		<div class="mt-8">
+			<twig:SimulatorFleetsList />
+		</div>
+
+		<section class="mt-12"
+			data-controller="combat-simulator--replay"
+			data-combat-simulator--replay-run-url-value="{{ path('combat_simulator_run') }}"
+			data-combat-simulator--replay-live-url-value="{{ path('combat_simulator_live_start') }}"
+			aria-labelledby="simulation-title">
+			<div class="flex flex-wrap items-end gap-4">
+				<h2 id="simulation-title" class="text-lg font-semibold">Simulation</h2>
+				<div class="ml-auto flex items-end gap-3">
+					<div>
+						<label for="simulation-seed" class="block text-xs text-gray-400">Graine (optionnelle)</label>
+						<input id="simulation-seed" type="number" min="1" data-combat-simulator--replay-target="seed" placeholder="aléatoire"
+							class="mt-1 w-36 rounded-md bg-white/5 px-3 py-1.5 text-sm text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500" />
+					</div>
+					<twig:Button type="button" data-action="combat-simulator--replay#run" data-combat-simulator--replay-target="runButton">
+						Lancer la simulation
+					</twig:Button>
+					<button type="button" data-action="combat-simulator--replay#runLive" data-combat-simulator--replay-target="liveButton"
+						title="Le serveur résout un tour toutes les {{ battle_turn_duration }} secondes, comme en jeu. Vous pouvez envoyer des renforts pendant la bataille."
+						class="rounded-md px-3 py-2 text-sm font-semibold text-white ring-1 ring-white/30 hover:bg-white/10 disabled:opacity-50">
+						Lancer en temps réel
+					</button>
+				</div>
+			</div>
+
+			<p class="mt-4 hidden rounded-md bg-red-950/60 border border-red-800 p-3 text-sm text-red-200" data-combat-simulator--replay-target="error"></p>
+
+			<div class="mt-6" data-combat-simulator--replay-target="output"></div>
+		</section>
+
+		<dialog data-ui--modal-target="dialog" aria-modal="true" class="absolute size-full top-0 left-0 bg-black/60">
+			<div class="fixed inset-y-0 top-12 left-12 right-12 bottom-12 z-50 px-6 overflow-y-auto bg-gray-800 sm:ring-1 sm:ring-white/40 sm:rounded-lg text-white">
+				<div class="flex items-center justify-between mt-4">
+					<twig:H3>Flotte</twig:H3>
+				</div>
+				<div class="mt-6 flow-root">
+					<twig:SimulatorFleetEditor />
+				</div>
+			</div>
+		</dialog>
+	</main>
+{% endblock body %}

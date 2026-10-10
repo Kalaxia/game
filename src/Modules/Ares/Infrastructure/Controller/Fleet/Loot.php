@@ -2,11 +2,11 @@
 
 namespace App\Modules\Ares\Infrastructure\Controller\Fleet;
 
-use App\Modules\Ares\Application\Handler\CommanderArmyHandler;
 use App\Modules\Ares\Application\Handler\Movement\MoveFleet;
 use App\Modules\Ares\Domain\Event\Fleet\PlannedLootEvent;
 use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
+use App\Modules\Ares\Domain\Service\GetCommanderPev;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Demeter\Model\Color;
 use App\Modules\Galaxy\Application\Handler\GetDistanceBetweenPlaces;
@@ -45,7 +45,7 @@ class Loot extends AbstractController
 		GetDistanceBetweenPlaces $getDistanceBetweenPlaces,
 		MoveFleet $moveFleet,
 		PlaceRepositoryInterface $placeRepository,
-		CommanderArmyHandler $commanderArmyHandler,
+		GetCommanderPev $getCommanderPev,
 		Uuid $id,
 	): Response {
 		$placeId = $request->query->get('placeId') ?? throw new BadRequestHttpException('Missing place ID');
@@ -74,7 +74,7 @@ class Loot extends AbstractController
 		// TODO replace with proper services
 		$length = $getDistanceBetweenPlaces($home, $place);
 
-		if (0 === $commanderArmyHandler->getPev($commander)) {
+		if (0 === $getCommanderPev($commander)) {
 			throw new ConflictHttpException('You cannot send a commander with an empty fleet');
 		}
 

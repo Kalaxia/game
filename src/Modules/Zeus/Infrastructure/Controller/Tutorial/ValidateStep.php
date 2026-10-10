@@ -179,9 +179,6 @@ class ValidateStep extends AbstractController
 				case TutorialResource::FILL_SQUADRON:
 					// asdf
 					break;
-				case TutorialResource::MOVE_FLEET_LINE:
-					// asdf
-					break;
 				case TutorialResource::SPY_PLANET:
 					// asdf
 					break;

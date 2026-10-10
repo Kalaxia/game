@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Ares\Infrastructure\DataFixtures\Foundry\Factory;
 
+use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Model\Squadron;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
@@ -19,7 +20,10 @@ final class SquadronFactory extends PersistentObjectFactory
 
 		return [
 			'id' => Uuid::v4(),
-			'position' => self::faker()->unique()->numberBetween(0, 24),
+			'shipCategory' => ShipCategory::LightFighter,
+			'ships' => 1,
+			'q' => 0,
+			'r' => 0,
 			'createdAt' => $date,
 			'updatedAt' => $date,
 		];

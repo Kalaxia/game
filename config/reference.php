@@ -1652,6 +1652,26 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     thumbnail?: scalar|Param|null,
  *     techno?: int|Param,
  * }>
+ * @psalm-type BattleShipTypesConfig = array<string, array{ // Default: []
+ *     ship_category?: int|Param,
+ *     pictogram?: scalar|Param|null,
+ *     role?: "interceptor"|"bomber"|"escort"|"line"|"artillery"|"capital"|Param,
+ *     class?: 0|1|2|3|Param,
+ *     pev?: int|Param,
+ *     life?: int|Param,
+ *     defense?: int|Param,
+ *     speed?: int|Param,
+ *     attack?: list<int|Param>,
+ *     squadron_size?: int|Param,
+ *     movement?: int|Param,
+ *     initiative?: int|Param,
+ *     range?: int|Param,
+ *     patterns?: list<"close"|"frontal_cone"|"broadside"|"ring"|"area"|Param>,
+ *     min_range?: int|Param,
+ *     splash_ratio?: float|Param,
+ *     split_fire?: bool|Param,
+ *     preferred_targets?: list<0|1|2|3|Param>,
+ * }>
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1673,6 +1693,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     factions?: FactionsConfig,
  *     faction_bonuses?: FactionBonusesConfig,
  *     ship_categories?: ShipCategoriesConfig,
+ *     battle_ship_types?: BattleShipTypesConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,

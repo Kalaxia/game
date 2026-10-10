@@ -12,6 +12,43 @@ parameters:
 
     ares.loot_limit: 5000
     ares.coeff.loot: 275
+
+    # New battle system (docs/fleet-combat/plan.md)
+    env(BATTLE_TURN_DURATION): '10'
+    ares.battle.turn_duration: '%env(int:BATTLE_TURN_DURATION)%'
+    ares.battle.battlefield_size: 5
+    ares.battle.fleet_area_radius: 4
+    ares.battle.formation_radius: 2
+    # Tuned with app:ares:simulate-battles to reach the duration targets of D1 (see docs/fleet-combat/plan.md)
+    ares.battle.durability_factor: 6.0
+    # Real time taken by one action (a squadron firing): a turn holds turn_duration / action_duration actions,
+    # shared among the fleets, so that the animation of a turn is continuous
+    ares.battle.action_duration: 0.4
+    # Fleet-size maluses (D10): command capacity = base_pev + pev_per_level × officer level
+    ares.battle.command:
+        base_pev: 300
+        pev_per_level: 100
+        malus_per_excess: 0.5
+        max_malus: 0.5
+    # Engagement delay in seconds when the attackers have less than min_force_ratio of the defenders' PEV (D11)
+    ares.battle.engagement:
+        delay: 180
+        min_force_ratio: 0.5
+    # Morale and retreat (D12), to be calibrated during balancing
+    ares.battle.morale:
+        loss_factor: 1.2
+        # Morale gained per percent of the fleet's PEV destroyed among the enemies
+        victory_factor: 0.5
+        outnumbered_penalty: 0.75
+        recovery: 1.0
+        allied_recovery: 2.0
+        withdrawal_threshold: 30.0
+        flight_threshold: 15.0
+        remobilisation_threshold: 50.0
+        exposed_turns: 2
+    # Officer experience per point of damage dealt or taken, before the importance weighting (D6).
+    # Calibrated on the legacy level curve (D19): a balanced medium battle earns about 95 XP, a big one about 160.
+    ares.battle.experience_per_damage: 0.006
     
 services:
     _defaults:
@@ -28,8 +65,3 @@ services:
             - '../../Message'
             - '../../Model'
             - '../../Resource'
-
-    App\Modules\Ares\Manager\ConquestManager:
-        arguments:
-            $colonizationCost: '%ares.coeff.colonization_cost%'
-            $conquestCost: '%ares.coeff.conquest_cost%'

@@ -10,7 +10,6 @@ use App\Modules\Ares\Model\Commander;
 use App\Modules\Athena\Manager\CommercialRouteManager;
 use App\Modules\Galaxy\Application\Registry\CurrentPlayerPlanetsRegistry;
 use App\Modules\Galaxy\Domain\Entity\Planet;
-use App\Modules\Galaxy\Resource\PlaceResource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,11 +31,7 @@ class ViewOverview extends AbstractController
 	): Response {
 		return $this->render('pages/athena/overview.html.twig', [
 			'commercial_routes_data' => $commercialRouteManager->getBaseCommercialData($currentPlanet),
-			'commanders' => $commanderRepository->getPlanetCommanders($currentPlanet, [Commander::AFFECTED, Commander::MOVING]),
-			'vanguard_positions' => PlaceResource::get($currentPlanet->typeOfBase, 'l-line-position'),
-			'vanguard_positions_count' => PlaceResource::get($currentPlanet->typeOfBase, 'l-line'),
-			'rear_positions' => PlaceResource::get($currentPlanet->typeOfBase, 'r-line-position'),
-			'rear_positions_count' => PlaceResource::get($currentPlanet->typeOfBase, 'r-line'),
+			'commanders' => $commanderRepository->getPlanetCommanders($currentPlanet, [Commander::AFFECTED, Commander::MOVING, Commander::IN_BATTLE]),
 			'science_coeff' => Game::getImprovementFromScientificCoef($currentPlanet->coefHistory),
 			'minimal_change_level' => $this->getParameter('athena.obm.change_type_min_level'),
 			'capital_change_level' => $this->getParameter('athena.obm.capital_min_level'),

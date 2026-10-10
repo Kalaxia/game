@@ -1,0 +1,17 @@
+{% extends 'layouts/ares/fleet.html.twig' %}
+
+{% block content %}
+	<twig:PageTitle>
+		Bataille {{ battle.place is not null ? 'en orbite de ' ~ (battle.place.player is not null ? battle.place.name : 'la planète rebelle') }}
+	</twig:PageTitle>
+
+	<section class="text-white"
+		data-controller="combat-simulator--replay"
+		data-combat-simulator--replay-battle-url-value="{{ path('battle_data', {id: battle.id}) }}">
+		<p class="mt-4 hidden rounded-md bg-red-950/60 border border-red-800 p-3 text-sm text-red-200" data-combat-simulator--replay-target="error"></p>
+
+		<div class="mt-6" data-combat-simulator--replay-target="output">
+			<p class="text-sm text-gray-400">Chargement de la bataille…</p>
+		</div>
+	</section>
+{% endblock content %}

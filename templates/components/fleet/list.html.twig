@@ -56,6 +56,8 @@
 										{% else %}
 											erreur
 										{% endif %}
+									{% elseif commander.isInBattle %}
+										<a href="{{ path('battle_view', {id: commander.battle.id}) }}" class="underline">en bataille</a>
 									{% elseif commander.isAffected %}
 										à quai
 									{% elseif commander.isMoving %}

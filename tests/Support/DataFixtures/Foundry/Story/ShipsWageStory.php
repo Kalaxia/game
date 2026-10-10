@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Support\DataFixtures\Foundry\Story;
 
+use App\Modules\Ares\Domain\Model\Battle\Grid\Hex;
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Ares\Infrastructure\DataFixtures\Foundry\Factory\CommanderFactory;
 use App\Modules\Ares\Infrastructure\DataFixtures\Foundry\Factory\SquadronFactory;
@@ -53,9 +54,10 @@ class ShipsWageStory extends Story
 
 		SquadronFactory::createMany(5, fn (int $index) => [
 			'commander' => $commander,
-			'position' => $index - 1,
+			...self::cell($index - 1),
 			'createdAt' => new \DateTimeImmutable('-1 day'),
-			'ship10' => 1,
+			'shipCategory' => ShipCategory::Cruiser,
+			'ships' => 1,
 		]);
 
 		$secondCommander = CommanderFactory::createOne([
@@ -67,9 +69,20 @@ class ShipsWageStory extends Story
 
 		SquadronFactory::createMany(10, fn (int $index) => [
 			'commander' => $secondCommander,
-			'position' => $index - 1,
+			...self::cell($index - 1),
 			'createdAt' => new \DateTimeImmutable('-1 day'),
-			'ship11' => 1,
+			'shipCategory' => ShipCategory::HeavyCruiser,
+			'ships' => 1,
 		]);
+	}
+
+	/**
+	 * @return array{q: int, r: int} a distinct cell of the formation grid for each index
+	 */
+	private static function cell(int $index): array
+	{
+		$hex = Hex::origin()->range(2)[$index];
+
+		return ['q' => $hex->q, 'r' => $hex->r];
 	}
 }

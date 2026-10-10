@@ -4,8 +4,8 @@ namespace App\Modules\Galaxy\Manager;
 
 use App\Classes\Library\Format;
 use App\Classes\Library\Game;
+use App\Modules\Ares\Domain\Model\Battle\Battle;
 use App\Modules\Ares\Model\Commander;
-use App\Modules\Ares\Model\Report;
 use App\Modules\Galaxy\Domain\Entity\EmptyPlace;
 use App\Modules\Galaxy\Domain\Entity\Place;
 use App\Modules\Galaxy\Domain\Entity\Planet;
@@ -14,7 +14,6 @@ use App\Modules\Galaxy\Domain\Repository\PlanetRepositoryInterface;
 use App\Modules\Hermes\Application\Builder\NotificationBuilder;
 use App\Modules\Hermes\Application\Persister\NotificationPersister;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Uid\Uuid;
 
 readonly class PlaceManager
 {
@@ -48,7 +47,7 @@ readonly class PlaceManager
 		$this->planetRepository->save($planet);
 	}
 
-	public function sendNotif(Planet $place, int $case, Commander $commander, ?Report $report = null): void
+	public function sendNotif(Planet $place, int $case, Commander $commander, ?Battle $battle = null): void
 	{
 		$notifications = match ($case) {
 			Planet::CHANGESUCCESS => [
@@ -66,24 +65,6 @@ readonly class PlaceManager
 							$place->name,
 						),
 						'.',
-					))
-					->forPlayer($commander->player),
-			],
-			Planet::CHANGEFAIL => [
-				NotificationBuilder::new()
-					->setTitle('Déplacement réussi')
-					->setContent(NotificationBuilder::paragraph(
-						'Votre officier ',
-						NotificationBuilder::link(
-							$this->urlGenerator->generate('fleet_headquarters', ['commander' => $commander->id]),
-							$commander->name,
-						),
-						' s\'est posé sur ',
-						NotificationBuilder::link(
-							$this->urlGenerator->generate('map', ['place' => $place->id]),
-							$place->name,
-						),
-						'. Il est en garnison car il n\'y avait pas assez de place en orbite.',
 					))
 					->forPlayer($commander->player),
 			],
@@ -137,10 +118,7 @@ readonly class PlaceManager
 							'expérience de l\'officier',
 						),
 						NotificationBuilder::divider(),
-						NotificationBuilder::link(
-							$this->urlGenerator->generate('fleet_archives', ['id' => $report->id]),
-							'voir le rapport',
-						),
+						$this->getBattleLink($battle),
 					))
 					->forPlayer($commander->player),
 			],
@@ -167,10 +145,7 @@ readonly class PlaceManager
 						NotificationBuilder::divider(),
 						'Il a désormais rejoint le Mémorial. Que son âme traverse l\'Univers dans la paix.',
 						NotificationBuilder::divider(),
-						NotificationBuilder::link(
-							$this->urlGenerator->generate('fleet_archives', ['id' => $report->id]),
-							'voir le rapport',
-						),
+						$this->getBattleLink($battle),
 					))
 					->forPlayer($commander->player),
 			],
@@ -206,10 +181,7 @@ readonly class PlaceManager
 							'expérience de l\'officier',
 						),
 						NotificationBuilder::divider(),
-						NotificationBuilder::link(
-							$this->urlGenerator->generate('fleet_archives', ['id' => $report->id]),
-							'voir le rapport',
-						),
+						$this->getBattleLink($battle),
 					))
 					->forPlayer($commander->player),
 				NotificationBuilder::new()
@@ -235,10 +207,7 @@ readonly class PlaceManager
 							'ressources pillées',
 						),
 						NotificationBuilder::divider(),
-						NotificationBuilder::link(
-							$this->urlGenerator->generate('fleet_archives', ['id' => $report->id]),
-							'voir le rapport',
-						),
+						$this->getBattleLink($battle),
 					))
 					->forPlayer($place->player),
 			],
@@ -265,10 +234,7 @@ readonly class PlaceManager
 						NotificationBuilder::divider(),
 						'Il a désormais rejoint le Mémorial. Que son âme traverse l\'Univers dans la paix.',
 						NotificationBuilder::divider(),
-						NotificationBuilder::link(
-							$this->urlGenerator->generate('fleet_archives', ['id' => $report->id]),
-							'voir le rapport',
-						),
+						$this->getBattleLink($battle),
 					))
 					->forPlayer($commander->player),
 				NotificationBuilder::new()
@@ -290,10 +256,7 @@ readonly class PlaceManager
 						NotificationBuilder::divider(),
 						'Vous avez repoussé l\'ennemi avec succès.',
 						NotificationBuilder::divider(),
-						NotificationBuilder::link(
-							$this->urlGenerator->generate('fleet_archives', ['id' => $report->id]),
-							'voir le rapport',
-						),
+						$this->getBattleLink($battle),
 					))
 					->forPlayer($place->player),
 			],
@@ -404,10 +367,7 @@ readonly class PlaceManager
 						),
 						'.',
 						NotificationBuilder::divider(),
-						NotificationBuilder::link(
-							$this->urlGenerator->generate('fleet_archives', ['id' => $report->id]),
-							'voir le rapport',
-						),
+						$this->getBattleLink($battle),
 					))
 					->forPlayer($commander->player),
 			],
@@ -434,10 +394,7 @@ readonly class PlaceManager
 						NotificationBuilder::divider(),
 						'Il a désormais rejoint le Mémorial. Que son âme traverse l\'Univers dans la paix.',
 						NotificationBuilder::divider(),
-						NotificationBuilder::link(
-							$this->urlGenerator->generate('fleet_archives', ['id' => $report->id]),
-							'voir le rapport',
-						),
+						$this->getBattleLink($battle),
 					))
 					->forPlayer($commander->player),
 			],
@@ -542,13 +499,8 @@ readonly class PlaceManager
 		}
 	}
 
-	/**
-	 * @param list<Uuid> $reports
-	 */
-	public function sendNotifForConquest(Planet $place, int $case, Commander $commander, array $reports = []): void
+	public function sendNotifForConquest(Planet $place, int $case, Commander $commander, Battle $battle): void
 	{
-		$nbrBattle = count($reports);
-
 		$notifications = match ($case) {
 			Planet::CONQUERPLAYERWHITBATTLESUCCESS => [
 				NotificationBuilder::new()
@@ -571,8 +523,6 @@ readonly class PlaceManager
 						),
 						'.',
 						NotificationBuilder::divider(),
-						$nbrBattle.Format::addPlural($nbrBattle, ' combats ont eu lieu.', ' seul combat a eu lieu'),
-						NotificationBuilder::divider(),
 						NotificationBuilder::resourceBox(
 							NotificationBuilder::RESOURCE_TYPE_XP,
 							'+ '.Format::number($commander->earnedExperience),
@@ -586,17 +536,8 @@ readonly class PlaceManager
 						),
 						'.',
 						NotificationBuilder::divider(),
-						...array_map(
-							fn (int $i): string => sprintf(
-								'%s%s',
-								NotificationBuilder::divider(),
-								NotificationBuilder::link(
-									$this->urlGenerator->generate('fleet_archives', ['id' => $reports[$i]]),
-									'voir le '.Format::ordinalNumber($i + 1).' rapport',
-								),
-							),
-							array_keys($reports),
-						),
+						NotificationBuilder::divider(),
+						$this->getBattleLink($battle),
 					))
 					->forPlayer($commander->player),
 				NotificationBuilder::new()
@@ -616,21 +557,10 @@ readonly class PlaceManager
 						),
 						'.',
 						NotificationBuilder::divider(),
-						$nbrBattle.Format::addPlural($nbrBattle, ' combats ont eu lieu.', ' seul combat a eu lieu'),
-						NotificationBuilder::divider(),
 						'Impliquez votre faction dans une action punitive envers votre assaillant.',
 						NotificationBuilder::divider(),
-						...array_map(
-							fn (int $i): string => sprintf(
-								'%s%s',
-								NotificationBuilder::divider(),
-								NotificationBuilder::link(
-									$this->urlGenerator->generate('fleet_archives', ['id' => $reports[$i]]),
-									'voir le '.Format::ordinalNumber($i + 1).' rapport',
-								),
-							),
-							array_keys($reports),
-						),
+						NotificationBuilder::divider(),
+						$this->getBattleLink($battle),
 					))
 					->forPlayer($place->player),
 			],
@@ -655,21 +585,10 @@ readonly class PlaceManager
 						),
 						'.',
 						NotificationBuilder::divider(),
-						$nbrBattle.Format::addPlural($nbrBattle, ' combats ont eu lieu.', ' seul combat a eu lieu'),
-						NotificationBuilder::divider(),
 						'Il a désormais rejoint de Mémorial. Que son âme traverse l\'Univers dans la paix.',
 						NotificationBuilder::divider(),
-						...array_map(
-							fn (int $i): string => sprintf(
-								'%s%s',
-								NotificationBuilder::divider(),
-								NotificationBuilder::link(
-									$this->urlGenerator->generate('fleet_archives', ['id' => $reports[$i]]),
-									'voir le '.Format::ordinalNumber($i + 1).' rapport',
-								),
-							),
-							array_keys($reports),
-						),
+						NotificationBuilder::divider(),
+						$this->getBattleLink($battle),
 					))
 					->forPlayer($commander->player),
 				NotificationBuilder::new()
@@ -689,21 +608,10 @@ readonly class PlaceManager
 						),
 						'.',
 						NotificationBuilder::divider(),
-						$nbrBattle.Format::addPlural($nbrBattle, ' combats ont eu lieu.', ' seul combat a eu lieu'),
-						NotificationBuilder::divider(),
 						'Vous avez repoussé l\'ennemi avec succès. Bravo !',
 						NotificationBuilder::divider(),
-						...array_map(
-							fn (int $i): string => sprintf(
-								'%s%s',
-								NotificationBuilder::divider(),
-								NotificationBuilder::link(
-									$this->urlGenerator->generate('fleet_archives', ['id' => $reports[$i]]),
-									'voir le '.Format::ordinalNumber($i + 1).' rapport',
-								),
-							),
-							array_keys($reports),
-						),
+						NotificationBuilder::divider(),
+						$this->getBattleLink($battle),
 					))
 					->forPlayer($place->player),
 			],
@@ -713,5 +621,15 @@ readonly class PlaceManager
 		foreach ($notifications as $notification) {
 			$this->notificationPersister->saveFromBuilder($notification);
 		}
+	}
+
+	/**
+	 * Link to the battle that preceded the outcome, if there was one.
+	 */
+	private function getBattleLink(?Battle $battle): string
+	{
+		return null !== $battle
+			? NotificationBuilder::link($this->urlGenerator->generate('battle_view', ['id' => $battle->id]), 'voir la bataille')
+			: '';
 	}
 }

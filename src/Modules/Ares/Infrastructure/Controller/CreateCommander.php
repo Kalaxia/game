@@ -80,6 +80,7 @@ class CreateCommander extends AbstractController
 					SchoolClassResource::getInfo($school, 'minExp'),
 					SchoolClassResource::getInfo($school, 'maxExp'),
 				),
+				drawTraits: false,
 			);
 			$commanderRepository->save($newCommander);
 

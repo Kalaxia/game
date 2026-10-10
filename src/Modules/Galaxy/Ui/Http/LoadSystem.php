@@ -2,8 +2,8 @@
 
 namespace App\Modules\Galaxy\Ui\Http;
 
+use App\Modules\Ares\Domain\Repository\BattleRepositoryInterface;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
-use App\Modules\Ares\Domain\Repository\ReportRepositoryInterface;
 use App\Modules\Ares\Manager\ConquestManager;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Artemis\Domain\Repository\SpyReportRepositoryInterface;
@@ -34,7 +34,7 @@ class LoadSystem extends AbstractController
 		TechnologyRepositoryInterface $technologyRepository,
 		ConquestManager $conquestManager,
 		SpyReportRepositoryInterface $spyReportRepository,
-		ReportRepositoryInterface $reportRepository,
+		BattleRepositoryInterface $battleRepository,
 		PlanetManager $planetManager,
 		RecyclingMissionRepositoryInterface $recyclingMissionRepository,
 		Uuid $id,
@@ -56,7 +56,7 @@ class LoadSystem extends AbstractController
 			'technologies' => $technologyRepository->getPlayerTechnology($currentPlayer),
 			'recycling_missions' => $recyclingMissionRepository->getPlanetActiveMissions($currentBase),
 			'spy_reports' => $spyReportRepository->getSystemReports($currentPlayer, $placesIds),
-			'combat_reports' => $reportRepository->getAttackReportsByPlaces($currentPlayer, $placesIds),
+			'battles' => $battleRepository->getPlayerBattlesAt($currentPlayer, $placesIds),
 			'colonization_cost' => $conquestManager->getColonizationCost($currentPlayer, $planetsCount),
 			'conquest_cost' => $conquestManager->getConquestCost($currentPlayer, $planetsCount),
 		]);

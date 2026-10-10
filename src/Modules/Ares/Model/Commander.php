@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Ares\Model;
 
+use App\Modules\Ares\Domain\Model\Battle\Battle;
+use App\Modules\Ares\Domain\Model\Battle\OfficerTrait;
+use App\Modules\Ares\Domain\Model\CommanderInterface;
 use App\Modules\Ares\Domain\Model\CommanderMission;
 use App\Modules\Ares\Domain\Model\ShipCategory;
 use App\Modules\Galaxy\Domain\Entity\Planet;
@@ -14,17 +17,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Uid\Uuid;
 
-class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatable
+class Commander implements CommanderInterface, TravellerInterface, \JsonSerializable, SystemUpdatable
 {
-	// variables de combat
-	/** @var list<int> */
-	public array $squadronsIds = [];
-	/** @var list<list<int>> */
-	public array $armyAtEnd = [];
+	/** Battle the fleet takes part in, while its statement is IN_BATTLE */
+	public ?Battle $battle = null;
+	/** Experience earned in the last battle, for notifications (not stored) */
 	public int $earnedExperience = 0;
-	public bool $winner = false;
-	public ?bool $isAttacker = null;
-	public bool $hasArmySetted = false;
 
 	// variables de déplacement
 	public ?\DateTimeImmutable $departedAt = null;
@@ -33,11 +31,8 @@ class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatabl
 	public ?CommanderMission $travelType = null;
 	public ?Planet $startPlace = null;
 	public ?Planet $destinationPlace = null;
-	// Tableau d'objets squadron
-	/**
-	 * @var list<Squadron>
-	 */
-	public array $army = [];
+	/** @var list<string> officer traits (OfficerTrait values), drawn as the officer levels up (D20) */
+	public array $traits = [];
 
 	public function __construct(
 		public Uuid $id,
@@ -53,7 +48,6 @@ class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatabl
 		public int $uExperience = 0,
 		public int $palmares = 0,
 		public int $statement = Commander::INSCHOOL,
-		public int $line = 1,
 		public ?string $comment = null,
 		/** @var Collection<Squadron> */
 		public Collection $squadrons = new ArrayCollection(),
@@ -92,6 +86,7 @@ class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatabl
 	public const RETIRED = 5; // à la retraite
 	public const ONSALE = 6; // dans le marché
 	public const RESERVE = 7; // dans la réserve (comme à l'école mais n'apprend pas)
+	public const IN_BATTLE = 8; // engagé dans une bataille, en orbite d'une planète
 
 	// types of travel
 	public const MOVE = 0; // déplacement
@@ -101,9 +96,6 @@ class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatabl
 
 	public const MAXTRAVELTIME = 57600;
 	public const DISTANCEMAX = 30;
-
-	// Const de lineCoord
-	public static array $LINECOORD = [1, 1, 1, 2, 2, 1, 2, 3, 3, 1, 2, 3, 4, 4, 2, 3, 4, 5, 5, 3, 4, 5, 6, 6, 4, 5, 6, 7, 7, 5, 6, 7];
 
 	public function isMoving(): bool
 	{
@@ -123,6 +115,11 @@ class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatabl
 	public function isInReserve(): bool
 	{
 		return self::RESERVE === $this->statement;
+	}
+
+	public function isInBattle(): bool
+	{
+		return self::IN_BATTLE === $this->statement;
 	}
 
 	public function isDead(): bool
@@ -160,56 +157,36 @@ class Commander implements TravellerInterface, \JsonSerializable, SystemUpdatabl
 		return self::DEAD !== $this->statement;
 	}
 
-	public function findSquadron(int $position): ?Squadron
+	public function getSquadronAt(int $q, int $r): ?Squadron
 	{
-		foreach ($this->squadrons as $squadron) {
-			if ($squadron->position === $position) {
-				return $squadron;
-			}
-		}
-
-		return null;
+		return $this->squadrons->findFirst(fn (int $key, Squadron $squadron) => $squadron->isAt($q, $r));
 	}
 
-	public function getFormatLineCoord(): array
+	public function hasShips(): bool
 	{
-		$return = [];
-
-		for ($i = 0; $i < ($this->level + 1); ++$i) {
-			$return[] = self::$LINECOORD[$i];
-		}
-
-		return $return;
-	}
-
-	public function getSizeArmy(): int
-	{
-		return count($this->squadronsIds);
-	}
-
-	public function getSquadron(int $i): ?Squadron
-	{
-		if ($i > 16) {
-			throw new \LogicException(sprintf('Squadron ID cannot be greater than 16, %d given', $i));
-		}
-
-		return $this->squadrons->get($i) ?? $this->army[$i] ?? null;
+		return $this->squadrons->exists(fn (int $key, Squadron $squadron) => $squadron->ships > 0);
 	}
 
 	/**
-	 * @return array<int, int>
+	 * @return array<int, int> number of ships by ship category value
 	 */
 	public function getNbrShipByType(): array
 	{
-		$array = array_fill(0, count(ShipCategory::cases()), 0);
+		$ships = array_fill(0, count(ShipCategory::cases()), 0);
 
-		foreach ($this->army as $squadron) {
-			for ($i = 0; $i < 12; ++$i) {
-				$array[$i] += $squadron->getShipQuantity($i);
-			}
+		foreach ($this->squadrons as $squadron) {
+			$ships[$squadron->shipCategory->value] += $squadron->ships;
 		}
 
-		return $array;
+		return $ships;
+	}
+
+	/**
+	 * @return list<OfficerTrait>
+	 */
+	public function getTraits(): array
+	{
+		return array_values(array_filter(array_map(OfficerTrait::tryFrom(...), $this->traits)));
 	}
 
 	public function getDepartureDate(): ?\DateTimeImmutable

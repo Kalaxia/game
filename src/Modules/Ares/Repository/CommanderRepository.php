@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Ares\Repository;
 
+use App\Modules\Ares\Domain\Model\Battle\Battle;
 use App\Modules\Ares\Domain\Repository\CommanderRepositoryInterface;
 use App\Modules\Ares\Model\Commander;
 use App\Modules\Demeter\Model\Color;
@@ -76,20 +77,18 @@ class CommanderRepository extends DoctrineRepository implements CommanderReposit
 			->getResult();
 	}
 
-	public function getPlanetCommanders(Planet $planet, array $statements = [], array $orderBy = []): array
+	public function getBattleCommanders(Battle $battle): array
 	{
-		return $this->findBy([
-			'base' => $planet,
-			'statement' => $statements,
-		], $orderBy);
+		return $this->findBy(['battle' => $battle]);
 	}
 
-	public function getCommandersByLine(Planet $planet, int $line): array
+	public function getPlanetCommanders(Planet $planet, array $statements = [], array $orderBy = []): array
 	{
-		return $this->findBy([
+		// An empty list of statements means any statement (findBy would match none)
+		return $this->findBy(array_filter([
 			'base' => $planet,
-			'line' => $line,
-		]);
+			'statement' => $statements,
+		], fn (mixed $criterion) => [] !== $criterion), $orderBy);
 	}
 
 	public function getIncomingAttacks(Player $player): array
@@ -124,21 +123,6 @@ class CommanderRepository extends DoctrineRepository implements CommanderReposit
 		], ['dArrival' => 'ASC']);
 	}
 
-	public function countCommandersByLine(Planet $planet, int $line): int
-	{
-		$qb = $this->createQueryBuilder('c');
-
-		return $qb
-			->select('COUNT(c)')
-			->andWhere('c.base = :planet')
-			->andWhere('c.line = :line')
-			->andWhere($qb->expr()->in('c.statement', [Commander::AFFECTED, Commander::MOVING]))
-			->setParameter('planet', $planet->id, UuidType::NAME)
-			->setParameter('line', $line)
-			->getQuery()
-			->getSingleScalarResult();
-	}
-
 	public function getFactionCommanderStats(Color $faction): array
 	{
 		$qb = $this->createQueryBuilder('c');
@@ -150,7 +134,7 @@ class CommanderRepository extends DoctrineRepository implements CommanderReposit
 			)
 			->join('c.player', 'p')
 			->where('p.faction = :faction')
-			->andWhere($qb->expr()->in('c.statement', [Commander::AFFECTED, Commander::MOVING]))
+			->andWhere($qb->expr()->in('c.statement', [Commander::AFFECTED, Commander::MOVING, Commander::IN_BATTLE]))
 			->setParameter('faction', $faction->id, UuidType::NAME);
 
 		return $qb->getQuery()->getSingleResult();

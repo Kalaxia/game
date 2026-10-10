@@ -34,7 +34,7 @@ class ViewHeadquarters extends AbstractController
 			$commander = $this->commanderRepository->get(Uuid::fromString($commanderId));
 		}
 
-		if (null !== $commander && $commander->player->id === $currentPlayer->id && in_array($commander->statement, [Commander::AFFECTED, Commander::MOVING])) {
+		if (null !== $commander && $commander->player->id === $currentPlayer->id && in_array($commander->statement, [Commander::AFFECTED, Commander::MOVING, Commander::IN_BATTLE])) {
 			$commanderBase = $commander->base;
 		}
 
@@ -89,7 +89,7 @@ class ViewHeadquarters extends AbstractController
 		}
 		$commanders = $this->commanderRepository->getPlayerCommanders(
 			$currentPlayer,
-			[Commander::AFFECTED, Commander::MOVING],
+			[Commander::AFFECTED, Commander::MOVING, Commander::IN_BATTLE],
 			['c.base' => 'DESC'],
 		);
 

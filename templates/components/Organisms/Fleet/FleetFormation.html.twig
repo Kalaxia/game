@@ -1,0 +1,116 @@
+{% set grid = this.gridDimensions %}
+{% set faction = commander.player.faction.identifier %}
+{% set editable = this.canCompose %}
+{% set command = this.command %}
+{# Art direction: the faction colour is the dominant colour of the fleet (see AGENTS.md) #}
+
+<div {{ attributes }} class="flex flex-col gap-6 lg:flex-row">
+	<div class="lg:w-1/2 text-sm">
+		{% if editable %}
+			<p class="text-gray-300">
+				Choisissez un type de vaisseau, puis cliquez sur une case de la formation pour y placer une escadrille
+				avec les vaisseaux du hangar. Une escadrille ne contient qu’un seul type de vaisseau.
+			</p>
+		{% elseif commander.isInBattle and commander.battle is not null %}
+			<p class="text-gray-300">
+				La flotte est engagée dans une bataille : sa composition est verrouillée.
+				<a href="{{ path('battle_view', {id: commander.battle.id}) }}" class="underline">Suivre la bataille</a>
+			</p>
+		{% else %}
+			<p class="text-gray-300">La composition de la flotte ne peut être modifiée qu’en orbite de sa base.</p>
+		{% endif %}
+
+		{% if error %}
+			<p class="mt-3 rounded-md bg-red-950/60 border border-red-800 px-3 py-2 text-red-200">{{ error }}</p>
+		{% endif %}
+
+		{% if commander.traits is not empty %}
+			<p class="mt-4 text-gray-400">
+				Traits de l’officier :
+				{% for trait in commander.traits %}
+					<span class="text-gray-200" title="{{ ('combat_simulator.traits.' ~ trait ~ '.description')|trans }}">{{ ('combat_simulator.traits.' ~ trait ~ '.name')|trans }}</span>{{ not loop.last ? ', ' }}
+				{% endfor %}
+			</p>
+		{% endif %}
+
+		{% if editable %}
+			<fieldset class="mt-4 grid grid-cols-1 gap-1 sm:grid-cols-2">
+				<legend class="sr-only">Type de vaisseau</legend>
+				{% for ship_type in this.shipTypes %}
+					{% set selected = selectedCategory == ship_type.category.value %}
+					<label class="flex items-center gap-2 rounded-md px-2 py-1 cursor-pointer hover:bg-white/5 {{ selected ? 'bg-white/10 ring-1 ring-white/20' }} {{ ship_type.hangar == 0 ? 'opacity-50' }}">
+						<input type="radio" name="selected-category" value="{{ ship_type.category.value }}" data-model="selectedCategory" {{ selected ? 'checked' }} class="sr-only" />
+						{{ include('components/Atoms/Fleet/ship_pictogram.html.twig', {pictogram: ship_type.type.pictogram, class: 'size-4'}) }}
+						<span class="grow">{{ ship_type.name }}</span>
+						<span class="text-xs text-gray-500">{{ ('combat_simulator.roles.' ~ ship_type.type.role.value)|trans }}</span>
+						<span class="text-xs text-gray-300" title="Vaisseaux au hangar · par escadrille">{{ ship_type.hangar }} · ×{{ ship_type.type.squadronSize }}</span>
+					</label>
+				{% endfor %}
+			</fieldset>
+
+			<div class="mt-4 flex flex-wrap items-end gap-4">
+				<div>
+					<label for="squadron-ships" class="block text-sm font-medium text-white">Vaisseaux par escadrille</label>
+					<input id="squadron-ships" type="number" min="0" data-model="squadronShips" value="{{ squadronShips }}"
+						class="mt-2 w-32 rounded-md bg-white/5 px-3 py-1.5 text-white outline-1 -outline-offset-1 outline-white/10" />
+				</div>
+				<p class="pb-2 text-xs text-gray-400">0 : autant que possible</p>
+			</div>
+
+			<div class="mt-6 flex flex-wrap gap-3">
+				<button type="button" data-action="live#action" data-live-action-param="autoArrange" class="rounded-md px-3 py-2 text-gray-200 ring-1 ring-white/20 hover:bg-white/10">
+					Réorganiser automatiquement
+				</button>
+				<button type="button" data-action="live#action" data-live-action-param="clear" class="rounded-md px-3 py-2 text-gray-200 ring-1 ring-white/20 hover:bg-white/10">
+					Tout renvoyer au hangar
+				</button>
+			</div>
+		{% endif %}
+	</div>
+
+	<div class="flex flex-col items-center lg:w-1/2">
+		{% if editable %}
+			<div class="mb-3 inline-flex rounded-md ring-1 ring-white/20 text-sm" role="radiogroup" aria-label="Outil">
+				{% for value, label in {place: 'Placer', remove: 'Retirer'} %}
+					<label class="cursor-pointer px-3 py-1 first:rounded-l-md last:rounded-r-md {{ tool == value ? 'bg-white/15 text-white' : 'text-gray-400 hover:text-white' }}">
+						<input type="radio" name="tool" value="{{ value }}" data-model="tool" {{ tool == value ? 'checked' }} class="sr-only" />
+						{{ label }}
+					</label>
+				{% endfor %}
+			</div>
+		{% endif %}
+		<p class="mb-2 text-xs uppercase tracking-wide text-gray-400">▲ Ligne de front</p>
+		<div class="relative" style="width: {{ grid.width }}px; height: {{ grid.height }}px">
+			{% for cell in this.cells %}
+				{% set squadron = cell.slot %}
+				<button type="button"
+					class="hex-flat absolute flex flex-col items-center justify-center text-center leading-tight text-white transition-colors {{ squadron ? 'hover:brightness-125' : 'bg-gray-700 hover:bg-gray-600' }} {{ not editable ? 'cursor-default' }}"
+					style="left: {{ cell.left }}px; top: {{ cell.top }}px; width: {{ grid.cell_width }}px; height: {{ grid.cell_height }}px;{% if squadron %} background: var(--color-medium-{{ faction }}); text-shadow: 0 0 3px rgb(0 0 0 / .9);{% endif %}"
+					title="{{ squadron ? this.shipTypeName(squadron.shipCategory) ~ ' × ' ~ squadron.ships : 'Case libre' }}"
+					{% if editable %}
+						data-action="live#action"
+						data-live-action-param="clickCell"
+						data-live-q-param="{{ cell.q }}"
+						data-live-r-param="{{ cell.r }}"
+					{% else %}
+						disabled
+					{% endif %}
+				>
+					{% if squadron %}
+						{{ include('components/Atoms/Fleet/ship_pictogram.html.twig', {pictogram: this.pictogram(squadron.shipCategory), class: 'size-6'}) }}
+						<span class="text-xs font-semibold">{{ squadron.ships }}</span>
+					{% endif %}
+				</button>
+			{% endfor %}
+		</div>
+		<p class="mt-3 text-xs text-gray-400">
+			{{ commander.squadrons|length }} / {{ this.cells|length }} escadrilles · {{ this.pev }} PEV
+			{% if command %}
+				· commandement {{ command.capacity }} PEV
+				{% if command.malus > 0 %}
+					<span class="text-gray-200" title="Au-delà de sa capacité de commandement, la flotte perd en initiative, en esquive et en cadence de tir.">· flotte désorganisée (−{{ command.malus }} %)</span>
+				{% endif %}
+			{% endif %}
+		</p>
+	</div>
+</div>

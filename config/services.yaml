@@ -2,6 +2,7 @@ imports:
     - { resource: ./game/faction_bonuses.yaml }
     - { resource: ./game/factions.yaml }
     - { resource: ./game/ship_categories.yaml }
+    - { resource: ./game/battle_ship_types.yaml }
 
     - { resource: ../src/Modules/Ares/Resource/config/config.yml }
     - { resource: ../src/Modules/Artemis/Resource/config/config.yml }

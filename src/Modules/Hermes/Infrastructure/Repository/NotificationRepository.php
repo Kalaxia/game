@@ -68,26 +68,6 @@ class NotificationRepository extends DoctrineRepository implements NotificationR
 		return $qb->getQuery()->getResult();
 	}
 
-	public function getMultiCombatNotifications(
-		Player $commanderPlayer,
-		Player $placePlayer,
-		\DateTimeImmutable $arrivedAt,
-	): array {
-		$qb = $this->createQueryBuilder('n');
-
-		$qb
-			->where($qb->expr()->orX(
-				$qb->expr()->eq('n.player', ':commander_player'),
-				$qb->expr()->eq('n.player', ':place_player'),
-			))
-			->andWhere('n.sentAt = :arrived_at')
-			->setParameter('commander_player', $commanderPlayer)
-			->setParameter('place_player', $placePlayer)
-			->setParameter('arrived_at', $arrivedAt);
-
-		return $qb->getQuery()->getResult();
-	}
-
 	public function removePlayerNotifications(Player $player): int
 	{
 		$qb = $this->createQueryBuilder('n');
